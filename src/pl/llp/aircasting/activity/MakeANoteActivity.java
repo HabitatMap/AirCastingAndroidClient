@@ -34,7 +34,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.util.SimpleProgressTask;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

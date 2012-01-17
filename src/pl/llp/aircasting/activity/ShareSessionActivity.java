@@ -30,13 +30,13 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.helper.CSVHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ShareHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.util.SimpleProgressTask;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

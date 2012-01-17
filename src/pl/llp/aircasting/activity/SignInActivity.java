@@ -28,10 +28,10 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.api.data.UserInfo;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.util.SimpleProgressTask;
 import pl.llp.aircasting.util.http.HttpResult;
 import roboguice.inject.InjectView;
 

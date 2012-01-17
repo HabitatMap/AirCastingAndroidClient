@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.LinearLayout;
 import pl.llp.aircasting.R;
-import roboguice.activity.RoboActivity;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +30,7 @@ import roboguice.activity.RoboActivity;
  * Date: 11/22/11
  * Time: 2:56 PM
  */
-public class DialogActivity extends RoboActivity {
+public class DialogActivity extends RoboActivityWithProgress {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

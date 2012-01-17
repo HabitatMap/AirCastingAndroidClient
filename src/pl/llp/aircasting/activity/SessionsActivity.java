@@ -42,7 +42,6 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
-import roboguice.activity.RoboListActivity;
 import roboguice.inject.InjectView;
 
 /**
@@ -51,7 +50,7 @@ import roboguice.inject.InjectView;
  * Date: 10/5/11
  * Time: 3:59 PM
  */
-public class SessionsActivity extends RoboListActivity implements AdapterView.OnItemLongClickListener {
+public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
     @Inject SessionRepository sessionRepository;
     @Inject SessionManager sessionManager;
     @Inject AdapterFactory adapterFactory;

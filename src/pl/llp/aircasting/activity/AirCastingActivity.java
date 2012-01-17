@@ -60,7 +60,7 @@ import java.text.NumberFormat;
  * Date: 9/30/11
  * Time: 3:18 PM
  */
-public class AirCastingActivity extends RoboMapActivity implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
+public class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
     // It seems it's impossible to inject these in the tests
     @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
     @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;

@@ -20,12 +20,12 @@
 package pl.llp.aircasting.activity;
 
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
 import roboguice.inject.InjectView;
@@ -37,6 +37,7 @@ import roboguice.inject.InjectView;
  * Time: 12:40 PM
  */
 public class ContributeActivity extends DialogActivity implements View.OnClickListener {
+    public static final int PROGRESS_DIALOG = 1235;
     @Inject SessionManager sessionManager;
 
     @InjectView(R.id.yes) Button yes;
@@ -62,19 +63,12 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
 
     private void saveSession() {
         //noinspection unchecked
-        new SaveSessionTask().execute();
+        new SaveSessionTask(this, ProgressDialog.STYLE_HORIZONTAL).execute();
     }
 
-    private class SaveSessionTask extends AsyncTask<Void, Void, Void> implements SessionRepository.ProgressListener {
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(ContributeActivity.this);
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setMessage(getString(R.string.saving));
-            dialog.setCancelable(false);
-            dialog.show();
+    private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements SessionRepository.ProgressListener {
+        public SaveSessionTask(ActivityWithProgress context, int styleHorizontal) {
+            super(context, styleHorizontal);
         }
 
         @Override

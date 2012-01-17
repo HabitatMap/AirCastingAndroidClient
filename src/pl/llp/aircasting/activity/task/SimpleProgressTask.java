@@ -17,12 +17,13 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.util;
+package pl.llp.aircasting.activity.task;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ActivityWithProgress;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,26 +32,37 @@ import pl.llp.aircasting.R;
  * Time: 1:49 PM
  */
 public abstract class SimpleProgressTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
-    ProgressDialog dialog;
-    private Context context;
+    protected ProgressDialog dialog;
+    private int progressStyle;
 
-    public SimpleProgressTask(Context context){
+    public static ProgressDialog prepareDialog(Context context, int progressStyle){
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getString(R.string.working));
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(progressStyle);
+
+        return progressDialog;
+    }
+    
+    private ActivityWithProgress context;
+
+    public SimpleProgressTask(ActivityWithProgress context){
         this.context = context;
+        this.progressStyle = ProgressDialog.STYLE_SPINNER;
+    }
+
+    public SimpleProgressTask(ActivityWithProgress context, int progressStyle){
+        this.context = context;
+        this.progressStyle = progressStyle;
     }
 
     @Override
     protected void onPreExecute() {
-        dialog = new ProgressDialog(context);
-
-        String message = context.getString(R.string.working);
-        dialog.setMessage(message);
-        dialog.setCancelable(false);
-
-        dialog.show();
-    }
+        this.dialog = context.showProgressDialog(progressStyle);
+   }
 
     @Override
     protected void onPostExecute(Result result) {
-        dialog.dismiss();
+        context.hideProgressDialog();
     }
 }

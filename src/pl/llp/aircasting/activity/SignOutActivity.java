@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.util.SimpleProgressTask;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

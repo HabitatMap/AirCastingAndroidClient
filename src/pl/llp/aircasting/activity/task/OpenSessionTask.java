@@ -19,28 +19,14 @@
 */
 package pl.llp.aircasting.activity.task;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ActivityWithProgress;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
 
-public abstract class OpenSessionTask extends AsyncTask<Long, Void, Session> implements SessionRepository.ProgressListener {
-    private ProgressDialog dialog;
-    private Activity context;
-
-    protected OpenSessionTask(Activity context) {
-        this.context = context;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        dialog = new ProgressDialog(context);
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.setMessage(context.getString(R.string.loading));
-        dialog.setCancelable(false);
-        dialog.show();
+public abstract class OpenSessionTask extends SimpleProgressTask<Long, Void, Session> implements SessionRepository.ProgressListener {
+    public OpenSessionTask(ActivityWithProgress context) {
+        super(context, ProgressDialog.STYLE_HORIZONTAL);
     }
 
     @Override

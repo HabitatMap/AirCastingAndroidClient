@@ -38,7 +38,7 @@ import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
-import pl.llp.aircasting.util.SimpleProgressTask;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
