@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_alignParentBottom="true"
+              android:layout_margin="5dp"
+        >
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:layout_weight="2"
+                  android:gravity="center"
+            >
+        <FrameLayout style="@style/Wrap"
+                     android:id="@+id/context_button_left"
+                >
+            <include layout="@layout/context_button_placeholder"/>
+        </FrameLayout>
+
+        <FrameLayout style="@style/Wrap"
+                     android:id="@+id/context_button_center"
+                     android:layout_marginLeft="5dp"
+                     android:layout_marginRight="5dp"
+                >
+            <include layout="@layout/context_button_placeholder"/>
+        </FrameLayout>
+
+        <FrameLayout style="@style/Wrap"
+                     android:id="@+id/context_button_right"
+                >
+            <include layout="@layout/context_button_placeholder"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:gravity="center"
+            >
+
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/plus"
+                android:id="@+id/zoom_in"
+                />
+
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/minus"
+                android:id="@+id/zoom_out"
+                />
+
+    </LinearLayout>
+
+</LinearLayout>

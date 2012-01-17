@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/note_viewer"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="40dp"
+              android:orientation="vertical"
+              android:background="@drawable/panel_background"
+        >
+    <LinearLayout android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:layout_marginBottom="2dp"
+                  android:padding="3dp"
+                  android:gravity="center_vertical"
+            >
+        <ImageView style="@style/Wrap"
+                   android:src="@drawable/ic_dialog_menu_generic"
+                   android:layout_margin="2dp"
+                />
+        <TextView style="@style/Fill"
+                  android:layout_weight="1"
+                  android:text="00/00/00 00:00"
+                  android:paddingLeft="5dp"
+                  android:gravity="center_vertical"
+                  android:id="@+id/note_date"
+                  android:textColor="@android:color/primary_text_dark"
+                />
+        <TextView style="@style/Wrap"
+                  android:text="00/00"
+                  android:layout_marginRight="2dp"
+                  android:gravity="center_vertical"
+                  android:id="@+id/note_number"
+                  android:textColor="@android:color/primary_text_dark"
+                />
+
+        <ImageButton style="@style/Wrap"
+                     android:background="@drawable/left"
+                     android:id="@+id/note_left"
+                />
+        <ImageButton style="@style/Wrap"
+                     android:background="@drawable/right"
+                     android:id="@+id/note_right"
+                />
+    </LinearLayout>
+
+    <LinearLayout style="@style/Wide"
+                  android:background="@drawable/dialog_background"
+                  android:orientation="vertical"
+            >
+
+        <TextView style="@style/DialogText"
+                  android:text="@string/note"
+                  android:layout_marginLeft="2dp"
+                />
+        <EditText style="@style/Wide"
+                  android:text=""
+                  android:lines="3"
+                  android:id="@+id/note_text"
+                />
+
+        <LinearLayout style="@style/Wrap"
+                      android:gravity="center_vertical"
+                      android:layout_marginBottom="5dp"
+                      android:layout_marginLeft="3dp"
+                      android:id="@+id/view_photo"
+                >
+            <ImageView style="@style/Wrap"
+                       android:src="@drawable/camera"
+                    />
+            <TextView style="@style/Link"
+                      android:text="@string/view_photo"
+                    />
+        </LinearLayout>
+
+        <Button style="@style/DialogButton"
+                android:text="@string/delete"
+                android:id="@+id/note_delete"
+                />
+
+        <Button style="@style/DialogLastButton"
+                android:text="@string/save_changes"
+                android:id="@+id/note_save"
+                />
+    </LinearLayout>
+</LinearLayout>

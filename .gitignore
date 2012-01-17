@@ -1,0 +1,15 @@
+# ant
+bin
+target
+out
+
+# intellij
+*.iml
+.idea
+tmp
+
+# android
+R.java
+local.properties
+proguard.cfg
+proguard_logs

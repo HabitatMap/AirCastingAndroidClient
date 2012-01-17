@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="pl.llp.aircasting"
+          android:versionCode="5"
+          android:versionName="1.0.5"
+        >
+
+    <uses-sdk android:targetSdkVersion="7"
+              android:minSdkVersion="7"
+            />
+
+    <!-- Settings -->
+    <supports-screens android:anyDensity="true"
+                      android:largeScreens="true"
+                      android:normalScreens="true"
+                      android:smallScreens="true"
+            />
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application android:name=".guice.AirCastingApplication"
+                 android:label="@string/app_name"
+                 android:icon="@drawable/icon"
+            >
+
+        <!-- Libraries -->
+        <uses-library android:name="com.google.android.maps"/>
+
+        <!-- Activities -->
+        <activity android:name=".activity.SplashActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                  android:noHistory="true"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.SoundTraceActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                >
+        </activity>
+
+        <activity android:name=".activity.GraphActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                />
+
+        <activity android:name=".activity.SessionsActivity"
+                  android:label="@string/app_name"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                />
+
+        <activity android:name=".activity.SaveSessionActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/session_details"
+                />
+
+        <activity android:name=".activity.EditSessionActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/session_details"
+                />
+
+        <activity android:name=".activity.SettingsActivity"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                />
+
+        <activity android:name=".activity.OpenSessionActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/session_options"
+                />
+
+        <activity android:name=".activity.HeatMapActivity"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                />
+
+        <activity android:name=".activity.AboutActivity"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                />
+
+        <activity android:name=".activity.MakeANoteActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/make_a_note"
+                />
+
+        <activity android:name=".activity.ThresholdsActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/color_scale"
+                />
+
+        <activity android:name=".activity.SignUpActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/connect_to_aircasting"
+                />
+
+        <activity android:name=".activity.SignOutActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/sign_out"
+                />
+
+        <activity android:name=".activity.SignInActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/sign_in"
+                />
+
+        <activity android:name=".activity.ResetPasswordActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/reset_password"
+                />
+
+        <activity android:name=".activity.ProfileActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/profile"
+                />
+
+        <activity android:name=".activity.ContributeActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/contribute_to_crowd_map"
+                />
+
+        <activity android:name=".activity.ShareSessionActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/share_session"
+                />
+
+        <!-- Services -->
+        <service android:name=".service.SensorService"/>
+
+        <service android:name=".service.SyncService"/>
+
+        <!-- Receivers -->
+        <receiver android:name=".receiver.NetworkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest> 

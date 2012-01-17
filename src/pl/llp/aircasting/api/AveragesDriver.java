@@ -1,0 +1,56 @@
+/**
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+*/
+package pl.llp.aircasting.api;
+
+import com.google.gson.reflect.TypeToken;
+import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.util.http.HttpResult;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
+import static pl.llp.aircasting.util.http.HttpBuilder.http;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: obrok
+ * Date: 11/3/11
+ * Time: 11:58 AM
+ */
+public class AveragesDriver {
+    private static final String AVERAGES_PATH = "/api/averages.json";
+
+    Type listType = new TypeToken<List<Region>>() {
+    }.getType();
+
+    public HttpResult<Iterable<Region>> index(double west, double north, double east, double south, int gridSizeX, int gridSizeY) {
+        return http()
+                .get()
+                .from(AVERAGES_PATH)
+                .with("q[west]", "" + west)
+                .with("q[north]", "" + north)
+                .with("q[east]", "" + east)
+                .with("q[south]", "" + south)
+                .with("q[grid_size_x]", "" + gridSizeX)
+                .with("q[grid_size_y]", "" + gridSizeY)
+                .into(listType);
+
+    }
+}

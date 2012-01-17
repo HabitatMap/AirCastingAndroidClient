@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/DialogMain"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+        >
+
+    <LinearLayout style="@style/Wide"
+                  android:padding="10dp"
+                  android:orientation="vertical">
+
+        <include layout="@layout/top_bar"/>
+
+        <LinearLayout style="@style/Wide"
+                      android:gravity="center_vertical"
+                >
+            <EditText style="@style/ColorScaleLeft"
+                      android:id="@+id/color_scale_too_loud"
+                      android:background="@drawable/red_box"
+                    />
+            <TextView style="@style/ColorScaleRight"
+                      android:text="@string/too_loud_summary"
+                      android:gravity="center"
+                      android:textColor="@android:color/black"
+                    />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Wide"
+                      android:gravity="center_vertical"
+                >
+            <EditText style="@style/ColorScaleLeft"
+                      android:id="@+id/color_scale_very_loud"
+                      android:background="@drawable/orange_box"
+                    />
+            <SeekBar style="@style/ColorScaleRight"
+                     android:id="@+id/color_scale_very_loud_slider"
+                    />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Wide"
+                      android:gravity="center_vertical"
+                >
+            <EditText style="@style/ColorScaleLeft"
+                      android:id="@+id/color_scale_loud"
+                      android:background="@drawable/yellow_box"
+                    />
+            <SeekBar style="@style/ColorScaleRight"
+                     android:id="@+id/color_scale_loud_slider"
+                    />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Wide"
+                      android:gravity="center_vertical"
+                >
+            <EditText style="@style/ColorScaleLeft"
+                      android:id="@+id/color_scale_average"
+                      android:background="@drawable/green_box"
+                    />
+            <SeekBar style="@style/ColorScaleRight"
+                     android:id="@+id/color_scale_average_slider"
+                    />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Wide"
+                      android:gravity="center_vertical"
+                >
+            <EditText style="@style/ColorScaleLeft"
+                      android:id="@+id/color_scale_quiet"
+                      android:background="@drawable/black_box"
+                    />
+            <TextView style="@style/ColorScaleRight"
+                      android:text="@string/too_quiet_summary"
+                      android:gravity="center"
+                      android:textColor="@android:color/black"
+                    />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button style="@style/DialogButton"
+            android:text="@string/save_changes"
+            android:id="@+id/save"
+            />
+    <Button style="@style/DialogLastButton"
+            android:text="@string/reset_to_default"
+            android:id="@+id/reset"
+            />
+</LinearLayout>

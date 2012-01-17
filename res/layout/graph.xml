@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:color/background_light"
+        >
+
+    <TextView style="@style/Wrap"
+              android:text="00:00:00"
+              android:layout_alignParentBottom="true"
+              android:id="@+id/graph_begin_time"
+              android:textColor="@android:color/black"
+            />
+
+    <TextView style="@style/Wrap"
+              android:text="00:00:00"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentRight="true"
+              android:id="@+id/graph_end_time"
+              android:textColor="@android:color/black"
+            />
+
+    <pl.llp.aircasting.view.NoisePlot android:layout_width="fill_parent"
+                                      android:layout_height="fill_parent"
+                                      android:layout_weight="1"
+                                      android:layout_marginTop="32dp"
+                                      android:layout_above="@id/graph_begin_time"
+                                      android:id="@+id/noise_graph"
+            />
+
+    <ImageView android:layout_height="fill_parent"
+               android:layout_width="6dp"
+               android:background="@drawable/white_gradient_left"
+               android:layout_alignTop="@id/noise_graph"
+               android:layout_alignLeft="@id/noise_graph"
+               android:layout_alignBottom="@id/noise_graph"
+               android:visibility="gone"
+               android:id="@+id/suggest_scroll_left"
+            />
+
+    <ImageView android:layout_height="fill_parent"
+               android:layout_width="6dp"
+               android:background="@drawable/white_gradient_right"
+               android:layout_alignTop="@id/noise_graph"
+               android:layout_alignRight="@id/noise_graph"
+               android:layout_alignBottom="@id/noise_graph"
+               android:visibility="gone"
+               android:id="@+id/suggest_scroll_right"
+            />
+
+    <TextView style="@style/Wrap"
+              android:textColor="@android:color/white"
+              android:layout_alignTop="@id/noise_graph"
+              android:id="@+id/graph_top_db"
+            />
+
+    <TextView style="@style/Wrap"
+              android:layout_alignBottom="@id/noise_graph"
+              android:textColor="@android:color/white"
+              android:id="@+id/graph_bottom_db"
+            />
+
+    <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
+                                      android:layout_width="fill_parent"
+                                      android:id="@+id/touch_pane"
+            />
+
+    <include layout="@layout/gauges"/>
+
+    <RelativeLayout android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/buttons"
+            >
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_alignParentLeft="true"
+                     android:layout_centerVertical="true"
+                     android:layout_marginLeft="5dp"
+                     android:background="@drawable/left_trace"
+                     android:id="@+id/trace_button"
+                />
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_alignParentRight="true"
+                     android:layout_centerVertical="true"
+                     android:layout_marginRight="5dp"
+                     android:background="@drawable/right_heat_map"
+                     android:id="@+id/heat_map_button"
+                />
+
+        <include layout="@layout/context_buttons"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

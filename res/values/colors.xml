@@ -1,0 +1,47 @@
+<resources>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+    <color name="dialog_background">#552F0968</color>
+    <color name="aircasting_standard">#FF2F0868</color>
+    <color name="aircasting_light">#FF9783B3</color>
+    <color name="gauge_transparent">#CFFF</color>
+
+    <color name="green">#FF00A33D</color>
+    <color name="yellow">#FFFFD800</color>
+    <color name="orange">#FFFF7F00</color>
+    <color name="red">#FFFE0000</color>
+
+    <color name="graph_green">#FF65C68A</color>
+    <color name="graph_yellow">#FFFEE665</color>
+    <color name="graph_orange">#FFFEB065</color>
+    <color name="graph_red">#FFFE6465</color>
+
+    <color name="list_selected">#FFD5E9FF</color>
+    <color name="list_odd">#FFEFEFEF</color>
+    <color name="list_even">#FFFDFBFD</color>
+
+    <color name="transparent">#0FFF</color>
+
+    <color name="lighter_gray">#C6CBC6</color>
+
+    <color name="button_gray">#E7ECE7</color>
+    <color name="button_focused">#22C5EE</color>
+    <color name="splash_background">#009ddb</color>
+</resources>

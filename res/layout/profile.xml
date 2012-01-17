@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/DialogMain"
+        >
+
+    <Button style="@style/DialogButton"
+            android:text="@string/sign_in"
+            android:id="@+id/sign_in"
+            />
+
+    <Button style="@style/DialogButton"
+            android:text="@string/create_profile"
+            android:id="@+id/create_profile"
+            />
+
+    <Button style="@style/DialogLastButton"
+            android:text="@string/forgot_password"
+            android:id="@+id/forgot_password"
+            />
+
+</LinearLayout>

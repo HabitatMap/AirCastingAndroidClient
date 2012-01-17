@@ -1,0 +1,300 @@
+<resources>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+    <string name="about_description">About AirCasting</string>
+    <string name="about_description_content">
+        <![CDATA[
+        <p>
+            AirCasting is a platform for recording, mapping, and sharing environmental
+            data using your smartphone. Currently, AirCasters can upload sound level data recorded by their phone’s
+            microphone. AirCasting is intended for measuring outdoor noise. Soon, we’ll expand the range of devices that
+            plug into the AirCasting platform to include sound level meters and pollution sensors.
+        </p>
+
+        <p>
+            Each AirCasting session lets you capture real-world measurements, annotate the data to tell your story, and
+            share it with a local and world-wide community via the CrowdMap. What was conjecture based on casual observation
+            now becomes a measurable fact. For example, you might think: “This noisy neighborhood is disrupting my sleep.”
+            Use AirCasting to identify the factual cause: “The twelve noise spikes greater than 65 decibels between 2am and
+            6am significantly degraded my quality of sleep.” When you share your AirCasting data with other AirCasters, your
+            data and notes become a social statement, linking your experiences to the community’s observations.
+        </p>
+
+        <p>
+            We began AirCasting by measuring sound levels in New York City for three reasons:
+            <br/>
+            1) New Yorkers care about neighborhood noise; it’s the #1 complaint filed with the City’s 311 hotline.
+            <br/>
+            2) Unwanted noise negatively impacts people’s health.
+            <br/>
+            3) Smartphones already have microphones, so no additional hardware is required.
+        </p>
+
+        <p>
+            Start measuring the air in your environment. What will you discover? What stories will you tell with AirCasting?
+            Where’s the noisy corner or quiet sanctuary in your neighborhood? Together, with AirCasting, we can better
+            understand and improve our environment.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_best_practices">Sound recording best practices</string>
+    <string name="about_best_practices_content">
+        <![CDATA[
+        <p>
+            Follow the Sound Recording Best Practices guide if you intend to contribute your session to the AirCasting
+            CrowdMap. If you’re not contributing your session to the CrowdMap, feel free to use AirCasting as you like.
+            When recording sound level readings...
+        </p>
+        <p>
+            <b>Do:</b> measure outside, hold phone steady, talk quietly, walk quietly,
+            <a href="http://www.takingspace.org/craft-a-windscreen-for-your-phone-mic/">craft a windscreen</a>
+            for your microphone (if possible)
+        </p>
+        <p>
+            <b>Don’t:</b> measure inside, put phone in pocket, talk loudly, walk loudly, expose your microphone to wind
+        </p>
+        <p>
+            Do you have an external sound level meter? Compare its readings with those from AirCasting to calibrate
+            AirCasting. Under “settings”, adjust the “microphone maximum” until the readings on your phone match those from
+            the external sound level meter. Then email us at <a href="mailto:info@habitatmap.org">info@habitatmap.org</a>
+            so we can add your phone to our microphone maximum database. To see a partial list of microphone maximums
+            for different Android phones,
+            <a href="http://www.takingspace.org/set-your-mic-max-to-record-accurate-sound-level-readings/">visit our blog</a>.
+        </p>
+        <p>
+            We welcome input for improving the Sound Recording Best Practices guide. Send feedback to
+            <a href="mailto:info@habitatmap.org">info@habitatmap.org</a>.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_start">Start AirCasting</string>
+    <string name="about_start_content">
+        <![CDATA[
+        <p>
+            Make sure your GPS is on and your location on the map is accurate. Press the bullseye button to refresh your
+            location and center the map. Don’t see any buttons? Just tap the screen once and they’ll appear; tap the screen
+            again to make them disappear. When your location is accurate, press the “play” button to begin an AirCasting
+            session.
+        </p>
+        <p>
+            First time? It’s a good idea to review the Sound Recording Best Practices guide before you start.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_view_data">View the AirCasting Data</string>
+    <string name="about_view_data_content">
+        <![CDATA[
+        <p>
+            AirCasting displays data with three views: the Route Map, the CrowdMap, and the Graph. Toggle between the views by
+            tapping the triangular buttons located on the left and right sides of the screen. If you don’t see any buttons tap
+            the screen once to make them appear; tap the screen again to make them disappear.
+        </p>
+        <p>
+            The Route Map displays your current position as a colored dot with a white outline; dots without an outline are past
+            readings. A dot’s color corresponds to the reading’s intensity at a location. Refer to the “Heat Legend ” (the
+            colored bar at the top of the screen) to identify the intensity range for a reading. For example, a yellow dot
+            corresponds to a sound level reading between 61 and 70 decibels.
+        </p>
+        <p>
+            The CrowdMap displays AirCasting data from all contributors. Each square’s color corresponds to the average
+            intensity of all the readings recorded in that area. Refer to the “Heat Legend ” (the colored bar at the top of the
+            screen) to identify the intensity range for a square. For example, an orange square corresponds to an average sound
+            level between 71 and 80 decibels. If no colors are displayed, there is no data in that area. The CrowdMap might load
+            slowly.
+        </p>
+        <p>
+            The Graph displays your sound level readings over time. Zoom in and out for more or less detail, respectively. Swipe
+            to pan through the data.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_note">Make a Note or Share a Reading</string>
+    <string name="about_note_content">
+        <![CDATA[
+        <p>
+            Tap the “share” button to add a note to a specific location or share your readings. The default message includes
+            the peak and average decibel levels recorded over the last ten seconds.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_stop">Stop AirCasting</string>
+    <string name="about_stop_content">
+        <![CDATA[
+        <p>
+            Press the “stop” button to end your session. Enter a title, tags, and description and press “Save session”.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_contribute">Contribute to the CrowdMap</string>
+    <string name="about_contribute_content">
+        <![CDATA[
+        <p>
+            If you save a session, you can also contribute it to the CrowdMap. Sessions added to the CrowdMap are publicly
+            accessible. Only press “yes” to contribute your session if it occurred outdoors and you made every effort to
+            minimize interferences. Interference factors include wind on the microphone, clothing rubbing against the
+            microphone, and loud conversation from the AirCasters. For more information, please review the Sound Recording Best
+            Practices guide.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_view_sessions">View Completed Sessions</string>
+    <string name="about_view_sessions_content">
+        <![CDATA[
+        <p>
+            Go to the “Sessions” screen and select a session to view.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_open_session">Share, Edit, or Delete Sessions</string>
+    <string name="about_open_session_content">
+        <![CDATA[
+        <p>
+            Long press a past session to share, edit, or delete it. While viewing a session, share or edit it by pressing
+            the corresponding buttons. You can share sessions as a web link or a CSV file.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_heat_legend">Adjust the Heat Legend Units</string>
+    <string name="about_heat_legend_content">
+        <![CDATA[
+        <p>
+            Adjust the relationship between sound levels and display colors by either tapping the Heat Legend at the top of
+            the screen or selecting it from the “Settings” screen.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_adjust_microphone">Adjust the Microphone Maximum</string>
+    <string name="about_adjust_microphone_content">
+        <![CDATA[
+        <p>
+            Adjust the microphone maximum by navigating to the “Settings” screen. For most phones the microphone maximum is
+            between 80 and 100 decibels. If you have access to a sound level meter, compare the readings with those from your
+            phone, and then adjust the “microphone maximum” until the readings on your phone match those from the sound level
+            meter.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_profile">Create a Profile or Sign in</string>
+    <string name="about_profile_content">
+        <![CDATA[
+        <p>
+            You must be signed in to save and contribute your AirCasting sessions to the CrowdMap. Create a profile or sign
+            in from the Settings screen.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_limitations">Limitations</string>
+    <string name="about_limitations_content">
+        <![CDATA[
+        <p>
+            Sound level readings recorded by phone microphones may not always be accurate. In addition, AirCasters might
+            contribute data to the AirCasting platform without following the Sound Recording Best Practices Guide. In the near
+            term, we will work to increase the accuracy of the underlying data by improving the Sound Recording Best Practices
+            Guide, creating mapping filters that can segregate and display data from selected AirCasters only, adjusting the
+            default “microphone maximum” setting in the app to match the specifications of the Android device on which it is
+            installed, and further developing the AirCasting app to receive data from sound level meters.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_health_effects">Health Effects of Noise Pollution</string>
+    <string name="about_health_effects_content">
+        <![CDATA[
+        <p>
+            Noise is a major environmental issue, affecting large numbers of people, particularly in urban areas. Evidence from
+            large-scale epidemiological studies links exposure to unwanted environmental noise with adverse health effects.
+            Effects include cardiovascular disease, cognitive impairment, sleep disturbance, and tinnitus. Environmental noise
+            should be viewed as a public health concern, not just as a nuisance. For more information on the health impacts of
+            unwanted noise, visit the <a href="http://www.epa.gov/air/noise.html">Environmental Protection Agency’s website</a>, or read
+            this report recently published by the World Health Organization:
+            <a href="http://www.euro.who.int/en/what-we-publish/abstracts/burden-of-disease-from-environmental-noise.-quantification-of-healthy-life-years-lost-in-europe">
+            “Burden of disease from environmental noise”</a>.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_habitat_map">AirCasting is a HabitatMap Project</string>
+    <string name="about_habitat_map_content">
+        <![CDATA[
+        <p>
+            HabitatMap is a non-profit environmental health justice organization whose goal is to raise awareness about the
+            impact the environment has on human health. We build tools to support grassroots environmental organizing,
+            including <a href="http://habitatmap.org">HabitatMap.org</a> - our community mapping platform - and AirCasting.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_open_source">Open Source</string>
+    <string name="about_open_source_content">
+        <![CDATA[
+        <p>
+            AirCasting is an open source project. In the coming months we will be setting up the infrastructure to share our
+            work and integrate contributions from the developer community. Want to help? Contact us at
+            <a href="mailto:info@habitatmap.org">info@habitatmap.org</a>.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_thanks">Thanks!</string>
+    <string name="about_thanks_content">
+        <![CDATA[
+        <p>
+            To <a href="http://www.lunarlogicpolska.com">Lunar Logic Polska</a> for programming the AirCasting website and Android app, to
+            <a href="http://www.sonomatech.com/staff.cfm?uemployeeid=8">Tim Dye</a> for big ideas and constructive feedback, to
+            <a href="http://www.bsing.net">Brooke Singer</a> for helping steer the project in the right direction.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_funders">Funders</string>
+    <string name="about_funders_content">
+        <![CDATA[
+        <p>
+            Start-up funding for AirCasting was provided by a Google Earth Outreach Developer Grant from the Google Inc.
+            Charitable Giving Fund of Tides Foundation. The New York Community Trust has committed to fund additional
+            development of the AirCasting platform through a partnership between HabitatMap, the New York Hall of Science, and
+            the Hive Learning Network NYC.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_feedback">Have Questions or Feedback?</string>
+    <string name="about_feedback_content">
+        <![CDATA[
+        <p>
+            Contact us via email: <a href="mailto:info@habitatmap.org">info@habitatmap.org</a>, or call: 347.410.9499.
+        </p>
+        ]]>
+    </string>
+
+    <string name="about_version">Version</string>
+</resources>

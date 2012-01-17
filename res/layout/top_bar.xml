@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_alignParentTop="true"
+              android:layout_gravity="center_horizontal"
+              android:layout_margin="5dp"
+        >
+
+    <LinearLayout style="@style/TopBarElement"
+                  android:padding="0dp"
+            >
+        <TextView style="@style/TopBarElement"
+                  android:layout_margin="0dp"
+                  android:gravity="left"
+                  android:id="@+id/top_bar_quiet"
+                  android:background="@color/green"
+                />
+        <TextView style="@style/TopBarElement"
+                  android:layout_margin="0dp"
+                  android:gravity="right"
+                  android:id="@+id/top_bar_average"
+                  android:background="@color/green"
+                />
+    </LinearLayout>
+
+    <TextView style="@style/TopBarElement"
+              android:gravity="right"
+              android:id="@+id/top_bar_loud"
+              android:background="@color/yellow"
+            />
+
+    <TextView style="@style/TopBarElement"
+              android:gravity="right"
+              android:id="@+id/top_bar_very_loud"
+              android:background="@color/orange"
+            />
+
+    <TextView style="@style/TopBarElement"
+              android:gravity="right"
+              android:background="@color/red"
+              android:id="@+id/top_bar_too_loud"
+            />
+
+</LinearLayout>

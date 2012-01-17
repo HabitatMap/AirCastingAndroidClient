@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:persistent="true"
+        >
+    <android.preference.Preference android:title="@string/profile"
+                                   android:summary="@string/profile_summary"
+                                   android:key="account"
+            />
+    <android.preference.CheckBoxPreference android:defaultValue="false"
+                                           android:key="satellite"
+                                           android:title="@string/satellite_view"
+            />
+
+    <android.preference.EditTextPreference android:defaultValue="100"
+                                           android:numeric="integer"
+                                           android:key="calibration"
+                                           android:title="@string/calibration"
+                                           android:summary="@string/calibration_summary"
+            />
+    <android.preference.EditTextPreference android:defaultValue="0"
+                                           android:numeric="signed"
+                                           android:key="offset_60_db"
+                                           android:title="@string/offset_60_db"
+                                           android:summary="@string/offset_60_db_summary"
+            />
+    <android.preference.Preference android:title="@string/color_scale"
+                                   android:summary="@string/color_scale_summary"
+                                   android:key="color_scale"
+            />
+    <android.preference.EditTextPreference android:defaultValue="10"
+                                           android:numeric="integer"
+                                           android:key="heat_map_density"
+                                           android:title="@string/heat_map_density"
+                                           android:summary="@string/heat_map_density_summary"
+            />
+    <android.preference.CheckBoxPreference android:defaultValue="false"
+                                           android:key="keep_screen_on"
+                                           android:title="@string/keep_screen_on"
+            />
+
+    <android.preference.EditTextPreference android:defaultValue="1"
+                                           android:numeric="integer"
+                                           android:key="averaging_time"
+                                           android:title="@string/averaging_time"
+                                           android:summary="@string/averaging_time_summary"
+            />
+
+    <android.preference.EditTextPreference android:defaultValue="aircasting.herokuapp.com"
+                                           android:key="backend"
+                                           android:title="Backend address"
+            />
+    <android.preference.EditTextPreference android:defaultValue="80"
+                                           android:numeric="integer"
+                                           android:key="backend_port"
+                                           android:title="@string/backend_port"
+            />
+</PreferenceScreen>

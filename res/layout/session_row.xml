@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:color/white"
+              android:gravity="center_vertical"
+        >
+    <LinearLayout android:orientation="vertical"
+                  android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:layout_weight="1"
+            >
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_width="fill_parent"
+                      android:layout_height="fill_parent"
+                      android:gravity="center_vertical"
+                >
+            <ImageView android:layout_height="fill_parent"
+                       android:layout_width="wrap_content"
+                       android:layout_margin="3dp"
+                       android:src="@drawable/session"
+                    />
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="fill_parent"
+                      android:textSize="16sp"
+                      android:layout_marginLeft="2dp"
+                      android:textColor="@android:color/black"
+                      android:id="@+id/session_title"
+                      android:text="Title"
+                      android:ellipsize="end"
+                      android:textStyle="bold"
+                    />
+        </LinearLayout>
+
+        <TextView android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:textSize="12sp"
+                  android:layout_marginLeft="3dp"
+                  android:textColor="@android:color/black"
+                  android:id="@+id/session_time"
+                  android:gravity="center_vertical"
+                  android:text="01/01/11 00:00 - 00:00"
+                  android:ellipsize="end"
+                />
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:orientation="vertical"
+                  android:gravity="center"
+                  android:layout_marginRight="6dp"
+                  android:layout_marginLeft="2dp"
+            >
+        <ImageView android:layout_height="wrap_content"
+                   android:layout_width="wrap_content"
+                   android:id="@+id/session_average_marker"
+                   android:background="@drawable/green"
+                   android:layout_marginTop="4dp"
+                   android:layout_marginBottom="1dp"
+                />
+        <TextView android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:textSize="16sp"
+                  android:textColor="@android:color/black"
+                  android:id="@+id/session_average"
+                  android:text="60 dB"
+                  android:padding="0dp"
+                  android:textStyle="bold"
+                />
+        <TextView android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:textSize="12sp"
+                  android:textColor="@android:color/black"
+                  android:text="@string/avg"
+                />
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:orientation="vertical"
+                  android:gravity="center"
+            >
+        <ImageView android:layout_height="wrap_content"
+                   android:layout_width="wrap_content"
+                   android:id="@+id/session_peak_marker"
+                   android:background="@drawable/orange"
+                   android:layout_marginTop="4dp"
+                   android:layout_marginBottom="1dp"
+                />
+        <TextView android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:textSize="16sp"
+                  android:textColor="@android:color/black"
+                  android:id="@+id/session_peak"
+                  android:text="80 dB"
+                  android:padding="0dp"
+                  android:textStyle="bold"
+                />
+        <TextView android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:textSize="12sp"
+                  android:textColor="@android:color/black"
+                  android:text="@string/peak"
+                />
+    </LinearLayout>
+</LinearLayout>

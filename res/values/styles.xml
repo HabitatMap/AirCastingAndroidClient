@@ -1,0 +1,111 @@
+<resources>
+<!--
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact the authors by email at <info@habitatmap.org>
+-->
+    <style name="Dialog"
+           parent="android:Theme.Dialog"
+            >
+        <item name="android:windowBackground">@drawable/panel_background</item>
+    </style>
+
+    <style name="DialogMain"
+           parent="Wide">
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/dialog_background</item>
+    </style>
+
+    <style name="DialogText"
+           parent="Wide">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:layout_marginLeft">1dp</item>
+    </style>
+
+    <style name="TopBarElement">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">1dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">15dp</item>
+    </style>
+
+    <style name="Wide">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+
+    <style name="ColorScaleLeft"
+           parent="Wide"
+            >
+        <item name="android:layout_weight">1</item>
+        <item name="android:inputType">number</item>
+        <item name="android:layout_margin">1dp</item>
+    </style>
+
+    <style name="ColorScaleRight"
+           parent="Wide"
+            >
+        <item name="android:layout_weight">0.4</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
+    <style name="Wrap">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="Fill">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+
+    <style name="High">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="DialogButton"
+           parent="Wide"
+            >
+        <item name="android:background">@drawable/dialog_button</item>
+        <item name="android:height">52dp</item>
+        <item name="android:textSize">21dp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+    </style>
+
+    <style name="DialogLastButton"
+           parent="DialogButton"
+            >
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+    <style name="Link"
+           parent="Wrap"
+            >
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+    </style>
+</resources>
