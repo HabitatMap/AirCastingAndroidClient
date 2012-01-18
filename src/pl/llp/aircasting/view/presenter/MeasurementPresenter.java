@@ -303,6 +303,14 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
     }
 
+    public double getLastAveraged() {
+        if(fullView == null || fullView.isEmpty()){
+            return 0;
+        } else {
+            return getLast(fullView).getValue();
+        }
+    }
+
     public interface Listener {
         void onViewUpdated();
 
