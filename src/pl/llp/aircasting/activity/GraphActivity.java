@@ -129,6 +129,11 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         refresh();
     }
 
+    @Override
+    public void onAveragedMeasurement(SoundMeasurement measurement) {
+
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(@Observes DoubleTapEvent event) {
         zoomIn();

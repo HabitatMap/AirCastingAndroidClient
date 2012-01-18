@@ -43,6 +43,7 @@ import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
 import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
+import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.event.Observes;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -60,7 +61,7 @@ import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
  * Date: 10/20/11
  * Time: 3:35 PM
  */
-public class AirCastingMapActivity extends AirCastingActivity {
+public class AirCastingMapActivity extends AirCastingActivity implements MeasurementPresenter.Listener {
     @InjectView(R.id.note_viewer) View noteViewer;
     @InjectView(R.id.note_date) TextView noteDate;
     @InjectView(R.id.note_number) TextView noteNumber;
@@ -80,6 +81,7 @@ public class AirCastingMapActivity extends AirCastingActivity {
     @Inject LocationOverlay locationOverlay;
     @Inject SoundTraceOverlay soundTraceOverlay;
     @Inject PhotoHelper photoHelper;
+    @Inject MeasurementPresenter measurementPresenter;
 
     NumberFormat numberFormat = NumberFormat.getInstance();
     boolean initialized = false;
@@ -109,6 +111,8 @@ public class AirCastingMapActivity extends AirCastingActivity {
         initializeMap();
 
         initializeTraceOverlay();
+
+        measurementPresenter.registerListener(this);
     }
 
     private void initializeMap() {
@@ -183,9 +187,6 @@ public class AirCastingMapActivity extends AirCastingActivity {
     public void onNewMeasurement(SoundMeasurement measurement) {
         super.onNewMeasurement(measurement);
 
-        if (sessionManager.isSessionStarted()) {
-            soundTraceOverlay.update(measurement);
-        }
         if (!sessionManager.isSessionSaved()) {
             updateLocation();
         }
@@ -357,5 +358,14 @@ public class AirCastingMapActivity extends AirCastingActivity {
             MapController controller = mapView.getController();
             controller.animateTo(geoPoint);
         }
+    }
+
+    @Override
+    public void onViewUpdated() {
+    }
+
+    @Override
+    public void onAveragedMeasurement(SoundMeasurement measurement) {
+        soundTraceOverlay.update(measurement);
     }
 }

@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.view.presenter;
 
 import com.google.inject.Inject;
@@ -291,5 +291,18 @@ public class MeasurementPresenterTest {
 
         assertThat(presenter.getTimelineView(), hasItem(equalTo(expected)));
         assertThat(presenter.getTimelineView(), hasItem(equalTo(measurement2)));
+    }
+
+    @Test
+    public void shouldNotifyListenersAboutNewAveragedMeasurements() {
+        when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
+        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        presenter.registerListener(listener);
+
+        presenter.onNewMeasurement(measurement1);
+        presenter.onNewMeasurement(measurement2);
+        presenter.onNewMeasurement(new SoundMeasurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
+
+        verify(listener, atLeastOnce()).onAveragedMeasurement(expected);
     }
 }
