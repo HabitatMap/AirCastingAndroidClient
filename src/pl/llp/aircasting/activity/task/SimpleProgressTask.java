@@ -58,11 +58,15 @@ public abstract class SimpleProgressTask<Params, Progress, Result> extends Async
 
     @Override
     protected void onPreExecute() {
-        this.dialog = context.showProgressDialog(progressStyle);
+        this.dialog = context.showProgressDialog(progressStyle, this);
    }
 
     @Override
     protected void onPostExecute(Result result) {
         context.hideProgressDialog();
+    }
+
+    public void setActivity(ActivityWithProgress activity) {
+        this.context = activity;
     }
 }

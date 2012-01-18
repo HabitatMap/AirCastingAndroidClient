@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity;
 
 import android.app.ProgressDialog;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,7 +12,7 @@ import android.app.ProgressDialog;
 public interface ActivityWithProgress {
     public static final int SPINNER_DIALOG = 6355;
 
-    public ProgressDialog showProgressDialog(int progressStyle);
+    public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task);
 
     public void hideProgressDialog();
 }

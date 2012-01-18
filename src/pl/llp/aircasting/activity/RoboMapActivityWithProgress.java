@@ -2,6 +2,7 @@ package pl.llp.aircasting.activity;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import roboguice.activity.RoboMapActivity;
 
@@ -14,10 +15,12 @@ import roboguice.activity.RoboMapActivity;
 public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress {
     private int progressStyle;
     private ProgressDialog dialog;
+    private SimpleProgressTask task;
 
     @Override
-    public ProgressDialog showProgressDialog(int progressStyle) {
+    public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task) {
         this.progressStyle = progressStyle;
+        this.task = task;
 
         showDialog(SPINNER_DIALOG);
         return dialog;
@@ -31,7 +34,23 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Object instance = getLastNonConfigurationInstance();
+        if (instance != null) {
+            ((SimpleProgressTask) instance).setActivity(this);
+        }
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return task;
+    }
+
+    @Override
     public void hideProgressDialog() {
+        dismissDialog(SPINNER_DIALOG);
         removeDialog(SPINNER_DIALOG);
     }
 }
