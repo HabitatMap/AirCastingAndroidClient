@@ -52,11 +52,11 @@ public class SoundTraceOverlay extends BufferingOverlay<SoundMeasurement> {
 
     @Override
     protected void performDraw(Canvas canvas, Projection projection) {
-        List<SoundMeasurement> fullView = measurementPresenter.getTimelineView();
+        List<SoundMeasurement> fullView = measurementPresenter.getFullView();
 
         // Avoid concurrent modification
         //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, fullViewSize = fullView.size(); i < fullViewSize; i++) {
+        for (int i = 0, fullViewSize = fullView.size(); i < fullViewSize - 1; i++) {
             SoundMeasurement measurement = fullView.get(i);
             drawPoint(canvas, projection, measurement);
         }

@@ -44,7 +44,7 @@ public abstract class RoboActivityWithProgress extends RoboActivity implements A
     }
 
     @Override
-    public final Object onRetainNonConfigurationInstance() {
+    public Object onRetainNonConfigurationInstance() {
         return task;
     }
 
