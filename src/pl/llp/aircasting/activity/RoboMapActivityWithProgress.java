@@ -50,7 +50,12 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
 
     @Override
     public void hideProgressDialog() {
-        dismissDialog(SPINNER_DIALOG);
-        removeDialog(SPINNER_DIALOG);
+        try {
+            dismissDialog(SPINNER_DIALOG);
+            removeDialog(SPINNER_DIALOG);
+        } catch (IllegalArgumentException e) {
+            // Ignore - there was no dialog after all
+        }
+
     }
 }
