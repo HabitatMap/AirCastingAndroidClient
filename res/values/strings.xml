@@ -165,7 +165,9 @@
         reboot your phone if the problem persists.
     </string>
     <string name="averaging_time">Averaging time</string>
-    <string name="averaging_time_summary">Determines how many seconds each point on the map or graph represents</string>
+    <string name="averaging_time_summary">Sound level readings are recorded every second. Adjusting the averaging time
+        will average these one second readings together prior to displaying them on the map and graph.
+    </string>
     <string name="averaging_time_error">The averaging time should be greater than 0</string>
     <string name="attach_photo">Attach a photo</string>
     <string name="view_photo">View photo</string>
