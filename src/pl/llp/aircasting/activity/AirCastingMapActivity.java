@@ -350,7 +350,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     private void updateLocation() {
         Location location = locationHelper.getLastLocation();
         if (!sessionManager.isSessionSaved()) {
-            double value = measurementPresenter.getLastAveraged();
+            double value;
+            if (settingsHelper.isAveraging()) {
+                value = measurementPresenter.getLastAveraged();
+            } else {
+                value = sessionManager.getDbNow();
+            }
 
             locationOverlay.setLocation(location);
             locationOverlay.setValue(value);

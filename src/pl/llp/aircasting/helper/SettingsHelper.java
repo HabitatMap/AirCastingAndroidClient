@@ -256,4 +256,8 @@ public class SettingsHelper {
     public int getAveragingTime() {
         return getInt(AVERAGING_TIME, 1);
     }
+
+    public boolean isAveraging() {
+        return getAveragingTime() > 1;
+    }
 }
