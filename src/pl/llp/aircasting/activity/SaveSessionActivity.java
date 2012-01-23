@@ -52,12 +52,20 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sessionManager.pauseSession();
+
         setContentView(R.layout.session_details);
 
         saveButton.setOnClickListener(this);
         discardButton.setOnClickListener(this);
 
         populateTags();
+    }
+
+    @Override
+    public void onBackPressed() {
+        sessionManager.continueSession();
+        finish();
     }
 
     private void populateTags() {

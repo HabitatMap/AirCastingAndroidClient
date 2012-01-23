@@ -47,7 +47,6 @@ import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.view.TouchPane;
-import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

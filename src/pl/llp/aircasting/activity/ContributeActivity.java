@@ -37,7 +37,6 @@ import roboguice.inject.InjectView;
  * Time: 12:40 PM
  */
 public class ContributeActivity extends DialogActivity implements View.OnClickListener {
-    public static final int PROGRESS_DIALOG = 1235;
     @Inject SessionManager sessionManager;
 
     @InjectView(R.id.yes) Button yes;
@@ -59,6 +58,12 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
         sessionManager.setContribute(contribute);
 
         saveSession();
+    }
+
+    @Override
+    public void onBackPressed() {
+        sessionManager.continueSession();
+        finish();
     }
 
     private void saveSession() {

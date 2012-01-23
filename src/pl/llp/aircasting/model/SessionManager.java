@@ -134,14 +134,14 @@ public class SessionManager implements SoundVolumeListener {
         }
     }
 
-    private synchronized void pauseSession() {
+    public synchronized void pauseSession() {
         if (recording) {
             paused = true;
             audioReader.stop();
         }
     }
 
-    private synchronized void continueSession() {
+    public synchronized void continueSession() {
         if (paused) {
             paused = false;
             audioReader.start(this);
