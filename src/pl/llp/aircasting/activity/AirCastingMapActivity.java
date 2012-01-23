@@ -87,7 +87,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     boolean initialized = false;
     int noteIndex;
     int noteTotal;
-    private Note currentNote;
+    Note currentNote;
+    SoundMeasurement lastMeasurement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -350,15 +351,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     private void updateLocation() {
         Location location = locationHelper.getLastLocation();
         if (!sessionManager.isSessionSaved()) {
-            double value;
-            if (settingsHelper.isAveraging()) {
-                value = measurementPresenter.getLastAveraged();
-            } else {
-                value = sessionManager.getDbNow();
+            if (!settingsHelper.isAveraging()) {
+                locationOverlay.setValue(sessionManager.getDbNow());
             }
 
             locationOverlay.setLocation(location);
-            locationOverlay.setValue(value);
         }
 
         mapView.invalidate();
@@ -379,7 +376,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @Override
     public void onAveragedMeasurement(SoundMeasurement measurement) {
         if (sessionManager.isSessionStarted()) {
-            soundTraceOverlay.update(measurement);
+            if (!settingsHelper.isAveraging()) {
+                soundTraceOverlay.update(measurement);
+            } else if (lastMeasurement != null) {
+                soundTraceOverlay.update(lastMeasurement);
+            }
         }
+
+        if (settingsHelper.isAveraging()) {
+            locationOverlay.setValue(measurement.getValue());
+            lastMeasurement = measurement;
+        }
+
+        mapView.invalidate();
     }
 }
