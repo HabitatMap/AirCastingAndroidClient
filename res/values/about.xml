@@ -257,9 +257,10 @@
     <string name="about_open_source_content">
         <![CDATA[
         <p>
-            AirCasting is an open source project. In the coming months we will be setting up the infrastructure to share our
-            work and integrate contributions from the developer community. Want to help? Contact us at
-            <a href="mailto:info@habitatmap.org">info@habitatmap.org</a>.
+            AirCasting is an open source project. You can access the code repositories for the
+            <a href="https://github.com/LunarLogicPolska/AirCastingAndroidClient">AirCasting Android app</a> and the
+            <a href="https://github.com/LunarLogicPolska/AirCasting">AirCasting web app</a>
+            through GitHub.
         </p>
         ]]>
     </string>
@@ -283,6 +284,14 @@
             Charitable Giving Fund of Tides Foundation. The New York Community Trust has committed to fund additional
             development of the AirCasting platform through a partnership between HabitatMap, the New York Hall of Science, and
             the Hive Learning Network NYC.
+        </p>
+        <p>
+            Built initially as a pavilion for the 1964 World\'s Fair, the New York Hall of Science is now New York City\'s
+            hands-on science and technology center. Since 1986, NYSCI has served over seven million children, parents and
+            teachers. NYSCI\'s mission is to convey the excitement and understanding of science and technology to children,
+            families, teachers and others by galvanizing their curiosity and offering them creative, participatory ways to
+            learn. NYSCI features the largest collection of hands-on science exhibits in New York City. Visitors of all ages
+            can explore over 450 interactive exhibits.
         </p>
         ]]>
     </string>
