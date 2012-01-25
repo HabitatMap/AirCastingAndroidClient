@@ -45,9 +45,8 @@ public class GeocodingHelper {
     public String getFromLocation(Location location) {
         try {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            if (addresses == null || addresses.isEmpty()) return null;
             return addresses.get(0).getThoroughfare();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Geocoding failure", e);
             return null;
         }
