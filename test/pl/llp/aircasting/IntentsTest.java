@@ -90,6 +90,6 @@ public class IntentsTest {
         Intent intent = new Intent(mock(Context.class), SensorService.class);
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
         
-        assertThat(Intents.getSessionServiceTask(intent), equalTo(Intents.STOP_SENSORS));
+        assertThat(Intents.getSensorServiceTask(intent), equalTo(Intents.STOP_SENSORS));
     }
 }

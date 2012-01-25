@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting;
 
 import android.app.Activity;
@@ -50,6 +50,7 @@ public class Intents {
     public static final String SESSION_SERVICE_TASK = "session_service_task";
     public static final int START_SENSORS = 0;
     public static final int STOP_SENSORS = 1;
+    public static final int UNKNOWN = -1;
 
     private static final String SESSION_ID = "session_id";
     public static final String PICTURES = "Pictures";
@@ -84,8 +85,12 @@ public class Intents {
         context.startService(intent);
     }
 
-    public static int getSessionServiceTask(Intent intent) {
-        return intent.getIntExtra(SESSION_SERVICE_TASK, START_SENSORS);
+    public static int getSensorServiceTask(Intent intent) {
+        if (intent != null && intent.hasExtra(SESSION_SERVICE_TASK)) {
+            return intent.getIntExtra(SESSION_SERVICE_TASK, START_SENSORS);
+        } else {
+            return UNKNOWN;
+        }
     }
 
     public static void share(Context context, String chooserTitle, String subject, String text) {

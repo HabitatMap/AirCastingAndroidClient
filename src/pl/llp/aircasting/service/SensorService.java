@@ -44,7 +44,7 @@ public class SensorService extends RoboService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        switch (Intents.getSessionServiceTask(intent)) {
+        switch (Intents.getSensorServiceTask(intent)) {
             case Intents.START_SENSORS:
                 sessionManager.startSensors();
                 break;
