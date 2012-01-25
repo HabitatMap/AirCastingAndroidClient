@@ -39,6 +39,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -55,6 +56,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Inject SettingsHelper settingsHelper;
     @Inject MainMenu mainMenu;
     @Inject Application context;
+    @Inject SyncState syncState;
 
     @InjectView(R.id.top_bar_quiet) TextView topBarQuiet;
     @InjectView(R.id.top_bar_average) TextView topBarAverage;
@@ -63,9 +65,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
 
     @InjectView(R.id.sync) Button sync;
+    @InjectView(R.id.refresh) Button refresh;
     @InjectView(R.id.sync_summary) TextView syncSummary;
-
     @InjectResource(R.string.sync_summary_template) String syncSummaryTemplate;
+    @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
     Cursor cursor;
     private long sessionId;
@@ -80,6 +83,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         getListView().setOnItemLongClickListener(this);
 
         sync.setOnClickListener(this);
+        refresh.setOnClickListener(this);
     }
 
     @Override
@@ -98,19 +102,31 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshList() {
-        int all = sessionRepository.getSessionsCount();
-        int uploaded = sessionRepository.getUploadedCount();
-        String text = String.format(syncSummaryTemplate, uploaded, all);
-        syncSummary.setText(text);
-
-        boolean uploadPending = all > uploaded;
-        sync.setVisibility(uploadPending ? View.VISIBLE : View.GONE);
+        refreshBottomBar();
 
         cursor = sessionRepository.notDeletedCursor();
         startManagingCursor(cursor);
 
         SessionAdapter adapter = adapterFactory.getSessionAdapter(this, cursor);
         setListAdapter(adapter);
+    }
+
+    private void refreshBottomBar() {
+        if (syncState.isInProgress()) {
+            sync.setVisibility(View.GONE);
+            refresh.setVisibility(View.VISIBLE);
+            syncSummary.setText(syncInProgress);
+        } else {
+            int all = sessionRepository.getSessionsCount();
+            int uploaded = sessionRepository.getUploadedCount();
+            String text = String.format(syncSummaryTemplate, uploaded, all);
+            syncSummary.setText(text);
+
+            boolean uploadPending = all > uploaded;
+            sync.setVisibility(uploadPending ? View.VISIBLE : View.GONE);
+
+            refresh.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -215,6 +231,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         switch (view.getId()) {
             case R.id.sync:
                 Intents.triggerSync(context);
+            case R.id.refresh:
                 refreshList();
                 break;
         }

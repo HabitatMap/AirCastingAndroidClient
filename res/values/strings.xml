@@ -177,4 +177,6 @@
     <string name="sync_summary_template"
             formatted="false">%d/%d sessions uploaded
     </string>
+    <string name="refresh">Refresh</string>
+    <string name="sync_in_progress">Sync in progress...</string>
 </resources>
