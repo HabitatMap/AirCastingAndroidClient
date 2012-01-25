@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.repository;
 
 import android.content.ContentValues;
@@ -39,12 +39,14 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 public class SessionRepository implements DBConstants {
     public interface ProgressListener {
+
         public void onSizeCalculated(int workSize);
 
         public void onProgress(int progress);
     }
 
     @Inject DBUtils dbHelper;
+
     SQLiteDatabase db;
 
     @Inject
@@ -58,6 +60,25 @@ public class SessionRepository implements DBConstants {
 
     public void save(Session session) {
         save(session, null);
+    }
+
+    public int getSessionsCount() {
+        return getCount(SESSION_TABLE_NAME, "NOT " + SESSION_MARKED_FOR_REMOVAL);
+    }
+
+    public int getUploadedCount() {
+        return getCount(SESSION_TABLE_NAME, "NOT " + SESSION_MARKED_FOR_REMOVAL +
+                " AND " + SESSION_LOCATION + " NOTNULL");
+    }
+
+    private int getCount(String table, String condition) {
+        Cursor cursor = db.query(table, new String[]{"COUNT(*)"}, condition, null, null, null, null);
+
+        cursor.moveToFirst();
+        int result = cursor.getInt(0);
+        cursor.close();
+
+        return result;
     }
 
     public void deleteNote(Session session, Note note) {

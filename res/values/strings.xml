@@ -173,4 +173,8 @@
     <string name="view_photo">View photo</string>
     <string name="photo_success">Photo attached</string>
     <string name="storage_error">Could not access the SD card</string>
+    <string name="sync_now">Sync now</string>
+    <string name="sync_summary_template"
+            formatted="false">%d/%d sessions uploaded
+    </string>
 </resources>

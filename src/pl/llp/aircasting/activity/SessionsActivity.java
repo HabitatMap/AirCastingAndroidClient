@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
@@ -26,10 +26,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -42,6 +39,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
+import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 /**
@@ -50,7 +48,7 @@ import roboguice.inject.InjectView;
  * Date: 10/5/11
  * Time: 3:59 PM
  */
-public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
+public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener, View.OnClickListener {
     @Inject SessionRepository sessionRepository;
     @Inject SessionManager sessionManager;
     @Inject AdapterFactory adapterFactory;
@@ -64,6 +62,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
     @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
 
+    @InjectView(R.id.sync) Button sync;
+    @InjectView(R.id.sync_summary) TextView syncSummary;
+
+    @InjectResource(R.string.sync_summary_template) String syncSummaryTemplate;
+
     Cursor cursor;
     private long sessionId;
 
@@ -75,6 +78,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
         refreshList();
         getListView().setOnItemLongClickListener(this);
+
+        sync.setOnClickListener(this);
     }
 
     @Override
@@ -93,6 +98,14 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshList() {
+        int all = sessionRepository.getSessionsCount();
+        int uploaded = sessionRepository.getUploadedCount();
+        String text = String.format(syncSummaryTemplate, uploaded, all);
+        syncSummary.setText(text);
+
+        boolean uploadPending = all > uploaded;
+        sync.setVisibility(uploadPending ? View.VISIBLE : View.GONE);
+
         cursor = sessionRepository.notDeletedCursor();
         startManagingCursor(cursor);
 
@@ -142,10 +155,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     private void updateSession(Intent data) {
         Session session = Intents.editSessionResult(data);
-        
+
         sessionRepository.update(session);
         Intents.triggerSync(context);
-        
+
         refreshList();
     }
 
@@ -157,7 +170,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     private void deleteSession(long id) {
         sessionRepository.markSessionForRemoval(id);
         Intents.triggerSync(context);
-        
+
         refreshList();
     }
 
@@ -172,7 +185,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void viewSession(long id) {
-        if(sessionManager.isSessionStarted()){
+        if (sessionManager.isSessionStarted()) {
             Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
             return;
         }
@@ -195,5 +208,15 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
                 finish();
             }
         }.execute(id);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.sync:
+                Intents.triggerSync(context);
+                refreshList();
+                break;
+        }
     }
 }
