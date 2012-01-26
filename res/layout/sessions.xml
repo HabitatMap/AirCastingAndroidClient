@@ -42,12 +42,15 @@
     <LinearLayout style="@style/Wide"
                   android:id="@id/bottom_bar"
                   android:layout_alignParentBottom="true"
+                  android:layout_height="50dp"
+                  android:gravity="center_vertical"
             >
-        <TextView style="@style/Wide"
+        <TextView style="@style/Fill"
                   android:layout_weight="1"
                   android:id="@+id/sync_summary"
                   android:textColor="@android:color/black"
-                  android:gravity="center"
+                  android:gravity="center_vertical"
+                  android:paddingLeft="5dp"
                 />
         <Button style="@style/DialogButton"
                 android:layout_width="wrap_content"

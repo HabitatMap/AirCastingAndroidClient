@@ -113,9 +113,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     private void refreshBottomBar() {
         if (syncState.isInProgress()) {
-            sync.setVisibility(View.GONE);
-            refresh.setVisibility(View.VISIBLE);
-            syncSummary.setText(syncInProgress);
+            syncInProgress();
         } else {
             int all = sessionRepository.getSessionsCount();
             int uploaded = sessionRepository.getUploadedCount();
@@ -127,6 +125,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
             refresh.setVisibility(View.GONE);
         }
+    }
+
+    private void syncInProgress() {
+        sync.setVisibility(View.GONE);
+        refresh.setVisibility(View.VISIBLE);
+        syncSummary.setText(syncInProgress);
     }
 
     @Override
@@ -231,6 +235,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         switch (view.getId()) {
             case R.id.sync:
                 Intents.triggerSync(context);
+                syncInProgress();
+                break;
             case R.id.refresh:
                 refreshList();
                 break;
