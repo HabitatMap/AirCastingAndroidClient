@@ -64,6 +64,8 @@ public class SyncService extends RoboIntentService {
     @InjectResource(R.string.account_reminder) String accountReminder;
     @InjectResource(R.string.sync_failed) String syncFailed;
 
+    boolean error;
+
     public SyncService() {
         super(SyncService.class.getSimpleName());
     }
@@ -81,10 +83,15 @@ public class SyncService extends RoboIntentService {
             Intents.notifySyncUpdate(context);
 
             if (canUpload()) {
+                error = false;
                 sync();
             } else if (!settingsHelper.hasCredentials()) {
                 Toast.makeText(context, accountReminder, Toast.LENGTH_LONG).show();
             } else {
+                error = true;
+            }
+
+            if (error) {
                 Toast.makeText(context, syncFailed, Toast.LENGTH_LONG).show();
             }
         } finally {
@@ -103,6 +110,8 @@ public class SyncService extends RoboIntentService {
             uploadSessions(syncResponse.getUpload());
 
             downloadSessions(syncResponse.getDownload());
+        } else {
+            error = true;
         }
     }
 
@@ -122,6 +131,8 @@ public class SyncService extends RoboIntentService {
 
                 if (result.getStatus() == Status.SUCCESS) {
                     updateSession(session, result.getContent());
+                } else {
+                    error = true;
                 }
             }
 
@@ -154,6 +165,8 @@ public class SyncService extends RoboIntentService {
 
             if (result.getStatus() == Status.SUCCESS) {
                 sessionRepository.save(result.getContent());
+            } else {
+                error = true;
             }
 
             Intents.notifySyncUpdate(context);
