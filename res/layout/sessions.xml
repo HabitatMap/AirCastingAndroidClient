@@ -41,6 +41,7 @@
 
     <Button style="@style/Wide"
             android:id="@id/sync_summary"
+            android:background="@drawable/dialog_button"
             android:layout_alignParentBottom="true"
             android:layout_height="50dp"
             android:gravity="center"
