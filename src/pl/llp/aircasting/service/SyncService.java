@@ -19,11 +19,14 @@
  */
 package pl.llp.aircasting.service;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
@@ -35,6 +38,7 @@ import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
+import roboguice.inject.InjectResource;
 import roboguice.service.RoboIntentService;
 
 import java.util.UUID;
@@ -54,6 +58,10 @@ public class SyncService extends RoboIntentService {
     @Inject SettingsHelper settingsHelper;
     @Inject SessionDriver sessionDriver;
     @Inject SyncState syncState;
+    @Inject Context context;
+
+    @InjectResource(R.string.account_reminder) String accountReminder;
+    @InjectResource(R.string.sync_failed) String syncFailed;
 
     public SyncService() {
         super(SyncService.class.getSimpleName());
@@ -70,6 +78,10 @@ public class SyncService extends RoboIntentService {
             syncState.setInProgress(true);
             if (canUpload()) {
                 sync();
+            } else if (!settingsHelper.hasCredentials()) {
+                Toast.makeText(context, accountReminder, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, syncFailed, Toast.LENGTH_LONG).show();
             }
         } finally {
             syncState.setInProgress(false);

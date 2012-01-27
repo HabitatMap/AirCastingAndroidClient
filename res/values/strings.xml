@@ -179,4 +179,5 @@
     </string>
     <string name="refresh">Refresh</string>
     <string name="sync_in_progress">Sync in progress...</string>
+    <string name="sync_failed">Sync failed. Check your network connection.</string>
 </resources>
