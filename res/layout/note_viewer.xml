@@ -93,13 +93,13 @@
         </LinearLayout>
 
         <Button style="@style/DialogButton"
-                android:text="@string/delete"
-                android:id="@+id/note_delete"
+                android:text="@string/save_changes"
+                android:id="@+id/note_save"
                 />
 
         <Button style="@style/DialogLastButton"
-                android:text="@string/save_changes"
-                android:id="@+id/note_save"
+                android:text="@string/delete"
+                android:id="@+id/note_delete"
                 />
     </LinearLayout>
 </LinearLayout>
