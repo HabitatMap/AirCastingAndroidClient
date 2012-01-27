@@ -102,8 +102,9 @@ public class MakeANoteActivityTest {
         when(bundle.containsKey(MakeANoteActivity.PHOTO_ATTACHED)).thenReturn(true);
         when(bundle.getBoolean(MakeANoteActivity.PHOTO_ATTACHED)).thenReturn(true);
 
-        activity.onRestoreInstanceState(bundle);
         activity.onCreate(bundle);
+        activity.onRestoreInstanceState(bundle);
+        activity.onResume();
 
         assertThat(activity.attachPhoto.getVisibility(), equalTo(View.GONE));
     }

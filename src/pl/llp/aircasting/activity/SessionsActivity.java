@@ -20,7 +20,10 @@
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -68,8 +71,16 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @InjectResource(R.string.sync_summary_template) String syncSummaryTemplate;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refreshList();
+        }
+    };
+
     Cursor cursor;
     private long sessionId;
+    private SessionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +99,18 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         super.onResume();
 
         updateTopBar();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intents.ACTION_SYNC_UPDATE);
+
+        registerReceiver(broadcastReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void updateTopBar() {
@@ -104,8 +127,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         cursor = sessionRepository.notDeletedCursor();
         startManagingCursor(cursor);
 
-        SessionAdapter adapter = adapterFactory.getSessionAdapter(this, cursor);
-        setListAdapter(adapter);
+        if (adapter == null) {
+            adapter = adapterFactory.getSessionAdapter(this, cursor);
+            setListAdapter(adapter);
+        } else {
+            adapter.changeCursor(cursor);
+        }
     }
 
     private void refreshBottomBar() {

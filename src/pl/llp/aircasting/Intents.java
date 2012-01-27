@@ -56,6 +56,8 @@ public class Intents {
     public static final String PICTURES = "Pictures";
     public static final String AIR_CASTING = "AirCasting";
 
+    public static final String ACTION_SYNC_UPDATE = "AIRCASTING_SYNC_UPDATE";
+
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
         intent.putExtra(SESSION, session);
@@ -176,6 +178,11 @@ public class Intents {
         }
 
         activity.startActivity(intent);
+    }
+    
+    public static void notifySyncUpdate(Context context){
+        Intent intent = new Intent(ACTION_SYNC_UPDATE);
+        context.sendBroadcast(intent);
     }
 }
 

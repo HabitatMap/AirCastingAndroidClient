@@ -26,6 +26,7 @@ import android.net.NetworkInfo;
 import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
@@ -76,6 +77,9 @@ public class SyncService extends RoboIntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             syncState.setInProgress(true);
+
+            Intents.notifySyncUpdate(context);
+
             if (canUpload()) {
                 sync();
             } else if (!settingsHelper.hasCredentials()) {
@@ -85,6 +89,7 @@ public class SyncService extends RoboIntentService {
             }
         } finally {
             syncState.setInProgress(false);
+            Intents.notifySyncUpdate(context);
         }
     }
 
@@ -119,6 +124,8 @@ public class SyncService extends RoboIntentService {
                     updateSession(session, result.getContent());
                 }
             }
+
+            Intents.notifySyncUpdate(context);
         }
     }
 
@@ -148,6 +155,8 @@ public class SyncService extends RoboIntentService {
             if (result.getStatus() == Status.SUCCESS) {
                 sessionRepository.save(result.getContent());
             }
+
+            Intents.notifySyncUpdate(context);
         }
     }
 }
