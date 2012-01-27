@@ -64,9 +64,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
     @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
 
-    @InjectView(R.id.sync) Button sync;
-    @InjectView(R.id.refresh) Button refresh;
-    @InjectView(R.id.sync_summary) TextView syncSummary;
+    @InjectView(R.id.sync_summary) Button syncSummary;
     @InjectResource(R.string.sync_summary_template) String syncSummaryTemplate;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
@@ -82,8 +80,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         refreshList();
         getListView().setOnItemLongClickListener(this);
 
-        sync.setOnClickListener(this);
-        refresh.setOnClickListener(this);
+        syncSummary.setOnClickListener(this);
     }
 
     @Override
@@ -112,25 +109,20 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshBottomBar() {
+        int all = sessionRepository.getSessionsCount();
+        int uploaded = sessionRepository.getUploadedCount();
+        boolean upToDate = all == uploaded;
+
         if (syncState.isInProgress()) {
-            syncInProgress();
-        } else {
-            int all = sessionRepository.getSessionsCount();
-            int uploaded = sessionRepository.getUploadedCount();
+            syncSummary.setVisibility(View.VISIBLE);
+            syncSummary.setText(syncInProgress);
+        } else if (!upToDate) {
             String text = String.format(syncSummaryTemplate, uploaded, all);
+            syncSummary.setVisibility(View.VISIBLE);
             syncSummary.setText(text);
-
-            boolean uploadPending = all > uploaded;
-            sync.setVisibility(uploadPending ? View.VISIBLE : View.GONE);
-
-            refresh.setVisibility(View.GONE);
+        } else {
+            syncSummary.setVisibility(View.GONE);
         }
-    }
-
-    private void syncInProgress() {
-        sync.setVisibility(View.GONE);
-        refresh.setVisibility(View.VISIBLE);
-        syncSummary.setText(syncInProgress);
     }
 
     @Override
@@ -232,14 +224,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.sync:
-                Intents.triggerSync(context);
-                syncInProgress();
-                break;
-            case R.id.refresh:
-                refreshList();
-                break;
+        if (!syncState.isInProgress()) {
+            Intents.triggerSync(context);
         }
     }
 }

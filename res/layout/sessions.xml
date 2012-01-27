@@ -33,40 +33,16 @@
     <ListView style="@style/Fill"
               android:layout_weight="1"
               android:layout_below="@id/top_bar"
-              android:layout_above="@+id/bottom_bar"
+              android:layout_above="@+id/sync_summary"
               android:id="@android:id/list"
               android:divider="@color/list_even"
               android:dividerHeight="0dp"
             />
 
-    <LinearLayout style="@style/Wide"
-                  android:id="@id/bottom_bar"
-                  android:layout_alignParentBottom="true"
-                  android:layout_height="50dp"
-                  android:gravity="center_vertical"
-            >
-        <TextView style="@style/Fill"
-                  android:layout_weight="1"
-                  android:id="@+id/sync_summary"
-                  android:textColor="@android:color/black"
-                  android:gravity="center_vertical"
-                  android:paddingLeft="5dp"
-                />
-        <Button style="@style/DialogButton"
-                android:layout_width="wrap_content"
-                android:id="@+id/sync"
-                android:text="@string/sync_now"
-                android:layout_height="40dp"
-                android:padding="5dp"
-                android:layout_margin="5dp"
-                />
-        <Button style="@style/DialogButton"
-                android:layout_width="wrap_content"
-                android:id="@+id/refresh"
-                android:text="@string/refresh"
-                android:layout_height="40dp"
-                android:padding="5dp"
-                android:layout_margin="5dp"
-                />
-    </LinearLayout>
+    <Button style="@style/Wide"
+            android:id="@id/sync_summary"
+            android:layout_alignParentBottom="true"
+            android:layout_height="50dp"
+            android:gravity="center"
+            />
 </RelativeLayout>
