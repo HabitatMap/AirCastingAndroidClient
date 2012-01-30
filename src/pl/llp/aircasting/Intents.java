@@ -52,7 +52,7 @@ public class Intents {
     public static final int STOP_SENSORS = 1;
     public static final int UNKNOWN = -1;
 
-    private static final String SESSION_ID = "session_id";
+    public static final String SESSION_ID = "session_id";
     public static final String PICTURES = "Pictures";
     public static final String AIR_CASTING = "AirCasting";
 
@@ -130,10 +130,6 @@ public class Intents {
         intent.putExtra(SESSION_ID, sessionId);
 
         context.startActivity(intent);
-    }
-
-    public static long getSessionId(Intent intent) {
-        return intent.getLongExtra(SESSION_ID, 0);
     }
 
     /**
