@@ -187,8 +187,6 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
 
             attachPhoto.setVisibility(View.GONE);
             photoAttached = true;
-
-            photoHelper.insertIntoGallery(photoPath);
         }
     }
 }
