@@ -58,13 +58,6 @@
                                            android:title="@string/keep_screen_on"
             />
 
-    <android.preference.EditTextPreference android:defaultValue="1"
-                                           android:numeric="integer"
-                                           android:key="averaging_time"
-                                           android:title="@string/averaging_time"
-                                           android:summary="@string/averaging_time_summary"
-            />
-
     <android.preference.EditTextPreference android:defaultValue="aircasting.org"
                                            android:key="backend"
                                            android:title="Backend address"
