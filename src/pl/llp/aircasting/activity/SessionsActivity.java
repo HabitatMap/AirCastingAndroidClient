@@ -90,7 +90,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
         setContentView(R.layout.sessions);
 
-        refreshList();
         getListView().setOnItemLongClickListener(this);
     }
 
@@ -98,6 +97,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     protected void onResume() {
         super.onResume();
 
+        refreshList();
         updateTopBar();
 
         IntentFilter filter = new IntentFilter();
