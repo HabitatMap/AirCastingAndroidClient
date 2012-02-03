@@ -41,6 +41,7 @@ import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
@@ -69,6 +70,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @InjectView(R.id.sync_summary) Button syncSummary;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
+
+    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -101,6 +104,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         filter.addAction(Intents.ACTION_SYNC_UPDATE);
 
         registerReceiver(broadcastReceiver, filter);
+        registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     }
 
     @Override
@@ -108,6 +112,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         super.onPause();
 
         unregisterReceiver(broadcastReceiver);
+        unregisterReceiver(syncBroadcastReceiver);
     }
 
     private void updateTopBar() {

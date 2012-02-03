@@ -45,6 +45,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.view.TouchPane;
 import roboguice.inject.InjectResource;
@@ -107,6 +108,8 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
 
     @Inject MainMenu mainMenu;
 
+    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+
     private boolean initialized = false;
 
     @Override
@@ -129,6 +132,8 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
         updateButtons();
         updateTopBar();
         updateKeepScreenOn();
+
+        registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     }
 
     private void updateKeepScreenOn() {
@@ -217,6 +222,8 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
         if (!sessionManager.isSessionSaved()) {
             Intents.stopSensors(getApplicationContext());
         }
+
+        unregisterReceiver(syncBroadcastReceiver);
     }
 
     @Override

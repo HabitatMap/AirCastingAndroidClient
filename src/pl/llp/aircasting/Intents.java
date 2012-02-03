@@ -58,6 +58,8 @@ public class Intents {
 
     public static final String ACTION_SYNC_UPDATE = "AIRCASTING_SYNC_UPDATE";
 
+    public static final String MESSAGE = "message";
+
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
         intent.putExtra(SESSION, session);
@@ -175,10 +177,26 @@ public class Intents {
 
         activity.startActivity(intent);
     }
-    
-    public static void notifySyncUpdate(Context context){
+
+    public static void notifySyncUpdate(Context context) {
+        notifySyncUpdate(context, null);
+    }
+
+    public static void notifySyncUpdate(Context context, String message) {
         Intent intent = new Intent(ACTION_SYNC_UPDATE);
+        if (message != null) {
+            intent.putExtra(MESSAGE, message);
+        }
+
         context.sendBroadcast(intent);
+    }
+
+    public static String getSyncMessage(Intent intent) {
+        if (intent.hasExtra(MESSAGE)) {
+            return intent.getStringExtra(MESSAGE);
+        } else {
+            return null;
+        }
     }
 }
 

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
@@ -77,26 +76,26 @@ public class SyncService extends RoboIntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        String message = null;
         try {
             syncState.setInProgress(true);
-
-            Intents.notifySyncUpdate(context);
+            error = false;
 
             if (canUpload()) {
-                error = false;
                 sync();
             } else if (!settingsHelper.hasCredentials()) {
-                Toast.makeText(context, accountReminder, Toast.LENGTH_LONG).show();
+                message = accountReminder;
             } else {
                 error = true;
             }
 
             if (error) {
-                Toast.makeText(context, syncFailed, Toast.LENGTH_LONG).show();
+                message = syncFailed;
             }
         } finally {
             syncState.setInProgress(false);
-            Intents.notifySyncUpdate(context);
+
+            Intents.notifySyncUpdate(context, message);
         }
     }
 
