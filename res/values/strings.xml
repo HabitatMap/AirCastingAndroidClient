@@ -174,9 +174,6 @@
     <string name="photo_success">Photo attached</string>
     <string name="storage_error">Could not access the SD card</string>
     <string name="sync_now">Sync now</string>
-    <string name="sync_summary_template"
-            formatted="false">%d/%d sessions uploaded. Sync now...
-    </string>
     <string name="sync_in_progress">Syncing sessions...</string>
     <string name="sync_failed">Sync failed. Check your network connection.</string>
 </resources>

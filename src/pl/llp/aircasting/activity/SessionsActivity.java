@@ -52,7 +52,7 @@ import roboguice.inject.InjectView;
  * Date: 10/5/11
  * Time: 3:59 PM
  */
-public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener, View.OnClickListener {
+public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
     @Inject SessionRepository sessionRepository;
     @Inject SessionManager sessionManager;
     @Inject AdapterFactory adapterFactory;
@@ -68,7 +68,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
 
     @InjectView(R.id.sync_summary) Button syncSummary;
-    @InjectResource(R.string.sync_summary_template) String syncSummaryTemplate;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -90,8 +89,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
         refreshList();
         getListView().setOnItemLongClickListener(this);
-
-        syncSummary.setOnClickListener(this);
     }
 
     @Override
@@ -136,17 +133,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshBottomBar() {
-        int all = sessionRepository.getSessionsCount();
-        int uploaded = sessionRepository.getUploadedCount();
-        boolean upToDate = all == uploaded;
-
         if (syncState.isInProgress()) {
             syncSummary.setVisibility(View.VISIBLE);
             syncSummary.setText(syncInProgress);
-        } else if (!upToDate) {
-            String text = String.format(syncSummaryTemplate, uploaded, all);
-            syncSummary.setVisibility(View.VISIBLE);
-            syncSummary.setText(text);
         } else {
             syncSummary.setVisibility(View.GONE);
         }
@@ -247,12 +236,5 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
                 finish();
             }
         }.execute(id);
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (!syncState.isInProgress()) {
-            Intents.triggerSync(context);
-        }
     }
 }

@@ -62,25 +62,6 @@ public class SessionRepository implements DBConstants {
         save(session, null);
     }
 
-    public int getSessionsCount() {
-        return getCount(SESSION_TABLE_NAME, "NOT " + SESSION_MARKED_FOR_REMOVAL);
-    }
-
-    public int getUploadedCount() {
-        return getCount(SESSION_TABLE_NAME, "NOT " + SESSION_MARKED_FOR_REMOVAL +
-                " AND " + SESSION_LOCATION + " NOTNULL");
-    }
-
-    private int getCount(String table, String condition) {
-        Cursor cursor = db.query(table, new String[]{"COUNT(*)"}, condition, null, null, null, null);
-
-        cursor.moveToFirst();
-        int result = cursor.getInt(0);
-        cursor.close();
-
-        return result;
-    }
-
     public void deleteNote(Session session, Note note) {
         db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
                 " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
