@@ -24,10 +24,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import pl.llp.aircasting.gson.LocalDateAdapter;
 import pl.llp.aircasting.gson.NoteAdapter;
 import pl.llp.aircasting.model.Note;
 
 import java.lang.reflect.Modifier;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +40,7 @@ import java.lang.reflect.Modifier;
 public class GsonProvider implements Provider<Gson> {
     @Inject GsonBuilder gsonBuilder;
     @Inject NoteAdapter noteAdapter;
+    @Inject LocalDateAdapter localDateAdapter;
 
     @Override
     public Gson get() {
@@ -47,6 +50,7 @@ public class GsonProvider implements Provider<Gson> {
                 .excludeFieldsWithoutExposeAnnotation()
                 .setDateFormat("MMM d, yyyy h:m:s a z")
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(Date.class, localDateAdapter)
                 .registerTypeAdapter(Note.class, noteAdapter)
                 .create();
     }
