@@ -29,6 +29,7 @@ import pl.llp.aircasting.gson.NoteAdapter;
 import pl.llp.aircasting.model.Note;
 
 import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -48,7 +49,7 @@ public class GsonProvider implements Provider<Gson> {
         return gsonBuilder
                 .excludeFieldsWithModifiers(Modifier.STATIC)
                 .excludeFieldsWithoutExposeAnnotation()
-                .setDateFormat("MMM d, yyyy h:m:s a z")
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(Date.class, localDateAdapter)
                 .registerTypeAdapter(Note.class, noteAdapter)
