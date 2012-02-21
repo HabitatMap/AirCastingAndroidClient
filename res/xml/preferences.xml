@@ -74,4 +74,8 @@
                                            android:key="backend_port"
                                            android:title="@string/backend_port"
             />
+    <android.preference.CheckBoxPreference android:defaultValue="false"
+                                           android:key="sync_only_wifi"
+                                           android:title="@string/sync_only_wifi"
+            />
 </PreferenceScreen>

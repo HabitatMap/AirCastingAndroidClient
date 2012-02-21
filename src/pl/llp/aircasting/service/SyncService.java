@@ -119,6 +119,7 @@ public class SyncService extends RoboIntentService {
 
         return networkInfo != null
                 && networkInfo.isConnected()
+                && (!settingsHelper.isSyncOnlyWifi() || networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
                 && settingsHelper.hasCredentials();
     }
 

@@ -176,4 +176,5 @@
     <string name="sync_now">Sync now</string>
     <string name="sync_in_progress">Syncing sessions...</string>
     <string name="sync_failed">Sync failed. Check your network connection.</string>
+    <string name="sync_only_wifi">Sync only through Wi-Fi</string>
 </resources>
