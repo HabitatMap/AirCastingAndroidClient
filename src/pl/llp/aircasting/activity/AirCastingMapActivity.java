@@ -62,6 +62,8 @@ import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
  * Time: 3:35 PM
  */
 public class AirCastingMapActivity extends AirCastingActivity implements MeasurementPresenter.Listener {
+    public static final String NOTE_INDEX = "noteIndex";
+
     @InjectView(R.id.note_viewer) View noteViewer;
     @InjectView(R.id.note_date) TextView noteDate;
     @InjectView(R.id.note_number) TextView noteNumber;
@@ -85,7 +87,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     NumberFormat numberFormat = NumberFormat.getInstance();
     boolean initialized = false;
-    int noteIndex;
+    int noteIndex = -1;
     int noteTotal;
     Note currentNote;
     SoundMeasurement lastMeasurement;
@@ -98,12 +100,28 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(NOTE_INDEX, noteIndex);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
         initialize();
 
         refreshNotes();
+
+        initializeNoteViewer();
 
         spinnerAnimation.start();
 
@@ -170,8 +188,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
                 setButton(contextButtonCenter, R.layout.context_button_locate);
             }
 
-            hideNoteViewer();
-
             mapView.getOverlays().add(noteOverlay);
 
             noteLeft.setOnClickListener(this);
@@ -181,6 +197,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
             viewPhoto.setOnClickListener(this);
 
             initialized = true;
+        }
+    }
+
+    private void initializeNoteViewer() {
+        if (noteIndex == -1) {
+            hideNoteViewer();
+        } else {
+            noteOverlay.onTap(noteIndex);
         }
     }
 
