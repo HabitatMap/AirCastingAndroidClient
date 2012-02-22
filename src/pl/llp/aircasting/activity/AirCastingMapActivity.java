@@ -91,6 +91,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     int noteTotal;
     Note currentNote;
     SoundMeasurement lastMeasurement;
+    private boolean zoomToSession = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +112,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         super.onRestoreInstanceState(savedInstanceState);
 
         noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+        zoomToSession = false;
     }
 
     @Override
@@ -177,16 +179,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     private void initialize() {
         if (!initialized) {
-            if (sessionManager.isSessionSaved()) {
-                LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSoundMeasurements());
+            showSession();
 
-                mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
-                mapView.getController().animateTo(boundingBox.getCenter());
-            } else {
-                mapView.getOverlays().add(locationOverlay);
-
-                setButton(contextButtonCenter, R.layout.context_button_locate);
-            }
+            addLocationControls();
 
             mapView.getOverlays().add(noteOverlay);
 
@@ -197,6 +192,23 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
             viewPhoto.setOnClickListener(this);
 
             initialized = true;
+        }
+    }
+
+    private void addLocationControls() {
+        if (!sessionManager.isSessionSaved()) {
+            mapView.getOverlays().add(locationOverlay);
+
+            setButton(contextButtonCenter, R.layout.context_button_locate);
+        }
+    }
+
+    private void showSession() {
+        if (sessionManager.isSessionSaved() && zoomToSession) {
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSoundMeasurements());
+
+            mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
+            mapView.getController().animateTo(boundingBox.getCenter());
         }
     }
 
