@@ -35,6 +35,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.LocationEvent;
+import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
@@ -92,6 +93,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     Note currentNote;
     SoundMeasurement lastMeasurement;
     private boolean zoomToSession = true;
+    private boolean suppressTap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,6 +241,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     public void noteClicked(OverlayItem item, int index, int total) {
+        suppressTap = true;
+
         mapView.getController().animateTo(item.getPoint());
 
         currentNote = sessionManager.getNote(index);
@@ -382,6 +386,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(@Observes LocationEvent event) {
         updateLocation();
+    }
+
+    @Override
+    public void onEvent(@Observes TapEvent event) {
+        if (suppressTap) {
+            suppressTap = false;
+        } else {
+            super.onEvent(event);
+        }
     }
 
     private void updateLocation() {
