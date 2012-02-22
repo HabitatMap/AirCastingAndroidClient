@@ -1,26 +1,27 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity;
 
 import android.content.Intent;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +47,6 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.view.TouchPane;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -61,6 +61,7 @@ import java.text.NumberFormat;
  * Time: 3:18 PM
  */
 public class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
+    public static final String SHOW_BUTTONS = "showButtons";
     // It seems it's impossible to inject these in the tests
     @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
     @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;
@@ -96,7 +97,6 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     @Inject AirCastingApplication context;
 
     @Inject SessionManager sessionManager;
-    @Inject SessionRepository sessionRepository;
 
     @Inject LayoutInflater layoutInflater;
 
@@ -111,6 +111,7 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
     private boolean initialized = false;
+    private boolean showButtons = true;
 
     @Override
     protected void onResume() {
@@ -134,6 +135,20 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
         updateKeepScreenOn();
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(SHOW_BUTTONS, showButtons);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        showButtons = savedInstanceState.getBoolean(SHOW_BUTTONS, true);
     }
 
     private void updateKeepScreenOn() {
@@ -172,6 +187,12 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
 
             fadeIn.setAnimationListener(this);
             fadeOut.setAnimationListener(this);
+
+            if (showButtons) {
+                buttons.setVisibility(View.VISIBLE);
+            } else {
+                buttons.setVisibility(View.GONE);
+            }
 
             // The test environment doesn't seem to handle the EventManager well
             try {
@@ -365,10 +386,20 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
 
     private void toggleButtons() {
         if (buttons.getVisibility() == View.VISIBLE) {
-            buttons.startAnimation(fadeOut);
+            hideButtons();
         } else {
-            buttons.startAnimation(fadeIn);
+            showButtons();
         }
+    }
+
+    private void hideButtons() {
+        buttons.startAnimation(fadeOut);
+        showButtons = false;
+    }
+
+    private void showButtons() {
+        buttons.startAnimation(fadeIn);
+        showButtons = true;
     }
 
     @SuppressWarnings("UnusedDeclaration")
