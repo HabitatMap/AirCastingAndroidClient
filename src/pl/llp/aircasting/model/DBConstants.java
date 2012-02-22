@@ -29,7 +29,7 @@ import android.provider.BaseColumns;
  */
 public interface DBConstants {
     String DB_NAME = "sessions.db";
-    int DB_VERSION = 20;
+    int DB_VERSION = 21;
 
     String SESSION_TABLE_NAME = "Sessions";
     String SESSION_ID = BaseColumns._ID;
@@ -50,6 +50,7 @@ public interface DBConstants {
     String SESSION_OS_VERSION = "OSVersion";
     String SESSION_OFFSET_60_DB = "Offset60DB";
     String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
+    String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
 
     String MEASUREMENT_TABLE_NAME = "Measurements";
     String MEASUREMENT_ID = BaseColumns._ID;

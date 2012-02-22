@@ -77,6 +77,7 @@ public class SyncService extends RoboIntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String message = null;
+
         try {
             syncState.setInProgress(true);
             error = false;
@@ -100,18 +101,32 @@ public class SyncService extends RoboIntentService {
     }
 
     private void sync() {
-        Iterable<Session> sessions = sessionRepository.all();
+        Iterable<Session> sessions = prepareSessions();
+
         HttpResult<SyncResponse> result = syncDriver.sync(sessions);
         SyncResponse syncResponse = result.getContent();
 
         if (syncResponse != null) {
-            sessionRepository.deleteMarked();
+            sessionRepository.deleteSubmitted();
             uploadSessions(syncResponse.getUpload());
 
             downloadSessions(syncResponse.getDownload());
         } else {
             error = true;
         }
+    }
+
+    private Iterable<Session> prepareSessions() {
+        Iterable<Session> sessions = sessionRepository.all();
+
+        for (Session session : sessions) {
+            if (session.isMarkedForRemoval()) {
+                session.setSubmittedForRemoval(true);
+                sessionRepository.update(session);
+            }
+        }
+
+        return sessions;
     }
 
     private boolean canUpload() {
@@ -126,7 +141,7 @@ public class SyncService extends RoboIntentService {
     private void uploadSessions(UUID[] uuids) {
         for (UUID uuid : uuids) {
             Session session = sessionRepository.loadEager(uuid);
-            if (session != null) {
+            if (session != null && !session.isMarkedForRemoval()) {
                 HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
 
                 if (result.getStatus() == Status.SUCCESS) {

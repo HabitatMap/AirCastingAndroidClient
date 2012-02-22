@@ -46,7 +46,6 @@ public class SessionRepository implements DBConstants {
     }
 
     @Inject DBUtils dbHelper;
-
     SQLiteDatabase db;
 
     @Inject
@@ -88,6 +87,7 @@ public class SessionRepository implements DBConstants {
         values.put(SESSION_OS_VERSION, session.getOSVersion());
         values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
         values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
+        values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
 
         long key = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
         session.setId(key);
@@ -162,6 +162,7 @@ public class SessionRepository implements DBConstants {
         session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
         session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
         session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
+        session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
 
         loadNotes(session);
 
@@ -219,8 +220,8 @@ public class SessionRepository implements DBConstants {
         return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
     }
 
-    public void deleteMarked() {
-        String condition = SESSION_MARKED_FOR_REMOVAL + " = 1";
+    public void deleteSubmitted() {
+        String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
         delete(condition);
     }
 

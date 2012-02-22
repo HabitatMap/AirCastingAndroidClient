@@ -62,6 +62,7 @@ public class Session implements Serializable {
     private Date end;
     private Date start;
     private Long id = null;
+    private boolean submittedForRemoval = false;
 
     public void add(SoundMeasurement measurement) {
         if (soundMeasurements.isEmpty()) {
@@ -280,5 +281,13 @@ public class Session implements Serializable {
 
     public void deleteNote(Note note) {
         notes.remove(note);
+    }
+
+    public void setSubmittedForRemoval(boolean submittedForRemoval) {
+        this.submittedForRemoval = submittedForRemoval;
+    }
+
+    public boolean isSubmittedForRemoval() {
+        return submittedForRemoval;
     }
 }

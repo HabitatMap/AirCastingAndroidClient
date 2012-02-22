@@ -55,6 +55,7 @@ public class DBUtils extends SQLiteOpenHelper implements DBConstants {
                 ", " + SESSION_INSTRUMENT + " text" +
                 ", " + SESSION_OFFSET_60_DB + " integer" +
                 ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
+                ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
                 ")"
         );
         sqLiteDatabase.execSQL("create table " + MEASUREMENT_TABLE_NAME + " (" +
@@ -88,6 +89,11 @@ public class DBUtils extends SQLiteOpenHelper implements DBConstants {
         if (oldVersion < 20 && newVersion >= 20) {
             sqLiteDatabase.execSQL("alter table " + NOTE_TABLE_NAME + " " +
                     "add column " + NOTE_NUMBER + " integer"
+            );
+        }
+        if (oldVersion < 21 && newVersion >= 21) {
+            sqLiteDatabase.execSQL("alter table " + SESSION_TABLE_NAME + " " +
+                    "add column " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean"
             );
         }
     }
