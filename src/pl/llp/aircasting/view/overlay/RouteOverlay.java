@@ -130,4 +130,10 @@ public class RouteOverlay extends Overlay {
             path.lineTo(point.x, point.y);
         }
     }
+
+    public void clear() {
+        points.clear();
+        pendingPoints.clear();
+        smoothedPoints.clear();
+    }
 }

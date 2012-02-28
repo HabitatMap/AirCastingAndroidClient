@@ -148,6 +148,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     private void initializeRouteOverlay() {
         if (sessionManager.isRecording() || sessionManager.isSessionSaved()) {
+            routeOverlay.clear();
+
             for (SoundMeasurement measurement : sessionManager.getSoundMeasurements()) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
