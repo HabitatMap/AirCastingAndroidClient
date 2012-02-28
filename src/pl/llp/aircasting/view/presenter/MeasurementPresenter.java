@@ -48,6 +48,8 @@ import static java.util.Collections.sort;
  */
 @Singleton
 public class MeasurementPresenter implements SessionManager.Listener, SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final long MILLIS_IN_SECOND = 1000;
+
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences preferences;
@@ -146,7 +148,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     }
 
     private long bucket(SoundMeasurement measurement) {
-        return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * 1000);
+        return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * MILLIS_IN_SECOND);
     }
 
     private SoundMeasurement average(Collection<SoundMeasurement> measurements) {
@@ -303,21 +305,13 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
     }
 
-    public double getLastAveraged() {
-        if(fullView == null || fullView.isEmpty()){
-            return 0;
-        } else {
-            return getLast(fullView).getValue();
-        }
-    }
-
     public interface Listener {
         void onViewUpdated();
 
         void onAveragedMeasurement(SoundMeasurement measurement);
     }
 
-    private class MeasurementAggregator {
+    private static class MeasurementAggregator {
         private double longitude = 0;
         private double latitude = 0;
         private double value = 0;

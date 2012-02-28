@@ -44,6 +44,7 @@ import static com.google.common.collect.Iterables.skip;
  * Time: 12:06 PM
  */
 public class NoisePlot extends View {
+    public static final int OPAQUE = 255;
     private Paint paint = new Paint();
 
     private SettingsHelper settingsHelper;
@@ -109,7 +110,7 @@ public class NoisePlot extends View {
             }
 
             paint.setColor(Color.WHITE);
-            paint.setAlpha(255);
+            paint.setAlpha(OPAQUE);
             paint.setStrokeWidth(3);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeJoin(Paint.Join.ROUND);

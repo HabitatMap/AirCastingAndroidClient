@@ -41,7 +41,7 @@ import java.io.IOException;
  * Date: 10/20/11
  * Time: 10:42 AM
  */
-public class Intents {
+public final class Intents {
     public static final String SESSION = "session";
     public static final int SAVE_DIALOG = 0;
     public static final int EDIT_SESSION = 1;
@@ -59,6 +59,9 @@ public class Intents {
     public static final String ACTION_SYNC_UPDATE = "AIRCASTING_SYNC_UPDATE";
 
     public static final String MESSAGE = "message";
+    public static final String MIME_TEXT_PLAIN = "text/plain";
+    public static final String MIME_TEXT_CSV = "text/csv";
+    public static final String MIME_IMAGE_JPEG = "image/jpeg";
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -100,7 +103,7 @@ public class Intents {
     public static void share(Context context, String chooserTitle, String subject, String text) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.setType("text/plain");
+        intent.setType(MIME_TEXT_PLAIN);
 
         intent.putExtra(Intent.EXTRA_TEXT, text);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -112,7 +115,7 @@ public class Intents {
     public static void shareCSV(Activity context, Uri uri, String chooserTitle, String subject, String text) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.setType("text/csv");
+        intent.setType(MIME_TEXT_CSV);
 
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.putExtra(Intent.EXTRA_TEXT, text);
@@ -172,7 +175,7 @@ public class Intents {
         if (uri.getScheme().equals("http")) {
             intent.setData(uri);
         } else {
-            intent.setDataAndType(uri, "image/jpeg");
+            intent.setDataAndType(uri, MIME_IMAGE_JPEG);
         }
 
         activity.startActivity(intent);
