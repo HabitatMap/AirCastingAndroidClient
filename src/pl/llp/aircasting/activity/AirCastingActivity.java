@@ -54,6 +54,8 @@ import roboguice.inject.InjectView;
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
 
+import static java.lang.String.valueOf;
+
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
@@ -160,11 +162,11 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText("" + settingsHelper.getThreshold(SoundLevel.QUIET));
-        topBarAverage.setText("" + settingsHelper.getThreshold(SoundLevel.AVERAGE));
-        topBarLoud.setText("" + settingsHelper.getThreshold(SoundLevel.LOUD));
-        topBarVeryLoud.setText("" + settingsHelper.getThreshold(SoundLevel.VERY_LOUD));
-        topBarTooLoud.setText("" + settingsHelper.getThreshold(SoundLevel.TOO_LOUD));
+        topBarQuiet.setText(valueOf(settingsHelper.getThreshold(SoundLevel.QUIET)));
+        topBarAverage.setText(valueOf(settingsHelper.getThreshold(SoundLevel.AVERAGE)));
+        topBarLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.LOUD)));
+        topBarVeryLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.VERY_LOUD)));
+        topBarTooLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.TOO_LOUD)));
     }
 
     private void updateButtons() {

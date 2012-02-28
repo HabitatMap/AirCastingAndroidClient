@@ -123,6 +123,8 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
     }
 
     class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
+        public static final int MAP_BUFFER_SIZE = 3;
+
         @Override
         protected void onPreExecute() {
             requestsOutstanding += 1;
@@ -144,8 +146,8 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
             int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
             if (size < 1) size = 1;
 
-            int gridSizeX = 3 * mapView.getWidth() / size;
-            int gridSizeY = 3 * mapView.getHeight() / size;
+            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
+            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
             return averagesDriver.index(northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
