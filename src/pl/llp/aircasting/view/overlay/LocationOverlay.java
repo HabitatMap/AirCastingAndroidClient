@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.helper.ResourceHelper;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
+import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,17 +53,13 @@ public class LocationOverlay extends Overlay {
             GeoPoint geoPoint = geoPoint(location);
             Point point = mapView.getProjection().toPixels(geoPoint, null);
 
-            int left = point.x - bullet.getIntrinsicWidth() / 2;
-            int top = point.y - bullet.getIntrinsicHeight() / 2;
-            int right = point.x + bullet.getIntrinsicWidth() / 2;
-            int bottom = point.y + bullet.getIntrinsicHeight() / 2;
-            bullet.setBounds(left, top, right, bottom);
+            centerAt(bullet, point);
             bullet.draw(canvas);
         }
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation(Location newLocation) {
+        this.location = newLocation;
     }
 
     public void setValue(double value) {

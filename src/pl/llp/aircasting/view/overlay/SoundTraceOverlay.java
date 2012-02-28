@@ -34,6 +34,8 @@ import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
 import java.util.List;
 
+import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
+
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
@@ -85,15 +87,6 @@ public class SoundTraceOverlay extends BufferingOverlay<SoundMeasurement> {
             centerAt(bullet, point);
             bullet.draw(canvas);
         }
-    }
-
-    private void centerAt(Drawable bullet, Point point) {
-        bullet.setBounds(
-                point.x - bullet.getIntrinsicWidth() / 2,
-                point.y - bullet.getIntrinsicWidth() / 2,
-                point.x + bullet.getIntrinsicWidth() / 2,
-                point.y + bullet.getIntrinsicHeight() / 2
-        );
     }
 
     public void setSaved(boolean saved) {
