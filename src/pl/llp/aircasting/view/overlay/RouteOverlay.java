@@ -25,9 +25,11 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
+import pl.llp.aircasting.util.map.PathSmoother;
 
 import java.util.List;
 
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
@@ -37,7 +39,15 @@ import static com.google.common.collect.Lists.newArrayList;
  * Time: 12:46 PM
  */
 public class RouteOverlay extends Overlay {
+    public static final int OPAQUE = 255;
+    public static final int SMOOTHING_BATCH = 10;
+
+    @Inject PathSmoother pathSmoother;
+
     private List<GeoPoint> points = newArrayList();
+    private List<GeoPoint> pendingPoints = newArrayList();
+    private List<GeoPoint> smoothedPoints = newArrayList();
+
     private int zoomLevel;
     private GeoPoint mapCenter;
     private Paint paint;
@@ -48,13 +58,9 @@ public class RouteOverlay extends Overlay {
         preparePaint();
     }
 
-    public void addPoint(GeoPoint geoPoint, MapView view) {
-        points.add(geoPoint);
-
-        if (path != null) {
-            Point point = view.getProjection().toPixels(geoPoint, null);
-            path.lineTo(point.x, point.y);
-        }
+    public void addPoint(GeoPoint geoPoint) {
+        pendingPoints.add(geoPoint);
+        path = null;
     }
 
     @Override
@@ -63,6 +69,8 @@ public class RouteOverlay extends Overlay {
 
         if (path == null || view.getZoomLevel() != zoomLevel || !mapCenter.equals(view.getMapCenter())) {
             path = new Path();
+
+            preparePoints();
             preparePath(view.getProjection());
 
             zoomLevel = view.getZoomLevel();
@@ -72,11 +80,20 @@ public class RouteOverlay extends Overlay {
         canvas.drawPath(path, paint);
     }
 
+    private void preparePoints() {
+        if (pendingPoints.size() > SMOOTHING_BATCH) {
+            points.addAll(pendingPoints);
+            pendingPoints.clear();
+
+            smoothedPoints = pathSmoother.getSmoothed(points);
+        }
+    }
+
     private void preparePaint() {
         paint = new Paint();
 
         paint.setColor(Color.BLUE);
-        paint.setAlpha(255);
+        paint.setAlpha(OPAQUE);
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
@@ -85,14 +102,15 @@ public class RouteOverlay extends Overlay {
     }
 
     private void preparePath(Projection projection) {
-        if (points.isEmpty()) return;
+        Iterable<GeoPoint> pointsToDraw = concat(smoothedPoints, pendingPoints);
+        if (isEmpty(pointsToDraw)) return;
 
         Point point = new Point();
 
-        projection.toPixels(points.get(0), point);
+        projection.toPixels(get(pointsToDraw, 0), point);
         path.moveTo(point.x, point.y);
 
-        for (GeoPoint geoPoint : points) {
+        for (GeoPoint geoPoint : skip(pointsToDraw, 1)) {
             projection.toPixels(geoPoint, point);
             path.lineTo(point.x, point.y);
         }

@@ -65,6 +65,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
         setContentView(R.layout.heat_map);
 
         mapView.getOverlays().add(heatMapOverlay);
+        mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(soundTraceOverlay);
     }
 

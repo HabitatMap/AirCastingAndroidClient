@@ -13,8 +13,7 @@ import static com.google.common.collect.Lists.newArrayList;
  * Time: 4:41 PM
  */
 public class PathSmoother {
-    // 0.000500 degrees longitude is ~5m on the equator, ~10m at 60 degrees latitude
-    private static final double DIST_CUTOFF = 500;
+    private static final double DIST_CUTOFF = 50;
 
     private List<GeoPoint> points;
     private boolean[] keep;

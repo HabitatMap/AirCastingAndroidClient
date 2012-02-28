@@ -43,6 +43,7 @@ import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
+import pl.llp.aircasting.view.overlay.RouteOverlay;
 import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.event.Observes;
@@ -94,6 +95,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     SoundMeasurement lastMeasurement;
     private boolean zoomToSession = true;
     private boolean suppressTap;
+    @Inject RouteOverlay routeOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +138,17 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         initializeTraceOverlay();
 
         measurementPresenter.registerListener(this);
+
+        initializeRouteOverlay();
+    }
+
+    private void initializeRouteOverlay() {
+        if (sessionManager.isRecording() || sessionManager.isSessionSaved()) {
+            for (SoundMeasurement measurement : sessionManager.getSoundMeasurements()) {
+                GeoPoint geoPoint = geoPoint(measurement);
+                routeOverlay.addPoint(geoPoint);
+            }
+        }
     }
 
     @Override
@@ -386,6 +399,16 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(@Observes LocationEvent event) {
         updateLocation();
+        updateRoute();
+
+        mapView.invalidate();
+    }
+
+    private void updateRoute() {
+        if (sessionManager.isRecording()) {
+            GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
+            routeOverlay.addPoint(geoPoint);
+        }
     }
 
     @Override
@@ -406,8 +429,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
             locationOverlay.setLocation(location);
         }
-
-        mapView.invalidate();
     }
 
     protected void centerMap() {

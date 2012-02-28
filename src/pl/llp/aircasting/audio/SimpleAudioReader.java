@@ -22,10 +22,6 @@ package pl.llp.aircasting.audio;
 import com.google.inject.Inject;
 import pl.llp.aircasting.helper.SettingsHelper;
 
-import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
-
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
@@ -41,15 +37,18 @@ public class SimpleAudioReader extends AudioReader.Listener {
 
     private SoundVolumeListener listener;
 
-    private List<Double> measurements = newArrayList();
-
-    public void start(SoundVolumeListener listener) {
-        this.listener = listener;
+    public void start(SoundVolumeListener newListener) {
+        this.listener = newListener;
 
         // The AudioReader sleeps as much as it records
         int block = SAMPLE_RATE / 2;
 
-        audioReader.startReader(SAMPLE_RATE, block, this);
+        try {
+            audioReader.startReader(SAMPLE_RATE, block, this);
+        } catch (Exception e) {
+
+
+        }
     }
 
     public void stop() {
