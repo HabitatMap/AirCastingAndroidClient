@@ -72,7 +72,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     private List<Listener> listeners = newArrayList();
 
     @Override
-    public synchronized void onNewMeasurement(SoundMeasurement measurement) {
+    public void onNewMeasurement(SoundMeasurement measurement) {
         if (!sessionManager.isSessionSaved()) {
             prepareFullView();
             updateFullView(measurement);
@@ -211,7 +211,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         measurementsSize = measurements.size();
     }
 
-    private synchronized void updateTimelineView() {
+    private void updateTimelineView() {
         SoundMeasurement measurement = aggregator.getAverage();
 
         if (aggregator.isComposite()) {
@@ -267,7 +267,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
     }
 
-    public synchronized void scroll(double scroll) {
+    public void scroll(double scroll) {
         prepareTimelineView();
 
         anchor -= scroll * timelineView.size();
