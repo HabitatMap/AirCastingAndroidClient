@@ -41,6 +41,7 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.AirCastingMapView;
+import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
 import pl.llp.aircasting.view.overlay.RouteOverlay;
@@ -56,6 +57,7 @@ import java.text.NumberFormat;
 import static pl.llp.aircasting.Intents.triggerSync;
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
+import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
 
 /**
  * Created by IntelliJ IDEA.
@@ -87,6 +89,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @Inject PhotoHelper photoHelper;
     @Inject MeasurementPresenter measurementPresenter;
 
+    @Inject RouteOverlay routeOverlay;
+
     NumberFormat numberFormat = NumberFormat.getInstance();
     boolean initialized = false;
     int noteIndex = -1;
@@ -95,7 +99,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     SoundMeasurement lastMeasurement;
     private boolean zoomToSession = true;
     private boolean suppressTap;
-    @Inject RouteOverlay routeOverlay;
+    MapIdleDetector routeRefreshDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +153,19 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
                 routeOverlay.addPoint(geoPoint);
             }
         }
+
+        routeRefreshDetector = detectMapIdle(mapView, 100, new MapIdleDetector.MapIdleListener() {
+            @Override
+            public void onMapIdle() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        routeOverlay.invalidate();
+                        mapView.invalidate();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -156,6 +173,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         super.onPause();
 
         measurementPresenter.unregisterListener(this);
+        routeRefreshDetector.stop();
     }
 
     private void initializeMap() {

@@ -123,8 +123,6 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
     }
 
     class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
-        private final String TAG = HeatMapDownloader.class.getSimpleName();
-
         @Override
         protected void onPreExecute() {
             requestsOutstanding += 1;

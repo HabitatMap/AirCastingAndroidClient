@@ -60,6 +60,10 @@ public class RouteOverlay extends Overlay {
 
     public void addPoint(GeoPoint geoPoint) {
         pendingPoints.add(geoPoint);
+        invalidate();
+    }
+
+    public void invalidate() {
         path = null;
     }
 
@@ -67,7 +71,7 @@ public class RouteOverlay extends Overlay {
     public void draw(Canvas canvas, MapView view, boolean shadow) {
         if (shadow) return;
 
-        if (path == null || view.getZoomLevel() != zoomLevel || !mapCenter.equals(view.getMapCenter())) {
+        if (isRefreshRequired(view)) {
             path = new Path();
 
             preparePoints();
@@ -78,6 +82,12 @@ public class RouteOverlay extends Overlay {
         }
 
         canvas.drawPath(path, paint);
+    }
+
+    private boolean isRefreshRequired(MapView view) {
+        return path == null ||
+                zoomLevel != view.getZoomLevel() ||
+                !mapCenter.equals(view.getMapCenter());
     }
 
     private void preparePoints() {
