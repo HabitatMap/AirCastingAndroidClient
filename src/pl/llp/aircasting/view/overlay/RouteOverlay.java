@@ -19,12 +19,16 @@
  */
 package pl.llp.aircasting.view.overlay;
 
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
+import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.util.map.PathSmoother;
 
 import java.util.List;
@@ -43,6 +47,7 @@ public class RouteOverlay extends Overlay {
     public static final int SMOOTHING_BATCH = 10;
 
     @Inject PathSmoother pathSmoother;
+    @Inject ResourceHelper resourceHelper;
 
     private List<GeoPoint> points = newArrayList();
     private List<GeoPoint> pendingPoints = newArrayList();
@@ -102,7 +107,7 @@ public class RouteOverlay extends Overlay {
     private void preparePaint() {
         paint = new Paint();
 
-        paint.setColor(Color.BLUE);
+        paint.setColor(resourceHelper.getGpsRoute());
         paint.setAlpha(OPAQUE);
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);

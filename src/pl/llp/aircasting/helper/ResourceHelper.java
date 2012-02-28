@@ -63,6 +63,8 @@ public class ResourceHelper {
     @InjectResource(R.drawable.dot_yellow) Drawable dotYellow;
     @InjectResource(R.drawable.dot_orange) Drawable dotOrange;
     @InjectResource(R.drawable.dot_red) Drawable dotRed;
+    
+    @InjectResource(R.color.gps_route) int gpsRoute;
 
     @Inject SoundHelper soundHelper;
 
@@ -147,5 +149,9 @@ public class ResourceHelper {
             default:
                 return power < 100 ? 40 : 30;
         }
+    }
+
+    public int getGpsRoute() {
+        return gpsRoute;
     }
 }
