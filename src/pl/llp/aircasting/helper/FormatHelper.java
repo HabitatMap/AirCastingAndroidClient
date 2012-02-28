@@ -19,15 +19,17 @@
 */
 package pl.llp.aircasting.helper;
 
-import android.text.format.DateFormat;
 import pl.llp.aircasting.model.Session;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FormatHelper {
-    public static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
-    public static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    // 01/29/12 10:22
+    public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
+
+    // 10:22
+    public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public static String timeText(Session session) {
         return dateTimeFormat.format(session.getStart()) + " - " + timeFormat.format(session.getEnd());

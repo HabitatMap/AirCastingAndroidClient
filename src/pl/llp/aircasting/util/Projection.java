@@ -25,7 +25,7 @@ package pl.llp.aircasting.util;
  * Date: 11/24/11
  * Time: 12:12 PM
  */
-public class Projection {
+public final class Projection {
     public static double project(double value, double fromBeg, double fromEnd, double toBeg, double toEnd){
         double temp = (value - fromBeg) / (fromEnd - fromBeg);
         return toBeg + temp * (toEnd - toBeg);

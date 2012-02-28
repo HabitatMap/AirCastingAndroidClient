@@ -31,6 +31,8 @@ import static pl.llp.aircasting.util.Projection.project;
  * Time: 3:33 PM
  */
 public class CalibrationHelper {
+    public static final int OFFSET_POINT = 60;
+
     @Inject SettingsHelper settingsHelper;
 
     public double calibrate(double value) {
@@ -41,11 +43,10 @@ public class CalibrationHelper {
     }
 
     public double calibrate(double value, int calibration, int offset60DB) {
-        int highCalibrated = calibration;
-        int low = -(highCalibrated - 60) + offset60DB;
+        int low = -(calibration - OFFSET_POINT) + offset60DB;
 
         if (low == 0) return 0;
-        return project(value, low, 0, 60, highCalibrated);
+        return project(value, low, 0, OFFSET_POINT, calibration);
     }
 
     public double calibrate(double power, Session session) {

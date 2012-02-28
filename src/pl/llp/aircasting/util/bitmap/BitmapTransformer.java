@@ -35,6 +35,7 @@ import static com.google.common.io.Closeables.closeQuietly;
  */
 public class BitmapTransformer {
     private static final double IMAGE_MAX_SIZE = 1200;
+    public static final int JPEG_QUALITY = 90;
 
     public Uploadable readScaledBitmap(String path) {
         BitmapFactory.Options options = getBitmapSize(path);
@@ -57,7 +58,7 @@ public class BitmapTransformer {
 
         try {
             stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream);
 
             return stream.toByteArray();
         } finally {

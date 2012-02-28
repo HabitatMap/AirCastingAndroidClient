@@ -35,6 +35,12 @@ import roboguice.inject.InjectResource;
  */
 @Singleton
 public class ResourceHelper {
+    public static final int THREE_DIGITS = 100;
+    public static final int SMALL_GAUGE_BIG_TEXT = 35;
+    public static final int SMALL_GAUGE_SMALL_TEXT = 25;
+    public static final int BIG_GAUGE_BIG_TEXT = 40;
+    public static final int BIG_GAUGE_SMALL_TEXT = 30;
+
     @InjectResource(R.drawable.green) Drawable greenBullet;
     @InjectResource(R.drawable.yellow) Drawable yellowBullet;
     @InjectResource(R.drawable.orange) Drawable orangeBullet;
@@ -144,10 +150,10 @@ public class ResourceHelper {
     public float getTextSize(double power, MarkerSize size) {
         switch (size) {
             case SMALL:
-                return power < 100 ? 35 : 25;
+                return power < THREE_DIGITS ? SMALL_GAUGE_BIG_TEXT : SMALL_GAUGE_SMALL_TEXT;
             case BIG:
             default:
-                return power < 100 ? 40 : 30;
+                return power < THREE_DIGITS ? BIG_GAUGE_BIG_TEXT : BIG_GAUGE_SMALL_TEXT;
         }
     }
 

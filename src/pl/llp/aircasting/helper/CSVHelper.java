@@ -30,6 +30,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 
 import static com.google.common.io.Closeables.closeQuietly;
+import static java.lang.String.valueOf;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,9 +39,13 @@ import static com.google.common.io.Closeables.closeQuietly;
  * Time: 2:31 PM
  */
 public class CSVHelper {
-    @Inject CalibrationHelper calibrationHelper;
-
+    public static final String BASE_PATH = "/mnt/sdcard/../..";
     public static final String SESSION_TEMP_FILE = "session.csv";
+
+    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+
+    @Inject CalibrationHelper calibrationHelper;
 
     public Uri prepareCSV(Context context, Session session) throws IOException {
         OutputStream outputStream = null;
@@ -51,8 +56,6 @@ public class CSVHelper {
 
             CsvWriter csvWriter = new CsvWriter(writer, ',');
 
-            // Should we have this in strings.xml?
-            // My rationale for not putting it there is that it probably shouldn't be localized
             csvWriter.write("Date");
             csvWriter.write("Time");
             csvWriter.write("Latitude");
@@ -60,24 +63,30 @@ public class CSVHelper {
             csvWriter.write("Decibel Level");
             csvWriter.endRecord();
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-
             for (SoundMeasurement measurement : session.getSoundMeasurements()) {
-                csvWriter.write(dateFormat.format(measurement.getTime()));
-                csvWriter.write(timeFormat.format(measurement.getTime()));
-                csvWriter.write("" + measurement.getLatitude());
-                csvWriter.write("" + measurement.getLongitude());
-                csvWriter.write("" + calibrationHelper.calibrate(measurement.getValue()));
+                csvWriter.write(DATE_FORMAT.format(measurement.getTime()));
+                csvWriter.write(TIME_FORMAT.format(measurement.getTime()));
+                csvWriter.write(valueOf(measurement.getLongitude()));
+                csvWriter.write(valueOf(measurement.getLatitude()));
+                csvWriter.write(valueOf(calibrationHelper.calibrate(measurement.getValue())));
                 csvWriter.endRecord();
             }
             csvWriter.close();
 
-            // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
-            File file = new File("/mnt/sdcard/../.." + context.getFilesDir() + "/" + SESSION_TEMP_FILE);
+            File file = getTarget(context);
             return Uri.fromFile(file);
         } finally {
             closeQuietly(outputStream);
         }
+    }
+
+    private File getTarget(Context context) {
+        // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
+        String path = new StringBuilder(BASE_PATH)
+                .append(context.getFilesDir())
+                .append("/")
+                .append(SESSION_TEMP_FILE)
+                .toString();
+        return new File(path);
     }
 }

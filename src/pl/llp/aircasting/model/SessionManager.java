@@ -88,8 +88,8 @@ public class SessionManager implements SoundVolumeListener {
     }
 
     public void loadSession(long id, SessionRepository.ProgressListener listener) {
-        Session session = sessionRepository.loadEager(id, listener);
-        setSession(session);
+        Session newSession = sessionRepository.loadEager(id, listener);
+        setSession(newSession);
     }
 
     private void setSession(Session session) {
@@ -288,7 +288,7 @@ public class SessionManager implements SoundVolumeListener {
         return session.getAvg();
     }
 
-    public double getDbNow() {
+    public synchronized double getDbNow() {
         return dbLast;
     }
 

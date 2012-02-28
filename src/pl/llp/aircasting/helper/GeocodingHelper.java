@@ -26,8 +26,9 @@ import android.util.Log;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import java.io.IOException;
 import java.util.List;
+
+import static com.google.common.collect.Iterables.getOnlyElement;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,14 +39,15 @@ import java.util.List;
 @Singleton
 public class GeocodingHelper {
     private static final String TAG = GeocodingHelper.class.getSimpleName();
+    public static final int REQUESTED_RESULTS = 1;
 
     @Inject Geocoder geocoder;
     @Inject LocationHelper locationHelper;
 
     public String getFromLocation(Location location) {
         try {
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            return addresses.get(0).getThoroughfare();
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), REQUESTED_RESULTS);
+            return getOnlyElement(addresses).getThoroughfare();
         } catch (Exception e) {
             Log.e(TAG, "Geocoding failure", e);
             return null;

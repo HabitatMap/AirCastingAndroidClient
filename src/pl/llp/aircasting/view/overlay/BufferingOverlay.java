@@ -77,8 +77,8 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
 
             int newZoomLevel = mapView.getZoomLevel();
             GeoPoint newMapCenter = mapView.getMapCenter();
-            Projection projection = mapView.getProjection();
-            ProjectionClone projectionClone = new ProjectionClone(projection, width, height);
+            Projection newProjection = mapView.getProjection();
+            ProjectionClone projectionClone = new ProjectionClone(newProjection, width, height);
 
             performDraw(canvas, projectionClone);
 
@@ -94,17 +94,17 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
 
     public void update(UpdateData updateData) {
         Canvas canvas = null;
-        Projection projection = null;
+        Projection projectionToUse = null;
 
         synchronized (this) {
             if (bitmap != null) {
                 canvas = new Canvas(bitmap);
-                projection = this.projection;
+                projectionToUse = this.projection;
             }
         }
 
         if (canvas != null) {
-            performUpdate(canvas, projection, updateData);
+            performUpdate(canvas, projectionToUse, updateData);
         }
     }
 

@@ -34,15 +34,17 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class BitmapHolder {
+    private static final CacheLoader<BitmapKey,Bitmap> cacheLoader = new CacheLoader<BitmapKey, Bitmap>() {
+        @Override
+        public Bitmap load(BitmapKey key) throws Exception {
+            return Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888);
+        }
+    };
+
     Cache<BitmapKey, Bitmap> cache =
             CacheBuilder.newBuilder()
                     .expireAfterAccess(30, TimeUnit.SECONDS)
-                    .build(new CacheLoader<BitmapKey, Bitmap>() {
-                        @Override
-                        public Bitmap load(BitmapKey key) throws Exception {
-                            return Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888);
-                        }
-                    });
+                    .build(cacheLoader);
 
     public Bitmap getBitmap(int width, int height, int index) {
         try {

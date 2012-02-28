@@ -117,13 +117,13 @@ public class Session implements Serializable {
     }
 
     private double calculatePeak() {
-        double peak = SoundHelper.TOTALLY_QUIET;
+        double newPeak = SoundHelper.TOTALLY_QUIET;
         for (SoundMeasurement measurement : soundMeasurements) {
-            if (measurement.getValue() > peak) {
-                peak = measurement.getValue();
+            if (measurement.getValue() > newPeak) {
+                newPeak = measurement.getValue();
             }
         }
-        return peak;
+        return newPeak;
     }
 
     public double getAvg() {
@@ -136,11 +136,11 @@ public class Session implements Serializable {
     private double calculateSum() {
         if (soundMeasurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
 
-        double sum = 0;
+        double newSum = 0;
         for (SoundMeasurement measurement : soundMeasurements) {
-            sum += measurement.getValue();
+            newSum += measurement.getValue();
         }
-        return sum;
+        return newSum;
     }
 
     public void setAvg(double avg) {

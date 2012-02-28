@@ -38,6 +38,7 @@ import roboguice.event.EventManager;
 @Singleton
 public class LocationHelper implements LocationListener {
     private static final int TWO_MINUTES = 1000 * 60 * 2;
+    public static final int ACCURACY_THRESHOLD = 200;
 
     @Inject LocationManager locationManager;
     @Inject EventManager eventManager;
@@ -132,7 +133,7 @@ public class LocationHelper implements LocationListener {
         int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
         boolean isLessAccurate = accuracyDelta > 0;
         boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+        boolean isSignificantlyLessAccurate = accuracyDelta > ACCURACY_THRESHOLD;
 
         // Check if the old and new location are from the same provider
         boolean isFromSameProvider = isSameProvider(location.getProvider(),
