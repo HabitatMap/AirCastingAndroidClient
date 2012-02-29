@@ -20,6 +20,8 @@
 package pl.llp.aircasting.model;
 
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -28,10 +30,7 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.audio.SimpleAudioReader;
 import pl.llp.aircasting.audio.SoundVolumeListener;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.helper.SoundHelper;
+import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
 
 import java.util.Date;
@@ -58,6 +57,7 @@ public class SessionManager implements SoundVolumeListener {
     @Inject LocationHelper locationHelper;
     @Inject MetadataHelper metadataHelper;
     @Inject TelephonyManager telephonyManager;
+    @Inject NotificationHelper notificationHelper;
 
     Session session = new Session();
 
@@ -326,6 +326,7 @@ public class SessionManager implements SoundVolumeListener {
         setSession(new Session());
         startSensors();
         sessionStarted = true;
+        notificationHelper.showRecordingNotification();
     }
 
     public void finishSession(SessionRepository.ProgressListener progressListener) {
@@ -353,6 +354,7 @@ public class SessionManager implements SoundVolumeListener {
         sessionStarted = false;
         noteNumber = 0;
         setSession(new Session());
+        notificationHelper.hideRecordingNotification();
     }
 
     public boolean isSessionStarted() {
