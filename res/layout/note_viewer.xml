@@ -74,7 +74,7 @@
                 />
         <EditText style="@style/Wide"
                   android:text=""
-                  android:lines="3"
+                  android:lines="5"
                   android:id="@+id/note_text"
                 />
 
