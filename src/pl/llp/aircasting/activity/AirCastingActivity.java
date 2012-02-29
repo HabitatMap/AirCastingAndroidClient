@@ -269,12 +269,6 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     }
 
     @Override
-    public void onDestroy() {
-        sessionManager.unregisterListener(this);
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return mainMenu.create(this, menu);
     }
