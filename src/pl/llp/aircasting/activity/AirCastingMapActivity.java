@@ -112,8 +112,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
         refreshNotes();
 
-        initializeNoteViewer();
-
         spinnerAnimation.start();
 
         locationHelper.setContext(this);

@@ -134,6 +134,8 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
 
         initialize();
 
+        initializeNoteViewer();
+
         if (!sessionManager.isSessionSaved()) {
             Intents.startSensors(getApplicationContext());
         }
@@ -378,6 +380,7 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
                 break;
             case R.id.edit:
                 Intents.editSession(this, sessionManager.getSession());
+
                 break;
             case R.id.note:
                 Intents.makeANote(this);
