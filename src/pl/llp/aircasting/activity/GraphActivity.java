@@ -29,15 +29,18 @@ import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.ScrollEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.event.Observes;
 import roboguice.inject.InjectView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -89,8 +92,9 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
         
         List<SoundMeasurement> measurements = measurementPresenter.getTimelineView();
+        ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
-        plot.update(measurements);
+        plot.update(measurements, notes);
 
         scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
         scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);

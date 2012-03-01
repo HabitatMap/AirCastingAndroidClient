@@ -20,22 +20,24 @@
 package pl.llp.aircasting.view;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
+import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.util.Search;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.skip;
+import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
+import static pl.llp.aircasting.util.Search.binarySearch;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,11 +47,13 @@ import static com.google.common.collect.Iterables.skip;
  */
 public class NoisePlot extends View {
     public static final int OPAQUE = 255;
+    
     private Paint paint = new Paint();
 
     private SettingsHelper settingsHelper;
 
     private List<SoundMeasurement> measurements = new ArrayList<SoundMeasurement>();
+    private List<Note> notes;
     private ResourceHelper resourceHelper;
     private CalibrationHelper calibrationHelper;
     private int bottom;
@@ -80,8 +84,9 @@ public class NoisePlot extends View {
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void update(List<SoundMeasurement> measurements) {
+    public void update(List<SoundMeasurement> measurements, List<Note> notes) {
         this.measurements = measurements;
+        this.notes = notes;
         invalidate();
     }
 
@@ -100,25 +105,61 @@ public class NoisePlot extends View {
             path.moveTo(0, lastY);
 
             for (SoundMeasurement measurement : skip(measurements, 1)) {
-                float place = measurement.getTime().getTime() - measurements.get(0).getTime().getTime();
-                float x = getWidth() * (place / span);
-
-                double value = calibrationHelper.calibrate(measurement.getValue());
-                float y = (float) (project(value));
-
-                path.lineTo(x, y);
+                Point place = place(measurement, span);
+                path.lineTo(place.x, place.y);
             }
 
-            paint.setColor(Color.WHITE);
-            paint.setAlpha(OPAQUE);
-            paint.setStrokeWidth(3);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeJoin(Paint.Join.ROUND);
-            paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setAntiAlias(true);
+
+            initializePaint();
 
             canvas.drawPath(path, paint);
+
+            for (Note note : notes) {
+                drawNote(canvas, note, span);
+            }
         }
+    }
+
+    private Point place(SoundMeasurement measurement, float span) {
+        long time = measurement.getTime().getTime();
+        long firstTime = measurements.get(0).getTime().getTime();
+        float place = time - firstTime;
+        int x = (int) (getWidth() * (place / span));
+
+        double value = calibrationHelper.calibrate(measurement.getValue());
+        int y = project(value);
+
+        return new Point(x,y);
+    }
+
+    private void drawNote(Canvas canvas, Note note, float span) {
+        SoundMeasurement measurement = findClosestMeasurement(note);
+        Point place = place(measurement, span);
+
+        Drawable noteArrow = resourceHelper.getNoteArrow();
+        centerBottomAt(noteArrow, place);
+        noteArrow.draw(canvas);
+    }
+
+    private SoundMeasurement findClosestMeasurement(final Note note) {
+        int index = binarySearch(measurements, new Search.Visitor<SoundMeasurement>() {
+            @Override
+            public int compareTo(SoundMeasurement value) {
+                return note.getDate().compareTo(value.getTime());
+            }
+        });
+        
+        return measurements.get(index);
+    }
+
+    private void initializePaint() {
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(OPAQUE);
+        paint.setStrokeWidth(3);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setAntiAlias(true);
     }
 
     private void drawBackground(Canvas canvas) {

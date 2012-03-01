@@ -69,7 +69,8 @@ public class ResourceHelper {
     @InjectResource(R.drawable.dot_yellow) Drawable dotYellow;
     @InjectResource(R.drawable.dot_orange) Drawable dotOrange;
     @InjectResource(R.drawable.dot_red) Drawable dotRed;
-    
+    @InjectResource(R.drawable.arrow_down) Drawable noteArrow;
+
     @InjectResource(R.color.gps_route) int gpsRoute;
 
     @Inject SoundHelper soundHelper;
@@ -159,5 +160,9 @@ public class ResourceHelper {
 
     public int getGpsRoute() {
         return gpsRoute;
+    }
+
+    public Drawable getNoteArrow() {
+        return noteArrow;
     }
 }

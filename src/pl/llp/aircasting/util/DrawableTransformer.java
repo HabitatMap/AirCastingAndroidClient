@@ -13,9 +13,18 @@ public final class DrawableTransformer {
     public static void centerAt(Drawable drawable, Point point) {
         drawable.setBounds(
                 point.x - drawable.getIntrinsicWidth() / 2,
-                point.y - drawable.getIntrinsicWidth() / 2,
+                point.y - drawable.getIntrinsicHeight() / 2,
                 point.x + drawable.getIntrinsicWidth() / 2,
                 point.y + drawable.getIntrinsicHeight() / 2
+        );
+    }
+
+    public static void centerBottomAt(Drawable drawable, Point point) {
+        drawable.setBounds(
+                point.x - drawable.getIntrinsicWidth() / 2,
+                point.y - drawable.getIntrinsicHeight(),
+                point.x + drawable.getIntrinsicWidth() / 2,
+                point.y
         );
     }
 }
