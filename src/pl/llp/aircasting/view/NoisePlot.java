@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.view;
 
 import android.content.Context;
@@ -35,6 +35,7 @@ import pl.llp.aircasting.util.Search;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.skip;
 import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
 import static pl.llp.aircasting.util.Search.binarySearch;
@@ -47,7 +48,7 @@ import static pl.llp.aircasting.util.Search.binarySearch;
  */
 public class NoisePlot extends View {
     public static final int OPAQUE = 255;
-    
+
     private Paint paint = new Paint();
 
     private SettingsHelper settingsHelper;
@@ -97,48 +98,60 @@ public class NoisePlot extends View {
         drawBackground(canvas);
 
         if (!measurements.isEmpty()) {
-            float span = measurements.get(measurements.size() - 1).getTime().getTime() - measurements.get(0).getTime().getTime();
-
             Path path = new Path();
 
             float lastY = project(calibrationHelper.calibrate(measurements.get(0).getValue()));
             path.moveTo(0, lastY);
 
             for (SoundMeasurement measurement : skip(measurements, 1)) {
-                Point place = place(measurement, span);
+                Point place = place(measurement);
                 path.lineTo(place.x, place.y);
             }
-
 
             initializePaint();
 
             canvas.drawPath(path, paint);
 
             for (Note note : notes) {
-                drawNote(canvas, note, span);
+                drawNote(canvas, note);
             }
         }
     }
 
-    private Point place(SoundMeasurement measurement, float span) {
+    private Point place(SoundMeasurement measurement) {
         long time = measurement.getTime().getTime();
-        long firstTime = measurements.get(0).getTime().getTime();
-        float place = time - firstTime;
+        float span = lastTime() - firstTime();
+        float place = time - firstTime();
         int x = (int) (getWidth() * (place / span));
 
         double value = calibrationHelper.calibrate(measurement.getValue());
         int y = project(value);
 
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
-    private void drawNote(Canvas canvas, Note note, float span) {
+    private void drawNote(Canvas canvas, Note note) {
+        if (!inRange(note)) return;
+
         SoundMeasurement measurement = findClosestMeasurement(note);
-        Point place = place(measurement, span);
+        Point place = place(measurement);
 
         Drawable noteArrow = resourceHelper.getNoteArrow();
         centerBottomAt(noteArrow, place);
         noteArrow.draw(canvas);
+    }
+
+    private boolean inRange(Note note) {
+        long noteTime = note.getDate().getTime();
+        return noteTime >= firstTime() && noteTime <= lastTime();
+    }
+
+    private long lastTime() {
+        return getLast(measurements).getTime().getTime();
+    }
+
+    private long firstTime() {
+        return measurements.get(0).getTime().getTime();
     }
 
     private SoundMeasurement findClosestMeasurement(final Note note) {
@@ -148,7 +161,7 @@ public class NoisePlot extends View {
                 return note.getDate().compareTo(value.getTime());
             }
         });
-        
+
         return measurements.get(index);
     }
 
