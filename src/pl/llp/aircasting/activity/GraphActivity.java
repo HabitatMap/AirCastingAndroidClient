@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity;
 
 import android.os.Bundle;
@@ -28,7 +28,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.ScrollEvent;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.NoisePlot;
@@ -42,12 +42,6 @@ import java.util.List;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/30/11
- * Time: 12:27 PM
- */
 public class GraphActivity extends AirCastingActivity implements View.OnClickListener, MeasurementPresenter.Listener {
     @InjectView(R.id.noise_graph) NoisePlot plot;
 
@@ -55,20 +49,18 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @InjectView(R.id.graph_end_time) TextView graphEnd;
     @InjectView(R.id.graph_top_db) TextView graphTop;
     @InjectView(R.id.graph_bottom_db) TextView graphBottom;
-    
+
     @InjectView(R.id.suggest_scroll_left) View scrollLeft;
     @InjectView(R.id.suggest_scroll_right) View scrollRight;
 
     @Inject MeasurementPresenter measurementPresenter;
-
-    @Inject SettingsHelper settingsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
 
-        plot.initialize(settingsHelper, resourceHelper, calibrationHelper);
+        plot.initialize(this, settingsHelper, resourceHelper, calibrationHelper);
 
         graphTop.setText(settingsHelper.getThreshold(SoundLevel.TOO_LOUD) + " dB");
         graphBottom.setText(settingsHelper.getThreshold(SoundLevel.QUIET) + " dB");
@@ -90,7 +82,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     private void refresh() {
         zoomIn.setEnabled(measurementPresenter.canZoomIn());
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
-        
+
         List<SoundMeasurement> measurements = measurementPresenter.getTimelineView();
         ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
@@ -117,7 +109,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
             default:
                 super.onClick(view);
         }
-
     }
 
     private void zoomIn() {
@@ -135,7 +126,13 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     @Override
     public void onAveragedMeasurement(SoundMeasurement measurement) {
+    }
 
+    @Override
+    public void onEvent(TapEvent event) {
+        if (!plot.onTap(event)) {
+            super.onEvent(event);
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -144,7 +141,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes ScrollEvent event){
+    public void onEvent(@Observes ScrollEvent event) {
         float relativeScroll = event.getDistanceX() / plot.getWidth();
         measurementPresenter.scroll(relativeScroll);
     }

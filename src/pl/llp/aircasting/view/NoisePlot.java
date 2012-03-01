@@ -25,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.activity.AirCastingActivity;
+import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -48,9 +50,11 @@ import static pl.llp.aircasting.util.Search.binarySearch;
  */
 public class NoisePlot extends View {
     public static final int OPAQUE = 255;
+    private static final double CLICK_RADIUS = 50;
 
     private Paint paint = new Paint();
 
+    private AirCastingActivity activity;
     private SettingsHelper settingsHelper;
 
     private List<SoundMeasurement> measurements = new ArrayList<SoundMeasurement>();
@@ -75,7 +79,8 @@ public class NoisePlot extends View {
         super(context, attrs, defStyle);
     }
 
-    public void initialize(SettingsHelper settingsHelper, ResourceHelper resourceHelper, CalibrationHelper calibrationHelper) {
+    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper, CalibrationHelper calibrationHelper) {
+        this.activity = activity;
         this.settingsHelper = settingsHelper;
         this.resourceHelper = resourceHelper;
         this.calibrationHelper = calibrationHelper;
@@ -133,12 +138,16 @@ public class NoisePlot extends View {
     private void drawNote(Canvas canvas, Note note) {
         if (!inRange(note)) return;
 
-        SoundMeasurement measurement = findClosestMeasurement(note);
-        Point place = place(measurement);
+        Point place = place(note);
 
         Drawable noteArrow = resourceHelper.getNoteArrow();
         centerBottomAt(noteArrow, place);
         noteArrow.draw(canvas);
+    }
+
+    private Point place(Note note) {
+        SoundMeasurement measurement = findClosestMeasurement(note);
+        return place(measurement);
     }
 
     private boolean inRange(Note note) {
@@ -198,5 +207,24 @@ public class NoisePlot extends View {
 
     private int project(double value) {
         return (int) (getHeight() * (top - value) / (top - bottom));
+    }
+
+    public boolean onTap(TapEvent event) {
+        for (int i = 0; i < notes.size(); i++) {
+            Note note = notes.get(i);
+            Point place = place(note);
+
+            if (inRange(note) && isClose(event, place)) {
+                activity.noteClicked(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isClose(TapEvent event, Point place) {
+        float x = event.getX() - place.x;
+        float y = event.getY() - place.y;
+        return Math.sqrt(x * x + y * y) < CLICK_RADIUS;
     }
 }

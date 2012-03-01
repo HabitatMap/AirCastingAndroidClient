@@ -20,8 +20,6 @@
 package pl.llp.aircasting.model;
 
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -240,6 +238,10 @@ public class SessionManager implements SoundVolumeListener {
             sessionRepository.deleteNote(session, note);
         }
         session.deleteNote(note);
+    }
+
+    public int getNoteCount() {
+        return session.getNotes().size();
     }
 
     public interface Listener {

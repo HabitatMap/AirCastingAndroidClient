@@ -1,4 +1,5 @@
 /**
+
  AirCasting - Share your Air!
  Copyright (C) 2011-2012 HabitatMap, Inc.
 
@@ -25,7 +26,9 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
@@ -37,7 +40,6 @@ import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.LocationEvent;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.AirCastingMapView;
@@ -52,7 +54,6 @@ import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.File;
-import java.text.NumberFormat;
 
 import static pl.llp.aircasting.Intents.triggerSync;
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
@@ -66,17 +67,10 @@ import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
  * Time: 3:35 PM
  */
 public class AirCastingMapActivity extends AirCastingActivity implements MeasurementPresenter.Listener {
-    public static final String NOTE_INDEX = "noteIndex";
-
-    @InjectView(R.id.note_viewer) View noteViewer;
-    @InjectView(R.id.note_date) TextView noteDate;
-    @InjectView(R.id.note_number) TextView noteNumber;
-    @InjectView(R.id.note_text) EditText noteText;
     @InjectView(R.id.note_left) ImageButton noteLeft;
     @InjectView(R.id.note_right) ImageButton noteRight;
     @InjectView(R.id.note_save) Button noteSave;
     @InjectView(R.id.note_delete) Button noteDelete;
-    @InjectView(R.id.view_photo) View viewPhoto;
 
     @InjectView(R.id.mapview) AirCastingMapView mapView;
 
@@ -86,16 +80,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @Inject NoteOverlay noteOverlay;
     @Inject LocationOverlay locationOverlay;
     @Inject SoundTraceOverlay soundTraceOverlay;
-    @Inject PhotoHelper photoHelper;
     @Inject MeasurementPresenter measurementPresenter;
 
     @Inject RouteOverlay routeOverlay;
 
-    NumberFormat numberFormat = NumberFormat.getInstance();
     boolean initialized = false;
-    int noteIndex = -1;
-    int noteTotal;
-    Note currentNote;
     SoundMeasurement lastMeasurement;
     private boolean zoomToSession = true;
     private boolean suppressTap;
@@ -109,17 +98,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt(NOTE_INDEX, noteIndex);
-    }
-
-    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
         zoomToSession = false;
     }
 
@@ -247,14 +228,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
-    private void initializeNoteViewer() {
-        if (noteIndex == -1) {
-            hideNoteViewer();
-        } else {
-            noteOverlay.onTap(noteIndex);
-        }
-    }
-
     protected void refreshNotes() {
         noteOverlay.clear();
         for (Note note : sessionManager.getNotes()) {
@@ -273,34 +246,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         mapView.invalidate();
     }
 
-    public void noteClicked(OverlayItem item, int index, int total) {
+    public void noteClicked(OverlayItem item, int index) {
         suppressTap = true;
 
         mapView.getController().animateTo(item.getPoint());
 
-        currentNote = sessionManager.getNote(index);
-
-        showNoteViewer();
-        noteDate.setText(item.getTitle());
-        noteText.setText(currentNote.getText());
-        noteNumber.setText(numberFormat.format(index + 1) + "/" + numberFormat.format(total));
-        viewPhoto.setVisibility(photoHelper.photoExists(currentNote) ? View.VISIBLE : View.GONE);
-
-        noteIndex = index;
-        noteTotal = total;
-    }
-
-    private void showNoteViewer() {
-        noteViewer.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (noteViewer.getVisibility() == View.VISIBLE) {
-            hideNoteViewer();
-        } else {
-            super.onBackPressed();
-        }
+        noteClicked(index);
     }
 
     @Override
@@ -387,10 +338,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
                 hideNoteViewer();
             }
         }.execute();
-    }
-
-    private void hideNoteViewer() {
-        noteViewer.setVisibility(View.INVISIBLE);
     }
 
     @Override

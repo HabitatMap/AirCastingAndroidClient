@@ -38,10 +38,7 @@ import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
-import pl.llp.aircasting.helper.CalibrationHelper;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
@@ -63,7 +60,9 @@ import static java.lang.String.valueOf;
  * Time: 3:18 PM
  */
 public class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
+    public static final String NOTE_INDEX = "noteIndex";
     public static final String SHOW_BUTTONS = "showButtons";
+
     // It seems it's impossible to inject these in the tests
     @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
     @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;
@@ -95,6 +94,11 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     @InjectView(R.id.top_bar_loud) TextView topBarLoud;
     @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
     @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
+    @InjectView(R.id.note_viewer) View noteViewer;
+    @InjectView(R.id.note_date) TextView noteDate;
+    @InjectView(R.id.note_number) TextView noteNumber;
+    @InjectView(R.id.note_text) EditText noteText;
+    @InjectView(R.id.view_photo) View viewPhoto;
 
     @Inject AirCastingApplication context;
 
@@ -107,13 +111,18 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     @Inject CalibrationHelper calibrationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject ResourceHelper resourceHelper;
+    @Inject PhotoHelper photoHelper;
 
     @Inject MainMenu mainMenu;
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
+    NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
     private boolean showButtons = true;
+    int noteIndex = -1;
+    int noteTotal;
+    Note currentNote;
 
     @Override
     protected void onResume() {
@@ -143,6 +152,7 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putInt(NOTE_INDEX, noteIndex);
         outState.putBoolean(SHOW_BUTTONS, showButtons);
     }
 
@@ -150,6 +160,7 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
         showButtons = savedInstanceState.getBoolean(SHOW_BUTTONS, true);
     }
 
@@ -418,5 +429,46 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
 
     @Override
     public void onAnimationRepeat(Animation animation) {
+    }
+
+    public void noteClicked(int index) {
+        int total = sessionManager.getNoteCount();
+        currentNote = sessionManager.getNote(index);
+
+        showNoteViewer();
+
+        String title = FormatHelper.dateTime(currentNote.getDate()).toString();
+        noteDate.setText(title);
+        noteText.setText(currentNote.getText());
+        noteNumber.setText(numberFormat.format(index + 1) + "/" + numberFormat.format(total));
+        viewPhoto.setVisibility(photoHelper.photoExists(currentNote) ? View.VISIBLE : View.GONE);
+
+        noteIndex = index;
+        noteTotal = total;
+    }
+
+    private void showNoteViewer() {
+        noteViewer.setVisibility(View.VISIBLE);
+    }
+
+    protected void initializeNoteViewer() {
+        if (noteIndex == -1) {
+            hideNoteViewer();
+        } else {
+            noteClicked(noteIndex);
+        }
+    }
+
+    protected void hideNoteViewer() {
+        noteViewer.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (noteViewer.getVisibility() == View.VISIBLE) {
+            hideNoteViewer();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
