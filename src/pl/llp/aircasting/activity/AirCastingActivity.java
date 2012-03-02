@@ -409,11 +409,10 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
                 deleteNote();
                 break;
             case R.id.note_left:
-                if (noteIndex == 0) noteIndex = noteTotal;
                 noteClicked(noteIndex - 1);
                 break;
             case R.id.note_right:
-                noteClicked((noteIndex + 1) % noteTotal);
+                noteClicked(noteIndex + 1);
                 break;
         }
     }
@@ -460,6 +459,9 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
 
     public void noteClicked(int index) {
         int total = sessionManager.getNoteCount();
+        if(total == 0) return;
+        index = ((index % total) + total) % total;
+        
         currentNote = sessionManager.getNote(index);
 
         showNoteViewer();
