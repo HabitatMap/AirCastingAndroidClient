@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -35,7 +33,6 @@ import com.google.android.maps.OverlayItem;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.LocationEvent;
 import pl.llp.aircasting.event.TapEvent;
@@ -55,7 +52,6 @@ import roboguice.inject.InjectView;
 
 import java.io.File;
 
-import static pl.llp.aircasting.Intents.triggerSync;
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
@@ -67,11 +63,6 @@ import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
  * Time: 3:35 PM
  */
 public class AirCastingMapActivity extends AirCastingActivity implements MeasurementPresenter.Listener {
-    @InjectView(R.id.note_left) ImageButton noteLeft;
-    @InjectView(R.id.note_right) ImageButton noteRight;
-    @InjectView(R.id.note_save) Button noteSave;
-    @InjectView(R.id.note_delete) Button noteDelete;
-
     @InjectView(R.id.mapview) AirCastingMapView mapView;
 
     @InjectView(R.id.spinner) ImageView spinner;
@@ -199,12 +190,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
             mapView.getOverlays().add(noteOverlay);
 
-            noteLeft.setOnClickListener(this);
-            noteRight.setOnClickListener(this);
-            noteSave.setOnClickListener(this);
-            noteDelete.setOnClickListener(this);
-            viewPhoto.setOnClickListener(this);
-
             initialized = true;
         }
     }
@@ -226,6 +211,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
+    @Override
     protected void refreshNotes() {
         noteOverlay.clear();
         for (Note note : sessionManager.getNotes()) {
@@ -255,13 +241,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.note_left:
-                if (noteIndex == 0) noteIndex = noteTotal;
-                noteOverlay.onTap(noteIndex - 1);
-                break;
-            case R.id.note_right:
-                noteOverlay.onTap((noteIndex + 1) % noteTotal);
-                break;
             case R.id.zoom_in:
                 mapView.getController().zoomIn();
                 break;
@@ -271,39 +250,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
             case R.id.locate:
                 centerMap();
                 break;
-            case R.id.note_save:
-                saveNote();
-                break;
             case R.id.view_photo:
                 Intents.viewPhoto(this, photoUri());
-                break;
-            case R.id.note_delete:
-                deleteNote();
                 break;
             default:
                 super.onClick(view);
         }
-    }
-
-    private void deleteNote() {
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                sessionManager.deleteNote(currentNote);
-                triggerSync(context);
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                refreshNotes();
-                hideNoteViewer();
-            }
-        }.execute();
     }
 
     private Uri photoUri() {
@@ -313,29 +265,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         } else {
             return Uri.parse(currentNote.getPhotoPath());
         }
-    }
-
-    private void saveNote() {
-        String text = noteText.getText().toString();
-        currentNote.setText(text);
-
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                if (sessionManager.isSessionSaved()) {
-                    sessionManager.saveChanges();
-                    triggerSync(context);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                hideNoteViewer();
-            }
-        }.execute();
     }
 
     @Override

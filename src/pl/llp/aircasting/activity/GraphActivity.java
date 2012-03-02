@@ -135,6 +135,11 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    protected void refreshNotes() {
+        refresh();
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(@Observes DoubleTapEvent event) {
         zoomIn();

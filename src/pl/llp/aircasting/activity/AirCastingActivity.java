@@ -36,6 +36,7 @@ import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
@@ -52,6 +53,7 @@ import java.lang.reflect.Method;
 import java.text.NumberFormat;
 
 import static java.lang.String.valueOf;
+import static pl.llp.aircasting.Intents.triggerSync;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,7 +61,7 @@ import static java.lang.String.valueOf;
  * Date: 9/30/11
  * Time: 3:18 PM
  */
-public class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
+public abstract class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
     public static final String NOTE_INDEX = "noteIndex";
     public static final String SHOW_BUTTONS = "showButtons";
 
@@ -99,6 +101,10 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
     @InjectView(R.id.note_number) TextView noteNumber;
     @InjectView(R.id.note_text) EditText noteText;
     @InjectView(R.id.view_photo) View viewPhoto;
+    @InjectView(R.id.note_save) Button noteSave;
+    @InjectView(R.id.note_delete) Button noteDelete;
+    @InjectView(R.id.note_left) ImageButton noteLeft;
+    @InjectView(R.id.note_right) ImageButton noteRight;
 
     @Inject AirCastingApplication context;
 
@@ -197,6 +203,12 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
             zoomIn.setOnClickListener(this);
             zoomOut.setOnClickListener(this);
             topBar.setOnClickListener(this);
+
+            noteLeft.setOnClickListener(this);
+            noteRight.setOnClickListener(this);
+            noteSave.setOnClickListener(this);
+            noteDelete.setOnClickListener(this);
+            viewPhoto.setOnClickListener(this);
 
             touchPane.setContext(this);
 
@@ -380,7 +392,6 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
                 break;
             case R.id.edit:
                 Intents.editSession(this, sessionManager.getSession());
-
                 break;
             case R.id.note:
                 Intents.makeANote(this);
@@ -390,6 +401,19 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
                 break;
             case R.id.share:
                 startActivity(new Intent(context, ShareSessionActivity.class));
+                break;
+            case R.id.note_save:
+                saveNote();
+                break;
+            case R.id.note_delete:
+                deleteNote();
+                break;
+            case R.id.note_left:
+                if (noteIndex == 0) noteIndex = noteTotal;
+                noteClicked(noteIndex - 1);
+                break;
+            case R.id.note_right:
+                noteClicked((noteIndex + 1) % noteTotal);
                 break;
         }
     }
@@ -474,4 +498,50 @@ public class AirCastingActivity extends RoboMapActivityWithProgress implements S
             super.onBackPressed();
         }
     }
+
+    private void saveNote() {
+        String text = noteText.getText().toString();
+        currentNote.setText(text);
+
+        //noinspection unchecked
+        new SimpleProgressTask<Void, Void, Void>(this) {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                if (sessionManager.isSessionSaved()) {
+                    sessionManager.saveChanges();
+                    triggerSync(context);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                hideNoteViewer();
+            }
+        }.execute();
+    }
+
+    private void deleteNote() {
+        //noinspection unchecked
+        new SimpleProgressTask<Void, Void, Void>(this) {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                sessionManager.deleteNote(currentNote);
+                triggerSync(context);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                refreshNotes();
+                hideNoteViewer();
+            }
+        }.execute();
+    }
+
+    protected abstract void refreshNotes();
 }
