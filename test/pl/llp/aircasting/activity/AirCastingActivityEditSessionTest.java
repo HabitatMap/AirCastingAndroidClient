@@ -41,7 +41,13 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(InjectedTestRunner.class)
 public class AirCastingActivityEditSessionTest {
-    @Inject AirCastingActivity activity;
+    private static class TestAirCastingActivity extends AirCastingActivity {
+        @Override
+        protected void refreshNotes() {
+        }
+    }
+
+    @Inject TestAirCastingActivity activity;
     private Session session;
     private Intent data;
 
