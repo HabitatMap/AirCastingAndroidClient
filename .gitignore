@@ -11,5 +11,4 @@ tmp
 # android
 R.java
 local.properties
-proguard.cfg
 proguard_logs
