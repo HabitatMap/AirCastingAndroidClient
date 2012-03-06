@@ -9,7 +9,6 @@
 
     <properties>
         <android.version>2.1.2</android.version>
-        <android.sdk.path>/opt/sdk/android-sdk-linux</android.sdk.path>
     </properties>
 
     <dependencies>
