@@ -61,9 +61,6 @@ public class SyncService extends RoboIntentService {
     @Inject Context context;
 
     @InjectResource(R.string.account_reminder) String accountReminder;
-    @InjectResource(R.string.sync_failed) String syncFailed;
-
-    boolean error;
 
     public SyncService() {
         super(SyncService.class.getSimpleName());
@@ -76,27 +73,16 @@ public class SyncService extends RoboIntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String message = null;
-
         try {
             syncState.setInProgress(true);
-            error = false;
 
             if (canUpload()) {
                 sync();
             } else if (!settingsHelper.hasCredentials()) {
-                message = accountReminder;
-            } else {
-                error = true;
-            }
-
-            if (error) {
-                message = syncFailed;
+                Intents.notifySyncUpdate(context, accountReminder);
             }
         } finally {
             syncState.setInProgress(false);
-
-            Intents.notifySyncUpdate(context, message);
         }
     }
 
@@ -111,8 +97,6 @@ public class SyncService extends RoboIntentService {
             uploadSessions(syncResponse.getUpload());
 
             downloadSessions(syncResponse.getDownload());
-        } else {
-            error = true;
         }
     }
 
@@ -146,8 +130,6 @@ public class SyncService extends RoboIntentService {
 
                 if (result.getStatus() == Status.SUCCESS) {
                     updateSession(session, result.getContent());
-                } else {
-                    error = true;
                 }
             }
 
@@ -180,8 +162,6 @@ public class SyncService extends RoboIntentService {
 
             if (result.getStatus() == Status.SUCCESS) {
                 sessionRepository.save(result.getContent());
-            } else {
-                error = true;
             }
 
             Intents.notifySyncUpdate(context);
