@@ -8,6 +8,10 @@ h2. Contribute
 
 If you'd like to contribute just use the usual github process - fork, make changes, issue a pull request.
 
+Grab maven (http://maven.apache.org) and Android SDK (http://developer.android.com/sdk/index.html),
+then use Maven SDK Deployer (https://github.com/mosabua/maven-android-sdk-deployer/) to put Android
+SDK into your local maven repository.
+
 h2. Contact
 
 You can contact the authors by email at "info@habitatmap.org":mailto:info@habitatmap.org.
