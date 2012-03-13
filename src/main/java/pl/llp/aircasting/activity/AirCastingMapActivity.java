@@ -117,9 +117,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     private void initializeRouteOverlay() {
-        if (sessionManager.isRecording() || sessionManager.isSessionSaved()) {
-            routeOverlay.clear();
+        routeOverlay.clear();
 
+        if (shouldShowRoute()) {
             for (SoundMeasurement measurement : sessionManager.getSoundMeasurements()) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
@@ -138,6 +138,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
                 });
             }
         });
+    }
+
+    private boolean shouldShowRoute() {
+        return settingsHelper.isShowRoute() &&
+                (sessionManager.isRecording() || sessionManager.isSessionSaved());
     }
 
     @Override
@@ -299,7 +304,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     private void updateRoute() {
-        if (sessionManager.isSessionStarted()) {
+        if (shouldShowRoute()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
         }

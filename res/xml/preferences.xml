@@ -78,4 +78,8 @@
                                            android:key="sync_only_wifi"
                                            android:title="@string/sync_only_wifi"
             />
+    <android.preference.CheckBoxPreference android:defaultValue="true"
+                                           android:key="show_route"
+                                           android:title="@string/show_route"
+            />
 </PreferenceScreen>

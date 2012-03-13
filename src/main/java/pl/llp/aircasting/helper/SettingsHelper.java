@@ -71,6 +71,7 @@ public class SettingsHelper {
     private static final int MIN_AVERAGING_TIME = 1;
     private static final int MAX_AVERAGING_TIME = 3600;
     public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
+    public static final String SHOW_ROUTE = "show_route";
 
     @Inject SharedPreferences preferences;
 
@@ -264,5 +265,9 @@ public class SettingsHelper {
 
     public boolean isSyncOnlyWifi() {
         return preferences.getBoolean(SYNC_ONLY_WIFI, false);
+    }
+
+    public boolean isShowRoute() {
+        return preferences.getBoolean(SHOW_ROUTE, true);
     }
 }
