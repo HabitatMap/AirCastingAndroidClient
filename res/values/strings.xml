@@ -179,4 +179,5 @@
     <string name="sync_only_wifi">Sync only through Wi-Fi</string>
     <string name="aircasting_is_recording">AirCasting is recording a session</string>
     <string name="show_route">Show route trace</string>
+    <string name="external_sensor">External sensor</string>
 </resources>

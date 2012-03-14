@@ -20,6 +20,7 @@
 package pl.llp.aircasting;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -62,6 +63,7 @@ public final class Intents {
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String MIME_TEXT_CSV = "text/csv";
     public static final String MIME_IMAGE_JPEG = "image/jpeg";
+    public static final int REQUEST_ENABLE_BLUETOOTH = 5;
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -200,6 +202,11 @@ public final class Intents {
         } else {
             return null;
         }
+    }
+
+    public static void requestEnableBluetooth(Activity context) {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        context.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
     }
 }
 

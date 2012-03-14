@@ -40,6 +40,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <application android:icon="@drawable/icon"
                  android:label="@string/app_name"
@@ -128,6 +130,11 @@
         <activity android:label="@string/share_session"
                   android:name=".activity.ShareSessionActivity"
                   android:theme="@style/Dialog"/>
+
+        <activity android:name=".activity.ExternalSensorActivity"
+                  android:theme="@style/Dialog"
+                  android:label="@string/external_sensor"
+                />
 
         <!-- Services -->
         <service android:name=".service.SensorService"/>
