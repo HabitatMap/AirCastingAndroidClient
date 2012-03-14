@@ -27,7 +27,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:clickable="true"
-            android:apiKey="0aW177QG5gTuz6SCETXfq_BAlXRaNVk5aykrN9g"
+            android:apiKey="${com.google.maps.api.key}"
             />
 
     <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"

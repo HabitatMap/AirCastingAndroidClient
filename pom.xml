@@ -117,32 +117,25 @@
    <build>
       <finalName>${project.artifactId}</finalName>
 
+      <resources>
+         <resource>
+            <directory>res/layout</directory>
+            <includes>
+               <include>**/*.xml</include>
+            </includes>
+            <filtering>true</filtering>
+            <targetPath>${project.basedir}/target/filtered-res/layout</targetPath>
+         </resource>
+      </resources>
+
       <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.2.2</version>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.4</version>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-         </plugin>
 
          <plugin>
             <groupId>com.jayway.maven.plugins.android.generation2</groupId>
             <artifactId>android-maven-plugin</artifactId>
             <version>3.1.1</version>
             <configuration>
-               <androidManifestFile>${project.build.directory}/filtered-manifest/AndroidManifest.xml
-               </androidManifestFile>
+               <resourceOverlayDirectory>${project.build.directory}/filtered-res</resourceOverlayDirectory>
                <sdk>
                   <platform>7</platform>
                </sdk>
@@ -202,6 +195,24 @@
                   </goals>
                </execution>
             </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.2.2</version>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.4</version>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
          </plugin>
 
       </plugins>
