@@ -9,7 +9,6 @@
 
    <properties>
       <android.version>2.1.2</android.version>
-      <android.sdk.path>/opt/sdk/android-sdk-linux</android.sdk.path>
       <com.google.maps.api.key>0aW177QG5gTuz6SCETXfq_BAlXRaNVk5aykrN9g</com.google.maps.api.key>
    </properties>
 
