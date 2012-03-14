@@ -9,7 +9,6 @@
 
    <properties>
       <android.version>2.1.2</android.version>
-      <aircasting.version>${project.version}</aircasting.version>
       <android.sdk.path>/opt/sdk/android-sdk-linux</android.sdk.path>
       <com.google.maps.api.key>0aW177QG5gTuz6SCETXfq_BAlXRaNVk5aykrN9g</com.google.maps.api.key>
    </properties>
@@ -118,17 +117,6 @@
    <build>
       <finalName>${project.artifactId}</finalName>
 
-      <resources>
-         <resource>
-            <targetPath>${project.basedir}/target/filtered-manifest</targetPath>
-            <filtering>true</filtering>
-            <directory>${basedir}</directory>
-            <includes>
-               <include>AndroidManifest.xml</include>
-            </includes>
-         </resource>
-      </resources>
-
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -165,8 +153,26 @@
                <proguard>
                   <skip>false</skip>
                </proguard>
+               <manifest>
+                  <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+               </manifest>
             </configuration>
             <extensions>true</extensions>
+
+            <executions>
+               <execution>
+                  <id>update-manifest</id>
+                  <goals>
+                     <goal>manifest-update</goal>
+                  </goals>
+                  <configuration>
+                     <manifest>
+                        <versionName />
+                        <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+                     </manifest>
+                  </configuration>
+               </execution>
+            </executions>
          </plugin>
 
          <plugin>
@@ -262,5 +268,25 @@
       </profile>
 
    </profiles>
+
+   <scm>
+      <connection>scm:git:git://git@github.com:LunarLogicPolska/AirCastingAndroidClient.git</connection>
+      <url>scm:git:git://git@github.com:LunarLogicPolska/AirCastingAndroidClient.git</url>
+   </scm>
+
+   <distributionManagement>
+      <repository>
+         <id>releases</id>
+         <url>http://java.llp.pl/nexus/content/repositories/releases/</url>
+         <name>Releases</name>
+      </repository>
+
+      <snapshotRepository>
+         <id>snapshots</id>
+         <url>http://java.llp.pl/nexus/content/repositories/snapshots/</url>
+         <name>Snapshots</name>
+      </snapshotRepository>
+   </distributionManagement>
+
 
 </project>
