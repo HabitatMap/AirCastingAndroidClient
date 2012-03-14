@@ -248,10 +248,10 @@
                            <includes>
                               <include>target/*.apk</include>
                            </includes>
-                           <keystore>~/.android/keystore</keystore>
-                           <storepass>${android.keystore.pass}</storepass>
-                           <keypass>${android.key.pass}</keypass>
-                           <alias>key0</alias>
+                           <keystore>${aircasting.keystore.path}</keystore>
+                           <storepass>${aircasting.keystore.pass}</storepass>
+                           <keypass>${aircasting.key.pass}</keypass>
+                           <alias>${aircasting.key.alias}</alias>
                         </configuration>
                      </execution>
                   </executions>
