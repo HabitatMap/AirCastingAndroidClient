@@ -1,4 +1,7 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   
    <modelVersion>4.0.0</modelVersion>
    <name>Maven Default Project</name>
 
@@ -183,42 +186,13 @@
          </plugin>
 
          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.7</version>
-            <executions>
-               <execution>
-                  <id>parse-version</id>
-                  <goals>
-                     <goal>parse-version</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>1.0-alpha-2</version>
-            <executions>
-               <execution>
-                  <phase>initialize</phase>
-                  <goals>
-                     <goal>read-project-properties</goal>
-                  </goals>
-                  <configuration>
-                     <files>
-                        <file>local.properties</file>
-                     </files>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-
-         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
             <version>2.2.2</version>
+
+            <configuration>
+               <releaseProfiles>release</releaseProfiles>
+            </configuration>
          </plugin>
 
          <plugin>
@@ -254,7 +228,7 @@
       </profile>
 
       <profile>
-         <id>sign</id>
+         <id>release</id>
          <build>
             <plugins>
                <plugin>
@@ -270,28 +244,81 @@
                         <phase>package</phase>
                         <inherited>true</inherited>
                         <configuration>
-                           <archiveDirectory></archiveDirectory>
+                           <archiveDirectory />
                            <includes>
                               <include>target/*.apk</include>
                            </includes>
                            <keystore>~/.android/keystore</keystore>
-                           <!--<storepass>storepasword</storepass>-->
-                           <!--<keypass>keypassword</keypass>-->
+                           <storepass>${android.keystore.pass}</storepass>
+                           <keypass>${android.key.pass}</keypass>
                            <alias>key0</alias>
                         </configuration>
                      </execution>
                   </executions>
                </plugin>
+
+               <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>properties-maven-plugin</artifactId>
+                  <version>1.0-alpha-2</version>
+                  <executions>
+                     <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                           <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                           <files>
+                              <file>release.properties</file>
+                           </files>
+                        </configuration>
+                     </execution>
+                  </executions>
+               </plugin>
+
                <plugin>
                   <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                   <artifactId>android-maven-plugin</artifactId>
-                  <inherited>true</inherited>
+                  <version>3.1.1</version>
                   <configuration>
+                     <resourceOverlayDirectory>${project.build.directory}/filtered-res</resourceOverlayDirectory>
+                     <sdk>
+                        <platform>7</platform>
+                     </sdk>
+                     <emulator>
+                        <avd>22</avd>
+                     </emulator>
+                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                     <proguard>
+                        <skip>false</skip>
+                     </proguard>
                      <sign>
                         <debug>false</debug>
                      </sign>
+                     <manifest>
+                        <debuggable>false</debuggable>
+                        <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+                     </manifest>
                   </configuration>
+                  <extensions>true</extensions>
+
+                  <executions>
+                     <execution>
+                        <id>update-manifest</id>
+                        <goals>
+                           <goal>manifest-update</goal>
+                        </goals>
+                        <configuration>
+                           <manifest>
+                              <versionName />
+                              <debuggable>false</debuggable>
+                              <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+                           </manifest>
+                        </configuration>
+                     </execution>
+                  </executions>
                </plugin>
+
             </plugins>
          </build>
       </profile>
