@@ -269,7 +269,7 @@
                         </goals>
                         <configuration>
                            <files>
-                              <file>release.properties</file>
+                              <file>production.properties</file>
                            </files>
                         </configuration>
                      </execution>
