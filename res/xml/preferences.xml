@@ -65,7 +65,7 @@
                                            android:summary="@string/averaging_time_summary"
             />
 
-    <android.preference.EditTextPreference android:defaultValue="aircasting.herokuapp.com"
+    <android.preference.EditTextPreference android:defaultValue="aircasting.org"
                                            android:key="backend"
                                            android:title="Backend address"
             />
