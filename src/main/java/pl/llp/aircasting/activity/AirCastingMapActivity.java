@@ -304,7 +304,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     private void updateRoute() {
-        if (shouldShowRoute()) {
+        if (settingsHelper.isShowRoute() && sessionManager.isRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
         }
