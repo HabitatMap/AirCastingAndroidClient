@@ -2,7 +2,7 @@
 /**
  * org.hermit.android.io: Android utilities for accessing peripherals.
  *
- * These classes provide some basic utilities for accessing the audio
+ * These classes provide some basic utilities for accessing the builtin
  * interface, at present.
  *
  * <br>Copyright 2009 Ian Cameron Smith
@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  */
 
-package pl.llp.aircasting.audio;
+package pl.llp.aircasting.sensor.builtin;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -25,7 +25,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 /**
- * A class which reads audio input from the mic in a background thread and
+ * A class which reads builtin input from the mic in a background thread and
  * passes it to the caller when ready.
  * <p/>
  * <p>To use this class, your application must have permission RECORD_AUDIO.
@@ -37,21 +37,21 @@ public class AudioReader {
     // ******************************************************************** //
 
     /**
-     * Listener for audio reads.
+     * Listener for builtin reads.
      */
     public static abstract class Listener {
         /**
-         * Audio read error code: the audio reader failed to initialise.
+         * Audio read error code: the builtin reader failed to initialise.
          */
         public static final int ERR_INIT_FAILED = 1;
 
         /**
-         * Audio read error code: an audio read failed.
+         * Audio read error code: an builtin read failed.
          */
         public static final int ERR_READ_FAILED = 2;
 
         /**
-         * An audio read has completed.
+         * An builtin read has completed.
          *
          * @param buffer Buffer containing the data.
          */
@@ -83,9 +83,9 @@ public class AudioReader {
     /**
      * Start this reader.
      *
-     * @param rate     The audio sampling rate, in samples / sec.
+     * @param rate     The builtin sampling rate, in samples / sec.
      * @param block    Number of samples of input to read at a time.
-     *                 This is different from the system audio
+     *                 This is different from the system builtin
      *                 buffer size.
      * @param listener Listener to be notified on each completed read.
      */
@@ -99,7 +99,7 @@ public class AudioReader {
 
             Log.d(TAG, "Will use buffer size: " + audioBuf);
 
-            // Set up the audio input.
+            // Set up the builtin input.
             audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC,
                     rate,
                     AudioFormat.CHANNEL_CONFIGURATION_MONO,
@@ -138,7 +138,7 @@ public class AudioReader {
         }
         readerThread = null;
 
-        // Kill the audio input.
+        // Kill the builtin input.
         synchronized (this) {
             if (audioInput != null) {
                 audioInput.release();
@@ -154,7 +154,7 @@ public class AudioReader {
     // ******************************************************************** //
 
     /**
-     * Main loop of the audio reader.  This runs in our own thread.
+     * Main loop of the builtin reader.  This runs in our own thread.
      */
     private void readerRun() {
         short[] buffer;
@@ -219,9 +219,9 @@ public class AudioReader {
                     if (done) {
                         readDone(buffer);
 
-                        // Because our block size is way smaller than the audio
+                        // Because our block size is way smaller than the builtin
                         // buffer, we get blocks in bursts, which messes up
-                        // the audio analyzer.  We don't want to be forced to
+                        // the builtin analyzer.  We don't want to be forced to
                         // wait until the analysis is done, because if
                         // the analysis is slow, lag will build up.  Instead
                         // wait, but with a timeout which lets us keep the
@@ -274,10 +274,10 @@ public class AudioReader {
     // Private Data.
     // ******************************************************************** //
 
-    // Our audio input device.
+    // Our builtin input device.
     private AudioRecord audioInput;
 
-    // Our audio input buffer, and the index of the next item to go in.
+    // Our builtin input buffer, and the index of the next item to go in.
     private short[][] inputBuffer = null;
     private int inputBufferWhich = 0;
     private int inputBufferIndex = 0;

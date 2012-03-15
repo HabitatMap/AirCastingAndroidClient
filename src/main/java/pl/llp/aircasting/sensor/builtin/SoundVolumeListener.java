@@ -17,7 +17,7 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.audio;
+package pl.llp.aircasting.sensor.builtin;
 
 public interface SoundVolumeListener {
     public void onError();

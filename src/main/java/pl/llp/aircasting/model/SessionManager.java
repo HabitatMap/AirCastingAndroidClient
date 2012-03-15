@@ -26,8 +26,8 @@ import android.telephony.TelephonyManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.audio.SimpleAudioReader;
-import pl.llp.aircasting.audio.SoundVolumeListener;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.sensor.builtin.SoundVolumeListener;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
 

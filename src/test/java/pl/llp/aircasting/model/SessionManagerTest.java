@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.audio.SimpleAudioReader;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;

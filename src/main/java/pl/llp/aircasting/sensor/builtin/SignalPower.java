@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-package pl.llp.aircasting.audio;
+package pl.llp.aircasting.sensor.builtin;
 
 /**
  * A power metering algorithm.
