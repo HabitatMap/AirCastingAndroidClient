@@ -55,8 +55,6 @@ public class AirCastingModule extends AbstractAndroidModule {
 
         bind(Geocoder.class).toProvider(GeocoderProvider.class);
         
-        bind(BluetoothAdapter.class).toProvider(BluetoothAdapterProvider.class);
-
         bindConstant().annotatedWith(SharedPreferencesName.class).to("pl.llp.aircasting_preferences");
 
         bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));
