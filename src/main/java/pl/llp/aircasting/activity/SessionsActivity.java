@@ -34,7 +34,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
-import pl.llp.aircasting.activity.adapter.AdapterFactory;
+import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
@@ -56,7 +56,7 @@ import roboguice.inject.InjectView;
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
     @Inject SessionRepository sessionRepository;
     @Inject SessionManager sessionManager;
-    @Inject AdapterFactory adapterFactory;
+    @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SettingsHelper settingsHelper;
     @Inject MainMenu mainMenu;
     @Inject Application context;
@@ -130,7 +130,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         startManagingCursor(cursor);
 
         if (adapter == null) {
-            adapter = adapterFactory.getSessionAdapter(this, cursor);
+            adapter = sessionAdapterFactory.getSessionAdapter(this, cursor);
             setListAdapter(adapter);
         } else {
             adapter.changeCursor(cursor);

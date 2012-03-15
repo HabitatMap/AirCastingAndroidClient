@@ -7,24 +7,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.adapter.SensorAdapter;
+import pl.llp.aircasting.activity.adapter.SensorAdapterFactory;
 import roboguice.inject.InjectView;
 
 public class ExternalSensorActivity extends DialogActivity {
     @Inject Context context;
-    @InjectView(R.id.info) TextView info;
+    @Inject SensorAdapterFactory adapterFactory;
+
+    @InjectView(R.id.sensor_list) ListView sensorList;
 
     BluetoothAdapter bluetoothAdapter;
     BroadcastReceiver receiver = new BluetoothFoundReceiver();
+    SensorAdapter sensorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sensor);
+        setContentView(R.layout.external_sensor_list);
+
+        sensorAdapter = adapterFactory.getAdapter(this);
+        sensorList.setAdapter(sensorAdapter);
     }
 
     @Override
@@ -70,15 +78,11 @@ public class ExternalSensorActivity extends DialogActivity {
         bluetoothAdapter.startDiscovery();
     }
 
-    private void deviceFound(BluetoothDevice device) {
-        info.setText(info.getText() + "\n" + device.getAddress());
-    }
-
     private class BluetoothFoundReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            deviceFound(device);
+            sensorAdapter.deviceFound(device);
         }
     }
 }

@@ -32,7 +32,7 @@ import pl.llp.aircasting.repository.SessionRepository;
  * Date: 10/19/11
  * Time: 11:51 AM
  */
-public class AdapterFactory {
+public class SessionAdapterFactory {
     @Inject SessionRepository sessionRepository;
     @Inject ResourceHelper resourceHelper;
     @Inject CalibrationHelper calibrationHelper;
