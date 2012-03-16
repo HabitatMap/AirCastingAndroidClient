@@ -31,6 +31,8 @@ public class ExternalSensorActivity extends DialogActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.external_sensor_list);
 
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         sensorAdapter = adapterFactory.getAdapter(this);
         sensorList.setAdapter(sensorAdapter);
     }
@@ -39,7 +41,6 @@ public class ExternalSensorActivity extends DialogActivity {
     protected void onResume() {
         super.onResume();
 
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(context, R.string.bluetooth_not_supported, Toast.LENGTH_LONG).show();
             finish();
