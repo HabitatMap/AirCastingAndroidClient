@@ -54,6 +54,9 @@ public class SensorService extends RoboService {
                     stopSelf();
                 }
                 break;
+            case Intents.RESTART_SENSORS:
+                sessionManager.restartSensors();
+                break;
         }
 
         return START_STICKY;

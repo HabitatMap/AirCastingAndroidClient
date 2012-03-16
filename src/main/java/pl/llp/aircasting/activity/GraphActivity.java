@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
@@ -33,7 +34,6 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
-import roboguice.event.Observes;
 import roboguice.inject.InjectView;
 
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     public void onAveragedMeasurement(SoundMeasurement measurement) {
     }
 
-    @Override
+    @Subscribe
     public void onEvent(TapEvent event) {
         if (!plot.onTap(event)) {
             super.onEvent(event);
@@ -140,13 +140,13 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         refresh();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes DoubleTapEvent event) {
+    @Subscribe
+    public void onEvent(DoubleTapEvent event) {
         zoomIn();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes ScrollEvent event) {
+    @Subscribe
+    public void onEvent(ScrollEvent event) {
         float relativeScroll = event.getDistanceX() / plot.getWidth();
         measurementPresenter.scroll(relativeScroll);
     }

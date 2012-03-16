@@ -29,6 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.*;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.Intents;
@@ -49,7 +51,6 @@ import pl.llp.aircasting.view.TouchPane;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-import java.lang.reflect.Method;
 import java.text.NumberFormat;
 
 import static java.lang.String.valueOf;
@@ -123,6 +124,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
+    @Inject EventBus eventBus;
+
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
     private boolean showButtons = true;
@@ -143,7 +146,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         initializeNoteViewer();
 
         if (!sessionManager.isSessionSaved()) {
-            Intents.startSensors(getApplicationContext());
+            Intents.startSensors(context);
         }
 
         sessionManager.registerListener(this);
@@ -154,6 +157,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         updateKeepScreenOn();
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+
+        eventBus.register(this);
     }
 
     @Override
@@ -210,8 +215,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
             noteDelete.setOnClickListener(this);
             viewPhoto.setOnClickListener(this);
 
-            touchPane.setContext(this);
-
             fadeIn.setAnimationListener(this);
             fadeOut.setAnimationListener(this);
 
@@ -219,14 +222,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
                 buttons.setVisibility(View.VISIBLE);
             } else {
                 buttons.setVisibility(View.GONE);
-            }
-
-            // The test environment doesn't seem to handle the EventManager well
-            try {
-                Method method = AirCastingActivity.class.getDeclaredMethod("onEvent", TapEvent.class);
-                eventManager.registerObserver(this, method, TapEvent.class);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
             }
 
             if (sessionManager.isSessionSaved()) {
@@ -266,9 +261,10 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     protected void onPause() {
         super.onPause();
         sessionManager.unregisterListener(this);
+        eventBus.unregister(this);
 
         if (!sessionManager.isSessionSaved()) {
-            Intents.stopSensors(getApplicationContext());
+            Intents.stopSensors(context);
         }
 
         unregisterReceiver(syncBroadcastReceiver);
@@ -435,7 +431,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         showButtons = true;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @Subscribe
     public void onEvent(TapEvent event) {
         toggleButtons();
     }

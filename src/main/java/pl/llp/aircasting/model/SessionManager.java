@@ -125,7 +125,6 @@ public class SessionManager implements SoundVolumeListener {
     public void startSensors() {
         if (!recording) {
             locationHelper.start();
-
             audioReader.start(this);
 
             recording = true;
@@ -242,6 +241,11 @@ public class SessionManager implements SoundVolumeListener {
 
     public int getNoteCount() {
         return session.getNotes().size();
+    }
+
+    public void restartSensors() {
+        stopSensors();
+        startSensors();
     }
 
     public interface Listener {

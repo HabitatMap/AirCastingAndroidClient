@@ -19,10 +19,10 @@
 */
 package pl.llp.aircasting.guice;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.location.Geocoder;
 import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.Scopes;
 import org.apache.http.client.HttpClient;
@@ -52,9 +52,11 @@ public class AirCastingModule extends AbstractAndroidModule {
         bind(DBUtils.class).toProvider(DBHelperProvider.class);
 
         bind(NoteOverlay.class).toProvider(NoteOverlayProvider.class);
-
+        
         bind(Geocoder.class).toProvider(GeocoderProvider.class);
         
+        bind(EventBus.class).in(Scopes.SINGLETON);
+
         bindConstant().annotatedWith(SharedPreferencesName.class).to("pl.llp.aircasting_preferences");
 
         bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));

@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -46,7 +47,6 @@ import pl.llp.aircasting.view.overlay.NoteOverlay;
 import pl.llp.aircasting.view.overlay.RouteOverlay;
 import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
-import roboguice.event.Observes;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -104,8 +104,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         refreshNotes();
 
         spinnerAnimation.start();
-
-        locationHelper.setContext(this);
 
         initializeMap();
 
@@ -285,18 +283,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         refreshNotes();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes DoubleTapEvent event) {
+    @Subscribe
+    public void onEvent(DoubleTapEvent event) {
         mapView.getController().zoomIn();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes MotionEvent event) {
+    @Subscribe
+    public void onEvent(MotionEvent event) {
         mapView.dispatchTouchEvent(event);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes LocationEvent event) {
+    @Subscribe
+    public void onEvent(LocationEvent event) {
         updateLocation();
         updateRoute();
 
@@ -311,7 +309,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onEvent(@Observes TapEvent event) {
+    @Subscribe
+    public void onEvent(TapEvent event) {
         if (suppressTap) {
             suppressTap = false;
         } else {

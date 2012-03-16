@@ -88,6 +88,8 @@ public class ExternalSensorActivity extends DialogActivity implements AdapterVie
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String address = sensorAdapter.getAddress(position);
         settingsHelper.setSensorAddress(address);
+        
+        Intents.restartSensors(context);
     }
 
     private class BluetoothFoundReceiver extends BroadcastReceiver {

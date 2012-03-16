@@ -24,13 +24,13 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.ScrollEvent;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
-import roboguice.event.EventManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,9 +40,7 @@ import roboguice.event.EventManager;
  */
 public class TouchPane extends View implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener {
     GestureDetector gestureDetector = new GestureDetector(this);
-    @Inject EventManager eventManager;
-
-    private Context context;
+    @Inject EventBus eventBus;
 
     @SuppressWarnings("UnusedDeclaration")
     public TouchPane(Context context) {
@@ -70,26 +68,22 @@ public class TouchPane extends View implements GestureDetector.OnDoubleTapListen
         gestureDetector.setOnDoubleTapListener(this);
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
-        eventManager.fire(context, event);
+        eventBus.post(event);
         return true;
     }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent event) {
-        eventManager.fire(context, new TapEvent(event.getX(), event.getY()));
+        eventBus.post(new TapEvent(event.getX(), event.getY()));
         return true;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent event) {
-        eventManager.fire(context, new DoubleTapEvent());
+        eventBus.post(new DoubleTapEvent());
         return true;
     }
 
@@ -114,7 +108,7 @@ public class TouchPane extends View implements GestureDetector.OnDoubleTapListen
 
     @Override
     public boolean onScroll(MotionEvent event, MotionEvent event1, float distanceX, float distanceY) {
-        eventManager.fire(context, new ScrollEvent(event, event1, distanceX, distanceY));
+        eventBus.post(new ScrollEvent(event, event1, distanceX, distanceY));
         return true;
     }
 
