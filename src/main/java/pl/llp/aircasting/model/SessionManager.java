@@ -30,6 +30,7 @@ import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.builtin.SoundVolumeListener;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -49,13 +50,17 @@ import static com.google.inject.internal.Lists.newArrayList;
 @Singleton
 public class SessionManager implements SoundVolumeListener {
     @Inject SimpleAudioReader audioReader;
+    @Inject ExternalSensor externalSensor;
+
     @Inject SessionRepository sessionRepository;
+
     @Inject SettingsHelper settingsHelper;
-    @Inject Application applicationContext;
     @Inject LocationHelper locationHelper;
     @Inject MetadataHelper metadataHelper;
-    @Inject TelephonyManager telephonyManager;
     @Inject NotificationHelper notificationHelper;
+
+    @Inject Application applicationContext;
+    @Inject TelephonyManager telephonyManager;
 
     Session session = new Session();
 
@@ -125,7 +130,10 @@ public class SessionManager implements SoundVolumeListener {
     public void startSensors() {
         if (!recording) {
             locationHelper.start();
+
             audioReader.start(this);
+
+            externalSensor.start();
 
             recording = true;
         }
@@ -150,6 +158,8 @@ public class SessionManager implements SoundVolumeListener {
             locationHelper.stop();
 
             audioReader.stop();
+
+            externalSensor.stop();
 
             recording = false;
         }
@@ -244,8 +254,8 @@ public class SessionManager implements SoundVolumeListener {
     }
 
     public void restartSensors() {
-        stopSensors();
-        startSensors();
+        externalSensor.stop();
+        externalSensor.start();
     }
 
     public interface Listener {

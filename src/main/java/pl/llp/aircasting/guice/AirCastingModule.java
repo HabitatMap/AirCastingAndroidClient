@@ -19,6 +19,7 @@
 */
 package pl.llp.aircasting.guice;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.location.Geocoder;
 import android.telephony.TelephonyManager;
@@ -58,6 +59,8 @@ public class AirCastingModule extends AbstractAndroidModule {
         bind(EventBus.class).in(Scopes.SINGLETON);
 
         bindConstant().annotatedWith(SharedPreferencesName.class).to("pl.llp.aircasting_preferences");
+        
+        bind(BluetoothAdapter.class).toProvider(BluetoothAdapterProvider.class);
 
         bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));
     }

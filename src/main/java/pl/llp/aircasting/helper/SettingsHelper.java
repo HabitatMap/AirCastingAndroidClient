@@ -275,4 +275,8 @@ public class SettingsHelper {
     public void setSensorAddress(String address) {
         writeString(SENSOR_ADDRESS, address);
     }
+
+    public String getSensorAddress() {
+        return preferences.getString(SENSOR_ADDRESS, null);
+    }
 }
