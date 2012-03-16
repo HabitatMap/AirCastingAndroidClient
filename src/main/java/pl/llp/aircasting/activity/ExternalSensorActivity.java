@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.google.inject.Inject;
@@ -14,11 +16,13 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SensorAdapter;
 import pl.llp.aircasting.activity.adapter.SensorAdapterFactory;
+import pl.llp.aircasting.helper.SettingsHelper;
 import roboguice.inject.InjectView;
 
-public class ExternalSensorActivity extends DialogActivity {
+public class ExternalSensorActivity extends DialogActivity implements AdapterView.OnItemClickListener {
     @Inject Context context;
     @Inject SensorAdapterFactory adapterFactory;
+    @Inject SettingsHelper settingsHelper;
 
     @InjectView(R.id.sensor_list) ListView sensorList;
 
@@ -35,6 +39,7 @@ public class ExternalSensorActivity extends DialogActivity {
 
         sensorAdapter = adapterFactory.getAdapter(this);
         sensorList.setAdapter(sensorAdapter);
+        sensorList.setOnItemClickListener(this);
     }
 
     @Override
@@ -77,6 +82,12 @@ public class ExternalSensorActivity extends DialogActivity {
 
     private void findDevices() {
         bluetoothAdapter.startDiscovery();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String address = sensorAdapter.getAddress(position);
+        settingsHelper.setSensorAddress(address);
     }
 
     private class BluetoothFoundReceiver extends BroadcastReceiver {

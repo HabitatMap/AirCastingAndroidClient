@@ -72,6 +72,7 @@ public class SettingsHelper {
     private static final int MAX_AVERAGING_TIME = 3600;
     public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
     public static final String SHOW_ROUTE = "show_route";
+    public static final String SENSOR_ADDRESS = "sensor_address";
 
     @Inject SharedPreferences preferences;
 
@@ -269,5 +270,9 @@ public class SettingsHelper {
 
     public boolean isShowRoute() {
         return preferences.getBoolean(SHOW_ROUTE, true);
+    }
+
+    public void setSensorAddress(String address) {
+        writeString(SENSOR_ADDRESS, address);
     }
 }

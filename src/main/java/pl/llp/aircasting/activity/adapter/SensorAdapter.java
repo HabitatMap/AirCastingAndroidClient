@@ -7,10 +7,8 @@ import pl.llp.aircasting.R;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Sets.newHashSet;
 
 public class SensorAdapter extends SimpleAdapter {
     public static final String ADDRESS = "address";
@@ -20,7 +18,7 @@ public class SensorAdapter extends SimpleAdapter {
     public static final int[] FIELDS = new int[]{R.id.address, R.id.name};
 
     private List<Map<String, String>> data;
-    private Set<String> addresses = newHashSet();
+    private Map<String, BluetoothDevice> devices = newHashMap();
 
     protected SensorAdapter(Context context, List<Map<String, String>> data) {
         super(context, data, R.layout.external_sensor_item, KEYS, FIELDS);
@@ -28,8 +26,8 @@ public class SensorAdapter extends SimpleAdapter {
     }
 
     public void deviceFound(BluetoothDevice device) {
-        if (!addresses.contains(device.getAddress())) {
-            addresses.add(device.getAddress());
+        if (!devices.containsKey(device.getAddress())) {
+            devices.put(device.getAddress(), device);
 
             Map<String, String> item = newHashMap();
 
@@ -39,5 +37,9 @@ public class SensorAdapter extends SimpleAdapter {
             data.add(item);
             notifyDataSetChanged();
         }
+    }
+
+    public String getAddress(int position) {
+        return data.get(position).get(ADDRESS);
     }
 }
