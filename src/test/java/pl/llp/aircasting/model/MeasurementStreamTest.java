@@ -45,4 +45,14 @@ public class MeasurementStreamTest {
     public void shouldStoreSymbol() {
         assertThat(stream.getSymbol(), equalTo("C"));
     }
+
+    @Test
+    public void shouldProvideAnAverage() {
+        assertThat(stream.getAvg(), equalTo(0.5));
+    }
+
+    @Test
+    public void shouldProvidePeak() {
+        assertThat(stream.getPeak(), equalTo(1.0));
+    }
 }

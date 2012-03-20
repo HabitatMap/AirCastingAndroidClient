@@ -11,6 +11,9 @@ public class MeasurementStream {
     private String unit;
     private String symbol;
 
+    private double sum;
+    private double peak = Double.NEGATIVE_INFINITY;
+
     public MeasurementStream(String sensorName, String measurementType, String unit, String symbol) {
         this.sensorName = sensorName;
         this.measurementType = measurementType;
@@ -24,6 +27,12 @@ public class MeasurementStream {
 
     public void add(Measurement measurement) {
         measurements.add(measurement);
+
+        double value = measurement.getValue();
+        sum += value;
+        if (value > peak) {
+            peak = value;
+        }
     }
 
     public String getSensorName() {
@@ -40,5 +49,13 @@ public class MeasurementStream {
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public double getAvg() {
+        return sum / (measurements.isEmpty() ? 1 : measurements.size());
+    }
+
+    public double getPeak() {
+        return peak;
     }
 }
