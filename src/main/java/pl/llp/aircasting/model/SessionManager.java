@@ -1,35 +1,38 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.model;
 
 import android.app.Application;
 import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import pl.llp.aircasting.sensor.builtin.SoundVolumeListener;
+import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
 import java.util.Date;
@@ -48,9 +51,10 @@ import static com.google.inject.internal.Lists.newArrayList;
  * Time: 1:09 PM
  */
 @Singleton
-public class SessionManager implements SoundVolumeListener {
+public class SessionManager {
     @Inject SimpleAudioReader audioReader;
     @Inject ExternalSensor externalSensor;
+    @Inject EventBus eventBus;
 
     @Inject SessionRepository sessionRepository;
 
@@ -84,6 +88,8 @@ public class SessionManager implements SoundVolumeListener {
                 }
             }
         }, PhoneStateListener.LISTEN_CALL_STATE);
+
+        eventBus.register(this);
     }
 
     public Session getSession() {
@@ -131,7 +137,7 @@ public class SessionManager implements SoundVolumeListener {
         if (!recording) {
             locationHelper.start();
 
-            audioReader.start(this);
+            audioReader.start();
 
             externalSensor.start();
 
@@ -149,7 +155,7 @@ public class SessionManager implements SoundVolumeListener {
     public synchronized void continueSession() {
         if (paused) {
             paused = false;
-            audioReader.start(this);
+            audioReader.start();
         }
     }
 
@@ -204,8 +210,8 @@ public class SessionManager implements SoundVolumeListener {
         session.setContribute(value);
     }
 
-    @Override
-    public void onError() {
+    @Subscribe
+    public void onEvent(AudioReaderErrorEvent event) {
         notificationHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -216,8 +222,9 @@ public class SessionManager implements SoundVolumeListener {
         });
     }
 
-    @Override
-    public synchronized void onMeasurement(double value) {
+    @Subscribe
+    public synchronized void onEvent(SensorEvent event) {
+        double value = event.getValue();
         dbLast = value;
 
         if (locationHelper.getLastLocation() != null) {

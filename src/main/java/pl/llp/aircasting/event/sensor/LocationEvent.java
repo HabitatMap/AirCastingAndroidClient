@@ -17,13 +17,15 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.event;
+package pl.llp.aircasting.event.sensor;
 
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
- * Date: 11/4/11
- * Time: 2:47 PM
+ * Date: 11/30/11
+ * Time: 11:44 AM
  */
-public class DoubleTapEvent extends AirCastingEvent {
+public class LocationEvent {
+    public LocationEvent() {
+    }
 }

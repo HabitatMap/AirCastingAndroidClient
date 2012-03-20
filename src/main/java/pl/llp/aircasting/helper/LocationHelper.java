@@ -26,7 +26,7 @@ import android.os.Bundle;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.event.LocationEvent;
+import pl.llp.aircasting.event.sensor.LocationEvent;
 
 /**
  * Created by IntelliJ IDEA.

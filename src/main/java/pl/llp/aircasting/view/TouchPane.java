@@ -27,9 +27,9 @@ import android.view.View;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import pl.llp.aircasting.event.DoubleTapEvent;
-import pl.llp.aircasting.event.ScrollEvent;
-import pl.llp.aircasting.event.TapEvent;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.ScrollEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 
 /**

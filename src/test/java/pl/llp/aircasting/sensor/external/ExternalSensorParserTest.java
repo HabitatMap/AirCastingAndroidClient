@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.ExternalSensorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -16,8 +16,8 @@ public class ExternalSensorParserTest {
 
     @Test
     public void shouldParseLines() throws ParseException {
-        ExternalSensorEvent actual = parser.parse("awesome sensor;Temp;degrees;C;12.5");
-        ExternalSensorEvent expected = new ExternalSensorEvent("awesome sensor", "Temp", "degrees", "C", 12.5);
+        SensorEvent actual = parser.parse("awesome sensor;Temp;degrees;C;12.5");
+        SensorEvent expected = new SensorEvent("awesome sensor", "Temp", "degrees", "C", 12.5);
 
         assertThat(actual, equalTo(expected));
     }

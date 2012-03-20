@@ -1,9 +1,9 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.event.ExternalSensorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 
 public class ExternalSensorParser {
-    public ExternalSensorEvent parse(String string) throws ParseException {
+    public SensorEvent parse(String string) throws ParseException {
         String[] parts = string.split(";");
         if (parts.length < 4) {
             throw new ParseException();
@@ -21,6 +21,6 @@ public class ExternalSensorParser {
             throw new ParseException(e);
         }
 
-        return new ExternalSensorEvent(name, type, unit, symbol, value);
+        return new SensorEvent(name, type, unit, symbol, value);
     }
 }

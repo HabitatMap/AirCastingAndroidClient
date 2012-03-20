@@ -26,7 +26,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
-import pl.llp.aircasting.event.TapEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;

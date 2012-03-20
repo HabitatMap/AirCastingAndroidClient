@@ -17,9 +17,10 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.event;
+package pl.llp.aircasting.event.ui;
 
 import android.view.MotionEvent;
+import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
  * Created by IntelliJ IDEA.

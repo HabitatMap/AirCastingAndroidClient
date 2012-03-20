@@ -21,6 +21,7 @@ package pl.llp.aircasting.model;
 
 import android.location.Location;
 import android.location.LocationManager;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -29,11 +30,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -60,6 +62,7 @@ public class SessionManagerTest {
         sessionManager.audioReader = mock(SimpleAudioReader.class);
         sessionManager.metadataHelper = mock(MetadataHelper.class);
         sessionManager.externalSensor = mock(ExternalSensor.class);
+        sessionManager.eventBus = mock(EventBus.class);
 
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
     }
@@ -74,6 +77,10 @@ public class SessionManagerTest {
         mockSensors();
     }
 
+    private void triggerMeasurement(double value) {
+        sessionManager.onEvent(new SensorEvent("", "", "", "", value));
+    }
+
     @Test
     public void shouldStoreMeasurements() {
         sessionManager.session = spy(sessionManager.session);
@@ -81,7 +88,7 @@ public class SessionManagerTest {
 
         Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
 
-        sessionManager.onMeasurement(22);
+        triggerMeasurement(22);
 
         assertThat(sessionManager.getSoundMeasurements(), hasItem(equalTo(expected)));
         verify(sessionManager.session).add(expected);
@@ -89,7 +96,7 @@ public class SessionManagerTest {
 
     @Test
     public void shouldSkipMeasurementsWithoutLocation() {
-        sessionManager.onMeasurement(12.3);
+        triggerMeasurement(12.3);
 
         assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
     }
@@ -99,7 +106,7 @@ public class SessionManagerTest {
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
-        sessionManager.onMeasurement(12.4);
+        triggerMeasurement(12.4);
 
         verify(listener).onNewReading();
         assertThat(sessionManager.getDbNow(), equalTo(12.4));
@@ -110,7 +117,7 @@ public class SessionManagerTest {
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
-        sessionManager.onMeasurement(11);
+        triggerMeasurement(11);
 
         verify(listener).onNewMeasurement(Mockito.any(Measurement.class));
     }
@@ -120,7 +127,7 @@ public class SessionManagerTest {
         sessionManager.startSensors();
 
         verify(sessionManager.locationHelper).start();
-        verify(sessionManager.audioReader).start(sessionManager);
+        verify(sessionManager.audioReader).start();
         assertThat(sessionManager.isRecording(), equalTo(true));
     }
 
@@ -130,7 +137,7 @@ public class SessionManagerTest {
         sessionManager.startSensors();
 
         verify(sessionManager.locationHelper, atMost(1)).start();
-        verify(sessionManager.audioReader, atMost(1)).start(sessionManager);
+        verify(sessionManager.audioReader, atMost(1)).start();
         assertThat(sessionManager.isRecording(), equalTo(true));
     }
 
@@ -159,7 +166,7 @@ public class SessionManagerTest {
         sessionManager.startSession();
 
         verify(sessionManager.locationHelper).start();
-        verify(sessionManager.audioReader).start(sessionManager);
+        verify(sessionManager.audioReader).start();
         assertThat(sessionManager.isSessionStarted(), equalTo(true));
     }
 
@@ -169,7 +176,7 @@ public class SessionManagerTest {
         sessionManager.registerListener(listener);
         sessionManager.unregisterListener(listener);
 
-        sessionManager.onMeasurement(22);
+        triggerMeasurement(22);
 
         verifyZeroInteractions(listener);
     }
@@ -187,7 +194,7 @@ public class SessionManagerTest {
 
     @Test
     public void shouldDiscardSession() {
-        sessionManager.onMeasurement(13.5);
+        triggerMeasurement(13.5);
         sessionManager.discardSession();
 
         verify(sessionManager.audioReader, never()).stop();
@@ -201,7 +208,7 @@ public class SessionManagerTest {
     public void shouldStopASession() {
         SessionRepository.ProgressListener listener = mock(SessionRepository.ProgressListener.class);
 
-        sessionManager.onMeasurement(11);
+        triggerMeasurement(11);
         sessionManager.finishSession(listener);
 
         verify(sessionManager.audioReader, never()).stop();
@@ -235,7 +242,7 @@ public class SessionManagerTest {
     public void shouldNotAddMeasurementsToASavedSession() {
         sessionManager.session = new Session();
 
-        sessionManager.onMeasurement(10);
+        triggerMeasurement(10);
 
         assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
     }
@@ -275,7 +282,7 @@ public class SessionManagerTest {
         when(sessionManager.metadataHelper.getInstrument()).thenReturn("hammer");
         when(sessionManager.metadataHelper.getPhoneModel()).thenReturn("very old");
 
-        sessionManager.onMeasurement(100);
+        triggerMeasurement(100);
         sessionManager.finishSession(null);
 
         verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>() {
@@ -334,7 +341,7 @@ public class SessionManagerTest {
     @Test
     public void shouldRestartExternalSensor() {
         sessionManager.restartSensors();
-        
+
         verify(sessionManager.externalSensor).stop();
         verify(sessionManager.externalSensor).start();
     }

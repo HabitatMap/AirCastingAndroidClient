@@ -10,7 +10,7 @@ import com.google.common.io.InputSupplier;
 import com.google.common.io.LineProcessor;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.event.ExternalSensorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import javax.annotation.Nullable;
@@ -61,7 +61,7 @@ public class ExternalSensor {
 
     public void read(String line) {
         try {
-            ExternalSensorEvent event = parser.parse(line);
+            SensorEvent event = parser.parse(line);
             eventBus.post(event);
         } catch (pl.llp.aircasting.sensor.external.ParseException e) {
             Log.e(TAG, "External sensor error", e);

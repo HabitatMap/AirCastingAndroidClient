@@ -17,9 +17,15 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.sensor.builtin;
+package pl.llp.aircasting.event.ui;
 
-public interface SoundVolumeListener {
-    public void onError();
-    public void onMeasurement(double value);
+import pl.llp.aircasting.event.AirCastingEvent;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: obrok
+ * Date: 11/4/11
+ * Time: 2:47 PM
+ */
+public class DoubleTapEvent extends AirCastingEvent {
 }

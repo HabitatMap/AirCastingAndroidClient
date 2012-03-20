@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.ExternalSensorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import java.io.IOException;
 
@@ -25,7 +25,7 @@ public class ExternalSensorTest {
 
     @Test
     public void shouldReadInputAndGenerateEvents() throws IOException, pl.llp.aircasting.sensor.external.ParseException {
-        ExternalSensorEvent event1 = mock(ExternalSensorEvent.class);
+        SensorEvent event1 = mock(SensorEvent.class);
         when(sensor.parser.parse("Reading 1")).thenReturn(event1);
 
         sensor.read("Reading 1");

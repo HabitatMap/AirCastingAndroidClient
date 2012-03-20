@@ -39,7 +39,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
-import pl.llp.aircasting.event.TapEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Measurement;

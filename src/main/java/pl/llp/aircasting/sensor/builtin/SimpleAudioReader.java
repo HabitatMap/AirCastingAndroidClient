@@ -19,7 +19,10 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 /**
@@ -30,16 +33,17 @@ import pl.llp.aircasting.helper.SettingsHelper;
  */
 public class SimpleAudioReader extends AudioReader.Listener {
     private static final int SAMPLE_RATE = 44100;
+    public static final String SYMBOL = "dB";
+    public static final String UNIT = "decibels";
+    public static final String MEASUREMENT_TYPE = "Sound level";
+    public static final String SENSOR_NAME = "Phone microphone";
 
     @Inject SettingsHelper settingsHelper;
     @Inject AudioReader audioReader;
     @Inject SignalPower signalPower;
+    @Inject EventBus eventBus;
 
-    private SoundVolumeListener listener;
-
-    public void start(SoundVolumeListener newListener) {
-        this.listener = newListener;
-
+    public void start() {
         // The AudioReader sleeps as much as it records
         int block = SAMPLE_RATE / 2;
 
@@ -54,12 +58,13 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public void onReadComplete(short[] buffer) {
         Double power = signalPower.calculatePowerDb(buffer);
         if (power != null) {
-            listener.onMeasurement(power);
+            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL, power);
+            eventBus.post(event);
         }
     }
 
     @Override
     public void onReadError(int error) {
-        listener.onError();
+        eventBus.post(new AudioReaderErrorEvent());
     }
 }

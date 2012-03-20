@@ -1,6 +1,8 @@
-package pl.llp.aircasting.event;
+package pl.llp.aircasting.event.sensor;
 
-public class ExternalSensorEvent extends AirCastingEvent {
+import pl.llp.aircasting.event.AirCastingEvent;
+
+public class SensorEvent extends AirCastingEvent {
     private String sensorName;
     private String unit;
     private String symbol;
@@ -27,7 +29,7 @@ public class ExternalSensorEvent extends AirCastingEvent {
         return measurementType;
     }
 
-    public ExternalSensorEvent(String sensorName, String measurementType, String unit, String symbol, double value) {
+    public SensorEvent(String sensorName, String measurementType, String unit, String symbol, double value) {
         this.sensorName = sensorName;
         this.measurementType = measurementType;
         this.unit = unit;
@@ -37,7 +39,7 @@ public class ExternalSensorEvent extends AirCastingEvent {
 
     @Override
     public String toString() {
-        return "ExternalSensorEvent{" +
+        return "SensorEvent{" +
                 "sensorName='" + sensorName + '\'' +
                 ", unit='" + unit + '\'' +
                 ", symbol='" + symbol + '\'' +
@@ -51,7 +53,7 @@ public class ExternalSensorEvent extends AirCastingEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ExternalSensorEvent event = (ExternalSensorEvent) o;
+        SensorEvent event = (SensorEvent) o;
 
         if (Double.compare(event.value, value) != 0) return false;
         if (measurementType != null ? !measurementType.equals(event.measurementType) : event.measurementType != null)
