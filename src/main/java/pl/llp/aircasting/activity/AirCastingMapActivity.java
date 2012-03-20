@@ -38,8 +38,8 @@ import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.LocationEvent;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
@@ -76,7 +76,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     @Inject RouteOverlay routeOverlay;
 
     boolean initialized = false;
-    SoundMeasurement lastMeasurement;
+    Measurement lastMeasurement;
     private boolean zoomToSession = true;
     private boolean suppressTap;
     MapIdleDetector routeRefreshDetector;
@@ -118,7 +118,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            for (SoundMeasurement measurement : sessionManager.getSoundMeasurements()) {
+            for (Measurement measurement : sessionManager.getSoundMeasurements()) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
             }
@@ -223,7 +223,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onNewMeasurement(SoundMeasurement measurement) {
+    public void onNewMeasurement(Measurement measurement) {
         super.onNewMeasurement(measurement);
 
         if (!sessionManager.isSessionSaved()) {
@@ -342,7 +342,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onAveragedMeasurement(SoundMeasurement measurement) {
+    public void onAveragedMeasurement(Measurement measurement) {
         if (sessionManager.isSessionStarted()) {
             if (!settingsHelper.isAveraging()) {
                 soundTraceOverlay.update(measurement);

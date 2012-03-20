@@ -170,34 +170,34 @@ public class SessionManager implements SoundVolumeListener {
     }
 
     public synchronized double getPeak(int n) {
-        if (session.getSoundMeasurements().isEmpty()) return 0;
+        if (session.getMeasurements().isEmpty()) return 0;
 
-        Iterable<SoundMeasurement> measurements = getLast(n);
+        Iterable<Measurement> measurements = getLast(n);
         double max = Double.NEGATIVE_INFINITY;
-        for (SoundMeasurement measurement : measurements) {
+        for (Measurement measurement : measurements) {
             if (measurement.getValue() > max) max = measurement.getValue();
         }
 
         return max;
     }
 
-    private Iterable<SoundMeasurement> getLast(int n) {
-        int toSkip = session.getSoundMeasurements().size() - n;
+    private Iterable<Measurement> getLast(int n) {
+        int toSkip = session.getMeasurements().size() - n;
         if (toSkip < 0) toSkip = 0;
-        return skip(session.getSoundMeasurements(), toSkip);
+        return skip(session.getMeasurements(), toSkip);
     }
 
     public synchronized double getAvg(int n) {
-        if (session.getSoundMeasurements().isEmpty()) return 0;
+        if (session.getMeasurements().isEmpty()) return 0;
 
         double result = 0;
 
-        Iterable<SoundMeasurement> measurements = getLast(n);
-        for (SoundMeasurement measurement : measurements) {
+        Iterable<Measurement> measurements = getLast(n);
+        for (Measurement measurement : measurements) {
             result += measurement.getValue();
         }
 
-        return result / min(n, session.getSoundMeasurements().size());
+        return result / min(n, session.getMeasurements().size());
     }
 
     public void setContribute(boolean value) {
@@ -224,7 +224,7 @@ public class SessionManager implements SoundVolumeListener {
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
-            SoundMeasurement measurement = new SoundMeasurement(latitude, longitude, value);
+            Measurement measurement = new Measurement(latitude, longitude, value);
             if (sessionStarted) {
                 session.add(measurement);
             }
@@ -259,7 +259,7 @@ public class SessionManager implements SoundVolumeListener {
     }
 
     public interface Listener {
-        public void onNewMeasurement(SoundMeasurement measurement);
+        public void onNewMeasurement(Measurement measurement);
 
         public void onNewSession();
 
@@ -310,7 +310,7 @@ public class SessionManager implements SoundVolumeListener {
 
     Handler notificationHandler = new Handler();
 
-    private void notifyMeasurement(final SoundMeasurement measurement) {
+    private void notifyMeasurement(final Measurement measurement) {
         notificationHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -377,7 +377,7 @@ public class SessionManager implements SoundVolumeListener {
         return sessionStarted;
     }
 
-    public synchronized List<SoundMeasurement> getSoundMeasurements() {
-        return newArrayList(session.getSoundMeasurements());
+    public synchronized List<Measurement> getSoundMeasurements() {
+        return newArrayList(session.getMeasurements());
     }
 }

@@ -29,7 +29,7 @@ import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
 import java.util.List;
@@ -42,7 +42,7 @@ import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
  * Date: 9/26/11
  * Time: 3:23 PM
  */
-public class SoundTraceOverlay extends BufferingOverlay<SoundMeasurement> {
+public class SoundTraceOverlay extends BufferingOverlay<Measurement> {
     @Inject MeasurementPresenter measurementPresenter;
     @Inject ResourceHelper resourceHelper;
     @Inject SoundHelper soundHelper;
@@ -54,22 +54,22 @@ public class SoundTraceOverlay extends BufferingOverlay<SoundMeasurement> {
 
     @Override
     protected void performDraw(Canvas canvas, Projection projection) {
-        List<SoundMeasurement> fullView = measurementPresenter.getFullView();
+        List<Measurement> fullView = measurementPresenter.getFullView();
 
         // Avoid concurrent modification
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0, fullViewSize = fullView.size(); i < fullViewSize - 1; i++) {
-            SoundMeasurement measurement = fullView.get(i);
+            Measurement measurement = fullView.get(i);
             drawPoint(canvas, projection, measurement);
         }
     }
 
     @Override
-    protected void performUpdate(Canvas canvas, Projection projection, SoundMeasurement measurement) {
+    protected void performUpdate(Canvas canvas, Projection projection, Measurement measurement) {
         drawPoint(canvas, projection, measurement);
     }
 
-    private void drawPoint(Canvas canvas, Projection projection, SoundMeasurement measurement) {
+    private void drawPoint(Canvas canvas, Projection projection, Measurement measurement) {
         double value = measurement.getValue();
 
         if (isSaved) {

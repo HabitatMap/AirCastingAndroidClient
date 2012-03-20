@@ -29,31 +29,31 @@ import java.util.Date;
  * Date: 9/28/11
  * Time: 1:04 PM
  */
-public class SoundMeasurement {
+public class Measurement {
     @Expose private double latitude;
     @Expose private double longitude;
     @Expose private double value;
     @Expose private Date time;
 
-    public SoundMeasurement(double value) {
+    public Measurement(double value) {
         this.value = value;
     }
 
-    public SoundMeasurement(double latitude, double longitude, double value) {
+    public Measurement(double latitude, double longitude, double value) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.value = value;
         time = new Date();
     }
 
-    public SoundMeasurement(double latitude, double longitude, double value, Date time) {
+    public Measurement(double latitude, double longitude, double value, Date time) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.value = value;
         this.time = time;
     }
 
-    public SoundMeasurement() {
+    public Measurement() {
     }
 
     public double getValue() {
@@ -87,7 +87,7 @@ public class SoundMeasurement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SoundMeasurement that = (SoundMeasurement) o;
+        Measurement that = (Measurement) o;
 
         if (Double.compare(that.latitude, latitude) != 0) return false;
         if (Double.compare(that.longitude, longitude) != 0) return false;
@@ -111,7 +111,7 @@ public class SoundMeasurement {
 
     @Override
     public String toString() {
-        return "SoundMeasurement{" +
+        return "Measurement{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", value=" + value +

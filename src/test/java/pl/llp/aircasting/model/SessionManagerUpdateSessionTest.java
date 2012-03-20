@@ -46,7 +46,7 @@ public class SessionManagerUpdateSessionTest {
     public void setup(){
         sessionManager.sessionRepository = mock(SessionRepository.class);
         sessionManager.session = new Session();
-        sessionManager.session.add(new SoundMeasurement());
+        sessionManager.session.add(new Measurement());
         session = new Session();
         session.setTitle("New title");
     }

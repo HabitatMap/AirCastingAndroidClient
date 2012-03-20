@@ -23,8 +23,8 @@ import android.content.Context;
 import android.net.Uri;
 import com.csvreader.CsvWriter;
 import com.google.inject.Inject;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SoundMeasurement;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -63,7 +63,7 @@ public class CSVHelper {
             csvWriter.write("Decibel Level");
             csvWriter.endRecord();
 
-            for (SoundMeasurement measurement : session.getSoundMeasurements()) {
+            for (Measurement measurement : session.getMeasurements()) {
                 csvWriter.write(DATE_FORMAT.format(measurement.getTime()));
                 csvWriter.write(TIME_FORMAT.format(measurement.getTime()));
                 csvWriter.write(valueOf(measurement.getLongitude()));

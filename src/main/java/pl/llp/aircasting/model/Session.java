@@ -41,7 +41,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class Session implements Serializable {
     @Expose private UUID uuid = UUID.randomUUID();
 
-    @Expose @SerializedName("measurements") transient List<SoundMeasurement> soundMeasurements = new ArrayList<SoundMeasurement>();
+    @Expose @SerializedName("measurements") transient List<Measurement> measurements = new ArrayList<Measurement>();
     @Expose private List<Note> notes = newArrayList();
 
     @Expose private String title;
@@ -64,8 +64,8 @@ public class Session implements Serializable {
     private Long id = null;
     private boolean submittedForRemoval = false;
 
-    public void add(SoundMeasurement measurement) {
-        if (soundMeasurements.isEmpty()) {
+    public void add(Measurement measurement) {
+        if (measurements.isEmpty()) {
             // If average has been set earlier manually
             sum = measurement.getValue();
         } else {
@@ -75,14 +75,14 @@ public class Session implements Serializable {
             peak = measurement.getValue();
         }
 
-        soundMeasurements.add(measurement);
+        measurements.add(measurement);
     }
 
-    public List<SoundMeasurement> getSoundMeasurements() {
-        if (soundMeasurements == null) {
-            soundMeasurements = newArrayList();
+    public List<Measurement> getMeasurements() {
+        if (measurements == null) {
+            measurements = newArrayList();
         }
-        return soundMeasurements;
+        return measurements;
     }
 
     public void setTitle(String text) {
@@ -118,7 +118,7 @@ public class Session implements Serializable {
 
     private double calculatePeak() {
         double newPeak = SoundHelper.TOTALLY_QUIET;
-        for (SoundMeasurement measurement : soundMeasurements) {
+        for (Measurement measurement : measurements) {
             if (measurement.getValue() > newPeak) {
                 newPeak = measurement.getValue();
             }
@@ -130,14 +130,14 @@ public class Session implements Serializable {
         if (sum == null) {
             sum = calculateSum();
         }
-        return sum / (soundMeasurements.isEmpty() ? 1 : soundMeasurements.size());
+        return sum / (measurements.isEmpty() ? 1 : measurements.size());
     }
 
     private double calculateSum() {
-        if (soundMeasurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
+        if (measurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
 
         double newSum = 0;
-        for (SoundMeasurement measurement : soundMeasurements) {
+        for (Measurement measurement : measurements) {
             newSum += measurement.getValue();
         }
         return newSum;
@@ -153,14 +153,14 @@ public class Session implements Serializable {
 
     public Date getEnd() {
         if (end == null) {
-            end = getLast(soundMeasurements).getTime();
+            end = getLast(measurements).getTime();
         }
         return end;
     }
 
     public Date getStart() {
         if (start == null) {
-            start = soundMeasurements.get(0).getTime();
+            start = measurements.get(0).getTime();
         }
         return start;
     }

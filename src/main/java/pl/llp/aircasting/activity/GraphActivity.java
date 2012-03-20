@@ -30,8 +30,8 @@ import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.event.DoubleTapEvent;
 import pl.llp.aircasting.event.ScrollEvent;
 import pl.llp.aircasting.event.TapEvent;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectView;
@@ -83,7 +83,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         zoomIn.setEnabled(measurementPresenter.canZoomIn());
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
-        List<SoundMeasurement> measurements = measurementPresenter.getTimelineView();
+        List<Measurement> measurements = measurementPresenter.getTimelineView();
         ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
         plot.update(measurements, notes);
@@ -125,7 +125,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @Override
-    public void onAveragedMeasurement(SoundMeasurement measurement) {
+    public void onAveragedMeasurement(Measurement measurement) {
     }
 
     @Subscribe

@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import pl.llp.aircasting.activity.SoundTraceActivity;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.service.SensorService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -50,7 +50,7 @@ public class IntentsTest {
     @Before
     public void setup() {
         session = new Session();
-        session.add(new SoundMeasurement());
+        session.add(new Measurement());
         session.add(new Note());
     }
 

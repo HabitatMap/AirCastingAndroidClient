@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.Measurement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,20 +40,20 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(InjectedTestRunner.class)
 public class LocationConversionHelperTest {
-    List<SoundMeasurement> soundMeasurements;
+    List<Measurement> measurements;
 
     @Before
     public void setup() {
-        soundMeasurements = new ArrayList<SoundMeasurement>();
+        measurements = new ArrayList<Measurement>();
 
-        soundMeasurements.add(new SoundMeasurement(10, 20, 10));
-        soundMeasurements.add(new SoundMeasurement(20, 10, 10));
-        soundMeasurements.add(new SoundMeasurement(-10, 30, 10));
+        measurements.add(new Measurement(10, 20, 10));
+        measurements.add(new Measurement(20, 10, 10));
+        measurements.add(new Measurement(-10, 30, 10));
     }
 
     @Test
     public void shouldCalculateBoundingBox() {
-        LocationConversionHelper.BoundingBox boundingBox = LocationConversionHelper.boundingBox(soundMeasurements);
+        LocationConversionHelper.BoundingBox boundingBox = LocationConversionHelper.boundingBox(measurements);
 
         assertThat(boundingBox.getCenter(), equalTo(new GeoPoint(5 * 1000000, 20 * 1000000)));
         assertThat(boundingBox.getLatSpan(), equalTo(30 * 1000000));

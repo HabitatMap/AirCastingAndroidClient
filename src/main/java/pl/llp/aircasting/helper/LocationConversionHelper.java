@@ -21,7 +21,7 @@ package pl.llp.aircasting.helper;
 
 import android.location.Location;
 import com.google.android.maps.GeoPoint;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.Measurement;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -39,7 +39,7 @@ public class LocationConversionHelper {
         return (int) (latLng * INTEGER_1E6);
     }
 
-    public static GeoPoint geoPoint(SoundMeasurement measurement) {
+    public static GeoPoint geoPoint(Measurement measurement) {
         return geoPoint(measurement.getLatitude(), measurement.getLongitude());
     }
 
@@ -54,12 +54,12 @@ public class LocationConversionHelper {
         return location;
     }
 
-    public static BoundingBox boundingBox(Iterable<SoundMeasurement> measurements) {
+    public static BoundingBox boundingBox(Iterable<Measurement> measurements) {
         int north, south, east, west;
         north = east = Integer.MIN_VALUE;
         south = west = Integer.MAX_VALUE;
 
-        for (SoundMeasurement measurement : measurements) {
+        for (Measurement measurement : measurements) {
             north = max(north, geoPointize(measurement.getLatitude()));
             south = min(south, geoPointize(measurement.getLatitude()));
             east = max(east, geoPointize(measurement.getLongitude()));

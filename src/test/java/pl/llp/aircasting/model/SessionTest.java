@@ -46,8 +46,8 @@ public class SessionTest {
     Session session = new Session();
     Date date = new Date();
     Session emptySession = new Session();
-    SoundMeasurement measurement = new SoundMeasurement(0, 0, 0);
-    SoundMeasurement otherMeasurement = new SoundMeasurement(0, 0, 1);
+    Measurement measurement = new Measurement(0, 0, 0);
+    Measurement otherMeasurement = new Measurement(0, 0, 1);
     Note note = new Note();
 
     @Before
@@ -59,7 +59,7 @@ public class SessionTest {
 
     @Test
     public void shouldStoreSoundMeasurements() {
-        assertThat(session.getSoundMeasurements(), hasItem(equalTo(measurement)));
+        assertThat(session.getMeasurements(), hasItem(equalTo(measurement)));
     }
 
     @Test
@@ -124,8 +124,8 @@ public class SessionTest {
     public void shouldExposeMeasurementsToGSON() {
         Session result = gson.fromJson(gson.toJson(session), Session.class);
 
-        assertThat(result.getSoundMeasurements(), hasItem(measurement));
-        assertThat(result.getSoundMeasurements(), hasItem(measurement));
+        assertThat(result.getMeasurements(), hasItem(measurement));
+        assertThat(result.getMeasurements(), hasItem(measurement));
     }
 
     @Test
@@ -136,8 +136,8 @@ public class SessionTest {
 
     @Test
     public void shouldAlwaysHaveMeasurements(){
-        session.soundMeasurements = null;
+        session.measurements = null;
 
-        assertThat(session.getSoundMeasurements(), not(equalTo(null)));
+        assertThat(session.getMeasurements(), not(equalTo(null)));
     }
 }

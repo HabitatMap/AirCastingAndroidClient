@@ -69,7 +69,7 @@ public class SessionRepository implements DBConstants {
     public void save(Session session, ProgressListener progressListener) {
         db.beginTransaction();
 
-        if (progressListener != null) progressListener.onSizeCalculated(session.getSoundMeasurements().size());
+        if (progressListener != null) progressListener.onSizeCalculated(session.getMeasurements().size());
 
         ContentValues values = new ContentValues();
 
@@ -93,7 +93,7 @@ public class SessionRepository implements DBConstants {
         session.setId(key);
 
         int count = 0;
-        for (SoundMeasurement measurement : session.getSoundMeasurements()) {
+        for (Measurement measurement : session.getMeasurements()) {
             values.clear();
             values.put(MEASUREMENT_SESSION_ID, key);
             values.put(MEASUREMENT_VALUE, measurement.getValue());
@@ -301,7 +301,7 @@ public class SessionRepository implements DBConstants {
         if (progressListener != null) progressListener.onSizeCalculated(cursor.getCount());
 
         while (!cursor.isAfterLast()) {
-            SoundMeasurement measurement = new SoundMeasurement();
+            Measurement measurement = new Measurement();
 
             measurement.setLatitude(getDouble(cursor, MEASUREMENT_LATITUDE));
             measurement.setLongitude(getDouble(cursor, MEASUREMENT_LONGITUDE));

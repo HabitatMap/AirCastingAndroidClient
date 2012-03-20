@@ -42,10 +42,10 @@ import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.view.TouchPane;
 import roboguice.inject.InjectResource;
@@ -271,7 +271,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     }
 
     @Override
-    public void onNewMeasurement(SoundMeasurement measurement) {
+    public void onNewMeasurement(Measurement measurement) {
         updateGauges();
     }
 

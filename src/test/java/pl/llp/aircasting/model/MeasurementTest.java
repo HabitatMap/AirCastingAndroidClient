@@ -21,8 +21,6 @@ package pl.llp.aircasting.model;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import org.hamcrest.CoreMatchers;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,16 +40,16 @@ import static org.junit.Assert.assertThat;
  * Time: 1:06 PM
  */
 @RunWith(InjectedTestRunner.class)
-public class SoundMeasurementTest {
+public class MeasurementTest {
     @Inject Gson gson;
 
-    SoundMeasurement measurement;
-    SoundMeasurement other;
+    Measurement measurement;
+    Measurement other;
 
     @Before
     public void setup() {
-        measurement = new SoundMeasurement(0, 1, 2);
-        other = new SoundMeasurement(0, 1, 2);
+        measurement = new Measurement(0, 1, 2);
+        other = new Measurement(0, 1, 2);
     }
 
     @Test
@@ -76,7 +74,7 @@ public class SoundMeasurementTest {
     public void shouldExposeMembersToGSON(){
         // JSON loses sub-second parts, but we don't care
         measurement.setTime(new Date(0));
-        SoundMeasurement result = gson.fromJson(gson.toJson(measurement), SoundMeasurement.class);
+        Measurement result = gson.fromJson(gson.toJson(measurement), Measurement.class);
 
         assertThat(result.getTime(), equalTo(measurement.getTime()));
         assertThat(result.getLatitude(), equalTo(measurement.getLatitude()));

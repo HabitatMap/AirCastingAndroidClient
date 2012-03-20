@@ -30,8 +30,8 @@ import pl.llp.aircasting.event.TapEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.util.Search;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class NoisePlot extends View {
     private AirCastingActivity activity;
     private SettingsHelper settingsHelper;
 
-    private List<SoundMeasurement> measurements = new ArrayList<SoundMeasurement>();
+    private List<Measurement> measurements = new ArrayList<Measurement>();
     private List<Note> notes;
     private ResourceHelper resourceHelper;
     private CalibrationHelper calibrationHelper;
@@ -90,7 +90,7 @@ public class NoisePlot extends View {
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void update(List<SoundMeasurement> measurements, List<Note> notes) {
+    public void update(List<Measurement> measurements, List<Note> notes) {
         this.measurements = measurements;
         this.notes = notes;
         invalidate();
@@ -108,7 +108,7 @@ public class NoisePlot extends View {
             float lastY = project(calibrationHelper.calibrate(measurements.get(0).getValue()));
             path.moveTo(0, lastY);
 
-            for (SoundMeasurement measurement : skip(measurements, 1)) {
+            for (Measurement measurement : skip(measurements, 1)) {
                 Point place = place(measurement);
                 path.lineTo(place.x, place.y);
             }
@@ -123,7 +123,7 @@ public class NoisePlot extends View {
         }
     }
 
-    private Point place(SoundMeasurement measurement) {
+    private Point place(Measurement measurement) {
         long time = measurement.getTime().getTime();
         float span = lastTime() - firstTime();
         float place = time - firstTime();
@@ -146,7 +146,7 @@ public class NoisePlot extends View {
     }
 
     private Point place(Note note) {
-        SoundMeasurement measurement = findClosestMeasurement(note);
+        Measurement measurement = findClosestMeasurement(note);
         return place(measurement);
     }
 
@@ -163,10 +163,10 @@ public class NoisePlot extends View {
         return measurements.get(0).getTime().getTime();
     }
 
-    private SoundMeasurement findClosestMeasurement(final Note note) {
-        int index = binarySearch(measurements, new Search.Visitor<SoundMeasurement>() {
+    private Measurement findClosestMeasurement(final Note note) {
+        int index = binarySearch(measurements, new Search.Visitor<Measurement>() {
             @Override
-            public int compareTo(SoundMeasurement value) {
+            public int compareTo(Measurement value) {
                 return note.getDate().compareTo(value.getTime());
             }
         });

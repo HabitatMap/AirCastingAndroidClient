@@ -79,7 +79,7 @@ public class SessionManagerTest {
         sessionManager.session = spy(sessionManager.session);
         sessionManager.sessionStarted = true;
 
-        SoundMeasurement expected = new SoundMeasurement(location.getLatitude(), location.getLongitude(), 22);
+        Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
 
         sessionManager.onMeasurement(22);
 
@@ -112,7 +112,7 @@ public class SessionManagerTest {
 
         sessionManager.onMeasurement(11);
 
-        verify(listener).onNewMeasurement(Mockito.any(SoundMeasurement.class));
+        verify(listener).onNewMeasurement(Mockito.any(Measurement.class));
     }
 
     @Test
@@ -243,9 +243,9 @@ public class SessionManagerTest {
     @Test
     public void shouldProvideRunningAverage() {
         sessionManager.session = new Session();
-        sessionManager.session.add(new SoundMeasurement(2));
-        sessionManager.session.add(new SoundMeasurement(4));
-        sessionManager.session.add(new SoundMeasurement(6));
+        sessionManager.session.add(new Measurement(2));
+        sessionManager.session.add(new Measurement(4));
+        sessionManager.session.add(new Measurement(6));
 
         assertThat(sessionManager.getAvg(4), equalTo(4.0));
         assertThat(sessionManager.getAvg(3), equalTo(4.0));
@@ -255,9 +255,9 @@ public class SessionManagerTest {
     @Test
     public void shouldProvideRunningPeak() {
         sessionManager.session = new Session();
-        sessionManager.session.add(new SoundMeasurement(6));
-        sessionManager.session.add(new SoundMeasurement(4));
-        sessionManager.session.add(new SoundMeasurement(2));
+        sessionManager.session.add(new Measurement(6));
+        sessionManager.session.add(new Measurement(4));
+        sessionManager.session.add(new Measurement(2));
 
         assertThat(sessionManager.getPeak(4), equalTo(6.0));
         assertThat(sessionManager.getPeak(3), equalTo(6.0));

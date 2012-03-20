@@ -25,8 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.SoundMeasurement;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,23 +47,23 @@ import static org.mockito.Mockito.*;
 @RunWith(InjectedTestRunner.class)
 public class MeasurementPresenterTest {
     @Inject MeasurementPresenter presenter;
-    List<SoundMeasurement> measurements;
-    private SoundMeasurement measurement1;
+    List<Measurement> measurements;
+    private Measurement measurement1;
     private MeasurementPresenter.Listener listener;
-    private SoundMeasurement measurement2;
+    private Measurement measurement2;
 
     @Before
     public void setup() {
-        measurements = new ArrayList<SoundMeasurement>();
+        measurements = new ArrayList<Measurement>();
         for (int i = 0; i < 4; i++) {
-            measurements.add(new SoundMeasurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
+            measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
         }
         presenter.sessionManager = mockSessionManager();
         when(presenter.sessionManager.getSoundMeasurements()).thenReturn(measurements);
         when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
 
-        measurement1 = new SoundMeasurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
-        measurement2 = new SoundMeasurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
+        measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
+        measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
 
         listener = mock(MeasurementPresenter.Listener.class);
         presenter.registerListener(listener);
@@ -82,7 +82,7 @@ public class MeasurementPresenterTest {
     public void shouldShowLastNMillis() {
         presenter.setZoom(100);
 
-        List<SoundMeasurement> result = presenter.getTimelineView();
+        List<Measurement> result = presenter.getTimelineView();
 
         assertThat(result, hasItem(equalTo(measurements.get(3))));
         assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
@@ -98,7 +98,7 @@ public class MeasurementPresenterTest {
 
     @Test
     public void shouldHandleEmptyList() {
-        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(new ArrayList<SoundMeasurement>());
+        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(new ArrayList<Measurement>());
 
         assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
     }
@@ -110,7 +110,7 @@ public class MeasurementPresenterTest {
         presenter.sessionManager = mockSessionManager();
 
         presenter.onNewMeasurement(measurement1);
-        List<SoundMeasurement> result = presenter.getTimelineView();
+        List<Measurement> result = presenter.getTimelineView();
 
         verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
@@ -160,7 +160,7 @@ public class MeasurementPresenterTest {
         presenter.sessionManager = mockSessionManager();
 
         presenter.onNewMeasurement(measurement1);
-        List<SoundMeasurement> result = presenter.getFullView();
+        List<Measurement> result = presenter.getFullView();
 
         verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
@@ -259,7 +259,7 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverage() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
+        Measurement expected = new Measurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
 
         presenter.onNewSession();
 
@@ -269,7 +269,7 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverageOnTheFly() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
         presenter.onNewSession();
         presenter.onNewMeasurement(measurement1);
@@ -282,7 +282,7 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverageTimelineOnTheFly() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
         presenter.onNewSession();
         presenter.getTimelineView();
@@ -296,12 +296,12 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldNotifyListenersAboutNewAveragedMeasurements() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
         presenter.registerListener(listener);
 
         presenter.onNewMeasurement(measurement1);
         presenter.onNewMeasurement(measurement2);
-        presenter.onNewMeasurement(new SoundMeasurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
+        presenter.onNewMeasurement(new Measurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
 
         verify(listener, atLeastOnce()).onAveragedMeasurement(expected);
     }
