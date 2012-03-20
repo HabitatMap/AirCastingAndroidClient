@@ -21,6 +21,7 @@ package pl.llp.aircasting.model;
 
 import android.location.Location;
 import android.location.LocationManager;
+import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.hamcrest.BaseMatcher;
@@ -102,7 +103,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldCreateAStreamForEachSensor(){
+    public void shouldCreateAStreamForEachSensor() {
         triggerMeasurement();
         sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 10));
 
@@ -111,16 +112,21 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldStoreMeasurements() {
-        sessionManager.session = spy(sessionManager.session);
-        sessionManager.sessionStarted = true;
+    public void shouldAllowAccessToAParticularStream() {
+        triggerMeasurement();
 
-        Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
+        MeasurementStream expected = Iterables.getOnlyElement(sessionManager.getMeasurementStreams());
+        assertThat(sessionManager.getMeasurementStream("LHC") == expected, equalTo(true));
+    }
+
+    @Test
+    public void shouldStoreMeasurements() {
+        sessionManager.sessionStarted = true;
 
         triggerMeasurement(22);
 
-        assertThat(sessionManager.getSoundMeasurements(), hasItem(equalTo(expected)));
-        verify(sessionManager.session).add(expected);
+        Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
+        assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements(), hasItem(equalTo(expected)));
     }
 
     @Test

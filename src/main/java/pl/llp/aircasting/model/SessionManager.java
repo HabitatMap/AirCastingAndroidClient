@@ -224,17 +224,9 @@ public class SessionManager {
 
     @Subscribe
     public synchronized void onEvent(SensorEvent event) {
+        prepareStream(event);
+
         double value = event.getValue();
-
-        String sensorName = event.getSensorName();
-        if (!measurementStreams.containsKey(sensorName)) {
-            String measurementType = event.getMeasurementType();
-            String unit = event.getUnit();
-            String symbol = event.getSymbol();
-            MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
-            measurementStreams.put(sensorName, stream);
-        }
-
         dbLast = value;
 
         if (locationHelper.getLastLocation() != null) {
@@ -243,12 +235,23 @@ public class SessionManager {
 
             Measurement measurement = new Measurement(latitude, longitude, value);
             if (sessionStarted) {
-                session.add(measurement);
+                getMeasurementStream(event.getSensorName()).add(measurement);
             }
             notifyMeasurement(measurement);
         }
 
         notifyNewReading();
+    }
+
+    private void prepareStream(SensorEvent event) {
+        String sensorName = event.getSensorName();
+        if (!measurementStreams.containsKey(sensorName)) {
+            String measurementType = event.getMeasurementType();
+            String unit = event.getUnit();
+            String symbol = event.getSymbol();
+            MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
+            measurementStreams.put(sensorName, stream);
+        }
     }
 
     public Note getNote(int i) {
@@ -277,6 +280,10 @@ public class SessionManager {
 
     public Collection<MeasurementStream> getMeasurementStreams() {
         return measurementStreams.values();
+    }
+
+    public MeasurementStream getMeasurementStream(String sensorName) {
+        return measurementStreams.get(sensorName);
     }
 
     public interface Listener {
