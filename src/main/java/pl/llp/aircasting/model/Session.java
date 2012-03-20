@@ -24,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
 import pl.llp.aircasting.helper.SoundHelper;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +40,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class Session implements Serializable {
     @Expose private UUID uuid = UUID.randomUUID();
 
-    @Expose @SerializedName("measurements") transient List<Measurement> measurements = new ArrayList<Measurement>();
+    @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
     @Expose private List<Note> notes = newArrayList();
 
     @Expose private String title;
