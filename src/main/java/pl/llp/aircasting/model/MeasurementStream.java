@@ -58,4 +58,42 @@ public class MeasurementStream {
     public double getPeak() {
         return peak;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MeasurementStream stream = (MeasurementStream) o;
+
+        if (measurementType != null ? !measurementType.equals(stream.measurementType) : stream.measurementType != null)
+            return false;
+        if (sensorName != null ? !sensorName.equals(stream.sensorName) : stream.sensorName != null) return false;
+        if (symbol != null ? !symbol.equals(stream.symbol) : stream.symbol != null) return false;
+        if (unit != null ? !unit.equals(stream.unit) : stream.unit != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sensorName != null ? sensorName.hashCode() : 0;
+        result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MeasurementStream{" +
+                "measurements=" + measurements +
+                ", sensorName='" + sensorName + '\'' +
+                ", measurementType='" + measurementType + '\'' +
+                ", unit='" + unit + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", sum=" + sum +
+                ", peak=" + peak +
+                '}';
+    }
 }

@@ -78,7 +78,36 @@ public class SessionManagerTest {
     }
 
     private void triggerMeasurement(double value) {
-        sessionManager.onEvent(new SensorEvent("", "", "", "", value));
+        sessionManager.onEvent(new SensorEvent("LHC", "Higgs boson", "number", "#", value));
+    }
+
+    private void triggerMeasurement() {
+        triggerMeasurement(10);
+    }
+
+    @Test
+    public void shouldCreateMeasurementStreams() {
+        triggerMeasurement();
+
+        MeasurementStream expected = new MeasurementStream("LHC", "Higgs boson", "number", "#");
+        assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
+    }
+
+    @Test
+    public void shouldCreateOnlyOneStreamPerSensor() {
+        triggerMeasurement();
+        triggerMeasurement();
+
+        assertThat(sessionManager.getMeasurementStreams().size(), equalTo(1));
+    }
+
+    @Test
+    public void shouldCreateAStreamForEachSensor(){
+        triggerMeasurement();
+        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 10));
+
+        MeasurementStream expected = new MeasurementStream("LHC2", "Siggh boson", "number", "#");
+        assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
     }
 
     @Test

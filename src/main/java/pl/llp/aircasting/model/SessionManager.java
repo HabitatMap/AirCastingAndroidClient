@@ -35,12 +35,10 @@ import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Iterables.skip;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.primitives.Ints.min;
 import static com.google.inject.internal.Lists.newArrayList;
 
@@ -75,6 +73,8 @@ public class SessionManager {
     private boolean recording;
     private boolean paused;
     private int noteNumber = 0;
+
+    private Map<String, MeasurementStream> measurementStreams = newHashMap();
 
     @Inject
     public void init() {
@@ -225,6 +225,16 @@ public class SessionManager {
     @Subscribe
     public synchronized void onEvent(SensorEvent event) {
         double value = event.getValue();
+
+        String sensorName = event.getSensorName();
+        if (!measurementStreams.containsKey(sensorName)) {
+            String measurementType = event.getMeasurementType();
+            String unit = event.getUnit();
+            String symbol = event.getSymbol();
+            MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
+            measurementStreams.put(sensorName, stream);
+        }
+
         dbLast = value;
 
         if (locationHelper.getLastLocation() != null) {
@@ -263,6 +273,10 @@ public class SessionManager {
     public void restartSensors() {
         externalSensor.stop();
         externalSensor.start();
+    }
+
+    public Collection<MeasurementStream> getMeasurementStreams() {
+        return measurementStreams.values();
     }
 
     public interface Listener {
