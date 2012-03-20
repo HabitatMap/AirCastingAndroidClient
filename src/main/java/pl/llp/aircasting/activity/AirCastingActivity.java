@@ -47,7 +47,6 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.view.TouchPane;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -89,7 +88,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @InjectView(R.id.zoom_in) Button zoomIn;
     @InjectView(R.id.zoom_out) Button zoomOut;
     @InjectView(R.id.buttons) View buttons;
-    @InjectView(R.id.touch_pane) TouchPane touchPane;
 
     @InjectView(R.id.top_bar) View topBar;
     @InjectView(R.id.top_bar_quiet) TextView topBarQuiet;
