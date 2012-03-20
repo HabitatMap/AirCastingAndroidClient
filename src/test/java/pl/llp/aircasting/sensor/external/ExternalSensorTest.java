@@ -1,8 +1,5 @@
 package pl.llp.aircasting.sensor.external;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.junit.Before;
@@ -10,15 +7,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.ExternalSensorEvent;
-import pl.llp.aircasting.helper.SettingsHelper;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
 public class ExternalSensorTest {
@@ -32,7 +24,7 @@ public class ExternalSensorTest {
     }
 
     @Test
-    public void shouldReadInputAndGenerateEvents() throws IOException {
+    public void shouldReadInputAndGenerateEvents() throws IOException, pl.llp.aircasting.sensor.external.ParseException {
         ExternalSensorEvent event1 = mock(ExternalSensorEvent.class);
         when(sensor.parser.parse("Reading 1")).thenReturn(event1);
 

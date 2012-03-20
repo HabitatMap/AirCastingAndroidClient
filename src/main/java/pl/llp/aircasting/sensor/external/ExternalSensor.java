@@ -47,15 +47,25 @@ public class ExternalSensor {
     }
 
     public synchronized void stop() {
-        if(readerWorker != null){
+        if (readerWorker != null) {
             readerWorker.stop();
             readerWorker = null;
+
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Bluetooth thread didn't finish", e);
+            }
         }
     }
 
     public void read(String line) {
-        ExternalSensorEvent event = parser.parse(line);
-        eventBus.post(event);
+        try {
+            ExternalSensorEvent event = parser.parse(line);
+            eventBus.post(event);
+        } catch (pl.llp.aircasting.sensor.external.ParseException e) {
+            Log.e(TAG, "External sensor error", e);
+        }
     }
 
     private class ReaderWorker implements Runnable {
@@ -68,6 +78,7 @@ public class ExternalSensor {
 
             try {
                 socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+                socket.connect();
                 reader = new InputStreamReader(socket.getInputStream());
                 final InputStreamReader finalReader = reader;
 
@@ -82,7 +93,7 @@ public class ExternalSensor {
                             @Override
                             public boolean processLine(String line) throws IOException {
                                 read(line);
-                                return stopped;
+                                return !stopped;
                             }
 
                             @Override
