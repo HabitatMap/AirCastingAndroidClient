@@ -10,16 +10,17 @@ public class ExternalSensorParser {
         }
 
         String name = parts[0];
-        String unit = parts[1];
-        String symbol = parts[2];
+        String type = parts[1];
+        String unit = parts[2];
+        String symbol = parts[3];
 
         double value;
         try {
-            value = Double.parseDouble(parts[3]);
+            value = Double.parseDouble(parts[4]);
         } catch (NumberFormatException e) {
             throw new ParseException(e);
         }
 
-        return new ExternalSensorEvent(name, unit, symbol, value);
+        return new ExternalSensorEvent(name, type, unit, symbol, value);
     }
 }

@@ -1,13 +1,14 @@
 package pl.llp.aircasting.event;
 
 public class ExternalSensorEvent extends AirCastingEvent {
-    private String name;
+    private String sensorName;
     private String unit;
     private String symbol;
+    private String measurementType;
     private double value;
 
-    public String getName() {
-        return name;
+    public String getSensorName() {
+        return sensorName;
     }
 
     public String getUnit() {
@@ -22,11 +23,27 @@ public class ExternalSensorEvent extends AirCastingEvent {
         return value;
     }
 
-    public ExternalSensorEvent(String name, String unit, String symbol, double value) {
-        this.name = name;
+    public String getMeasurementType() {
+        return measurementType;
+    }
+
+    public ExternalSensorEvent(String sensorName, String measurementType, String unit, String symbol, double value) {
+        this.sensorName = sensorName;
+        this.measurementType = measurementType;
         this.unit = unit;
         this.symbol = symbol;
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "ExternalSensorEvent{" +
+                "sensorName='" + sensorName + '\'' +
+                ", unit='" + unit + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", measurementType='" + measurementType + '\'' +
+                ", value=" + value +
+                '}';
     }
 
     @Override
@@ -37,7 +54,9 @@ public class ExternalSensorEvent extends AirCastingEvent {
         ExternalSensorEvent event = (ExternalSensorEvent) o;
 
         if (Double.compare(event.value, value) != 0) return false;
-        if (name != null ? !name.equals(event.name) : event.name != null) return false;
+        if (measurementType != null ? !measurementType.equals(event.measurementType) : event.measurementType != null)
+            return false;
+        if (sensorName != null ? !sensorName.equals(event.sensorName) : event.sensorName != null) return false;
         if (symbol != null ? !symbol.equals(event.symbol) : event.symbol != null) return false;
         if (unit != null ? !unit.equals(event.unit) : event.unit != null) return false;
 
@@ -48,21 +67,12 @@ public class ExternalSensorEvent extends AirCastingEvent {
     public int hashCode() {
         int result;
         long temp;
-        result = name != null ? name.hashCode() : 0;
+        result = sensorName != null ? sensorName.hashCode() : 0;
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+        result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
         temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ExternalSensorEvent{" +
-                "name='" + name + '\'' +
-                ", unit='" + unit + '\'' +
-                ", symbol='" + symbol + '\'' +
-                ", value=" + value +
-                '}';
     }
 }
