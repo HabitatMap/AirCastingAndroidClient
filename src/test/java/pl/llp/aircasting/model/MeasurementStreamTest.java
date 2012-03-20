@@ -11,12 +11,12 @@ import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
 @RunWith(InjectedTestRunner.class)
 public class MeasurementStreamTest {
-    MeasurementStream stream = new MeasurementStream();
+    MeasurementStream stream = new MeasurementStream("big sensor", "temperature", "degrees Celsius", "C");
     Measurement measurement = new Measurement(0, 0, 0);
     Measurement otherMeasurement = new Measurement(0, 0, 1);
 
     @Before
-    public void setup(){
+    public void setup() {
         stream.add(measurement);
         stream.add(otherMeasurement);
     }
@@ -24,5 +24,25 @@ public class MeasurementStreamTest {
     @Test
     public void shouldStoreMeasurements() {
         assertThat(stream.getMeasurements(), hasItem(equalTo(measurement)));
+    }
+
+    @Test
+    public void shouldStoreSensorName() {
+        assertThat(stream.getSensorName(), equalTo("big sensor"));
+    }
+
+    @Test
+    public void shouldStoreMeasurementType() {
+        assertThat(stream.getMeasurementType(), equalTo("temperature"));
+    }
+
+    @Test
+    public void shouldStoreUnit() {
+        assertThat(stream.getUnit(), equalTo("degrees Celsius"));
+    }
+
+    @Test
+    public void shouldStoreSymbol() {
+        assertThat(stream.getSymbol(), equalTo("C"));
     }
 }
