@@ -20,7 +20,7 @@ public class SensorAdapter extends SimpleAdapter {
     private List<Map<String, String>> data;
     private Map<String, BluetoothDevice> devices = newHashMap();
 
-    protected SensorAdapter(Context context, List<Map<String, String>> data) {
+    SensorAdapter(Context context, List<Map<String, String>> data) {
         super(context, data, R.layout.external_sensor_item, KEYS, FIELDS);
         this.data = data;
     }

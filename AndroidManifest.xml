@@ -136,6 +136,11 @@
                   android:label="@string/external_sensor"
                 />
 
+        <activity android:name=".activity.StreamsActivity"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                  android:label="@string/measurement_streams"
+                />
+
         <!-- Services -->
         <service android:name=".service.SensorService"/>
 

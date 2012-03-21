@@ -22,6 +22,7 @@ package pl.llp.aircasting.activity.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import com.google.inject.Inject;
+import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.repository.SessionRepository;

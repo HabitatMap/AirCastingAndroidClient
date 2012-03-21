@@ -76,7 +76,11 @@
                                            android:title="@string/show_route"
             />
 
+
     <android.preference.Preference android:title="@string/external_sensor"
                                    android:key="external_sensor"
+            />
+    <android.preference.Preference android:title="@string/measurement_streams"
+                                   android:key="measurement_streams"
             />
 </PreferenceScreen>

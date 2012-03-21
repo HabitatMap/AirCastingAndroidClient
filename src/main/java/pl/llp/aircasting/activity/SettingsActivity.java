@@ -44,7 +44,8 @@ import roboguice.inject.InjectResource;
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACCOUNT_KEY = "account";
     public static final String COLOR_SCALE_KEY = "color_scale";
-    public static final String EXTERNAL_SENSOR = "external_sensor";
+    public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
+    public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
 
     @Inject Application context;
 
@@ -85,8 +86,11 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         } else if (preference.getKey().equals(ACCOUNT_KEY)) {
             signInOrOut();
             return true;
-        } else if (preference.getKey().equals(EXTERNAL_SENSOR)) {
+        } else if (preference.getKey().equals(EXTERNAL_SENSOR_KEY)) {
             startActivity(new Intent(this, ExternalSensorActivity.class));
+            return true;
+        } else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY)) {
+            startActivity(new Intent(this, StreamsActivity.class));
             return true;
         } else {
             return super.onPreferenceTreeClick(preferenceScreen, preference);
