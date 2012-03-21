@@ -19,18 +19,20 @@
  */
 package pl.llp.aircasting.view.overlay;
 
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.Projection;
-import com.google.inject.Inject;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.SoundMeasurement;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
+
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Projection;
+import com.google.inject.Inject;
 
 import java.util.List;
 
@@ -100,4 +102,9 @@ public class SoundTraceOverlay extends BufferingOverlay<SoundMeasurement> {
     public void setOffset60DB(int newOffset60DB) {
         this.offset60DB = newOffset60DB;
     }
+
+   public void stopDrawing(MapView view)
+   {
+      super.stopDrawing(view);
+   }
 }

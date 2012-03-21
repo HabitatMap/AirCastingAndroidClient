@@ -20,41 +20,39 @@
 package pl.llp.aircasting.util.bitmap;
 
 import android.graphics.Bitmap;
-import com.google.common.cache.*;
+import com.google.common.collect.MapMaker;
 import com.google.inject.Singleton;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/23/11
- * Time: 1:58 PM
- */
 @Singleton
 public class BitmapHolder {
-    private static final CacheLoader<BitmapKey,Bitmap> cacheLoader = new CacheLoader<BitmapKey, Bitmap>() {
-        @Override
-        public Bitmap load(BitmapKey key) throws Exception {
-            return Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888);
-        }
-    };
 
-    Cache<BitmapKey, Bitmap> cache =
-            CacheBuilder.newBuilder()
-                    .expireAfterAccess(30, TimeUnit.SECONDS)
-                    .build(cacheLoader);
+    Map<BitmapKey, Bitmap> cache = new MapMaker().concurrencyLevel(1).makeMap();
+   
+    public Bitmap getBitmap(int width, int height, int index)
+    {
+       if(width == 0 || height == 0) return null;
+       BitmapKey key = new BitmapKey(width, height, index);
 
-    public Bitmap getBitmap(int width, int height, int index) {
-        try {
-            if(width == 0 || height == 0) return null;
+       if(!cache.containsKey(key))
+       {
+          cache.put(key, Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888));
+       }
 
-            BitmapKey key = new BitmapKey(width, height, index);
-            return cache.get(key);
-        } catch (ExecutionException e) {
-            //Should never happen
-            throw new RuntimeException(e);
-        }
+       return cache.get(key);
     }
+
+   public void release(int width, int height)
+   {
+      for (Map.Entry<BitmapKey, Bitmap> entry : cache.entrySet())
+      {
+         BitmapKey key = entry.getKey();
+         if((key.getWidth() == width) && (key.getHeight() == height))
+         {
+            Bitmap removed = cache.remove(key);
+            removed.recycle();
+         }
+      }
+   }
 }

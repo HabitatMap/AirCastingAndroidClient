@@ -19,6 +19,14 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.api.AveragesDriver;
+import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.util.http.HttpResult;
+import pl.llp.aircasting.view.MapIdleDetector;
+import pl.llp.aircasting.view.overlay.HeatMapOverlay;
+
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,13 +36,6 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.api.AveragesDriver;
-import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.model.Region;
-import pl.llp.aircasting.util.http.HttpResult;
-import pl.llp.aircasting.view.MapIdleDetector;
-import pl.llp.aircasting.view.overlay.HeatMapOverlay;
 
 import static java.lang.Math.min;
 import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
@@ -137,8 +138,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
             // We want to download data that's off screen so the user can see something while panning
             GeoPoint northWest = projection.fromPixels(-mapView.getWidth(), -mapView.getHeight());
-            GeoPoint southEast = projection.fromPixels(mapView.getWidth() + mapView.getWidth(),
-                    mapView.getHeight() + mapView.getHeight());
+            GeoPoint southEast = projection.fromPixels(2 * mapView.getWidth(), 2 * mapView.getHeight());
 
             Location northWestLoc = LocationConversionHelper.location(northWest);
             Location southEastLoc = LocationConversionHelper.location(southEast);

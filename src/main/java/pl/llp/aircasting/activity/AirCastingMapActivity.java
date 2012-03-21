@@ -20,17 +20,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.location.Location;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.Animation;
-import android.widget.ImageView;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
-import com.google.android.maps.OverlayItem;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.DoubleTapEvent;
@@ -46,6 +35,18 @@ import pl.llp.aircasting.view.overlay.NoteOverlay;
 import pl.llp.aircasting.view.overlay.RouteOverlay;
 import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
+
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.widget.ImageView;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.OverlayItem;
+import com.google.inject.Inject;
 import roboguice.event.Observes;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -151,6 +152,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
         measurementPresenter.unregisterListener(this);
         routeRefreshDetector.stop();
+        soundTraceOverlay.stopDrawing(mapView);
     }
 
     private void initializeMap() {
@@ -173,6 +175,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         soundTraceOverlay.setSaved(sessionManager.isSessionSaved());
         soundTraceOverlay.setCalibration(sessionManager.getSession().getCalibration());
         soundTraceOverlay.setOffset60DB(sessionManager.getSession().getOffset60DB());
+        soundTraceOverlay.startDrawing();
     }
 
     protected void startSpinner() {

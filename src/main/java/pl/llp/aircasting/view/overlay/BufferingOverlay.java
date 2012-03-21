@@ -19,6 +19,10 @@
 */
 package pl.llp.aircasting.view.overlay;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.util.bitmap.BitmapHolder;
+import pl.llp.aircasting.util.map.ProjectionClone;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -27,9 +31,6 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.util.bitmap.BitmapHolder;
-import pl.llp.aircasting.util.map.ProjectionClone;
 import roboguice.inject.InjectResource;
 
 /**
@@ -49,7 +50,9 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
     private int zoomLevel;
     private Projection projection;
 
-    @Override
+   private volatile boolean paused;
+
+   @Override
     public synchronized void draw(Canvas canvas, MapView mapView, boolean shadow) {
         if (shadow || bitmap == null || mapView.getZoomLevel() != zoomLevel) return;
 
@@ -62,6 +65,9 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
     }
 
     public void refresh(MapView mapView) {
+       if(shouldDraw())
+          return;
+
         bitmapIndex = 1 - bitmapIndex;
 
         Canvas canvas = new Canvas();
@@ -92,7 +98,9 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
         }
     }
 
-    public void update(UpdateData updateData) {
+   private boolean shouldDraw() {return paused;}
+
+   public void update(UpdateData updateData) {
         Canvas canvas = null;
         Projection projectionToUse = null;
 
@@ -111,4 +119,16 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay {
     protected abstract void performDraw(Canvas canvas, Projection projection);
 
     protected abstract void performUpdate(Canvas canvas, Projection projection, UpdateData updateData);
+
+    protected void stopDrawing(MapView view)
+    {
+       paused = true;
+       bitmap = null;
+       bitmapHolder.release(view.getWidth(), view.getHeight());
+    }
+
+   public void startDrawing()
+   {
+      paused = false;
+   }
 }
