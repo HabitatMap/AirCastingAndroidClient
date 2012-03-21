@@ -14,9 +14,7 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.UUID;
 
 import static com.google.common.io.Closeables.closeQuietly;
@@ -33,33 +31,28 @@ public class ExternalSensor {
 
     private BluetoothDevice device;
     private Thread readerThread;
-    private ReaderWorker readerWorker;
 
     public synchronized void start() {
-        if (bluetoothAdapter != null && readerWorker == null) {
-            String address = settingsHelper.getSensorAddress();
+        String address = settingsHelper.getSensorAddress();
+        if (bluetoothAdapter != null && (device == null || !device.getAddress().equals(address))) {
+            if (device != null) {
+                stop();
+            }
             device = bluetoothAdapter.getRemoteDevice(address);
 
-            readerWorker = new ReaderWorker();
+            ReaderWorker readerWorker = new ReaderWorker(device);
             readerThread = new Thread(readerWorker);
             readerThread.start();
         }
     }
 
-    public synchronized void stop() {
-        if (readerWorker != null) {
-            readerWorker.stop();
-            readerWorker = null;
-
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Bluetooth thread didn't finish", e);
-            }
+    private void stop() {
+        if (readerThread != null) {
+            readerThread.interrupt();
         }
     }
 
-    public void read(String line) {
+    public void process(String line) {
         try {
             SensorEvent event = parser.parse(line);
             eventBus.post(event);
@@ -69,18 +62,24 @@ public class ExternalSensor {
     }
 
     private class ReaderWorker implements Runnable {
-        private boolean stopped = false;
+        public static final int ONE_SECOND = 1000;
+        public static final int EIGHT_SECONDS = 8000;
+
+        BluetoothSocket socket = null;
+        InputStream stream = null;
+        BluetoothDevice device;
+
+        public ReaderWorker(BluetoothDevice device) {
+            this.device = device;
+        }
 
         @Override
         public void run() {
-            BluetoothSocket socket = null;
-            InputStreamReader reader = null;
+            connect();
 
             try {
-                socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
-                socket.connect();
-                reader = new InputStreamReader(socket.getInputStream());
-                final InputStreamReader finalReader = reader;
+                stream = socket.getInputStream();
+                final Reader finalReader = new InputStreamReader(stream);
 
                 CharStreams.readLines(
                         new InputSupplier<Reader>() {
@@ -92,8 +91,8 @@ public class ExternalSensor {
                         new LineProcessor<Void>() {
                             @Override
                             public boolean processLine(String line) throws IOException {
-                                read(line);
-                                return !stopped;
+                                process(line);
+                                return true;
                             }
 
                             @Override
@@ -103,15 +102,30 @@ public class ExternalSensor {
                         }
                 );
             } catch (IOException e) {
-                Log.e(TAG, "Bluetooth communication failure", e);
+                Log.w(TAG, "Bluetooth communication failure - mostly likely end of stream", e);
             } finally {
-                closeQuietly(reader);
+                closeQuietly(stream);
                 closeQuietly(socket);
             }
         }
 
-        public void stop() {
-            stopped = true;
+        private void connect() {
+            int sleep = ONE_SECOND;
+            while (socket == null) {
+                try {
+                    socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+                    socket.connect();
+
+                    if (socket == null) {
+                        Thread.sleep(sleep);
+                    }
+
+                    sleep *= 2;
+                    sleep = Math.min(sleep, EIGHT_SECONDS);
+                } catch (Exception e) {
+                    socket = null;
+                }
+            }
         }
     }
 }

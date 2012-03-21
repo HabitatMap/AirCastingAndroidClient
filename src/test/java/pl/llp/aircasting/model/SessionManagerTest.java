@@ -377,7 +377,6 @@ public class SessionManagerTest {
     public void shouldRestartExternalSensor() {
         sessionManager.restartSensors();
 
-        verify(sessionManager.externalSensor).stop();
         verify(sessionManager.externalSensor).start();
     }
 }

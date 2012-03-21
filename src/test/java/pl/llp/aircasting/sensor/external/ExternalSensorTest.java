@@ -28,7 +28,7 @@ public class ExternalSensorTest {
         SensorEvent event1 = mock(SensorEvent.class);
         when(sensor.parser.parse("Reading 1")).thenReturn(event1);
 
-        sensor.read("Reading 1");
+        sensor.process("Reading 1");
 
         verify(sensor.eventBus).post(event1);
     }

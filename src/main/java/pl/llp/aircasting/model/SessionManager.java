@@ -165,8 +165,6 @@ public class SessionManager {
 
             audioReader.stop();
 
-            externalSensor.stop();
-
             recording = false;
         }
     }
@@ -274,7 +272,6 @@ public class SessionManager {
     }
 
     public void restartSensors() {
-        externalSensor.stop();
         externalSensor.start();
     }
 
