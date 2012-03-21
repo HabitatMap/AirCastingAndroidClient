@@ -19,13 +19,15 @@
 */
 package pl.llp.aircasting.api;
 
-import com.google.gson.reflect.TypeToken;
 import pl.llp.aircasting.model.Region;
 import pl.llp.aircasting.util.http.HttpResult;
+
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
+import static java.lang.String.*;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
 
 /**
@@ -44,12 +46,12 @@ public class AveragesDriver {
         return http()
                 .get()
                 .from(AVERAGES_PATH)
-                .with("q[west]", "" + west)
-                .with("q[north]", "" + north)
-                .with("q[east]", "" + east)
-                .with("q[south]", "" + south)
-                .with("q[grid_size_x]", "" + gridSizeX)
-                .with("q[grid_size_y]", "" + gridSizeY)
+                .with("q[west]", valueOf(west))
+                .with("q[north]", valueOf(north))
+                .with("q[east]", valueOf(east))
+                .with("q[south]", valueOf(south))
+                .with("q[grid_size_x]", valueOf(gridSizeX))
+                .with("q[grid_size_y]", valueOf(gridSizeY))
                 .into(listType);
 
     }

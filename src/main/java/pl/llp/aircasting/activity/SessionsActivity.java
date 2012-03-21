@@ -19,18 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.*;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
@@ -44,6 +32,23 @@ import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
+
+import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -116,11 +121,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText("" + settingsHelper.getThreshold(SoundLevel.QUIET));
-        topBarAverage.setText("" + settingsHelper.getThreshold(SoundLevel.AVERAGE));
-        topBarLoud.setText("" + settingsHelper.getThreshold(SoundLevel.LOUD));
-        topBarVeryLoud.setText("" + settingsHelper.getThreshold(SoundLevel.VERY_LOUD));
-        topBarTooLoud.setText("" + settingsHelper.getThreshold(SoundLevel.TOO_LOUD));
+        topBarQuiet.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.QUIET)));
+        topBarAverage.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.AVERAGE)));
+        topBarLoud.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.LOUD)));
+        topBarVeryLoud.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.VERY_LOUD)));
+        topBarTooLoud.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.TOO_LOUD)));
     }
 
     private void refreshList() {

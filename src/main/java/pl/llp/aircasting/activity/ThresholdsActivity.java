@@ -19,14 +19,19 @@
 */
 package pl.llp.aircasting.activity;
 
-import android.app.Application;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.helper.SettingsHelper;
+
+import android.app.Application;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.google.inject.Inject;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
@@ -70,11 +75,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.color_scale);
 
-        tooLoudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.TOO_LOUD));
-        veryLoudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.VERY_LOUD));
-        loudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.LOUD));
-        averageEdit.setText("" + settingsHelper.getThreshold(SoundLevel.AVERAGE));
-        quietEdit.setText("" + settingsHelper.getThreshold(SoundLevel.QUIET));
+        tooLoudEdit.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.TOO_LOUD)));
+        veryLoudEdit.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.VERY_LOUD)));
+        loudEdit.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.LOUD)));
+        averageEdit.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.AVERAGE)));
+        quietEdit.setText(Integer.toString(settingsHelper.getThreshold(SoundLevel.QUIET)));
 
         veryLoudEdit.setOnFocusChangeListener(this);
         loudEdit.setOnFocusChangeListener(this);
@@ -138,11 +143,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     }
 
     private void updateEdits() {
-        tooLoudEdit.setText("" + tooLoud);
-        veryLoudEdit.setText("" + veryLoud);
-        loudEdit.setText("" + loud);
-        averageEdit.setText("" + average);
-        quietEdit.setText("" + quiet);
+        tooLoudEdit.setText(Integer.toString(tooLoud));
+        veryLoudEdit.setText(Integer.toString(veryLoud));
+        loudEdit.setText(Integer.toString(loud));
+        averageEdit.setText(Integer.toString(average));
+        quietEdit.setText(Integer.toString(quiet));
     }
 
     private SoundLevel toSoundLevel(int id) {
@@ -201,11 +206,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText("" + quiet);
-        topBarAverage.setText("" + average);
-        topBarLoud.setText("" + loud);
-        topBarVeryLoud.setText("" + veryLoud);
-        topBarTooLoud.setText("" + tooLoud);
+        topBarQuiet.setText(Integer.toString(quiet));
+        topBarAverage.setText(Integer.toString(average));
+        topBarLoud.setText(Integer.toString(loud));
+        topBarVeryLoud.setText(Integer.toString(veryLoud));
+        topBarTooLoud.setText(Integer.toString(tooLoud));
     }
 
     private void updateSliders() {
@@ -224,13 +229,13 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
         SoundLevel soundLevel = toSoundLevel(bar.getId());
         switch (soundLevel) {
             case AVERAGE:
-                averageEdit.setText("" + value);
+                averageEdit.setText(Integer.toString(value));
                 break;
             case LOUD:
-                loudEdit.setText("" + value);
+                loudEdit.setText(Integer.toString(value));
                 break;
             case VERY_LOUD:
-                veryLoudEdit.setText("" + value);
+                veryLoudEdit.setText(Integer.toString(value));
                 break;
         }
     }
