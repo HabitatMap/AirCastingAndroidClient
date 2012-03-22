@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -278,8 +279,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onNewSession() {
-        super.onNewSession();
+    @Subscribe
+    public void onEvent(SessionChangeEvent event) {
+        super.onEvent(event);
         refreshNotes();
         mapView.invalidate();
     }

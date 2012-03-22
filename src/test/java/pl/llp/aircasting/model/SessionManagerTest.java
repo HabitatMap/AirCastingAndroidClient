@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -244,7 +245,7 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStopASession() {
-        fail("Needs a redo");
+        fail("Fix session persistence");
 
         SessionRepository.ProgressListener listener = mock(SessionRepository.ProgressListener.class);
 
@@ -260,26 +261,16 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotifyListenersOnSessionClobber() {
-        fail("Needs a redo");
-
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-
         sessionManager.discardSession();
 
-        verify(listener).onNewSession();
+        verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
     }
 
     @Test
     public void shouldNotifyListenersOnSessionLoad() {
-        fail("Needs a redo");
-
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-
         sessionManager.loadSession(0, null);
 
-        verify(listener).onNewSession();
+        verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
     }
 
     @Test

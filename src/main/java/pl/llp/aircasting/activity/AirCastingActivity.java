@@ -41,6 +41,7 @@ import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
@@ -356,8 +357,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         sessionManager.startSession();
     }
 
-    @Override
-    public void onNewSession() {
+    @Subscribe
+    public void onEvent(SessionChangeEvent event) {
         updateGauges();
     }
 

@@ -31,6 +31,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -284,8 +285,6 @@ public class SessionManager {
     }
 
     public interface Listener {
-        public void onNewSession();
-
         public void onNewNote(Note note);
 
         public void onError();
@@ -335,9 +334,7 @@ public class SessionManager {
     Handler notificationHandler = new Handler();
 
     private void notifyNewSession() {
-        for (Listener listener : listeners) {
-            listener.onNewSession();
-        }
+        eventBus.post(new SessionChangeEvent());
     }
 
     public void startSession() {

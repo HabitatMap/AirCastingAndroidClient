@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.SessionManager;
@@ -178,7 +179,7 @@ public class MeasurementPresenterTest {
         when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
         when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
         triggerMeasurement(measurement1);
 
         assertThat(presenter.getFullView().isEmpty(), equalTo(true));
@@ -266,7 +267,7 @@ public class MeasurementPresenterTest {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
         Measurement expected = new Measurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
 
         assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
     }
@@ -276,7 +277,7 @@ public class MeasurementPresenterTest {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
         Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
         triggerMeasurement(measurement1);
         triggerMeasurement(measurement2);
 
@@ -289,7 +290,7 @@ public class MeasurementPresenterTest {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
         Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
         presenter.getTimelineView();
         triggerMeasurement(measurement1);
         triggerMeasurement(measurement2);

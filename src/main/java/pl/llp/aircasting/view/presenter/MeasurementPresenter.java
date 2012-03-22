@@ -28,6 +28,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -117,8 +118,8 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         return bucket(last) != bucket(measurement);
     }
 
-    @Override
-    public synchronized void onNewSession() {
+    @Subscribe
+    public synchronized void onEvent(SessionChangeEvent event) {
         reset();
 
         notifyListeners();
