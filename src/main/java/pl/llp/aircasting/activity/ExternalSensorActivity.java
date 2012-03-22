@@ -90,6 +90,7 @@ public class ExternalSensorActivity extends DialogActivity implements AdapterVie
         settingsHelper.setSensorAddress(address);
         
         Intents.restartSensors(context);
+        Intents.startStreamsActivity(this);
     }
 
     private class BluetoothFoundReceiver extends BroadcastReceiver {

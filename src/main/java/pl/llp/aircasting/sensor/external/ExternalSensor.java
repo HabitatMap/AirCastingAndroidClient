@@ -34,16 +34,20 @@ public class ExternalSensor {
 
     public synchronized void start() {
         String address = settingsHelper.getSensorAddress();
-        if (bluetoothAdapter != null && (device == null || !device.getAddress().equals(address))) {
+        if (bluetoothAdapter != null && address != null && (device == null || addressChanged(address))) {
             if (device != null) {
                 stop();
             }
             device = bluetoothAdapter.getRemoteDevice(address);
 
-            ReaderWorker readerWorker = new ReaderWorker(device);
+            ReaderWorker readerWorker = new ReaderWorker(bluetoothAdapter, device);
             readerThread = new Thread(readerWorker);
             readerThread.start();
         }
+    }
+
+    private boolean addressChanged(String address) {
+        return !device.getAddress().equals(address);
     }
 
     private void stop() {
@@ -67,15 +71,22 @@ public class ExternalSensor {
 
         BluetoothSocket socket = null;
         InputStream stream = null;
+        BluetoothAdapter adapter;
         BluetoothDevice device;
 
-        public ReaderWorker(BluetoothDevice device) {
+        public ReaderWorker(BluetoothAdapter adapter, BluetoothDevice device) {
+            this.adapter = adapter;
             this.device = device;
         }
 
         @Override
         public void run() {
-            connect();
+            try {
+                connect();
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Failed to establish bluetooth connection", e);
+                return;
+            }
 
             try {
                 stream = socket.getInputStream();
@@ -109,20 +120,19 @@ public class ExternalSensor {
             }
         }
 
-        private void connect() {
+        private void connect() throws InterruptedException {
             int sleep = ONE_SECOND;
             while (socket == null) {
                 try {
+                    adapter.cancelDiscovery();
                     socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
                     socket.connect();
-
-                    if (socket == null) {
-                        Thread.sleep(sleep);
-                    }
+                } catch (Exception e) {
+                    Thread.sleep(sleep);
 
                     sleep *= 2;
                     sleep = Math.min(sleep, EIGHT_SECONDS);
-                } catch (Exception e) {
+
                     socket = null;
                 }
             }

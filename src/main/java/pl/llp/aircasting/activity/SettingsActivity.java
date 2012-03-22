@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -90,7 +91,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
             startActivity(new Intent(this, ExternalSensorActivity.class));
             return true;
         } else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY)) {
-            startActivity(new Intent(this, StreamsActivity.class));
+            Intents.startStreamsActivity(this);
             return true;
         } else {
             return super.onPreferenceTreeClick(preferenceScreen, preference);

@@ -29,6 +29,7 @@ import android.provider.MediaStore;
 import pl.llp.aircasting.activity.EditSessionActivity;
 import pl.llp.aircasting.activity.MakeANoteActivity;
 import pl.llp.aircasting.activity.ShareSessionActivity;
+import pl.llp.aircasting.activity.StreamsActivity;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.service.SyncService;
@@ -215,6 +216,11 @@ public final class Intents {
     public static void requestEnableBluetooth(Activity context) {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         context.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+    }
+
+    public static void startStreamsActivity(Activity activity) {
+        Intent intent = new Intent(activity, StreamsActivity.class);
+        activity.startActivity(intent);
     }
 }
 

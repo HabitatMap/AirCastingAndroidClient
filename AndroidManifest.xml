@@ -134,6 +134,7 @@
         <activity android:name=".activity.ExternalSensorActivity"
                   android:theme="@style/Dialog"
                   android:label="@string/external_sensor"
+                  android:noHistory="true"
                 />
 
         <activity android:name=".activity.StreamsActivity"

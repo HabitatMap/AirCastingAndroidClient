@@ -40,14 +40,14 @@ public class StreamAdapter extends SimpleAdapter {
 
     @Subscribe
     public void onEvent(SensorEvent event) {
-        HashMap<String, String> map = newHashMap();
+        final HashMap<String, String> map = newHashMap();
 
         map.put(NAME, event.getSensorName());
 
-        data.add(map);
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                data.add(map);
                 notifyDataSetChanged();
             }
         });
