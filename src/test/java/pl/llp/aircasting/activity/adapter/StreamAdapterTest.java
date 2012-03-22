@@ -1,23 +1,26 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.app.Activity;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(InjectedTestRunner.class)
 public class StreamAdapterTest {
-    @Inject StreamAdapter adapter;
+    private StreamAdapter adapter;
 
     @Before
     public void setup() {
-        adapter.eventBus = mock(EventBus.class);
+        adapter = new StreamAdapter(mock(Activity.class), new ArrayList<Map<String, String>>(), mock(EventBus.class));
     }
 
     @Test
