@@ -156,7 +156,7 @@ public class SessionManagerTest {
 
         triggerMeasurement(12.3);
 
-        assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements().isEmpty(), equalTo(true));
+        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
     }
 
     @Test
@@ -168,19 +168,16 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStartSensors() {
-        fail("Needs a redo");
-
         sessionManager.startSensors();
 
         verify(sessionManager.locationHelper).start();
         verify(sessionManager.audioReader).start();
+        verify(sessionManager.externalSensor).start();
         assertThat(sessionManager.isRecording(), equalTo(true));
     }
 
     @Test
     public void shouldOnlyStartSensorsOnce() {
-        fail("Needs a redo");
-
         sessionManager.startSensors();
         sessionManager.startSensors();
 
@@ -191,8 +188,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStopSensors() {
-        fail("Needs a redo");
-
         sessionManager.startSensors();
         sessionManager.stopSensors();
 
@@ -203,8 +198,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotStopSensorsDuringASession() {
-        fail("Needs a redo");
-
         sessionManager.startSession();
         sessionManager.stopSensors();
 
@@ -215,8 +208,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStartASession() {
-        fail("Needs a redo");
-
         sessionManager.startSession();
 
         verify(sessionManager.locationHelper).start();
@@ -226,7 +217,7 @@ public class SessionManagerTest {
 
     @Test
     public void shouldUnregisterListeners() {
-        fail("Needs a redo");
+        fail("This needs to be removed when we get rid of the Listener");
 
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
@@ -238,21 +229,8 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldNotStopSessionWhenLastListenerUnregisters() {
-        fail("Needs a redo");
-
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-
+    public void shouldDiscardASession() {
         sessionManager.startSession();
-        sessionManager.unregisterListener(listener);
-
-        assertThat(sessionManager.isSessionStarted(), equalTo(true));
-    }
-
-    @Test
-    public void shouldDiscardSession() {
-        fail("Needs a redo");
 
         triggerMeasurement(13.5);
         sessionManager.discardSession();
@@ -260,7 +238,7 @@ public class SessionManagerTest {
         verify(sessionManager.audioReader, never()).stop();
         verify(sessionManager.locationHelper).stop();
         verify(sessionManager.sessionRepository, never()).save(Mockito.any(Session.class));
-        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
+        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
         assertThat(sessionManager.isSessionStarted(), equalTo(false));
     }
 

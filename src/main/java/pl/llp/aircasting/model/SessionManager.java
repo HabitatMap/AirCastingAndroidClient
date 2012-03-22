@@ -223,12 +223,12 @@ public class SessionManager {
 
     @Subscribe
     public synchronized void onEvent(SensorEvent event) {
-        prepareStream(event);
-
         double value = event.getValue();
         recentMeasurements.put(event.getSensorName(), value);
 
         if (locationHelper.getLastLocation() != null) {
+            prepareStream(event);
+
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
