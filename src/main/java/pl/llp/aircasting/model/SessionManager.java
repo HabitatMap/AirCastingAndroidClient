@@ -237,8 +237,6 @@ public class SessionManager {
             }
             notifyMeasurement(measurement);
         }
-
-        notifyNewReading();
     }
 
     private void prepareStream(SensorEvent event) {
@@ -290,8 +288,6 @@ public class SessionManager {
 
         public void onNewNote(Note note);
 
-        public void onNewReading();
-
         public void onError();
     }
 
@@ -329,7 +325,7 @@ public class SessionManager {
         return session.getAvg();
     }
 
-    public synchronized double getDbNow() {
+    public synchronized double getNow(String sensorName) {
         return dbLast;
     }
 
@@ -350,17 +346,6 @@ public class SessionManager {
         for (Listener listener : listeners) {
             listener.onNewSession();
         }
-    }
-
-    private void notifyNewReading() {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onNewReading();
-                }
-            }
-        });
     }
 
     public void startSession() {

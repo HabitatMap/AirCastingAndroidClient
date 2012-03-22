@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,7 +20,8 @@ public class StreamAdapterTest {
 
     @Before
     public void setup() {
-        adapter = new StreamAdapter(mock(Activity.class), new ArrayList<Map<String, String>>(), mock(EventBus.class));
+        adapter = new StreamAdapter(mock(Activity.class), new ArrayList<Map<String, String>>(),
+                mock(EventBus.class), mock(SessionManager.class));
     }
 
     @Test

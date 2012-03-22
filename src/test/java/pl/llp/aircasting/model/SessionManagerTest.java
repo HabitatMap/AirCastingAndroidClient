@@ -42,6 +42,7 @@ import pl.llp.aircasting.sensor.external.ExternalSensor;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -137,14 +138,8 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldNotifyListenersAboutReadings() {
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-
-        triggerMeasurement(12.4);
-
-        verify(listener).onNewReading();
-        assertThat(sessionManager.getDbNow(), equalTo(12.4));
+    public void shouldStoreLastMeasurementForEachSensor() {
+        fail("Not implemented");
     }
 
     @Test

@@ -166,10 +166,6 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     }
 
     @Override
-    public void onNewReading() {
-    }
-
-    @Override
     public void onError() {
     }
 

@@ -39,6 +39,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
@@ -251,7 +252,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         dbPeakContainer.setVisibility(visibility);
 
         updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
-        updatePowerView(dbNow, sessionManager.getDbNow(), MarkerSize.BIG);
+        updatePowerView(dbNow, sessionManager.getNow("Phone microphone"), MarkerSize.BIG);
         updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
     }
 
@@ -359,8 +360,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     public void onNewNote(Note note) {
     }
 
-    @Override
-    public void onNewReading() {
+    @Subscribe
+    public void onEvent(SensorEvent event) {
         updateGauges();
     }
 
