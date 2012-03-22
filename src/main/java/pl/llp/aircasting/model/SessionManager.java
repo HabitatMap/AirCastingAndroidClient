@@ -66,7 +66,7 @@ public class SessionManager {
 
     Session session = new Session();
 
-    private double dbLast = SoundHelper.TOTALLY_QUIET;
+    private Map<String, Double> recentMeasurements = newHashMap();
 
     boolean sessionStarted = false;
 
@@ -225,7 +225,7 @@ public class SessionManager {
         prepareStream(event);
 
         double value = event.getValue();
-        dbLast = value;
+        recentMeasurements.put(event.getSensorName(), value);
 
         if (locationHelper.getLastLocation() != null) {
             double latitude = locationHelper.getLastLocation().getLatitude();
@@ -326,7 +326,10 @@ public class SessionManager {
     }
 
     public synchronized double getNow(String sensorName) {
-        return dbLast;
+        if(!recentMeasurements.containsKey(sensorName)){
+            return 0;
+        }
+        return recentMeasurements.get(sensorName);
     }
 
     Handler notificationHandler = new Handler();

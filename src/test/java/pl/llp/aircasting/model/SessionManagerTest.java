@@ -42,7 +42,6 @@ import pl.llp.aircasting.sensor.external.ExternalSensor;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -79,8 +78,12 @@ public class SessionManagerTest {
         mockSensors();
     }
 
+    private void triggerMeasurement(String name, double value) {
+        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "number", "#", value));
+    }
+
     private void triggerMeasurement(double value) {
-        sessionManager.onEvent(new SensorEvent("LHC", "Higgs boson", "number", "#", value));
+        triggerMeasurement("LHC", value);
     }
 
     private void triggerMeasurement() {
@@ -139,7 +142,16 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStoreLastMeasurementForEachSensor() {
-        fail("Not implemented");
+        triggerMeasurement("LHC", 150);
+        triggerMeasurement("LHC2", 123);
+
+        assertThat(sessionManager.getNow("LHC"), equalTo(150.0));
+        assertThat(sessionManager.getNow("LHC2"), equalTo(123.0));
+    }
+
+    @Test
+    public void shouldAssumeLastMeasurementIsZeroByDefault() {
+        assertThat(sessionManager.getNow("Something that does not exist"), equalTo(0.0));
     }
 
     @Test
