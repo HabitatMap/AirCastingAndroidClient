@@ -355,8 +355,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldJustDeleteNotesIfSessionInProgress() {
-        fail("Needs a redo");
-
         sessionManager.startSession();
         Note note = sessionManager.makeANote(null, null, null);
 
@@ -367,8 +365,6 @@ public class SessionManagerTest {
 
     @Test
     public void afterDeletingNotesShouldHaveNewNumbers() {
-        fail("Needs a redo");
-
         sessionManager.startSession();
         Note note1 = sessionManager.makeANote(null, null, null);
         Note note2 = sessionManager.makeANote(null, null, null);
@@ -381,8 +377,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldMarkNotesToBeDeletedForSavedSessions() {
-        fail("Needs a redo");
-
         sessionManager.session = mock(Session.class);
         when(sessionManager.session.isSaved()).thenReturn(true);
         Note note = new Note(null, null, location, null, 10);
