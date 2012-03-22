@@ -372,6 +372,7 @@ public class SessionManager {
         sessionStarted = false;
         noteNumber = 0;
         setSession(new Session());
+        measurementStreams = newHashMap();
         notificationHelper.hideRecordingNotification();
     }
 
