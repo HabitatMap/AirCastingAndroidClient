@@ -95,6 +95,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldCreateMeasurementStreams() {
+        sessionManager.startSession();
+
         triggerMeasurement();
 
         MeasurementStream expected = new MeasurementStream("LHC", "Higgs boson", "number", "#");
@@ -103,6 +105,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldCreateOnlyOneStreamPerSensor() {
+        sessionManager.startSession();
+
         triggerMeasurement();
         triggerMeasurement();
 
@@ -111,6 +115,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldCreateAStreamForEachSensor() {
+        sessionManager.startSession();
+
         triggerMeasurement();
         sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 10));
 
@@ -120,6 +126,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldAllowAccessToAParticularStream() {
+        sessionManager.startSession();
+
         triggerMeasurement();
 
         MeasurementStream expected = Iterables.getOnlyElement(sessionManager.getMeasurementStreams());
@@ -275,13 +283,11 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotAddMeasurementsToASavedSession() {
-        fail("Needs a redo");
-
         sessionManager.session = new Session();
 
         triggerMeasurement(10);
 
-        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
+        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
     }
 
     @Test
@@ -389,7 +395,6 @@ public class SessionManagerTest {
 
     @Test
     public void shouldRestartExternalSensor() {
-        sessionManager.restartSensors();
         sessionManager.restartSensors();
 
         verify(sessionManager.externalSensor).start();

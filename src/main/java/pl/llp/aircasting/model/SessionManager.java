@@ -228,21 +228,20 @@ public class SessionManager {
         recentMeasurements.put(event.getSensorName(), value);
 
         if (locationHelper.getLastLocation() != null) {
-            prepareStream(event);
-
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
             Measurement measurement = new Measurement(latitude, longitude, value);
             if (sessionStarted) {
-                getMeasurementStream(event.getSensorName()).add(measurement);
+                MeasurementStream stream = prepareStream(event);
+                stream.add(measurement);
             }
             
             eventBus.post(new MeasurementEvent(measurement));
         }
     }
 
-    private void prepareStream(SensorEvent event) {
+    private MeasurementStream prepareStream(SensorEvent event) {
         String sensorName = event.getSensorName();
         if (!measurementStreams.containsKey(sensorName)) {
             String measurementType = event.getMeasurementType();
@@ -251,6 +250,8 @@ public class SessionManager {
             MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
             measurementStreams.put(sensorName, stream);
         }
+        
+        return measurementStreams.get(sensorName);
     }
 
     public Note getNote(int i) {
