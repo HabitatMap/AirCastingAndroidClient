@@ -150,11 +150,12 @@ public class SessionManagerTest {
 
     @Test
     public void shouldSkipMeasurementsWithoutLocation() {
-        fail("Needs a redo");
-        
+        sessionManager.sessionStarted = true;
+        when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
+
         triggerMeasurement(12.3);
 
-        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
+        assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements().isEmpty(), equalTo(true));
     }
 
     @Test
