@@ -20,8 +20,10 @@ public class StreamAdapter extends SimpleAdapter {
     private static final String[] FROM = new String[]{TITLE};
 
     private List<Map<String, String>> data;
-    EventBus eventBus;
+    private Map<String, Map<String, String>> sensors = newHashMap();
+
     private Activity context;
+    EventBus eventBus;
 
     public StreamAdapter(Activity context, List<Map<String, String>> data, EventBus eventBus) {
         super(context, data, R.layout.stream, FROM, TO);
@@ -39,17 +41,26 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     @Subscribe
-    public void onEvent(SensorEvent event) {
-        final HashMap<String, String> map = newHashMap();
-
-        map.put(TITLE, event.getSensorName());
-
+    public void onEvent(final SensorEvent event) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                data.add(map);
-                notifyDataSetChanged();
+                update(event);
             }
         });
+    }
+
+    private void update(SensorEvent event) {
+        String name = event.getSensorName();
+        if (!sensors.containsKey(name)) {
+            HashMap<String, String> map = new HashMap<String, String>();
+            sensors.put(name, map);
+            data.add(map);
+        }
+        Map<String, String> map = sensors.get(name);
+
+        map.put(TITLE, name);
+
+        notifyDataSetChanged();
     }
 }
