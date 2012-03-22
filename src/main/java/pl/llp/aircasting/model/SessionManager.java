@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.repository.SessionRepository;
@@ -235,7 +236,8 @@ public class SessionManager {
             if (sessionStarted) {
                 getMeasurementStream(event.getSensorName()).add(measurement);
             }
-            notifyMeasurement(measurement);
+            
+            eventBus.post(new MeasurementEvent(measurement));
         }
     }
 
@@ -282,8 +284,6 @@ public class SessionManager {
     }
 
     public interface Listener {
-        public void onNewMeasurement(Measurement measurement);
-
         public void onNewSession();
 
         public void onNewNote(Note note);
@@ -333,17 +333,6 @@ public class SessionManager {
     }
 
     Handler notificationHandler = new Handler();
-
-    private void notifyMeasurement(final Measurement measurement) {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onNewMeasurement(measurement);
-                }
-            }
-        });
-    }
 
     private void notifyNewSession() {
         for (Listener listener : listeners) {

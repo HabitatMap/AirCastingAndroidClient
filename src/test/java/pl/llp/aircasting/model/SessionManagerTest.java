@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
@@ -160,14 +161,9 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotifyListenersAboutMeasurements() {
-        fail("Needs a redo");
-
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-
         triggerMeasurement(11);
 
-        verify(listener).onNewMeasurement(Mockito.any(Measurement.class));
+        verify(sessionManager.eventBus).post(Mockito.any(MeasurementEvent.class));
     }
 
     @Test

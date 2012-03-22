@@ -34,6 +34,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -222,15 +223,21 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
+    @Subscribe
     @Override
-    public void onNewMeasurement(Measurement measurement) {
-        super.onNewMeasurement(measurement);
+    public void onEvent(MeasurementEvent event) {
+        super.onEvent(event);
 
-        if (!sessionManager.isSessionSaved()) {
-            updateLocation();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!sessionManager.isSessionSaved()) {
+                    updateLocation();
+                }
 
-        mapView.invalidate();
+                mapView.invalidate();
+            }
+        });
     }
 
     public void noteClicked(OverlayItem item, int index) {

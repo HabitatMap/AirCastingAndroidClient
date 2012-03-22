@@ -24,8 +24,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -73,8 +75,10 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     private LinkedList<Measurement> timelineView;
     private List<Listener> listeners = newArrayList();
 
-    @Override
-    public void onNewMeasurement(Measurement measurement) {
+    @Subscribe
+    public void onEvent(MeasurementEvent event) {
+        Measurement measurement = event.getMeasurement();
+
         if (!sessionManager.isSessionSaved()) {
             prepareFullView();
             updateFullView(measurement);

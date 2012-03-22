@@ -39,11 +39,11 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
-import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
@@ -244,16 +244,21 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     }
 
     private void updateGauges() {
-        dbNowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dbNowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
 
-        boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
-        int visibility = hasStats ? View.VISIBLE : View.GONE;
-        dbAvgContainer.setVisibility(visibility);
-        dbPeakContainer.setVisibility(visibility);
+                boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
+                int visibility = hasStats ? View.VISIBLE : View.GONE;
+                dbAvgContainer.setVisibility(visibility);
+                dbPeakContainer.setVisibility(visibility);
 
-        updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
-        updatePowerView(dbNow, sessionManager.getNow("Phone microphone"), MarkerSize.BIG);
-        updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
+                updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
+                updatePowerView(dbNow, sessionManager.getNow("Phone microphone"), MarkerSize.BIG);
+                updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
+            }
+        });
     }
 
     @Override
@@ -269,8 +274,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         unregisterReceiver(syncBroadcastReceiver);
     }
 
-    @Override
-    public void onNewMeasurement(Measurement measurement) {
+    @Subscribe
+    public void onEvent(MeasurementEvent event) {
         updateGauges();
     }
 
@@ -454,9 +459,9 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
 
     public void noteClicked(int index) {
         int total = sessionManager.getNoteCount();
-        if(total == 0) return;
+        if (total == 0) return;
         index = ((index % total) + total) % total;
-        
+
         currentNote = sessionManager.getNote(index);
 
         showNoteViewer();
