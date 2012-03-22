@@ -42,6 +42,7 @@ import pl.llp.aircasting.sensor.external.ExternalSensor;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -124,23 +125,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldStoreMeasurements() {
-        sessionManager.sessionStarted = true;
-
-        triggerMeasurement(22);
-
-        Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
-        assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements(), hasItem(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldSkipMeasurementsWithoutLocation() {
-        triggerMeasurement(12.3);
-
-        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
-    }
-
-    @Test
     public void shouldStoreLastMeasurementForEachSensor() {
         triggerMeasurement("LHC", 150);
         triggerMeasurement("LHC2", 123);
@@ -155,7 +139,28 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void shouldStoreMeasurements() {
+        sessionManager.sessionStarted = true;
+
+        triggerMeasurement(22);
+
+        Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
+        assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements(), hasItem(equalTo(expected)));
+    }
+
+    @Test
+    public void shouldSkipMeasurementsWithoutLocation() {
+        fail("Needs a redo");
+        
+        triggerMeasurement(12.3);
+
+        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
+    }
+
+    @Test
     public void shouldNotifyListenersAboutMeasurements() {
+        fail("Needs a redo");
+
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
@@ -166,6 +171,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStartSensors() {
+        fail("Needs a redo");
+
         sessionManager.startSensors();
 
         verify(sessionManager.locationHelper).start();
@@ -175,6 +182,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldOnlyStartSensorsOnce() {
+        fail("Needs a redo");
+
         sessionManager.startSensors();
         sessionManager.startSensors();
 
@@ -185,6 +194,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStopSensors() {
+        fail("Needs a redo");
+
         sessionManager.startSensors();
         sessionManager.stopSensors();
 
@@ -195,6 +206,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotStopSensorsDuringASession() {
+        fail("Needs a redo");
+
         sessionManager.startSession();
         sessionManager.stopSensors();
 
@@ -205,6 +218,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStartASession() {
+        fail("Needs a redo");
+
         sessionManager.startSession();
 
         verify(sessionManager.locationHelper).start();
@@ -214,6 +229,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldUnregisterListeners() {
+        fail("Needs a redo");
+
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
         sessionManager.unregisterListener(listener);
@@ -225,6 +242,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotStopSessionWhenLastListenerUnregisters() {
+        fail("Needs a redo");
+
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
@@ -236,6 +255,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldDiscardSession() {
+        fail("Needs a redo");
+
         triggerMeasurement(13.5);
         sessionManager.discardSession();
 
@@ -248,6 +269,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldStopASession() {
+        fail("Needs a redo");
+
         SessionRepository.ProgressListener listener = mock(SessionRepository.ProgressListener.class);
 
         triggerMeasurement(11);
@@ -262,6 +285,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotifyListenersOnSessionClobber() {
+        fail("Needs a redo");
+
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
@@ -272,6 +297,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotifyListenersOnSessionLoad() {
+        fail("Needs a redo");
+
         SessionManager.Listener listener = mock(SessionManager.Listener.class);
         sessionManager.registerListener(listener);
 
@@ -282,6 +309,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldNotAddMeasurementsToASavedSession() {
+        fail("Needs a redo");
+
         sessionManager.session = new Session();
 
         triggerMeasurement(10);
@@ -291,6 +320,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldProvideRunningAverage() {
+        fail("Needs a redo");
+
         sessionManager.session = new Session();
         sessionManager.session.add(new Measurement(2));
         sessionManager.session.add(new Measurement(4));
@@ -303,6 +334,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldProvideRunningPeak() {
+        fail("Needs a redo");
+
         sessionManager.session = new Session();
         sessionManager.session.add(new Measurement(6));
         sessionManager.session.add(new Measurement(4));
@@ -315,6 +348,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldSaveAdditionalData() {
+        fail("Needs a redo");
+
         sessionManager.settingsHelper = mock(SettingsHelper.class);
         sessionManager.metadataHelper = mock(MetadataHelper.class);
         when(sessionManager.settingsHelper.getCalibration()).thenReturn(123);
@@ -348,6 +383,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldJustDeleteNotesIfSessionInProgress() {
+        fail("Needs a redo");
+
         sessionManager.startSession();
         Note note = sessionManager.makeANote(null, null, null);
 
@@ -358,6 +395,8 @@ public class SessionManagerTest {
 
     @Test
     public void afterDeletingNotesShouldHaveNewNumbers() {
+        fail("Needs a redo");
+
         sessionManager.startSession();
         Note note1 = sessionManager.makeANote(null, null, null);
         Note note2 = sessionManager.makeANote(null, null, null);
@@ -370,6 +409,8 @@ public class SessionManagerTest {
 
     @Test
     public void shouldMarkNotesToBeDeletedForSavedSessions() {
+        fail("Needs a redo");
+
         sessionManager.session = mock(Session.class);
         when(sessionManager.session.isSaved()).thenReturn(true);
         Note note = new Note(null, null, location, null, 10);
@@ -382,6 +423,7 @@ public class SessionManagerTest {
 
     @Test
     public void shouldRestartExternalSensor() {
+        sessionManager.restartSensors();
         sessionManager.restartSensors();
 
         verify(sessionManager.externalSensor).start();
