@@ -1,9 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content">
-    <TextView style="@style/Wide"
-              android:id="@+id/name"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/dialog_frame"
+        >
+
+    <TextView style="@style/Wrap"
+              android:id="@+id/title"
+              android:text="Title"
+              android:layout_alignParentTop="true"
+              android:layout_centerHorizontal="true"
             />
-</LinearLayout>
+
+    <include layout="@layout/gauge_faces"
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:layout_below="@id/title"
+             android:layout_centerHorizontal="true"
+            />
+
+    <include layout="@layout/top_bar"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_below="@id/gauge_container"
+            />
+
+    <ImageButton style="@style/Wrap"
+                 android:background="@drawable/minus"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentLeft="true"
+            />
+    <ImageButton style="@style/Wrap"
+                 android:background="@drawable/minus"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentRight="true"
+            />
+
+</RelativeLayout>

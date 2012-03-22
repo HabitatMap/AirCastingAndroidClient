@@ -27,93 +27,9 @@
         <include layout="@layout/top_bar"
                  android:id="@+id/top_bar"
                 />
+        
+        <include layout="@layout/gauge_faces"/>
 
-        <LinearLayout android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:gravity="center"
-                      android:layout_below="@id/top_bar"
-                      android:id="@+id/gauge_container"
-                      android:layout_centerHorizontal="true"
-                >
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:orientation="vertical"
-                          android:layout_margin="1sp"
-                          android:id="@+id/db_avg_container"
-                    >
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="fill_parent"
-                          android:layout_height="wrap_content"
-                          android:text="@string/db_avg"
-                          android:gravity="center"
-                          android:textColor="@android:color/black"
-                          android:background="@color/gauge_transparent"
-                        />
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:background="@drawable/round_bottom_green"
-                          android:gravity="center"
-                          android:text="0"
-                          android:textSize="35sp"
-                          android:textColor="@android:color/white"
-                          android:id="@+id/db_avg"
-                        />
-            </LinearLayout>
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:orientation="vertical"
-                          android:id="@+id/db_now_container"
-                          android:layout_margin="1sp"
-                    >
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="fill_parent"
-                          android:layout_height="wrap_content"
-                          android:text="@string/db_now"
-                          android:gravity="center"
-                          android:textColor="@android:color/black"
-                          android:background="@color/gauge_transparent"
-                        />
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:background="@drawable/round_bottom_green_big"
-                          android:gravity="center"
-                          android:text="0"
-                          android:textSize="40sp"
-                          android:textColor="@android:color/white"
-                          android:id="@+id/db_now"
-                        />
-            </LinearLayout>
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:orientation="vertical"
-                          android:layout_margin="1sp"
-                          android:id="@+id/db_peak_container"
-                    >
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="fill_parent"
-                          android:layout_height="wrap_content"
-                          android:text="@string/db_peak"
-                          android:gravity="center"
-                          android:textColor="@android:color/black"
-                          android:background="@color/gauge_transparent"
-                        />
-                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:background="@drawable/round_bottom_green"
-                          android:gravity="center"
-                          android:text="0"
-                          android:textSize="35sp"
-                          android:textColor="@android:color/white"
-                          android:id="@+id/db_peak"
-                        />
-            </LinearLayout>
-        </LinearLayout>
         <LinearLayout style="@style/Fill"
                       android:layout_below="@id/top_bar"
                       android:layout_alignBottom="@id/gauge_container"

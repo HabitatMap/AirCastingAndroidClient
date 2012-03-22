@@ -14,10 +14,10 @@ import java.util.Map;
 import static com.google.common.collect.Maps.newHashMap;
 
 public class StreamAdapter extends SimpleAdapter {
-    public static final String NAME = "name";
+    public static final String TITLE = "title";
 
-    private static final int[] TO = new int[]{R.id.name};
-    private static final String[] FROM = new String[]{NAME};
+    private static final int[] TO = new int[]{R.id.title};
+    private static final String[] FROM = new String[]{TITLE};
 
     private List<Map<String, String>> data;
     EventBus eventBus;
@@ -42,7 +42,7 @@ public class StreamAdapter extends SimpleAdapter {
     public void onEvent(SensorEvent event) {
         final HashMap<String, String> map = newHashMap();
 
-        map.put(NAME, event.getSensorName());
+        map.put(TITLE, event.getSensorName());
 
         context.runOnUiThread(new Runnable() {
             @Override
