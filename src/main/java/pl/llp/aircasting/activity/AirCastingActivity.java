@@ -39,6 +39,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
@@ -63,7 +64,7 @@ import static pl.llp.aircasting.Intents.triggerSync;
  * Date: 9/30/11
  * Time: 3:18 PM
  */
-public abstract class AirCastingActivity extends RoboMapActivityWithProgress implements SessionManager.Listener, View.OnClickListener, Animation.AnimationListener {
+public abstract class AirCastingActivity extends RoboMapActivityWithProgress implements View.OnClickListener, Animation.AnimationListener {
     public static final String NOTE_INDEX = "noteIndex";
     public static final String SHOW_BUTTONS = "showButtons";
 
@@ -148,8 +149,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         if (!sessionManager.isSessionSaved()) {
             Intents.startSensors(context);
         }
-
-        sessionManager.registerListener(this);
 
         updateGauges();
         updateButtons();
@@ -265,7 +264,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @Override
     protected void onPause() {
         super.onPause();
-        sessionManager.unregisterListener(this);
         eventBus.unregister(this);
 
         if (!sessionManager.isSessionSaved()) {
@@ -367,9 +365,14 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         updateGauges();
     }
 
-    @Override
-    public void onError() {
-        Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+    @Subscribe
+    public void onEvent(AudioReaderErrorEvent event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

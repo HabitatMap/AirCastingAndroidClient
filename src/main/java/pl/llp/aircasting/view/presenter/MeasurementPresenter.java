@@ -24,6 +24,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -49,17 +50,18 @@ import static java.util.Collections.sort;
  * Time: 1:47 PM
  */
 @Singleton
-public class MeasurementPresenter implements SessionManager.Listener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final long MILLIS_IN_SECOND = 1000;
 
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences preferences;
+    @Inject EventBus eventBus;
 
     @Inject
     public void init() {
-        sessionManager.registerListener(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
+        eventBus.register(this);
     }
 
     private double anchor = 0;
@@ -163,10 +165,6 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
 
         return aggregator.getAverage();
-    }
-
-    @Override
-    public void onError() {
     }
 
     private void notifyListeners() {

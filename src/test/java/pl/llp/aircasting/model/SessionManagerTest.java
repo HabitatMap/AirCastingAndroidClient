@@ -225,19 +225,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldUnregisterListeners() {
-        fail("This needs to be removed when we get rid of the Listener");
-
-        SessionManager.Listener listener = mock(SessionManager.Listener.class);
-        sessionManager.registerListener(listener);
-        sessionManager.unregisterListener(listener);
-
-        triggerMeasurement(22);
-
-        verifyZeroInteractions(listener);
-    }
-
-    @Test
     public void shouldDiscardASession() {
         sessionManager.startSession();
 

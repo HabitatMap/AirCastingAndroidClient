@@ -49,7 +49,6 @@ public class SessionManagerMakeANoteTest {
     @Inject SessionManager sessionManager;
     private Location location;
     private Date date;
-    private SessionManager.Listener listener;
 
     @Before
     public void setup() {
@@ -60,8 +59,6 @@ public class SessionManagerMakeANoteTest {
         sessionManager.locationHelper = mock(LocationHelper.class);
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
         sessionManager.eventBus = mock(EventBus.class);
-
-        listener = mock(SessionManager.Listener.class);
 
         date = new Date();
     }

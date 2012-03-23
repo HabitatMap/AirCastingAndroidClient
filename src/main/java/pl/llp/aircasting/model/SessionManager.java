@@ -20,7 +20,6 @@
 package pl.llp.aircasting.model;
 
 import android.app.Application;
-import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import com.google.common.eventbus.EventBus;
@@ -28,17 +27,22 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
-import pl.llp.aircasting.helper.*;
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.MetadataHelper;
+import pl.llp.aircasting.helper.NotificationHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Iterables.skip;
 import static com.google.common.collect.Maps.newHashMap;
@@ -210,18 +214,6 @@ public class SessionManager {
     }
 
     @Subscribe
-    public void onEvent(AudioReaderErrorEvent event) {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onError();
-                }
-            }
-        });
-    }
-
-    @Subscribe
     public synchronized void onEvent(SensorEvent event) {
         double value = event.getValue();
         recentMeasurements.put(event.getSensorName(), value);
@@ -284,20 +276,6 @@ public class SessionManager {
         return measurementStreams.get(sensorName);
     }
 
-    public interface Listener {
-        public void onError();
-    }
-
-    private Set<Listener> listeners = new HashSet<Listener>();
-
-    public void registerListener(Listener listener) {
-        listeners.add(listener);
-    }
-
-    public void unregisterListener(Listener listener) {
-        listeners.remove(listener);
-    }
-
     public void discardSession() {
         cleanup();
     }
@@ -328,8 +306,6 @@ public class SessionManager {
         }
         return recentMeasurements.get(sensorName);
     }
-
-    Handler notificationHandler = new Handler();
 
     private void notifyNewSession() {
         eventBus.post(new SessionChangeEvent());
