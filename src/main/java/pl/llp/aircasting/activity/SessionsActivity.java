@@ -62,11 +62,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Inject Application context;
     @Inject SyncState syncState;
 
-    @InjectView(R.id.top_bar_quiet) TextView topBarQuiet;
-    @InjectView(R.id.top_bar_average) TextView topBarAverage;
-    @InjectView(R.id.top_bar_loud) TextView topBarLoud;
-    @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
+    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
+    @InjectView(R.id.top_bar_low) TextView topBarAverage;
+    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
+    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
+    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
 
     @InjectView(R.id.sync_summary) Button syncSummary;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;

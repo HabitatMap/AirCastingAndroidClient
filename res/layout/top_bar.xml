@@ -33,33 +33,33 @@
         <TextView style="@style/TopBarElement"
                   android:layout_margin="0dp"
                   android:gravity="left"
-                  android:id="@+id/top_bar_quiet"
+                  android:id="@+id/top_bar_very_low"
                   android:background="@color/green"
                 />
         <TextView style="@style/TopBarElement"
                   android:layout_margin="0dp"
                   android:gravity="right"
-                  android:id="@+id/top_bar_average"
+                  android:id="@+id/top_bar_low"
                   android:background="@color/green"
                 />
     </LinearLayout>
 
     <TextView style="@style/TopBarElement"
               android:gravity="right"
-              android:id="@+id/top_bar_loud"
+              android:id="@+id/top_bar_mid"
               android:background="@color/yellow"
             />
 
     <TextView style="@style/TopBarElement"
               android:gravity="right"
-              android:id="@+id/top_bar_very_loud"
+              android:id="@+id/top_bar_high"
               android:background="@color/orange"
             />
 
     <TextView style="@style/TopBarElement"
               android:gravity="right"
               android:background="@color/red"
-              android:id="@+id/top_bar_too_loud"
+              android:id="@+id/top_bar_very_high"
             />
 
 </LinearLayout>

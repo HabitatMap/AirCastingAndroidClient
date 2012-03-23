@@ -94,11 +94,11 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @InjectView(R.id.buttons) View buttons;
 
     @InjectView(R.id.top_bar) View topBar;
-    @InjectView(R.id.top_bar_quiet) TextView topBarQuiet;
-    @InjectView(R.id.top_bar_average) TextView topBarAverage;
-    @InjectView(R.id.top_bar_loud) TextView topBarLoud;
-    @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
+    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
+    @InjectView(R.id.top_bar_low) TextView topBarAverage;
+    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
+    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
+    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
     @InjectView(R.id.note_viewer) View noteViewer;
     @InjectView(R.id.note_date) TextView noteDate;
     @InjectView(R.id.note_number) TextView noteNumber;

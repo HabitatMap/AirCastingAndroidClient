@@ -22,10 +22,22 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String PEAK_LABEL = "peak_label";
     public static final String AVG_LABEL = "avg_label";
     public static final String NOW_LABEL = "now_label";
+    public static final String VERY_LOW = "veryLow";
+    public static final String LOW = "low";
+    public static final String MID = "mid";
+    public static final String HIGH = "high";
+    public static final String VERY_HIGH = "veryHigh";
 
-    private static final String[] FROM = new String[]{TITLE, NOW, AVERAGE, PEAK, NOW_LABEL, AVG_LABEL, PEAK_LABEL};
-    private static final int[] TO = new int[]{R.id.title, R.id.db_now, R.id.db_avg, R.id.db_peak,
-            R.id.now_label, R.id.avg_label, R.id.peak_label};
+    private static final String[] FROM = new String[]{
+            TITLE, NOW, AVERAGE, PEAK,
+            NOW_LABEL, AVG_LABEL, PEAK_LABEL,
+            VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+    };
+    private static final int[] TO = new int[]{
+            R.id.title, R.id.db_now, R.id.db_avg, R.id.db_peak,
+            R.id.now_label, R.id.avg_label, R.id.peak_label,
+            R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
+    };
 
     private List<Map<String, String>> data;
     private Map<String, Map<String, String>> sensors = newHashMap();
@@ -77,6 +89,12 @@ public class StreamAdapter extends SimpleAdapter {
         map.put(PEAK_LABEL, label(R.string.peak_label_template, event));
         map.put(NOW_LABEL, label(R.string.now_label_template, event));
         map.put(AVG_LABEL, label(R.string.avg_label_template, event));
+        
+        map.put(VERY_LOW, String.valueOf(event.getVeryLow()));
+        map.put(LOW, String.valueOf(event.getLow()));
+        map.put(MID, String.valueOf(event.getMid()));
+        map.put(HIGH, String.valueOf(event.getHigh()));
+        map.put(VERY_HIGH, String.valueOf(event.getVeryHigh()));
 
         notifyDataSetChanged();
     }

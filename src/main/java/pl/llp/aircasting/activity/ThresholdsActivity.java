@@ -47,11 +47,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     @InjectView(R.id.color_scale_loud_slider) SeekBar loudSlider;
     @InjectView(R.id.color_scale_average_slider) SeekBar averageSlider;
 
-    @InjectView(R.id.top_bar_too_loud) TextView topBarTooLoud;
-    @InjectView(R.id.top_bar_very_loud) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_loud) TextView topBarLoud;
-    @InjectView(R.id.top_bar_average) TextView topBarAverage;
-    @InjectView(R.id.top_bar_quiet) TextView topBarQuiet;
+    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
+    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
+    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
+    @InjectView(R.id.top_bar_low) TextView topBarAverage;
+    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
 
     @InjectView(R.id.save) Button save;
     @InjectView(R.id.reset) Button reset;
