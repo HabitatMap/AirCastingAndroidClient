@@ -50,6 +50,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -255,7 +256,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
                 dbPeakContainer.setVisibility(visibility);
 
                 updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
-                updatePowerView(dbNow, sessionManager.getNow("Phone microphone"), MarkerSize.BIG);
+                updatePowerView(dbNow, sessionManager.getNow(SimpleAudioReader.SENSOR_NAME), MarkerSize.BIG);
                 updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
             }
         });

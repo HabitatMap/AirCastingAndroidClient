@@ -43,6 +43,7 @@ import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
@@ -331,7 +332,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         Location location = locationHelper.getLastLocation();
         if (!sessionManager.isSessionSaved()) {
             if (!settingsHelper.isAveraging()) {
-                locationOverlay.setValue(sessionManager.getNow("Phone microphone"));
+                locationOverlay.setValue(sessionManager.getNow(SimpleAudioReader.SENSOR_NAME));
             }
 
             locationOverlay.setLocation(location);
