@@ -44,10 +44,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Iterables.skip;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.primitives.Ints.min;
 import static com.google.inject.internal.Lists.newArrayList;
+import static pl.llp.aircasting.util.Lists.getLast;
 
 /**
  * Created by IntelliJ IDEA.
@@ -181,7 +181,7 @@ public class SessionManager {
     public synchronized double getPeak(int n) {
         if (session.getMeasurements().isEmpty()) return 0;
 
-        Iterable<Measurement> measurements = getLast(n);
+        Iterable<Measurement> measurements = getLast(session.getMeasurements(), n);
         double max = Double.NEGATIVE_INFINITY;
         for (Measurement measurement : measurements) {
             if (measurement.getValue() > max) max = measurement.getValue();
@@ -190,18 +190,12 @@ public class SessionManager {
         return max;
     }
 
-    private Iterable<Measurement> getLast(int n) {
-        int toSkip = session.getMeasurements().size() - n;
-        if (toSkip < 0) toSkip = 0;
-        return skip(session.getMeasurements(), toSkip);
-    }
-
     public synchronized double getAvg(int n) {
         if (session.getMeasurements().isEmpty()) return 0;
 
         double result = 0;
 
-        Iterable<Measurement> measurements = getLast(n);
+        Iterable<Measurement> measurements = getLast(session.getMeasurements(), n);
         for (Measurement measurement : measurements) {
             result += measurement.getValue();
         }
@@ -227,7 +221,7 @@ public class SessionManager {
                 MeasurementStream stream = prepareStream(event);
                 stream.add(measurement);
             }
-            
+
             eventBus.post(new MeasurementEvent(measurement));
         }
     }
@@ -241,7 +235,7 @@ public class SessionManager {
             MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
             measurementStreams.put(sensorName, stream);
         }
-        
+
         return measurementStreams.get(sensorName);
     }
 
@@ -301,7 +295,7 @@ public class SessionManager {
     }
 
     public synchronized double getNow(String sensorName) {
-        if(!recentMeasurements.containsKey(sensorName)){
+        if (!recentMeasurements.containsKey(sensorName)) {
             return 0;
         }
         return recentMeasurements.get(sensorName);
