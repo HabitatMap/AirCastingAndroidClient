@@ -82,7 +82,7 @@ public class SessionManagerTest {
     }
 
     private void triggerMeasurement(String name, double value) {
-        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "number", "#", value));
+        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "number", "#", 1, 2, 3, 4, 5, value));
     }
 
     private void triggerMeasurement(double value) {
@@ -118,7 +118,7 @@ public class SessionManagerTest {
         sessionManager.startSession();
 
         triggerMeasurement();
-        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 10));
+        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 1, 2, 3, 4, 5, 10));
 
         MeasurementStream expected = new MeasurementStream("LHC2", "Siggh boson", "number", "#");
         assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
@@ -149,16 +149,16 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldProvideAvgForEachStream(){
+    public void shouldProvideAvgForEachStream() {
         MeasurementStream stream = mock(MeasurementStream.class);
         sessionManager.measurementStreams.put("LHC", stream);
         when(stream.getAvg()).thenReturn(10.0);
-        
+
         assertThat(sessionManager.getAvg("LHC"), equalTo(10.0));
     }
-    
+
     @Test
-    public void shouldProvidePeakForEachStream(){
+    public void shouldProvidePeakForEachStream() {
         MeasurementStream stream = mock(MeasurementStream.class);
         sessionManager.measurementStreams.put("LHC", stream);
         when(stream.getPeak()).thenReturn(11.0);

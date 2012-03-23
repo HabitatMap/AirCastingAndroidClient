@@ -38,6 +38,12 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public static final String MEASUREMENT_TYPE = "Sound Level";
     public static final String SENSOR_NAME = "Phone Microphone";
 
+    public static final int VERY_LOW = 20;
+    public static final int LOW = 60;
+    public static final int MID = 70;
+    public static final int HIGH = 80;
+    public static final int VERY_HIGH = 100;
+
     @Inject SettingsHelper settingsHelper;
     @Inject AudioReader audioReader;
     @Inject SignalPower signalPower;
@@ -58,7 +64,8 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public void onReadComplete(short[] buffer) {
         Double power = signalPower.calculatePowerDb(buffer);
         if (power != null) {
-            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL, power);
+            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL,
+                    VERY_LOW, LOW, MID, HIGH, VERY_HIGH, power);
             eventBus.post(event);
         }
     }

@@ -52,6 +52,12 @@ public class SimpleAudioReaderTest {
         audioReader.eventBus = mock(EventBus.class);
     }
 
+    private SensorEvent expected(double value) {
+        return new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB",
+                SimpleAudioReader.VERY_LOW, SimpleAudioReader.LOW, SimpleAudioReader.MID, SimpleAudioReader.HIGH,
+                SimpleAudioReader.VERY_HIGH, value);
+    }
+
     @Test
     public void shouldStartReader() {
         audioReader.start();
@@ -85,8 +91,8 @@ public class SimpleAudioReaderTest {
         audioReader.onReadComplete(new short[0]);
         audioReader.onReadComplete(new short[0]);
 
-        SensorEvent expected1 = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 12.3);
-        SensorEvent expected2 = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 12.4);
+        SensorEvent expected1 = expected(12.3);
+        SensorEvent expected2 = expected(12.4);
         verify(audioReader.eventBus).post(expected1);
         verify(audioReader.eventBus).post(expected2);
     }
@@ -101,7 +107,7 @@ public class SimpleAudioReaderTest {
         audioReader.onReadComplete(new short[0]);
         audioReader.onReadComplete(new short[0]);
 
-        SensorEvent expected = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 2.2);
+        SensorEvent expected = expected(2.2);
         verify(audioReader.eventBus).post(expected);
     }
 }

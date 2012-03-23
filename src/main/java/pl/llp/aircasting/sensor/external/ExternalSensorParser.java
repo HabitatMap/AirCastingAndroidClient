@@ -15,12 +15,19 @@ public class ExternalSensorParser {
         String symbol = parts[3];
 
         double value;
+        int veryLow, low, mid, high, veryHigh;
         try {
-            value = Double.parseDouble(parts[4]);
+            veryLow = Integer.parseInt(parts[4]);
+            low = Integer.parseInt(parts[5]);
+            mid = Integer.parseInt(parts[6]);
+            high = Integer.parseInt(parts[7]);
+            veryHigh = Integer.parseInt(parts[8]);
+
+            value = Double.parseDouble(parts[9]);
         } catch (NumberFormatException e) {
             throw new ParseException(e);
         }
 
-        return new SensorEvent(name, type, unit, symbol, value);
+        return new SensorEvent(name, type, unit, symbol, veryLow, low, mid, high, veryHigh, value);
     }
 }

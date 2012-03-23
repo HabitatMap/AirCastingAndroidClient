@@ -7,6 +7,11 @@ public class SensorEvent extends AirCastingEvent {
     private String unit;
     private String symbol;
     private String measurementType;
+    private int veryLow;
+    private int low;
+    private int mid;
+    private int high;
+    private int veryHigh;
     private double value;
 
     public String getSensorName() {
@@ -29,11 +34,37 @@ public class SensorEvent extends AirCastingEvent {
         return measurementType;
     }
 
-    public SensorEvent(String sensorName, String measurementType, String unit, String symbol, double value) {
+    public int getVeryLow() {
+        return veryLow;
+    }
+
+    public int getLow() {
+        return low;
+    }
+
+    public int getMid() {
+        return mid;
+    }
+
+    public int getHigh() {
+        return high;
+    }
+
+    public int getVeryHigh() {
+        return veryHigh;
+    }
+
+    public SensorEvent(String sensorName, String measurementType, String unit, String symbol,
+                       int veryLow, int low, int mid, int high, int veryHigh, double value) {
         this.sensorName = sensorName;
         this.measurementType = measurementType;
         this.unit = unit;
         this.symbol = symbol;
+        this.veryLow = veryLow;
+        this.low = low;
+        this.mid = mid;
+        this.high = high;
+        this.veryHigh = veryHigh;
         this.value = value;
     }
 
@@ -44,6 +75,11 @@ public class SensorEvent extends AirCastingEvent {
                 ", unit='" + unit + '\'' +
                 ", symbol='" + symbol + '\'' +
                 ", measurementType='" + measurementType + '\'' +
+                ", veryLow=" + veryLow +
+                ", low=" + low +
+                ", mid=" + mid +
+                ", high=" + high +
+                ", veryHigh=" + veryHigh +
                 ", value=" + value +
                 '}';
     }
@@ -55,7 +91,12 @@ public class SensorEvent extends AirCastingEvent {
 
         SensorEvent event = (SensorEvent) o;
 
+        if (high != event.high) return false;
+        if (low != event.low) return false;
+        if (mid != event.mid) return false;
         if (Double.compare(event.value, value) != 0) return false;
+        if (veryHigh != event.veryHigh) return false;
+        if (veryLow != event.veryLow) return false;
         if (measurementType != null ? !measurementType.equals(event.measurementType) : event.measurementType != null)
             return false;
         if (sensorName != null ? !sensorName.equals(event.sensorName) : event.sensorName != null) return false;
@@ -73,6 +114,11 @@ public class SensorEvent extends AirCastingEvent {
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
         result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
+        result = 31 * result + veryLow;
+        result = 31 * result + low;
+        result = 31 * result + mid;
+        result = 31 * result + high;
+        result = 31 * result + veryHigh;
         temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
