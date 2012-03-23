@@ -149,6 +149,24 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void shouldProvideAvgForEachStream(){
+        MeasurementStream stream = mock(MeasurementStream.class);
+        sessionManager.measurementStreams.put("LHC", stream);
+        when(stream.getAvg()).thenReturn(10.0);
+        
+        assertThat(sessionManager.getAvg("LHC"), equalTo(10.0));
+    }
+    
+    @Test
+    public void shouldProvidePeakForEachStream(){
+        MeasurementStream stream = mock(MeasurementStream.class);
+        sessionManager.measurementStreams.put("LHC", stream);
+        when(stream.getPeak()).thenReturn(11.0);
+
+        assertThat(sessionManager.getPeak("LHC"), equalTo(11.0));
+    }
+
+    @Test
     public void shouldStoreMeasurements() {
         sessionManager.sessionStarted = true;
 

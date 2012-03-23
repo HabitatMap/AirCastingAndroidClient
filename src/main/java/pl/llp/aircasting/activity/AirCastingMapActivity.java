@@ -365,6 +365,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
             lastMeasurement = measurement;
         }
 
-        mapView.invalidate();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapView.invalidate();
+            }
+        });
     }
 }

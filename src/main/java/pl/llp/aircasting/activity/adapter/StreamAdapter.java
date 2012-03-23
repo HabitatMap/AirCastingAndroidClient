@@ -17,9 +17,11 @@ import static com.google.common.collect.Maps.newHashMap;
 public class StreamAdapter extends SimpleAdapter {
     public static final String TITLE = "title";
     public static final String NOW = "now";
+    public static final String AVERAGE = "average";
+    public static final String PEAK = "peak";
 
-    private static final int[] TO = new int[]{R.id.title, R.id.db_now};
-    private static final String[] FROM = new String[]{TITLE, NOW};
+    private static final String[] FROM = new String[]{TITLE, NOW, AVERAGE, PEAK};
+    private static final int[] TO = new int[]{R.id.title, R.id.db_now, R.id.db_avg, R.id.db_peak};
 
     private List<Map<String, String>> data;
     private Map<String, Map<String, String>> sensors = newHashMap();
@@ -64,7 +66,9 @@ public class StreamAdapter extends SimpleAdapter {
         Map<String, String> map = sensors.get(name);
 
         map.put(TITLE, name);
-        map.put(NOW, String.valueOf((int)sessionManager.getNow(name)));
+        map.put(NOW, String.valueOf((int) sessionManager.getNow(name)));
+        map.put(AVERAGE, String.valueOf((int) sessionManager.getAvg(name)));
+        map.put(PEAK, String.valueOf((int) sessionManager.getPeak(name)));
 
         notifyDataSetChanged();
     }

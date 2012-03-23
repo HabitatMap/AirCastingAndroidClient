@@ -81,7 +81,7 @@ public class SessionManager {
     private boolean paused;
     private int noteNumber = 0;
 
-    private Map<String, MeasurementStream> measurementStreams = newHashMap();
+    Map<String, MeasurementStream> measurementStreams = newHashMap();
 
     @Inject
     public void init() {
@@ -347,5 +347,21 @@ public class SessionManager {
 
     public synchronized List<Measurement> getSoundMeasurements() {
         return newArrayList(session.getMeasurements());
+    }
+
+    public double getAvg(String sensorName) {
+        if (measurementStreams.containsKey(sensorName)) {
+            return measurementStreams.get(sensorName).getAvg();
+        } else {
+            return 0;
+        }
+    }
+
+    public double getPeak(String sensorName) {
+        if (measurementStreams.containsKey(sensorName)) {
+            return measurementStreams.get(sensorName).getPeak();
+        } else {
+            return 0;
+        }
     }
 }
