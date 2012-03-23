@@ -182,4 +182,8 @@
     <string name="external_sensor">External sensor</string>
     <string name="bluetooth_not_supported">Your phone does not support bluetooth.</string>
     <string name="measurement_streams">Measurement streams</string>
+    
+    <string name="peak_label_template" formatted="false">Peak %s</string>
+    <string name="now_label_template" formatted="false">Now %s</string>
+    <string name="avg_label_template" formatted="false">Avg %s</string>
 </resources>
