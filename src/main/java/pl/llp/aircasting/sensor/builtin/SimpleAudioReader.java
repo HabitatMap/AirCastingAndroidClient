@@ -35,8 +35,8 @@ public class SimpleAudioReader extends AudioReader.Listener {
     private static final int SAMPLE_RATE = 44100;
     public static final String SYMBOL = "dB";
     public static final String UNIT = "decibels";
-    public static final String MEASUREMENT_TYPE = "Sound level";
-    public static final String SENSOR_NAME = "Phone microphone";
+    public static final String MEASUREMENT_TYPE = "Sound Level";
+    public static final String SENSOR_NAME = "Phone Microphone";
 
     @Inject SettingsHelper settingsHelper;
     @Inject AudioReader audioReader;

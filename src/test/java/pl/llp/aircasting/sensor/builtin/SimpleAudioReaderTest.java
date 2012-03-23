@@ -85,8 +85,8 @@ public class SimpleAudioReaderTest {
         audioReader.onReadComplete(new short[0]);
         audioReader.onReadComplete(new short[0]);
 
-        SensorEvent expected1 = new SensorEvent("Phone microphone", "Sound level", "decibels", "dB", 12.3);
-        SensorEvent expected2 = new SensorEvent("Phone microphone", "Sound level", "decibels", "dB", 12.4);
+        SensorEvent expected1 = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 12.3);
+        SensorEvent expected2 = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 12.4);
         verify(audioReader.eventBus).post(expected1);
         verify(audioReader.eventBus).post(expected2);
     }
@@ -101,7 +101,7 @@ public class SimpleAudioReaderTest {
         audioReader.onReadComplete(new short[0]);
         audioReader.onReadComplete(new short[0]);
 
-        SensorEvent expected = new SensorEvent("Phone microphone", "Sound level", "decibels", "dB", 2.2);
+        SensorEvent expected = new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB", 2.2);
         verify(audioReader.eventBus).post(expected);
     }
 }
