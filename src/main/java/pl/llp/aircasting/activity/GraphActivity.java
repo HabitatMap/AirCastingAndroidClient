@@ -80,21 +80,26 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     private void refresh() {
-        zoomIn.setEnabled(measurementPresenter.canZoomIn());
-        zoomOut.setEnabled(measurementPresenter.canZoomOut());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                zoomIn.setEnabled(measurementPresenter.canZoomIn());
+                zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
-        List<Measurement> measurements = measurementPresenter.getTimelineView();
-        ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
+                List<Measurement> measurements = measurementPresenter.getTimelineView();
+                ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
-        plot.update(measurements, notes);
+                plot.update(measurements, notes);
 
-        scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
-        scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
+                scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
+                scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
 
-        if (!measurements.isEmpty()) {
-            graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
-            graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
-        }
+                if (!measurements.isEmpty()) {
+                    graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
+                    graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
+                }
+            }
+        });
     }
 
     @Override
