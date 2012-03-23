@@ -21,12 +21,14 @@ package pl.llp.aircasting.model;
 
 import android.location.Location;
 import android.location.LocationManager;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 
 import java.util.Date;
@@ -57,6 +59,7 @@ public class SessionManagerMakeANoteTest {
 
         sessionManager.locationHelper = mock(LocationHelper.class);
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
+        sessionManager.eventBus = mock(EventBus.class);
 
         listener = mock(SessionManager.Listener.class);
 
@@ -81,12 +84,11 @@ public class SessionManagerMakeANoteTest {
 
     @Test
     public void shouldNotifyListeners() {
-        sessionManager.registerListener(listener);
-        Note expected = new Note(date, "Note text", location, "some file", 0);
-
         sessionManager.makeANote(date, "Note text", "some file");
 
-        verify(listener).onNewNote(Mockito.eq(expected));
+        Note note = new Note(date, "Note text", location, "some file", 0);
+        NoteCreatedEvent expected = new NoteCreatedEvent(note);
+        verify(sessionManager.eventBus).post(Mockito.eq(expected));
     }
 
     @Test

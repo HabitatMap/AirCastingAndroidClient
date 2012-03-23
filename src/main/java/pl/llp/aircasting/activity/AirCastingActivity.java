@@ -362,10 +362,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         updateGauges();
     }
 
-    @Override
-    public void onNewNote(Note note) {
-    }
-
     @Subscribe
     public void onEvent(SensorEvent event) {
         updateGauges();

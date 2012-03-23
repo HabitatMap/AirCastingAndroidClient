@@ -31,7 +31,6 @@ import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SessionManager;
 
 import java.util.*;
@@ -164,10 +163,6 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
 
         return aggregator.getAverage();
-    }
-
-    @Override
-    public void onNewNote(Note eq) {
     }
 
     @Override
