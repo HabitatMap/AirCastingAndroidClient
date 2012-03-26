@@ -24,7 +24,7 @@ public class ExternalSensorParserTest {
 
     @Test(expected = ParseException.class)
     public void shouldThrowExceptionsForMalformedLines() throws ParseException {
-        parser.parse("some string");
+        parser.parse("1;2;3;4;5;6;7");
     }
 
     @Test(expected = ParseException.class)

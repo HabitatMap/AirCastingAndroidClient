@@ -5,8 +5,8 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 public class ExternalSensorParser {
     public SensorEvent parse(String string) throws ParseException {
         String[] parts = string.split(";");
-        if (parts.length < 4) {
-            throw new ParseException();
+        if (parts.length < 9) {
+            throw new ParseException("Field count is wrong");
         }
 
         String name = parts[0];
