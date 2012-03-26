@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="fill_parent"
-          android:layout_height="fill_parent"
+          style="@style/Fill"
           android:id="@android:id/list"
+          android:background="@android:color/white"
+          android:cacheColorHint="@android:color/white"
+          android:divider="@android:color/white"
+          android:dividerHeight="0dp"
         >
 </ListView>
