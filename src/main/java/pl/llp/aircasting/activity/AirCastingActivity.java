@@ -73,13 +73,13 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
     @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;
 
-    @InjectView(R.id.db_avg) TextView dbAvg;
-    @InjectView(R.id.db_now) TextView dbNow;
-    @InjectView(R.id.db_peak) TextView dbPeak;
+    @InjectView(R.id.avg_gauge) TextView dbAvg;
+    @InjectView(R.id.now_gauge) TextView dbNow;
+    @InjectView(R.id.peak_gauge) TextView dbPeak;
 
-    @InjectView(R.id.db_now_container) View dbNowContainer;
-    @InjectView(R.id.db_avg_container) View dbAvgContainer;
-    @InjectView(R.id.db_peak_container) View dbPeakContainer;
+    @InjectView(R.id.now_container) View dbNowContainer;
+    @InjectView(R.id.avg_container) View dbAvgContainer;
+    @InjectView(R.id.peak_container) View dbPeakContainer;
 
     @Nullable @InjectView(R.id.graph_button) ImageButton graphButton;
     @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;

@@ -23,6 +23,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 /**
@@ -48,6 +49,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
     @Inject AudioReader audioReader;
     @Inject SignalPower signalPower;
     @Inject EventBus eventBus;
+    @Inject CalibrationHelper calibrationHelper;
 
     public void start() {
         // The AudioReader sleeps as much as it records
@@ -64,8 +66,9 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public void onReadComplete(short[] buffer) {
         Double power = signalPower.calculatePowerDb(buffer);
         if (power != null) {
+            double calibrated = calibrationHelper.calibrate(power);
             SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL,
-                    VERY_LOW, LOW, MID, HIGH, VERY_HIGH, power);
+                    VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
             eventBus.post(event);
         }
     }

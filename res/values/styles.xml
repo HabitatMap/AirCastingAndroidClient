@@ -117,4 +117,23 @@
         <item name="android:layout_margin">1sp</item>
         <item name="android:orientation">vertical</item>
     </style>
+
+    <style name="GaugeLabel"
+           parent="Wide"
+            >
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@color/gauge_transparent</item>
+    </style>
+
+    <style name="Gauge"
+           parent="Wrap"
+            >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/round_bottom_green</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">0</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

@@ -1,11 +1,14 @@
 package pl.llp.aircasting.activity.adapter;
 
 import android.app.Activity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.model.SessionManager;
 
 import java.util.HashMap;
@@ -34,34 +37,49 @@ public class StreamAdapter extends SimpleAdapter {
             VERY_LOW, LOW, MID, HIGH, VERY_HIGH
     };
     private static final int[] TO = new int[]{
-            R.id.title, R.id.db_now, R.id.db_avg, R.id.db_peak,
+            R.id.title, R.id.now_gauge, R.id.avg_gauge, R.id.peak_gauge,
             R.id.now_label, R.id.avg_label, R.id.peak_label,
             R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
     };
 
-    private List<Map<String, String>> data;
-    private Map<String, Map<String, String>> sensors = newHashMap();
-
-    private Activity context;
-    private SessionManager sessionManager;
+    GaugeHelper gaugeHelper;
+    SessionManager sessionManager;
     EventBus eventBus;
 
-    public StreamAdapter(Activity context, List<Map<String, String>> data, EventBus eventBus, SessionManager sessionManager) {
+    private List<Map<String, Object>> data;
+    private Map<String, Map<String, Object>> sensors = newHashMap();
+
+    private Activity context;
+
+    public StreamAdapter(Activity context, List<Map<String, Object>> data, EventBus eventBus, SessionManager sessionManager, GaugeHelper gaugeHelper) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
         this.sessionManager = sessionManager;
+        this.gaugeHelper = gaugeHelper;
     }
 
+    /**
+     * Start updating the adapter
+     */
     public void start() {
         eventBus.register(this);
     }
 
+    /**
+     * Stop updating the adapter
+     */
     public void stop() {
         eventBus.unregister(this);
     }
 
+    /**
+     * Adjust the state of the adapter to incorporate
+     * new sensor data.
+     *
+     * @param event new sensor data to be displayed
+     */
     @Subscribe
     public void onEvent(final SensorEvent event) {
         context.runOnUiThread(new Runnable() {
@@ -72,24 +90,32 @@ public class StreamAdapter extends SimpleAdapter {
         });
     }
 
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+
+        Map<String, Object> state = data.get(position);
+        Integer peak = (Integer) state.get(PEAK);
+        Integer avg = (Integer) state.get(AVERAGE);
+        Integer now = (Integer) state.get(NOW);
+        gaugeHelper.updateGauges(view, now, avg, peak);
+
+        return view;
+    }
+
     private void update(SensorEvent event) {
+        Map<String, Object> map = prepareItem(event);
         String name = event.getSensorName();
-        if (!sensors.containsKey(name)) {
-            HashMap<String, String> map = new HashMap<String, String>();
-            sensors.put(name, map);
-            data.add(map);
-        }
-        Map<String, String> map = sensors.get(name);
 
         map.put(TITLE, title(event));
 
-        map.put(NOW, String.valueOf((int) sessionManager.getNow(name)));
-        map.put(AVERAGE, String.valueOf((int) sessionManager.getAvg(name)));
-        map.put(PEAK, String.valueOf((int) sessionManager.getPeak(name)));
+        map.put(NOW, (int) sessionManager.getNow(name));
+        map.put(AVERAGE, (int) sessionManager.getAvg(name));
+        map.put(PEAK, (int) sessionManager.getPeak(name));
         map.put(PEAK_LABEL, label(R.string.peak_label_template, event));
         map.put(NOW_LABEL, label(R.string.now_label_template, event));
         map.put(AVG_LABEL, label(R.string.avg_label_template, event));
-        
+
         map.put(VERY_LOW, String.valueOf(event.getVeryLow()));
         map.put(LOW, String.valueOf(event.getLow()));
         map.put(MID, String.valueOf(event.getMid()));
@@ -97,6 +123,16 @@ public class StreamAdapter extends SimpleAdapter {
         map.put(VERY_HIGH, String.valueOf(event.getVeryHigh()));
 
         notifyDataSetChanged();
+    }
+
+    private Map<String, Object> prepareItem(SensorEvent event) {
+        String name = event.getSensorName();
+        if (!sensors.containsKey(name)) {
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            sensors.put(name, map);
+            data.add(map);
+        }
+        return sensors.get(name);
     }
 
     private String title(SensorEvent event) {

@@ -109,8 +109,8 @@
     <string name="description_label">Description:</string>
 
     <string name="db_avg">Avg dB</string>
-    <string name="db_peak">Peak dB</string>
-    <string name="db_now">Now dB</string>
+    <string name="peak_gauge">Peak dB</string>
+    <string name="now_gauge">Now dB</string>
     <string name="save_changes">Save Changes</string>
     <string name="reset_to_default">Reset to Default</string>
 
