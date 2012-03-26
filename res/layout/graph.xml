@@ -111,7 +111,7 @@
                      android:layout_centerVertical="true"
                      android:layout_marginRight="5dp"
                      android:background="@drawable/right_heat_map"
-                     android:id="@+id/heat_map_button"
+                     android:id="@+id/streams_button"
                 />
 
         <include layout="@layout/context_buttons"/>

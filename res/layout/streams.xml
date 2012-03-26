@@ -23,16 +23,16 @@
                      android:layout_alignParentLeft="true"
                      android:layout_centerVertical="true"
                      android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_heat_map"
-                     android:id="@+id/heat_map_button"
+                     android:background="@drawable/left_charts"
+                     android:id="@+id/graph_button"
                 />
 
         <ImageButton style="@style/Wrap"
                      android:layout_alignParentRight="true"
                      android:layout_centerVertical="true"
                      android:layout_marginRight="5dp"
-                     android:background="@drawable/right_charts"
-                     android:id="@+id/graph_button"
+                     android:background="@drawable/right_heat_map"
+                     android:id="@+id/heat_map_button"
                 />
     </RelativeLayout>
 </RelativeLayout>

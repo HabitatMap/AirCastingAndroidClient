@@ -33,6 +33,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Nullable @InjectView(R.id.graph_button) ImageButton graphButton;
     @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;
     @Nullable @InjectView(R.id.heat_map_button) ImageButton heatMapButton;
+    @Nullable @InjectView(R.id.streams_button) ImageButton streamsButton;
 
     private boolean initialized = false;
 
@@ -72,6 +73,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             if (graphButton != null) graphButton.setOnClickListener(this);
             if (traceButton != null) traceButton.setOnClickListener(this);
             if (heatMapButton != null) heatMapButton.setOnClickListener(this);
+            if (streamsButton != null) streamsButton.setOnClickListener(this);
 
             initialized = true;
         }
@@ -139,6 +141,9 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 break;
             case R.id.heat_map_button:
                 startActivity(new Intent(context, HeatMapActivity.class));
+                break;
+            case R.id.streams_button:
+                startActivity(new Intent(context, StreamsActivity.class));
                 break;
         }
     }
