@@ -26,7 +26,7 @@ import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -62,8 +62,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
         plot.initialize(this, settingsHelper, resourceHelper, calibrationHelper);
 
-        graphTop.setText(settingsHelper.getThreshold(SoundLevel.TOO_LOUD) + " dB");
-        graphBottom.setText(settingsHelper.getThreshold(SoundLevel.QUIET) + " dB");
+        graphTop.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH) + " dB");
+        graphBottom.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_LOW) + " dB");
     }
 
     @Override

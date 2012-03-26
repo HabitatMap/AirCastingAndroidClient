@@ -21,7 +21,8 @@ package pl.llp.aircasting.helper;
 
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 /**
  * Created by IntelliJ IDEA.
@@ -106,39 +107,39 @@ public class SettingsHelper {
         return getInt(HEAT_MAP_DENSITY, DEFAULT_HEAT_MAP_DENSITY);
     }
 
-    public int getThreshold(SoundLevel soundLevel) {
-        switch (soundLevel) {
-            case QUIET:
+    public int getThreshold(MeasurementLevel measurementLevel) {
+        switch (measurementLevel) {
+            case VERY_LOW:
                 return preferences.getInt(QUIET_THRESHOLD, DEFAULT_QUIET_THRESHOLD);
-            case AVERAGE:
+            case LOW:
                 return preferences.getInt(AVERAGE_THRESHOLD, DEFAULT_AVERAGE_THRESHOLD);
-            case LOUD:
+            case MID:
                 return preferences.getInt(LOUD_THRESHOLD, DEFAULT_LOUD_THRESHOLD);
-            case VERY_LOUD:
+            case HIGH:
                 return preferences.getInt(VERY_LOUD_THRESHOLD, DEFAULT_VERY_LOUD_THRESHOLD);
-            case TOO_LOUD:
+            case VERY_HIGH:
                 return preferences.getInt(TOO_LOUD_THRESHOLD, DEFAULT_TOO_LOUT_THRESHOLD);
         }
-        throw new RuntimeException("Could not provide a threshold for sound level " + soundLevel);
+        throw new RuntimeException("Could not provide a threshold for sound level " + measurementLevel);
     }
 
-    public void setThreshold(SoundLevel soundLevel, int value) {
+    public void setThreshold(MeasurementLevel measurementLevel, int value) {
         SharedPreferences.Editor editor = preferences.edit();
 
-        switch (soundLevel) {
-            case QUIET:
+        switch (measurementLevel) {
+            case VERY_LOW:
                 editor.putInt(QUIET_THRESHOLD, value);
                 break;
-            case AVERAGE:
+            case LOW:
                 editor.putInt(AVERAGE_THRESHOLD, value);
                 break;
-            case LOUD:
+            case MID:
                 editor.putInt(LOUD_THRESHOLD, value);
                 break;
-            case VERY_LOUD:
+            case HIGH:
                 editor.putInt(VERY_LOUD_THRESHOLD, value);
                 break;
-            case TOO_LOUD:
+            case VERY_HIGH:
                 editor.putInt(TOO_LOUD_THRESHOLD, value);
                 break;
         }
@@ -278,5 +279,9 @@ public class SettingsHelper {
 
     public String getSensorAddress() {
         return preferences.getString(SENSOR_ADDRESS, null);
+    }
+
+    public Boolean hasThresholds(String sensorName) {
+        return sensorName.equals(SimpleAudioReader.SENSOR_NAME);
     }
 }

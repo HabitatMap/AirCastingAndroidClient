@@ -24,7 +24,7 @@ import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
@@ -85,8 +85,8 @@ public class NoisePlot extends View {
         this.resourceHelper = resourceHelper;
         this.calibrationHelper = calibrationHelper;
 
-        bottom = settingsHelper.getThreshold(SoundLevel.QUIET);
-        top = settingsHelper.getThreshold(SoundLevel.TOO_LOUD);
+        bottom = settingsHelper.getThreshold(MeasurementLevel.VERY_LOW);
+        top = settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH);
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
@@ -193,15 +193,15 @@ public class NoisePlot extends View {
 
         int lastThreshold = top;
 
-        for (SoundLevel soundLevel : new SoundLevel[]{SoundLevel.VERY_LOUD, SoundLevel.LOUD, SoundLevel.AVERAGE}) {
-            paint.setColor(resourceHelper.getGraphColor(soundLevel));
-            int threshold = settingsHelper.getThreshold(soundLevel);
+        for (MeasurementLevel measurementLevel : new MeasurementLevel[]{MeasurementLevel.HIGH, MeasurementLevel.MID, MeasurementLevel.LOW}) {
+            paint.setColor(resourceHelper.getGraphColor(measurementLevel));
+            int threshold = settingsHelper.getThreshold(measurementLevel);
 
             canvas.drawRect(0, project(lastThreshold), getWidth(), project(threshold), paint);
             lastThreshold = threshold;
         }
 
-        paint.setColor(resourceHelper.getGraphColor(SoundLevel.QUIET));
+        paint.setColor(resourceHelper.getGraphColor(MeasurementLevel.VERY_LOW));
         canvas.drawRect(0, project(lastThreshold), getWidth(), getHeight(), paint);
     }
 

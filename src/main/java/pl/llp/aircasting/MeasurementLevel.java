@@ -25,6 +25,6 @@ package pl.llp.aircasting;
  * Date: 10/10/11
  * Time: 3:32 PM
  */
-public enum SoundLevel {
-    TOO_LOUD, VERY_LOUD, LOUD, AVERAGE, QUIET, INDISTINCT
+public enum MeasurementLevel {
+    VERY_HIGH, HIGH, MID, LOW, VERY_LOW, TOO_LOW
 }

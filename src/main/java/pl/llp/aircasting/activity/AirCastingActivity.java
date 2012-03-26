@@ -35,8 +35,8 @@ import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MarkerSize;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
@@ -186,11 +186,11 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText(valueOf(settingsHelper.getThreshold(SoundLevel.QUIET)));
-        topBarAverage.setText(valueOf(settingsHelper.getThreshold(SoundLevel.AVERAGE)));
-        topBarLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.LOUD)));
-        topBarVeryLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.VERY_LOUD)));
-        topBarTooLoud.setText(valueOf(settingsHelper.getThreshold(SoundLevel.TOO_LOUD)));
+        topBarQuiet.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.VERY_LOW)));
+        topBarAverage.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.LOW)));
+        topBarLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.MID)));
+        topBarVeryLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.HIGH)));
+        topBarTooLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH)));
     }
 
     private void updateButtons() {

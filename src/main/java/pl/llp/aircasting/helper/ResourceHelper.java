@@ -23,8 +23,8 @@ import android.graphics.drawable.Drawable;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.MarkerSize;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
 import roboguice.inject.InjectResource;
 
 /**
@@ -77,25 +77,25 @@ public class ResourceHelper {
 
     public Drawable getGaugeAbsolute(double value, MarkerSize size) {
         switch (soundHelper.soundLevelAbsolute(value)) {
-            case INDISTINCT:
-            case QUIET:
+            case TOO_LOW:
+            case VERY_LOW:
                 return size == MarkerSize.SMALL ? smallGreenGauge : bigGreenGauge;
-            case AVERAGE:
+            case LOW:
                 return size == MarkerSize.SMALL ? smallYellowGauge : bigYellowGauge;
-            case LOUD:
+            case MID:
                 return size == MarkerSize.SMALL ? smallOrangeGauge : bigOrangeGauge;
             default:
                 return size == MarkerSize.SMALL ? smallRedGauge : bigRedGauge;
         }
     }
 
-    public int getGraphColor(SoundLevel soundLevel) {
-        switch (soundLevel) {
-            case QUIET:
+    public int getGraphColor(MeasurementLevel measurementLevel) {
+        switch (measurementLevel) {
+            case VERY_LOW:
                 return graphGreen;
-            case AVERAGE:
+            case LOW:
                 return graphYellow;
-            case LOUD:
+            case MID:
                 return graphOrange;
             default:
                 return graphRed;
@@ -104,15 +104,15 @@ public class ResourceHelper {
 
     public Drawable getLocationBullet(double value) {
         switch (soundHelper.soundLevel(value)) {
-            case AVERAGE:
+            case LOW:
                 return dotYellow;
-            case LOUD:
+            case MID:
                 return dotOrange;
-            case VERY_LOUD:
-            case TOO_LOUD:
+            case HIGH:
+            case VERY_HIGH:
                 return dotRed;
-            case INDISTINCT:
-            case QUIET:
+            case TOO_LOW:
+            case VERY_LOW:
             default:
                 return dotGreen;
         }
@@ -120,11 +120,11 @@ public class ResourceHelper {
 
     public int getColorAbsolute(double value) {
         switch (soundHelper.soundLevelAbsolute(value)) {
-            case QUIET:
+            case VERY_LOW:
                 return green;
-            case AVERAGE:
+            case LOW:
                 return yellow;
-            case LOUD:
+            case MID:
                 return orange;
             default:
                 return red;
@@ -132,17 +132,17 @@ public class ResourceHelper {
     }
 
     public Drawable getBulletAbsolute(double value) {
-        SoundLevel soundLevel = soundHelper.soundLevelAbsolute(value);
+        MeasurementLevel measurementLevel = soundHelper.soundLevelAbsolute(value);
 
-        switch (soundLevel) {
-            case INDISTINCT:
-            case QUIET:
+        switch (measurementLevel) {
+            case TOO_LOW:
+            case VERY_LOW:
                 return greenBullet;
-            case AVERAGE:
+            case LOW:
                 return yellowBullet;
-            case LOUD:
+            case MID:
                 return orangeBullet;
-            case VERY_LOUD:
+            case HIGH:
             default:
                 return redBullet;
         }

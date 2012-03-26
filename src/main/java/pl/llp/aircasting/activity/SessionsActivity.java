@@ -32,8 +32,8 @@ import android.view.View;
 import android.widget.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.menu.MainMenu;
@@ -116,11 +116,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText("" + settingsHelper.getThreshold(SoundLevel.QUIET));
-        topBarAverage.setText("" + settingsHelper.getThreshold(SoundLevel.AVERAGE));
-        topBarLoud.setText("" + settingsHelper.getThreshold(SoundLevel.LOUD));
-        topBarVeryLoud.setText("" + settingsHelper.getThreshold(SoundLevel.VERY_LOUD));
-        topBarTooLoud.setText("" + settingsHelper.getThreshold(SoundLevel.TOO_LOUD));
+        topBarQuiet.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_LOW));
+        topBarAverage.setText("" + settingsHelper.getThreshold(MeasurementLevel.LOW));
+        topBarLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.MID));
+        topBarVeryLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.HIGH));
+        topBarTooLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH));
     }
 
     private void refreshList() {

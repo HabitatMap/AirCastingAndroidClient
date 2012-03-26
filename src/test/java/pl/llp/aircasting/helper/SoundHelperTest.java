@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -50,41 +50,41 @@ public class SoundHelperTest {
         when(soundHelper.settingsHelper.getCalibration()).thenReturn(10);
         when(soundHelper.settingsHelper.getOffset60DB()).thenReturn(0);
 
-        when(soundHelper.settingsHelper.getThreshold(SoundLevel.TOO_LOUD)).thenReturn(60);
-        when(soundHelper.settingsHelper.getThreshold(SoundLevel.VERY_LOUD)).thenReturn(50);
-        when(soundHelper.settingsHelper.getThreshold(SoundLevel.LOUD)).thenReturn(30);
-        when(soundHelper.settingsHelper.getThreshold(SoundLevel.AVERAGE)).thenReturn(10);
-        when(soundHelper.settingsHelper.getThreshold(SoundLevel.QUIET)).thenReturn(-20);
+        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH)).thenReturn(60);
+        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.HIGH)).thenReturn(50);
+        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.MID)).thenReturn(30);
+        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.LOW)).thenReturn(10);
+        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.VERY_LOW)).thenReturn(-20);
     }
 
     @Test
     public void shouldRecognizeIndistinctSounds() {
-        assertThat(soundHelper.soundLevel(-35), equalTo(SoundLevel.INDISTINCT));
+        assertThat(soundHelper.soundLevel(-35), equalTo(MeasurementLevel.TOO_LOW));
     }
 
     @Test
     public void shouldRecognizeQuietSounds() {
-        assertThat(soundHelper.soundLevel(-10), equalTo(SoundLevel.QUIET));
+        assertThat(soundHelper.soundLevel(-10), equalTo(MeasurementLevel.VERY_LOW));
     }
 
     @Test
     public void shouldRecognizeAverageSounds() {
-        assertThat(soundHelper.soundLevel(5), equalTo(SoundLevel.AVERAGE));
+        assertThat(soundHelper.soundLevel(5), equalTo(MeasurementLevel.LOW));
     }
 
     @Test
     public void shouldRecognizeLoudSounds() {
-        assertThat(soundHelper.soundLevel(25), equalTo(SoundLevel.LOUD));
+        assertThat(soundHelper.soundLevel(25), equalTo(MeasurementLevel.MID));
     }
 
     @Test
     public void shouldRecognizeVeryLoudSounds() {
-        assertThat(soundHelper.soundLevel(45), equalTo(SoundLevel.VERY_LOUD));
+        assertThat(soundHelper.soundLevel(45), equalTo(MeasurementLevel.HIGH));
     }
 
     @Test
     public void shouldRecognizeTooLoudSounds() {
-        assertThat(soundHelper.soundLevel(55), equalTo(SoundLevel.TOO_LOUD));
+        assertThat(soundHelper.soundLevel(55), equalTo(MeasurementLevel.VERY_HIGH));
     }
 
     @Test
@@ -104,9 +104,9 @@ public class SoundHelperTest {
 
     @Test
     public void shouldReturnLowerOneOnTheBorder() {
-        assertThat(soundHelper.soundLevelAbsolute(10.1), equalTo(SoundLevel.QUIET));
-        assertThat(soundHelper.soundLevelAbsolute(30.1), equalTo(SoundLevel.AVERAGE));
-        assertThat(soundHelper.soundLevelAbsolute(50.1), equalTo(SoundLevel.LOUD));
-        assertThat(soundHelper.soundLevelAbsolute(60.1), equalTo(SoundLevel.VERY_LOUD));
+        assertThat(soundHelper.soundLevelAbsolute(10.1), equalTo(MeasurementLevel.VERY_LOW));
+        assertThat(soundHelper.soundLevelAbsolute(30.1), equalTo(MeasurementLevel.LOW));
+        assertThat(soundHelper.soundLevelAbsolute(50.1), equalTo(MeasurementLevel.MID));
+        assertThat(soundHelper.soundLevelAbsolute(60.1), equalTo(MeasurementLevel.HIGH));
     }
 }

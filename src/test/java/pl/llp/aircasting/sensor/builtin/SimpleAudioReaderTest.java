@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import static org.mockito.Mockito.*;
@@ -50,6 +51,7 @@ public class SimpleAudioReaderTest {
         audioReader.settingsHelper = mock(SettingsHelper.class);
         audioReader.signalPower = mock(SignalPower.class);
         audioReader.eventBus = mock(EventBus.class);
+        audioReader.calibrationHelper = mock(CalibrationHelper.class);
     }
 
     private SensorEvent expected(double value) {
@@ -86,13 +88,15 @@ public class SimpleAudioReaderTest {
         when(audioReader.signalPower.calculatePowerDb(Mockito.any(short[].class)))
                 .thenReturn(12.3)
                 .thenReturn(12.4);
+        when(audioReader.calibrationHelper.calibrate(12.3)).thenReturn(13.3);
+        when(audioReader.calibrationHelper.calibrate(12.4)).thenReturn(13.4);
 
         audioReader.start();
         audioReader.onReadComplete(new short[0]);
         audioReader.onReadComplete(new short[0]);
 
-        SensorEvent expected1 = expected(12.3);
-        SensorEvent expected2 = expected(12.4);
+        SensorEvent expected1 = expected(13.3);
+        SensorEvent expected2 = expected(13.4);
         verify(audioReader.eventBus).post(expected1);
         verify(audioReader.eventBus).post(expected2);
     }
@@ -102,6 +106,7 @@ public class SimpleAudioReaderTest {
         when(audioReader.signalPower.calculatePowerDb(Mockito.any(short[].class)))
                 .thenReturn(null)
                 .thenReturn(2.2);
+        when(audioReader.calibrationHelper.calibrate(2.2)).thenReturn(2.2);
 
         audioReader.start();
         audioReader.onReadComplete(new short[0]);

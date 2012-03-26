@@ -20,7 +20,7 @@
 package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,34 +31,34 @@ import pl.llp.aircasting.SoundLevel;
 public class SoundHelper {
     public static final double TOTALLY_QUIET = -80;
 
-    private static final SoundLevel[] soundLevels = new SoundLevel[]{
-            SoundLevel.TOO_LOUD,
-            SoundLevel.VERY_LOUD,
-            SoundLevel.LOUD,
-            SoundLevel.AVERAGE,
-            SoundLevel.QUIET
+    private static final MeasurementLevel[] MEASUREMENT_LEVELS = new MeasurementLevel[]{
+            MeasurementLevel.VERY_HIGH,
+            MeasurementLevel.HIGH,
+            MeasurementLevel.MID,
+            MeasurementLevel.LOW,
+            MeasurementLevel.VERY_LOW
     };
 
     @Inject SettingsHelper settingsHelper;
     @Inject CalibrationHelper calibrationHelper;
 
-    public SoundLevel soundLevel(double value) {
+    public MeasurementLevel soundLevel(double value) {
         double calibrated = calibrationHelper.calibrate(value);
 
         return soundLevelAbsolute(calibrated);
     }
 
-    public SoundLevel soundLevelAbsolute(double value) {
-        for (SoundLevel soundLevel : soundLevels) {
-            if ((int) value > settingsHelper.getThreshold(soundLevel)) {
-                return soundLevel;
+    public MeasurementLevel soundLevelAbsolute(double value) {
+        for (MeasurementLevel measurementLevel : MEASUREMENT_LEVELS) {
+            if ((int) value > settingsHelper.getThreshold(measurementLevel)) {
+                return measurementLevel;
             }
         }
-        return SoundLevel.INDISTINCT;
+        return MeasurementLevel.TOO_LOW;
     }
 
     public boolean shouldDisplayAbsolute(double value) {
-        SoundLevel soundLevel = soundLevelAbsolute(value);
-        return soundLevel != SoundLevel.TOO_LOUD && soundLevel != SoundLevel.INDISTINCT;
+        MeasurementLevel measurementLevel = soundLevelAbsolute(value);
+        return measurementLevel != MeasurementLevel.VERY_HIGH && measurementLevel != MeasurementLevel.TOO_LOW;
     }
 }

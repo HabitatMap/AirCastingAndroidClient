@@ -24,8 +24,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import com.google.inject.Inject;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.helper.SettingsHelper;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
@@ -70,11 +70,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.color_scale);
 
-        tooLoudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.TOO_LOUD));
-        veryLoudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.VERY_LOUD));
-        loudEdit.setText("" + settingsHelper.getThreshold(SoundLevel.LOUD));
-        averageEdit.setText("" + settingsHelper.getThreshold(SoundLevel.AVERAGE));
-        quietEdit.setText("" + settingsHelper.getThreshold(SoundLevel.QUIET));
+        tooLoudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH));
+        veryLoudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.HIGH));
+        loudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.MID));
+        averageEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.LOW));
+        quietEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_LOW));
 
         veryLoudEdit.setOnFocusChangeListener(this);
         loudEdit.setOnFocusChangeListener(this);
@@ -107,11 +107,11 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
         calculateThresholds();
         fixThresholds();       
 
-        settingsHelper.setThreshold(SoundLevel.TOO_LOUD, tooLoud);
-        settingsHelper.setThreshold(SoundLevel.VERY_LOUD, veryLoud);
-        settingsHelper.setThreshold(SoundLevel.LOUD, loud);
-        settingsHelper.setThreshold(SoundLevel.AVERAGE, average);
-        settingsHelper.setThreshold(SoundLevel.QUIET, quiet);
+        settingsHelper.setThreshold(MeasurementLevel.VERY_HIGH, tooLoud);
+        settingsHelper.setThreshold(MeasurementLevel.HIGH, veryLoud);
+        settingsHelper.setThreshold(MeasurementLevel.MID, loud);
+        settingsHelper.setThreshold(MeasurementLevel.LOW, average);
+        settingsHelper.setThreshold(MeasurementLevel.VERY_LOW, quiet);
 
         finish();
     }
@@ -119,9 +119,9 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     private void fixThresholds() {
         View focus = getCurrentFocus();
         int id = focus == null ? 0 : focus.getId();
-        SoundLevel soundLevel = toSoundLevel(id);
+        MeasurementLevel measurementLevel = toSoundLevel(id);
 
-        fixThresholds(soundLevel);
+        fixThresholds(measurementLevel);
     }
 
     private void calculateThresholds() {
@@ -145,44 +145,44 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
         quietEdit.setText("" + quiet);
     }
 
-    private SoundLevel toSoundLevel(int id) {
+    private MeasurementLevel toSoundLevel(int id) {
         switch (id) {
             case R.id.color_scale_quiet:
-                return SoundLevel.QUIET;
+                return MeasurementLevel.VERY_LOW;
             case R.id.color_scale_average:
             case R.id.color_scale_average_slider:
-                return SoundLevel.AVERAGE;
+                return MeasurementLevel.LOW;
             case R.id.color_scale_loud:
             case R.id.color_scale_loud_slider:
-                return SoundLevel.LOUD;
+                return MeasurementLevel.MID;
             case R.id.color_scale_very_loud:
             case R.id.color_scale_very_loud_slider:
-                return SoundLevel.VERY_LOUD;
+                return MeasurementLevel.HIGH;
             default:
-                return SoundLevel.TOO_LOUD;
+                return MeasurementLevel.VERY_HIGH;
         }
     }
 
-    private void fixThresholds(SoundLevel fixed) {
+    private void fixThresholds(MeasurementLevel fixed) {
         switch (fixed) {
-            case QUIET:
+            case VERY_LOW:
                 if (average <= quiet) average = quiet + 1;
-            case AVERAGE:
+            case LOW:
                 if (loud <= average) loud = average + 1;
-            case LOUD:
+            case MID:
                 if (veryLoud <= loud) veryLoud = loud + 1;
-            case VERY_LOUD:
+            case HIGH:
                 if (tooLoud <= veryLoud) tooLoud = veryLoud + 1;
         }
 
         switch (fixed) {
-            case TOO_LOUD:
+            case VERY_HIGH:
                 if (veryLoud >= tooLoud) veryLoud = tooLoud - 1;
-            case VERY_LOUD:
+            case HIGH:
                 if (loud >= veryLoud) loud = veryLoud - 1;
-            case LOUD:
+            case MID:
                 if (average >= loud) average = loud - 1;
-            case AVERAGE:
+            case LOW:
                 if (quiet >= average) quiet = average - 1;
         }
     }
@@ -221,15 +221,15 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     @Override
     public void onProgressChanged(SeekBar bar, int i, boolean b) {
         int value = unProject(bar.getProgress(), bar.getMax());
-        SoundLevel soundLevel = toSoundLevel(bar.getId());
-        switch (soundLevel) {
-            case AVERAGE:
+        MeasurementLevel measurementLevel = toSoundLevel(bar.getId());
+        switch (measurementLevel) {
+            case LOW:
                 averageEdit.setText("" + value);
                 break;
-            case LOUD:
+            case MID:
                 loudEdit.setText("" + value);
                 break;
-            case VERY_LOUD:
+            case HIGH:
                 veryLoudEdit.setText("" + value);
                 break;
         }
@@ -247,8 +247,8 @@ public class ThresholdsActivity extends RoboActivity implements View.OnClickList
     @Override
     public void onStopTrackingTouch(SeekBar bar) {
         calculateThresholds();
-        SoundLevel soundLevel = toSoundLevel(bar.getId());
-        fixThresholds(soundLevel);
+        MeasurementLevel measurementLevel = toSoundLevel(bar.getId());
+        fixThresholds(measurementLevel);
         updateViews();
     }
 }
