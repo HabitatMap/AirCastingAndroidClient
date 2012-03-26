@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -43,18 +44,13 @@ public class SoundHelperTest {
 
     @Before
     public void setup() {
-        SettingsHelper settingsHelper = mock(SettingsHelper.class);
-        soundHelper.calibrationHelper.settingsHelper = settingsHelper;
-        soundHelper.settingsHelper = settingsHelper;
+        soundHelper.thresholdsHelper = mock(ThresholdsHelper.class);
 
-        when(soundHelper.settingsHelper.getCalibration()).thenReturn(10);
-        when(soundHelper.settingsHelper.getOffset60DB()).thenReturn(0);
-
-        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH)).thenReturn(60);
-        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.HIGH)).thenReturn(50);
-        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.MID)).thenReturn(30);
-        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.LOW)).thenReturn(10);
-        when(soundHelper.settingsHelper.getThreshold(MeasurementLevel.VERY_LOW)).thenReturn(-20);
+        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.SENSOR_NAME, MeasurementLevel.VERY_HIGH)).thenReturn(60);
+        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.SENSOR_NAME, MeasurementLevel.HIGH)).thenReturn(50);
+        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.SENSOR_NAME, MeasurementLevel.MID)).thenReturn(30);
+        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.SENSOR_NAME, MeasurementLevel.LOW)).thenReturn(10);
+        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.SENSOR_NAME, MeasurementLevel.VERY_LOW)).thenReturn(-20);
     }
 
     @Test
@@ -69,22 +65,22 @@ public class SoundHelperTest {
 
     @Test
     public void shouldRecognizeAverageSounds() {
-        assertThat(soundHelper.soundLevel(5), equalTo(MeasurementLevel.LOW));
+        assertThat(soundHelper.soundLevel(15), equalTo(MeasurementLevel.LOW));
     }
 
     @Test
     public void shouldRecognizeLoudSounds() {
-        assertThat(soundHelper.soundLevel(25), equalTo(MeasurementLevel.MID));
+        assertThat(soundHelper.soundLevel(35), equalTo(MeasurementLevel.MID));
     }
 
     @Test
     public void shouldRecognizeVeryLoudSounds() {
-        assertThat(soundHelper.soundLevel(45), equalTo(MeasurementLevel.HIGH));
+        assertThat(soundHelper.soundLevel(55), equalTo(MeasurementLevel.HIGH));
     }
 
     @Test
     public void shouldRecognizeTooLoudSounds() {
-        assertThat(soundHelper.soundLevel(55), equalTo(MeasurementLevel.VERY_HIGH));
+        assertThat(soundHelper.soundLevel(65), equalTo(MeasurementLevel.VERY_HIGH));
     }
 
     @Test
@@ -104,9 +100,11 @@ public class SoundHelperTest {
 
     @Test
     public void shouldReturnLowerOneOnTheBorder() {
-        assertThat(soundHelper.soundLevelAbsolute(10.1), equalTo(MeasurementLevel.VERY_LOW));
-        assertThat(soundHelper.soundLevelAbsolute(30.1), equalTo(MeasurementLevel.LOW));
-        assertThat(soundHelper.soundLevelAbsolute(50.1), equalTo(MeasurementLevel.MID));
-        assertThat(soundHelper.soundLevelAbsolute(60.1), equalTo(MeasurementLevel.HIGH));
+        String sensorName = SimpleAudioReader.SENSOR_NAME;
+        
+        assertThat(soundHelper.soundLevelAbsolute(sensorName, 10.1), equalTo(MeasurementLevel.VERY_LOW));
+        assertThat(soundHelper.soundLevelAbsolute(sensorName, 30.1), equalTo(MeasurementLevel.LOW));
+        assertThat(soundHelper.soundLevelAbsolute(sensorName, 50.1), equalTo(MeasurementLevel.MID));
+        assertThat(soundHelper.soundLevelAbsolute(sensorName, 60.1), equalTo(MeasurementLevel.HIGH));
     }
 }

@@ -41,6 +41,7 @@ public class StreamAdapter extends SimpleAdapter {
             R.id.now_label, R.id.avg_label, R.id.peak_label,
             R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
     };
+    public static final String NAME = "name";
 
     GaugeHelper gaugeHelper;
     SessionManager sessionManager;
@@ -98,7 +99,8 @@ public class StreamAdapter extends SimpleAdapter {
         Integer peak = (Integer) state.get(PEAK);
         Integer avg = (Integer) state.get(AVERAGE);
         Integer now = (Integer) state.get(NOW);
-        gaugeHelper.updateGauges(view, now, avg, peak);
+        String name = (String) state.get(NAME);
+        gaugeHelper.updateGauges(view, name, now, avg, peak);
 
         return view;
     }
@@ -108,6 +110,7 @@ public class StreamAdapter extends SimpleAdapter {
         String name = event.getSensorName();
 
         map.put(TITLE, title(event));
+        map.put(NAME, name);
 
         map.put(NOW, (int) sessionManager.getNow(name));
         map.put(AVERAGE, (int) sessionManager.getAvg(name));

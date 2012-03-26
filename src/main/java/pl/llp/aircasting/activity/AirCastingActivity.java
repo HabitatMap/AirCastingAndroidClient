@@ -284,7 +284,7 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
 
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
-        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(power, size));
+        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.SENSOR_NAME, size, power));
     }
 
     @Override
