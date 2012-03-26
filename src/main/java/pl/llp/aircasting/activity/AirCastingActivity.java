@@ -27,12 +27,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.*;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
@@ -43,15 +40,12 @@ import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
-import pl.llp.aircasting.event.ui.TapEvent;
-import pl.llp.aircasting.guice.AirCastingApplication;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
@@ -65,13 +59,8 @@ import static pl.llp.aircasting.Intents.triggerSync;
  * Date: 9/30/11
  * Time: 3:18 PM
  */
-public abstract class AirCastingActivity extends RoboMapActivityWithProgress implements View.OnClickListener, Animation.AnimationListener {
+public abstract class AirCastingActivity extends ButtonsActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
-    public static final String SHOW_BUTTONS = "showButtons";
-
-    // It seems it's impossible to inject these in the tests
-    @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
-    @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;
 
     @InjectView(R.id.avg_gauge) TextView dbAvg;
     @InjectView(R.id.now_gauge) TextView dbNow;
@@ -81,17 +70,12 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @InjectView(R.id.avg_container) View dbAvgContainer;
     @InjectView(R.id.peak_container) View dbPeakContainer;
 
-    @Nullable @InjectView(R.id.graph_button) ImageButton graphButton;
-    @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;
-    @Nullable @InjectView(R.id.heat_map_button) ImageButton heatMapButton;
-
     @InjectView(R.id.context_button_left) FrameLayout contextButtonLeft;
     @InjectView(R.id.context_button_center) FrameLayout contextButtonCenter;
     @InjectView(R.id.context_button_right) FrameLayout contextButtonRight;
 
     @InjectView(R.id.zoom_in) Button zoomIn;
     @InjectView(R.id.zoom_out) Button zoomOut;
-    @InjectView(R.id.buttons) View buttons;
 
     @InjectView(R.id.top_bar) View topBar;
     @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
@@ -109,8 +93,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @InjectView(R.id.note_left) ImageButton noteLeft;
     @InjectView(R.id.note_right) ImageButton noteRight;
 
-    @Inject AirCastingApplication context;
-
     @Inject SessionManager sessionManager;
 
     @Inject LayoutInflater layoutInflater;
@@ -126,11 +108,8 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
-    @Inject EventBus eventBus;
-
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
-    private boolean showButtons = true;
     int noteIndex = -1;
     int noteTotal;
     Note currentNote;
@@ -138,10 +117,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (graphButton != null) graphButton.setOnClickListener(this);
-        if (traceButton != null) traceButton.setOnClickListener(this);
-        if (heatMapButton != null) heatMapButton.setOnClickListener(this);
 
         initialize();
 
@@ -157,8 +132,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         updateKeepScreenOn();
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
-
-        eventBus.register(this);
     }
 
     @Override
@@ -166,7 +139,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         super.onSaveInstanceState(outState);
 
         outState.putInt(NOTE_INDEX, noteIndex);
-        outState.putBoolean(SHOW_BUTTONS, showButtons);
     }
 
     @Override
@@ -174,7 +146,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         super.onRestoreInstanceState(savedInstanceState);
 
         noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
-        showButtons = savedInstanceState.getBoolean(SHOW_BUTTONS, true);
     }
 
     private void updateKeepScreenOn() {
@@ -214,15 +185,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
             noteSave.setOnClickListener(this);
             noteDelete.setOnClickListener(this);
             viewPhoto.setOnClickListener(this);
-
-            fadeIn.setAnimationListener(this);
-            fadeOut.setAnimationListener(this);
-
-            if (showButtons) {
-                buttons.setVisibility(View.VISIBLE);
-            } else {
-                buttons.setVisibility(View.GONE);
-            }
 
             if (sessionManager.isSessionSaved()) {
                 setButton(contextButtonLeft, R.layout.context_button_edit);
@@ -265,7 +227,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @Override
     protected void onPause() {
         super.onPause();
-        eventBus.unregister(this);
 
         if (!sessionManager.isSessionSaved()) {
             Intents.stopSensors(context);
@@ -285,12 +246,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
         view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.SENSOR_NAME, size, power));
-    }
-
-    @Override
-    protected boolean isRouteDisplayed() {
-        // The maps server needs to know if we are displaying any routes
-        return false;
     }
 
     @Override
@@ -379,15 +334,6 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.graph_button:
-                startActivity(new Intent(context, GraphActivity.class));
-                break;
-            case R.id.trace_button:
-                startActivity(new Intent(context, SoundTraceActivity.class));
-                break;
-            case R.id.heat_map_button:
-                startActivity(new Intent(context, HeatMapActivity.class));
-                break;
             case R.id.toggle_aircasting:
                 toggleAirCasting();
                 break;
@@ -415,47 +361,10 @@ public abstract class AirCastingActivity extends RoboMapActivityWithProgress imp
             case R.id.note_right:
                 noteClicked(noteIndex + 1);
                 break;
+            default:
+                super.onClick(view);
+                break;
         }
-    }
-
-    private void toggleButtons() {
-        if (buttons.getVisibility() == View.VISIBLE) {
-            hideButtons();
-        } else {
-            showButtons();
-        }
-    }
-
-    private void hideButtons() {
-        buttons.startAnimation(fadeOut);
-        showButtons = false;
-    }
-
-    private void showButtons() {
-        buttons.startAnimation(fadeIn);
-        showButtons = true;
-    }
-
-    @Subscribe
-    public void onEvent(TapEvent event) {
-        toggleButtons();
-    }
-
-    @Override
-    public void onAnimationStart(Animation animation) {
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-        if (buttons.getVisibility() == View.VISIBLE) {
-            buttons.setVisibility(View.GONE);
-        } else {
-            buttons.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
     }
 
     public void noteClicked(int index) {

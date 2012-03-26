@@ -7,13 +7,12 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
-import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
-public class StreamsActivity extends RoboActivity {
+public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     
