@@ -60,7 +60,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
 
-        plot.initialize(this, settingsHelper, resourceHelper, calibrationHelper);
+        plot.initialize(this, settingsHelper, resourceHelper);
 
         graphTop.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH) + " dB");
         graphBottom.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_LOW) + " dB");

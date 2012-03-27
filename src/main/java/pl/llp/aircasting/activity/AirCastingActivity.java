@@ -99,7 +99,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
     @Inject LocationManager locationManager;
     @Inject LocationHelper locationHelper;
-    @Inject CalibrationHelper calibrationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject ResourceHelper resourceHelper;
     @Inject PhotoHelper photoHelper;
@@ -241,8 +240,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     }
 
     private void updatePowerView(TextView view, double power, MarkerSize size) {
-        power = calibrationHelper.calibrate(power, sessionManager.getSession());
-
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
         view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.SENSOR_NAME, size, power));

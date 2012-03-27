@@ -27,7 +27,6 @@ import android.view.View;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.event.ui.TapEvent;
-import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
@@ -60,7 +59,6 @@ public class NoisePlot extends View {
     private List<Measurement> measurements = new ArrayList<Measurement>();
     private List<Note> notes;
     private ResourceHelper resourceHelper;
-    private CalibrationHelper calibrationHelper;
     private int bottom;
     private int top;
 
@@ -79,11 +77,10 @@ public class NoisePlot extends View {
         super(context, attrs, defStyle);
     }
 
-    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper, CalibrationHelper calibrationHelper) {
+    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
         this.activity = activity;
         this.settingsHelper = settingsHelper;
         this.resourceHelper = resourceHelper;
-        this.calibrationHelper = calibrationHelper;
 
         bottom = settingsHelper.getThreshold(MeasurementLevel.VERY_LOW);
         top = settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH);
@@ -105,7 +102,7 @@ public class NoisePlot extends View {
         if (!measurements.isEmpty()) {
             Path path = new Path();
 
-            float lastY = project(calibrationHelper.calibrate(measurements.get(0).getValue()));
+            float lastY = project(measurements.get(0).getValue());
             path.moveTo(0, lastY);
 
             for (Measurement measurement : skip(measurements, 1)) {
@@ -129,7 +126,7 @@ public class NoisePlot extends View {
         float place = time - firstTime();
         int x = (int) (getWidth() * (place / span));
 
-        double value = calibrationHelper.calibrate(measurement.getValue());
+        double value = measurement.getValue();
         int y = project(value);
 
         return new Point(x, y);
