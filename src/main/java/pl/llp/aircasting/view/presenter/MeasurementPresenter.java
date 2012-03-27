@@ -30,8 +30,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
 import java.util.*;
@@ -57,6 +60,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences preferences;
     @Inject EventBus eventBus;
+    @Inject SensorManager sensorManager;
 
     @Inject
     public void init() {
@@ -79,15 +83,16 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     @Subscribe
     public void onEvent(MeasurementEvent event) {
+        if (sessionManager.isSessionSaved()) return;
+        if (!event.getSensorName().equals(sensorManager.getVisibleSensor())) return;
+
         Measurement measurement = event.getMeasurement();
 
-        if (!sessionManager.isSessionSaved()) {
-            prepareFullView();
-            updateFullView(measurement);
+        prepareFullView();
+        updateFullView(measurement);
 
-            if (timelineView != null && (int) anchor == 0) {
-                updateTimelineView();
-            }
+        if (timelineView != null && (int) anchor == 0) {
+            updateTimelineView();
         }
 
         notifyListeners();
@@ -122,34 +127,48 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Subscribe
     public synchronized void onEvent(SessionChangeEvent event) {
         reset();
+    }
 
-        notifyListeners();
+    @Subscribe
+    public synchronized void onEvent(ViewStreamEvent event) {
+        reset();
     }
 
     private void reset() {
         fullView = null;
         timelineView = null;
         anchor = 0;
+
+        notifyListeners();
     }
 
     private void prepareFullView() {
         if (fullView != null) return;
 
+        String visibleSensor = sensorManager.getVisibleSensor();
+        MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
+        Iterable<Measurement> measurements;
+        if (stream == null) {
+            measurements = newArrayList();
+        } else {
+            measurements = stream.getMeasurements();
+        }
+
         ImmutableListMultimap<Long, Measurement> forAveraging =
-                index(sessionManager.getSoundMeasurements(), new Function<Measurement, Long>() {
+                index(measurements, new Function<Measurement, Long>() {
                     @Override
                     public Long apply(Measurement measurement) {
                         return bucket(measurement);
                     }
                 });
 
-        ArrayList<Long> keys = newArrayList(forAveraging.keySet());
-        sort(keys);
-        fullView = newLinkedList();
+        ArrayList<Long> times = newArrayList(forAveraging.keySet());
+        sort(times);
 
-        for (Long key : keys) {
-            ImmutableList<Measurement> measurements = forAveraging.get(key);
-            fullView.add(average(measurements));
+        fullView = newLinkedList();
+        for (Long time : times) {
+            ImmutableList<Measurement> chunk = forAveraging.get(time);
+            fullView.add(average(chunk));
         }
     }
 
@@ -263,10 +282,10 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    public void scroll(double scroll) {
+    public void scroll(double scrollAmount) {
         prepareTimelineView();
 
-        anchor -= scroll * timelineView.size();
+        anchor -= scrollAmount * timelineView.size();
         fixAnchor();
         timelineView = null;
 
@@ -295,7 +314,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     public synchronized void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         if (key.equals(SettingsHelper.AVERAGING_TIME)) {
             reset();
-            notifyListeners();
         }
     }
 

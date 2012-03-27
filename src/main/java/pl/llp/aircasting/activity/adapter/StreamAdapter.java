@@ -116,11 +116,19 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         String name = (String) state.get(NAME);
         gaugeHelper.updateGauges(view, name, now, avg, peak);
 
+        initializeButtons(view, name);
+
+        return view;
+    }
+
+    private void initializeButtons(View view, String name) {
         View recordButton = view.findViewById(R.id.record_stream);
         recordButton.setTag(name);
         recordButton.setOnClickListener(this);
 
-        return view;
+        View viewButton = view.findViewById(R.id.record_stream);
+        viewButton.setTag(name);
+        viewButton.setOnClickListener(this);
     }
 
     private void update(SensorEvent event) {

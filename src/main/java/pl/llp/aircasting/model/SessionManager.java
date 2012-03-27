@@ -211,9 +211,11 @@ public class SessionManager {
     @Subscribe
     public synchronized void onEvent(SensorEvent event) {
         double value = event.getValue();
-        recentMeasurements.put(event.getSensorName(), value);
+        String sensorName = event.getSensorName();
 
-        if (locationHelper.getLastLocation() != null && sensorManager.isEnabled(event.getSensorName())) {
+        recentMeasurements.put(sensorName, value);
+
+        if (locationHelper.getLastLocation() != null && sensorManager.isEnabled(sensorName)) {
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
@@ -223,7 +225,7 @@ public class SessionManager {
                 stream.add(measurement);
             }
 
-            eventBus.post(new MeasurementEvent(measurement));
+            eventBus.post(new MeasurementEvent(measurement, sensorName));
         }
     }
 

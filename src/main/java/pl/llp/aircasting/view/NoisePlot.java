@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
-import static com.google.common.collect.Iterables.skip;
 import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
 import static pl.llp.aircasting.util.Search.binarySearch;
 
@@ -105,7 +104,9 @@ public class NoisePlot extends View {
             float lastY = project(measurements.get(0).getValue());
             path.moveTo(0, lastY);
 
-            for (Measurement measurement : skip(measurements, 1)) {
+            // Avoid concurrent modification
+            for (int i = 1; i < measurements.size(); i++) {
+                Measurement measurement = measurements.get(i);
                 Point place = place(measurement);
                 path.lineTo(place.x, place.y);
             }

@@ -28,6 +28,8 @@ import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
 import java.util.ArrayList;
@@ -51,8 +53,9 @@ public class MeasurementPresenterTest {
     @Inject MeasurementPresenter presenter;
     List<Measurement> measurements;
     private Measurement measurement1;
-    private MeasurementPresenter.Listener listener;
     private Measurement measurement2;
+    private MeasurementPresenter.Listener listener;
+    private MeasurementStream stream;
 
     @Before
     public void setup() {
@@ -60,8 +63,15 @@ public class MeasurementPresenterTest {
         for (int i = 0; i < 4; i++) {
             measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
         }
+
+        presenter.sensorManager = mock(SensorManager.class);
+        when(presenter.sensorManager.getVisibleSensor()).thenReturn("LHC");
+
+        stream = mock(MeasurementStream.class);
+        when(stream.getMeasurements()).thenReturn(measurements);
+        
         presenter.sessionManager = mockSessionManager();
-        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(measurements);
+        when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
         when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
 
         measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
@@ -81,7 +91,7 @@ public class MeasurementPresenterTest {
     }
 
     private void triggerMeasurement(Measurement measurement){
-        presenter.onEvent(new MeasurementEvent(measurement));
+        presenter.onEvent(new MeasurementEvent(measurement, "LHC"));
     }
 
     @Test
@@ -104,7 +114,7 @@ public class MeasurementPresenterTest {
 
     @Test
     public void shouldHandleEmptyList() {
-        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(new ArrayList<Measurement>());
+        when(stream.getMeasurements()).thenReturn(new ArrayList<Measurement>());
 
         assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
     }
@@ -174,6 +184,19 @@ public class MeasurementPresenterTest {
 
     @Test
     public void shouldNotUpdateWhenViewingASession() {
+        presenter.getFullView();
+        presenter.sessionManager = mockSessionManager();
+        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+        when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+
+        presenter.onEvent(new SessionChangeEvent());
+        triggerMeasurement(measurement1);
+
+        assertThat(presenter.getFullView().isEmpty(), equalTo(true));
+    }
+
+    @Test
+    public void shouldOnlyUpdateFromVisibleSensorEvents() {
         presenter.getFullView();
         presenter.sessionManager = mockSessionManager();
         when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
