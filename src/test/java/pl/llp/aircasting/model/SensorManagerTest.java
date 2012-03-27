@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.ui.ToggleStreamEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -31,5 +33,17 @@ public class SensorManagerTest {
         manager.onEvent(new ToggleStreamEvent("LHC"));
 
         assertThat(manager.isEnabled("LHC"), equalTo(true));
+    }
+
+    @Test
+    public void phoneMicrophoneShouldBeVisibleByDefault() {
+        assertThat(manager.getVisibleSensor(), equalTo(SimpleAudioReader.SENSOR_NAME));
+    }
+
+    @Test
+    public void shouldStoreInformationAboutCurrentVisibleSensor() {
+        manager.onEvent(new ViewStreamEvent("LHC"));
+
+        assertThat(manager.getVisibleSensor(), equalTo("LHC"));
     }
 }

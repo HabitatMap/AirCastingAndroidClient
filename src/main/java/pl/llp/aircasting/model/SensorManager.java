@@ -5,6 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.event.ui.ToggleStreamEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import java.util.Set;
 
@@ -15,6 +17,7 @@ public class SensorManager {
     @Inject EventBus eventBus;
 
     Set<String> disabledSensors = newHashSet();
+    private String visibleSensor = SimpleAudioReader.SENSOR_NAME;
 
     /**
      * Check if the given sensor is enabled for recording
@@ -34,5 +37,17 @@ public class SensorManager {
         } else {
             disabledSensors.add(name);
         }
+    }
+
+    @Subscribe
+    public void onEvent(ViewStreamEvent event) {
+        visibleSensor = event.getSensorName();
+    }
+
+    /***
+     * @return The name of the sensor that is currently selected for viewing
+     */
+    public String getVisibleSensor() {
+        return visibleSensor;
     }
 }
