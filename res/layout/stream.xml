@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/Wide"
                 android:background="@android:drawable/dialog_frame"
         >
 
@@ -30,11 +29,12 @@
                  android:background="@drawable/minus"
                  android:layout_alignParentTop="true"
                  android:layout_alignParentLeft="true"
+                 android:id="@+id/record_stream"
             />
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/minus"
                  android:layout_alignParentTop="true"
                  android:layout_alignParentRight="true"
+                 android:id="@+id/view_stream"
             />
-
 </RelativeLayout>

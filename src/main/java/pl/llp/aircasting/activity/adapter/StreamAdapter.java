@@ -8,16 +8,21 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.ui.ToggleStreamEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.model.SessionManager;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
 
-public class StreamAdapter extends SimpleAdapter {
+public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
     public static final String TITLE = "title";
     public static final String NOW = "now";
     public static final String AVERAGE = "average";
@@ -111,6 +116,10 @@ public class StreamAdapter extends SimpleAdapter {
         String name = (String) state.get(NAME);
         gaugeHelper.updateGauges(view, name, now, avg, peak);
 
+        View recordButton = view.findViewById(R.id.record_stream);
+        recordButton.setTag(name);
+        recordButton.setOnClickListener(this);
+
         return view;
     }
 
@@ -161,5 +170,18 @@ public class StreamAdapter extends SimpleAdapter {
     private String label(int templateId, SensorEvent event) {
         String template = context.getString(templateId);
         return String.format(template, event.getSymbol());
+    }
+
+    @Override
+    public void onClick(View view) {
+        String tag = view.getTag().toString();
+        switch (view.getId()) {
+            case R.id.view_stream:
+                eventBus.post(new ViewStreamEvent(tag));
+                break;
+            case R.id.record_stream:
+                eventBus.post(new ToggleStreamEvent(tag));
+                break;
+        }
     }
 }

@@ -27,6 +27,7 @@ public class StreamsActivity extends ButtonsActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.streams);
+
         adapter = adapterFactory.getAdapter(this);
         listView.setAdapter(adapter);
     }
