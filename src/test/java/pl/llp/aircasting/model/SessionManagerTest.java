@@ -67,8 +67,10 @@ public class SessionManagerTest {
         sessionManager.metadataHelper = mock(MetadataHelper.class);
         sessionManager.externalSensor = mock(ExternalSensor.class);
         sessionManager.eventBus = mock(EventBus.class);
+        sessionManager.sensorManager = mock(SensorManager.class);
 
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
+        when(sessionManager.sensorManager.isEnabled(Mockito.any(String.class))).thenReturn(true);
     }
 
     @Before
@@ -181,7 +183,17 @@ public class SessionManagerTest {
         sessionManager.sessionStarted = true;
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
-        triggerMeasurement(12.3);
+        triggerMeasurement();
+
+        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+    }
+
+    @Test
+    public void shouldSkipMeasurementsFromDisabledStreams() {
+        sessionManager.sessionStarted = true;
+        when(sessionManager.sensorManager.isEnabled("LHC")).thenReturn(false);
+
+        triggerMeasurement();
 
         assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
     }

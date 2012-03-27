@@ -70,6 +70,7 @@ public class SessionManager {
 
     @Inject Application applicationContext;
     @Inject TelephonyManager telephonyManager;
+    @Inject SensorManager sensorManager;
 
     Session session = new Session();
 
@@ -212,7 +213,7 @@ public class SessionManager {
         double value = event.getValue();
         recentMeasurements.put(event.getSensorName(), value);
 
-        if (locationHelper.getLastLocation() != null) {
+        if (locationHelper.getLastLocation() != null && sensorManager.isEnabled(event.getSensorName())) {
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
