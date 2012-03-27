@@ -11,11 +11,11 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.model.SessionManager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Collections.sort;
 
 public class StreamAdapter extends SimpleAdapter {
     public static final String TITLE = "title";
@@ -30,6 +30,7 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String MID = "mid";
     public static final String HIGH = "high";
     public static final String VERY_HIGH = "veryHigh";
+    public static final String NAME = "name";
 
     private static final String[] FROM = new String[]{
             TITLE, NOW, AVERAGE, PEAK,
@@ -41,7 +42,15 @@ public class StreamAdapter extends SimpleAdapter {
             R.id.now_label, R.id.avg_label, R.id.peak_label,
             R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
     };
-    public static final String NAME = "name";
+
+    private static final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
+        @Override
+        public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            String rightTitle = right.get(TITLE).toString();
+            String leftTitle = left.get(TITLE).toString();
+            return leftTitle.compareTo(rightTitle);
+        }
+    };
 
     GaugeHelper gaugeHelper;
     SessionManager sessionManager;
@@ -124,6 +133,8 @@ public class StreamAdapter extends SimpleAdapter {
         map.put(MID, String.valueOf(event.getMid()));
         map.put(HIGH, String.valueOf(event.getHigh()));
         map.put(VERY_HIGH, String.valueOf(event.getVeryHigh()));
+
+        sort(data, titleComparator);
 
         notifyDataSetChanged();
     }
