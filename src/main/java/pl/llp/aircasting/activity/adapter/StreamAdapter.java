@@ -11,6 +11,7 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ToggleStreamEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
 import javax.annotation.Nullable;
@@ -60,19 +61,22 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     GaugeHelper gaugeHelper;
     SessionManager sessionManager;
     EventBus eventBus;
+    SensorManager sensorManager;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
 
     private Activity context;
 
-    public StreamAdapter(Activity context, List<Map<String, Object>> data, EventBus eventBus, SessionManager sessionManager, GaugeHelper gaugeHelper) {
+    public StreamAdapter(Activity context, List<Map<String, Object>> data, EventBus eventBus,
+                         SessionManager sessionManager, GaugeHelper gaugeHelper, SensorManager sensorManager) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
         this.sessionManager = sessionManager;
         this.gaugeHelper = gaugeHelper;
+        this.sensorManager = sensorManager;
     }
 
     /**
@@ -117,6 +121,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         gaugeHelper.updateGauges(view, name, now, avg, peak);
 
         initializeButtons(view, name);
+        view.setClickable(true);
+        view.setFocusable(true);
 
         return view;
     }
@@ -125,10 +131,20 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         View recordButton = view.findViewById(R.id.record_stream);
         recordButton.setTag(name);
         recordButton.setOnClickListener(this);
+        if (sensorManager.isEnabled(name)) {
+            recordButton.setBackgroundResource(R.drawable.minus_active);
+        } else {
+            recordButton.setBackgroundResource(R.drawable.minus_regular);
+        }
 
-        View viewButton = view.findViewById(R.id.record_stream);
+        View viewButton = view.findViewById(R.id.view_stream);
         viewButton.setTag(name);
         viewButton.setOnClickListener(this);
+        if (name.equals(sensorManager.getVisibleSensor())) {
+            viewButton.setBackgroundResource(R.drawable.minus_active);
+        } else {
+            viewButton.setBackgroundResource(R.drawable.minus_regular);
+        }
     }
 
     private void update(SensorEvent event) {
@@ -183,6 +199,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     @Override
     public void onClick(View view) {
         String tag = view.getTag().toString();
+
         switch (view.getId()) {
             case R.id.view_stream:
                 eventBus.post(new ViewStreamEvent(tag));
@@ -191,5 +208,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 eventBus.post(new ToggleStreamEvent(tag));
                 break;
         }
+
+        notifyDataSetChanged();
     }
 }

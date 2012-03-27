@@ -16,6 +16,11 @@ import static com.google.common.collect.Sets.newHashSet;
 public class SensorManager {
     @Inject EventBus eventBus;
 
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
+
     Set<String> disabledSensors = newHashSet();
     private String visibleSensor = SimpleAudioReader.SENSOR_NAME;
 
@@ -32,6 +37,7 @@ public class SensorManager {
     @Subscribe
     public void onEvent(ToggleStreamEvent event) {
         String name = event.getSensorName();
+
         if (disabledSensors.contains(name)) {
             disabledSensors.remove(name);
         } else {
@@ -44,7 +50,7 @@ public class SensorManager {
         visibleSensor = event.getSensorName();
     }
 
-    /***
+    /**
      * @return The name of the sensor that is currently selected for viewing
      */
     public String getVisibleSensor() {

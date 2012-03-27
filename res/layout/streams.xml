@@ -12,7 +12,8 @@
               android:dividerHeight="0dp"
             />
 
-    <pl.llp.aircasting.view.TouchPane style="@style/Fill"
+    <pl.llp.aircasting.view.TouchPane android:layout_width="1dp"
+                                      android:layout_height="1dp"
                                       android:id="@+id/touch_pane"
             />
 

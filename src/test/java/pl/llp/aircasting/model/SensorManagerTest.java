@@ -1,6 +1,8 @@
 package pl.llp.aircasting.model;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
@@ -10,10 +12,16 @@ import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 @RunWith(InjectedTestRunner.class)
 public class SensorManagerTest {
     @Inject SensorManager manager;
+
+    @Before
+    public void setup() {
+        manager.eventBus = mock(EventBus.class);
+    }
 
     @Test
     public void shouldEnableAllSensorsByDefault() {
