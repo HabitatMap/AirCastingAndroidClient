@@ -19,6 +19,10 @@
 */
 package pl.llp.aircasting.guice;
 
+import pl.llp.aircasting.model.SchemaMigrator;
+import pl.llp.aircasting.util.http.HttpBuilder;
+import pl.llp.aircasting.view.overlay.NoteOverlay;
+
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.location.Geocoder;
@@ -28,20 +32,12 @@ import com.google.gson.Gson;
 import com.google.inject.Scopes;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import pl.llp.aircasting.model.DBUtils;
-import pl.llp.aircasting.util.http.HttpBuilder;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
 import roboguice.config.AbstractAndroidModule;
 import roboguice.inject.SharedPreferencesName;
 import roboguice.inject.SystemServiceProvider;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/27/11
- * Time: 10:41 AM
- */
-public class AirCastingModule extends AbstractAndroidModule {
+public class AirCastingModule extends AbstractAndroidModule
+{
     @Override
     protected void configure() {
         requestStaticInjection(HttpBuilder.class);
@@ -50,7 +46,7 @@ public class AirCastingModule extends AbstractAndroidModule {
 
         bind(HttpClient.class).to(DefaultHttpClient.class);
 
-        bind(DBUtils.class).toProvider(DBHelperProvider.class);
+        bind(SchemaMigrator.class).toProvider(DBHelperProvider.class);
 
         bind(NoteOverlay.class).toProvider(NoteOverlayProvider.class);
         

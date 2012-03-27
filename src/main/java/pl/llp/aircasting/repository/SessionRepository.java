@@ -19,11 +19,16 @@
  */
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.model.DBConstants;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.SchemaMigrator;
+import pl.llp.aircasting.model.Session;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -31,26 +36,14 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/6/11
- * Time: 11:29 AM
- */
 public class SessionRepository implements DBConstants {
-    public interface ProgressListener {
 
-        public void onSizeCalculated(int workSize);
-
-        public void onProgress(int progress);
-    }
-
-    @Inject DBUtils dbHelper;
+    @Inject SchemaMigrator dbAccessor;
     SQLiteDatabase db;
 
     @Inject
     public void init() {
-        db = dbHelper.getWritableDatabase();
+        db = dbAccessor.getWritableDatabase();
     }
 
     public void close() {

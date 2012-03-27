@@ -19,21 +19,16 @@
 */
 package pl.llp.aircasting.guice;
 
+import pl.llp.aircasting.model.SchemaMigrator;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import pl.llp.aircasting.model.DBUtils;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 3:21 PM
- */
-public class DBHelperProvider implements Provider<DBUtils> {
+public class DBHelperProvider implements Provider<SchemaMigrator> {
     @Inject AirCastingApplication application;
 
     @Override
-    public DBUtils get() {
-        return new DBUtils(application);
+    public SchemaMigrator get() {
+        return new SchemaMigrator(application);
     }
 }

@@ -21,15 +21,9 @@ package pl.llp.aircasting.model;
 
 import android.provider.BaseColumns;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/24/11
- * Time: 11:34 AM
- */
 public interface DBConstants {
     String DB_NAME = "sessions.db";
-    int DB_VERSION = 21;
+    int DB_VERSION = 22;
 
     String SESSION_TABLE_NAME = "Sessions";
     String SESSION_ID = BaseColumns._ID;
@@ -59,6 +53,14 @@ public interface DBConstants {
     String MEASUREMENT_LONGITUDE = "Longitude";
     String MEASUREMENT_VALUE = "Value";
     String MEASUREMENT_TIME = "Time";
+    String MEASUREMENT_SENSOR_ID = "SensorID";
+
+    String SENSOR_TABLE_NAME = "Sensors";
+    String SENSOR_ID = BaseColumns._ID;
+    String SENSOR_NAME = "SensorName";
+    String SENSOR_MEASUREMENT_TYPE = "SensorMeasurementType";
+    String SENSOR_MEASUREMENT_SYMBOL = "SensorMeasurementSymbol";
+    String SENSOR_MEASUREMENT_UNIT = "SensorMeasurementUnit";
 
     String NOTE_TABLE_NAME = "Notes";
     String NOTE_SESSION_ID = "SessionID";

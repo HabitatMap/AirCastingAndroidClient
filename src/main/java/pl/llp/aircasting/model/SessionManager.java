@@ -19,13 +19,6 @@
  */
 package pl.llp.aircasting.model;
 
-import android.app.Application;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
@@ -35,9 +28,18 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
+
+import android.app.Application;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Collection;
 import java.util.Date;
@@ -49,14 +51,9 @@ import static com.google.common.primitives.Ints.min;
 import static com.google.inject.internal.Lists.newArrayList;
 import static pl.llp.aircasting.util.Lists.getLast;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/29/11
- * Time: 1:09 PM
- */
 @Singleton
-public class SessionManager {
+public class SessionManager
+{
     @Inject SimpleAudioReader audioReader;
     @Inject ExternalSensor externalSensor;
     @Inject EventBus eventBus;
@@ -104,7 +101,7 @@ public class SessionManager {
         return session;
     }
 
-    public void loadSession(long id, SessionRepository.ProgressListener listener) {
+    public void loadSession(long id, ProgressListener listener) {
         Session newSession = sessionRepository.loadEager(id, listener);
         setSession(newSession);
     }
@@ -316,7 +313,7 @@ public class SessionManager {
         notificationHelper.showRecordingNotification();
     }
 
-    public void finishSession(SessionRepository.ProgressListener progressListener) {
+    public void finishSession(ProgressListener progressListener) {
         synchronized (this) {
             fillInDetails();
 

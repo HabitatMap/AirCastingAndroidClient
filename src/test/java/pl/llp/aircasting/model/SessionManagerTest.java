@@ -19,6 +19,18 @@
  */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.MetadataHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.repository.ProgressListener;
+import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
+
 import android.location.Location;
 import android.location.LocationManager;
 import com.google.common.collect.Iterables;
@@ -30,16 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import pl.llp.aircasting.sensor.external.ExternalSensor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -49,12 +51,6 @@ import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/29/11
- * Time: 1:08 PM
- */
 @RunWith(InjectedTestRunner.class)
 public class SessionManagerTest {
     @Inject SessionManager sessionManager;
@@ -280,7 +276,7 @@ public class SessionManagerTest {
     public void shouldStopASession() {
         fail("Fix session persistence");
 
-        SessionRepository.ProgressListener listener = mock(SessionRepository.ProgressListener.class);
+        ProgressListener listener = mock(ProgressListener.class);
 
         triggerMeasurement(11);
         sessionManager.finishSession(listener);
@@ -375,7 +371,7 @@ public class SessionManagerTest {
             public void describeTo(Description description) {
                 description.appendText("Session with additional data set");
             }
-        }), Mockito.any(SessionRepository.ProgressListener.class));
+        }), Mockito.any(ProgressListener.class));
     }
 
     @Test
