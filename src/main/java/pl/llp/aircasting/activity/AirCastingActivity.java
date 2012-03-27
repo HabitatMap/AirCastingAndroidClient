@@ -34,7 +34,6 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
@@ -102,8 +101,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @Inject SettingsHelper settingsHelper;
     @Inject ResourceHelper resourceHelper;
     @Inject PhotoHelper photoHelper;
-
-    @Inject MainMenu mainMenu;
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
@@ -243,16 +240,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
         view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.SENSOR_NAME, size, power));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
     }
 
     @Override

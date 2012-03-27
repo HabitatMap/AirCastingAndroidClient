@@ -3,6 +3,8 @@ package pl.llp.aircasting.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
@@ -11,11 +13,12 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.ui.TapEvent;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-/***
+/**
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
@@ -34,6 +37,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;
     @Nullable @InjectView(R.id.heat_map_button) ImageButton heatMapButton;
     @Nullable @InjectView(R.id.streams_button) ImageButton streamsButton;
+
+    @Inject MainMenu mainMenu;
 
     private boolean initialized = false;
 
@@ -146,6 +151,16 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 startActivity(new Intent(context, StreamsActivity.class));
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return mainMenu.create(this, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mainMenu.handleClick(this, item);
     }
 
     @Subscribe
