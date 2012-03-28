@@ -8,9 +8,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.event.ui.ToggleStreamEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -36,7 +36,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     public static final String MID = "mid";
     public static final String HIGH = "high";
     public static final String VERY_HIGH = "veryHigh";
-    public static final String NAME = "name";
 
     private static final String[] FROM = new String[]{
             TITLE, NOW, AVERAGE, PEAK,
@@ -57,6 +56,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
             return leftTitle.compareTo(rightTitle);
         }
     };
+    public static final String SENSOR = "sensor";
 
     GaugeHelper gaugeHelper;
     SessionManager sessionManager;
@@ -96,15 +96,13 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     /**
      * Adjust the state of the adapter to incorporate
      * new sensor data.
-     *
-     * @param event new sensor data to be displayed
      */
     @Subscribe
-    public void onEvent(final SensorEvent event) {
+    public void onEvent(SensorEvent event) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                update(event);
+                update();
             }
         });
     }
@@ -114,66 +112,72 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         View view = super.getView(position, convertView, parent);
 
         Map<String, Object> state = data.get(position);
+        Sensor sensor = (Sensor) state.get(SENSOR);
         Integer peak = (Integer) state.get(PEAK);
         Integer avg = (Integer) state.get(AVERAGE);
         Integer now = (Integer) state.get(NOW);
-        String name = (String) state.get(NAME);
-        gaugeHelper.updateGauges(view, name, now, avg, peak);
+        gaugeHelper.updateGauges(view, sensor, now, avg, peak);
 
-        initializeButtons(view, name);
+        initializeButtons(view, sensor);
         view.setClickable(true);
         view.setFocusable(true);
 
         return view;
     }
 
-    private void initializeButtons(View view, String name) {
+    private void initializeButtons(View view, Sensor sensor) {
         View recordButton = view.findViewById(R.id.record_stream);
-        recordButton.setTag(name);
+        recordButton.setTag(sensor);
         recordButton.setOnClickListener(this);
-        if (sensorManager.isEnabled(name)) {
+        if (sensor.isEnabled()) {
             recordButton.setBackgroundResource(R.drawable.minus_active);
         } else {
             recordButton.setBackgroundResource(R.drawable.minus_regular);
         }
 
         View viewButton = view.findViewById(R.id.view_stream);
-        viewButton.setTag(name);
+        viewButton.setTag(sensor);
         viewButton.setOnClickListener(this);
-        if (name.equals(sensorManager.getVisibleSensor())) {
+        if (sensorManager.getVisibleSensor().equals(sensor)) {
             viewButton.setBackgroundResource(R.drawable.minus_active);
         } else {
             viewButton.setBackgroundResource(R.drawable.minus_regular);
         }
     }
 
-    private void update(SensorEvent event) {
-        Map<String, Object> map = prepareItem(event);
-        String name = event.getSensorName();
+    private void update() {
+        data.clear();
 
-        map.put(TITLE, title(event));
-        map.put(NAME, name);
+        for (Sensor sensor : sensorManager.getSensors()) {
+            Map<String, Object> map = prepareItem(sensor);
+            String name = sensor.getSensorName();
 
-        map.put(NOW, (int) sessionManager.getNow(name));
-        map.put(AVERAGE, (int) sessionManager.getAvg(name));
-        map.put(PEAK, (int) sessionManager.getPeak(name));
-        map.put(PEAK_LABEL, label(R.string.peak_label_template, event));
-        map.put(NOW_LABEL, label(R.string.now_label_template, event));
-        map.put(AVG_LABEL, label(R.string.avg_label_template, event));
+            map.put(TITLE, title(sensor));
+            map.put(SENSOR, sensor);
 
-        map.put(VERY_LOW, String.valueOf(event.getVeryLow()));
-        map.put(LOW, String.valueOf(event.getLow()));
-        map.put(MID, String.valueOf(event.getMid()));
-        map.put(HIGH, String.valueOf(event.getHigh()));
-        map.put(VERY_HIGH, String.valueOf(event.getVeryHigh()));
+            map.put(NOW, (int) sessionManager.getNow(name));
+            map.put(AVERAGE, (int) sessionManager.getAvg(name));
+            map.put(PEAK, (int) sessionManager.getPeak(name));
+            map.put(PEAK_LABEL, label(R.string.peak_label_template, sensor));
+            map.put(NOW_LABEL, label(R.string.now_label_template, sensor));
+            map.put(AVG_LABEL, label(R.string.avg_label_template, sensor));
+
+            map.put(VERY_LOW, String.valueOf(sensor.getVeryLow()));
+            map.put(LOW, String.valueOf(sensor.getLow()));
+            map.put(MID, String.valueOf(sensor.getMid()));
+            map.put(HIGH, String.valueOf(sensor.getHigh()));
+            map.put(VERY_HIGH, String.valueOf(sensor.getVeryHigh()));
+
+            data.add(map);
+        }
 
         sort(data, titleComparator);
 
         notifyDataSetChanged();
     }
 
-    private Map<String, Object> prepareItem(SensorEvent event) {
-        String name = event.getSensorName();
+    private Map<String, Object> prepareItem(Sensor sensor) {
+        String name = sensor.getSensorName();
         if (!sensors.containsKey(name)) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             sensors.put(name, map);
@@ -182,30 +186,30 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         return sensors.get(name);
     }
 
-    private String title(SensorEvent event) {
+    private String title(Sensor sensor) {
         StringBuilder builder = new StringBuilder();
 
-        return builder.append(event.getMeasurementType())
+        return builder.append(sensor.getMeasurementType())
                 .append(" - ")
-                .append(event.getSensorName())
+                .append(sensor.getSensorName())
                 .toString();
     }
 
-    private String label(int templateId, SensorEvent event) {
+    private String label(int templateId, Sensor sensor) {
         String template = context.getString(templateId);
-        return String.format(template, event.getSymbol());
+        return String.format(template, sensor.getSymbol());
     }
 
     @Override
     public void onClick(View view) {
-        String tag = view.getTag().toString();
+        Sensor sensor = (Sensor) view.getTag();
 
         switch (view.getId()) {
             case R.id.view_stream:
-                eventBus.post(new ViewStreamEvent(tag));
+                eventBus.post(new ViewStreamEvent(sensor));
                 break;
             case R.id.record_stream:
-                eventBus.post(new ToggleStreamEvent(tag));
+                sensorManager.toggleSensor(sensor);
                 break;
         }
 

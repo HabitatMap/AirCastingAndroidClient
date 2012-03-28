@@ -1,21 +1,16 @@
 package pl.llp.aircasting.event.ui;
 
+import pl.llp.aircasting.model.Sensor;
+
 public class ViewStreamEvent {
-    private String sensorName;
+    private Sensor sensor;
 
-    public ViewStreamEvent(String sensorName) {
-        this.sensorName = sensorName;
+    public ViewStreamEvent(Sensor sensor) {
+        this.sensor = sensor;
     }
 
-    public String getSensorName() {
-        return sensorName;
-    }
-
-    @Override
-    public String toString() {
-        return "ViewStreamEvent{" +
-                "sensorName='" + sensorName + '\'' +
-                '}';
+    public Sensor getSensor() {
+        return sensor;
     }
 
     @Override
@@ -25,13 +20,20 @@ public class ViewStreamEvent {
 
         ViewStreamEvent event = (ViewStreamEvent) o;
 
-        if (sensorName != null ? !sensorName.equals(event.sensorName) : event.sensorName != null) return false;
+        if (sensor != null ? !sensor.equals(event.sensor) : event.sensor != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return sensorName != null ? sensorName.hashCode() : 0;
+        return sensor != null ? sensor.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ViewStreamEvent{" +
+                "sensor=" + sensor +
+                '}';
     }
 }

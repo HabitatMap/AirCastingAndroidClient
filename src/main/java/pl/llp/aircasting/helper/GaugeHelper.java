@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Sensor;
 
 import static java.lang.String.valueOf;
 
@@ -23,11 +24,12 @@ public class GaugeHelper {
      * @param avg  Value to set for the avg gauge
      * @param peak Value to set for the peak gauge
      */
-    public void updateGauges(View view, String sensorName, int now, int avg, int peak) {
+    public void updateGauges(View view, Sensor sensor, int now, int avg, int peak) {
         TextView nowGauge = (TextView) view.findViewById(R.id.now_gauge);
         TextView avgGauge = (TextView) view.findViewById(R.id.avg_gauge);
         TextView peakGauge = (TextView) view.findViewById(R.id.peak_gauge);
 
+        String sensorName = sensor.getSensorName();
         updateGauge(nowGauge, sensorName, MarkerSize.BIG, now);
         updateGauge(avgGauge, sensorName, MarkerSize.SMALL, avg);
         updateGauge(peakGauge, sensorName, MarkerSize.SMALL, peak);

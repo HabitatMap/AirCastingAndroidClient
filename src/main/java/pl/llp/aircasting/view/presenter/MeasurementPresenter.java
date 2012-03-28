@@ -84,7 +84,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Subscribe
     public void onEvent(MeasurementEvent event) {
         if (sessionManager.isSessionSaved()) return;
-        if (!event.getSensorName().equals(sensorManager.getVisibleSensor())) return;
+        if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
         Measurement measurement = event.getMeasurement();
 
@@ -145,7 +145,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private void prepareFullView() {
         if (fullView != null) return;
 
-        String visibleSensor = sensorManager.getVisibleSensor();
+        String visibleSensor = sensorManager.getVisibleSensor().getSensorName();
         MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
         Iterable<Measurement> measurements;
         if (stream == null) {

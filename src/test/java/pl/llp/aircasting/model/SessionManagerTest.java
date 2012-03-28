@@ -60,6 +60,7 @@ public class SessionManagerTest {
     @Inject SessionManager sessionManager;
 
     Location location;
+    Sensor sensor;
 
     private void mockSensors() {
         sessionManager.locationHelper = mock(LocationHelper.class);
@@ -69,8 +70,11 @@ public class SessionManagerTest {
         sessionManager.eventBus = mock(EventBus.class);
         sessionManager.sensorManager = mock(SensorManager.class);
 
+        sensor = mock(Sensor.class);
+        when(sensor.isEnabled()).thenReturn(true);
+
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
-        when(sessionManager.sensorManager.isEnabled(Mockito.any(String.class))).thenReturn(true);
+        when(sessionManager.sensorManager.getSensor(Mockito.any(String.class))).thenReturn(sensor);
     }
 
     @Before
@@ -191,7 +195,7 @@ public class SessionManagerTest {
     @Test
     public void shouldSkipMeasurementsFromDisabledStreams() {
         sessionManager.sessionStarted = true;
-        when(sessionManager.sensorManager.isEnabled("LHC")).thenReturn(false);
+        when(sensor.isEnabled()).thenReturn(false);
 
         triggerMeasurement();
 

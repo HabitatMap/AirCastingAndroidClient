@@ -6,52 +6,52 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.ui.ToggleStreamEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Mockito.mock;
 
 @RunWith(InjectedTestRunner.class)
 public class SensorManagerTest {
     @Inject SensorManager manager;
+    private Sensor sensor;
+    private SensorEvent event;
 
     @Before
     public void setup() {
         manager.eventBus = mock(EventBus.class);
+
+        event = new SensorEvent("LHC", "Hadrons", "number", "#", 0, 10, 20, 30, 40, 12);
+        sensor = new Sensor(event);
+
+        manager.onEvent(event);
     }
 
     @Test
-    public void shouldEnableAllSensorsByDefault() {
-        assertThat(manager.isEnabled("LHC"), equalTo(true));
+    public void shouldStoreSensorInformation() {
+        assertThat(manager.getSensors(), hasItem(sensor));
     }
 
     @Test
-    public void shouldStoreInformationAboutDisabledSensors() {
-        manager.onEvent(new ToggleStreamEvent("LHC"));
-
-        assertThat(manager.isEnabled("LHC"), equalTo(false));
+    public void shouldNotOverwriteSensors() {
+        manager.onEvent(new SensorEvent("LHC", "Muons", "number", "#", 0, 10, 20, 30, 40, 12));
+        sensor = manager.getSensor("LHC");
+        
+        assertThat(sensor.getMeasurementType(), equalTo("Hadrons"));
     }
 
     @Test
-    public void shouldReEnableSensors() {
-        manager.onEvent(new ToggleStreamEvent("LHC"));
-        manager.onEvent(new ToggleStreamEvent("LHC"));
-
-        assertThat(manager.isEnabled("LHC"), equalTo(true));
-    }
-
-    @Test
-    public void phoneMicrophoneShouldBeVisibleByDefault() {
-        assertThat(manager.getVisibleSensor(), equalTo(SimpleAudioReader.SENSOR_NAME));
+    public void shouldReturnSensorsByName() {
+        assertThat(manager.getSensor(sensor.getSensorName()), equalTo(sensor));
     }
 
     @Test
     public void shouldStoreInformationAboutCurrentVisibleSensor() {
-        manager.onEvent(new ViewStreamEvent("LHC"));
+        manager.onEvent(new ViewStreamEvent(sensor));
 
-        assertThat(manager.getVisibleSensor(), equalTo("LHC"));
+        assertThat(manager.getVisibleSensor(), equalTo(sensor));
     }
 }

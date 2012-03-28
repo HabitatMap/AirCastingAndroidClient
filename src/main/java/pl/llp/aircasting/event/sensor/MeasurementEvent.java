@@ -1,21 +1,22 @@
 package pl.llp.aircasting.event.sensor;
 
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.Sensor;
 
 public class MeasurementEvent {
     private Measurement measurement;
-    private String sensorName;
+    private Sensor sensor;
 
-    public MeasurementEvent(Measurement measurement, String sensorName) {
+    public MeasurementEvent(Measurement measurement, Sensor sensor) {
         this.measurement = measurement;
-        this.sensorName = sensorName;
+        this.sensor = sensor;
     }
 
     public Measurement getMeasurement() {
         return measurement;
     }
 
-    public String getSensorName() {
-        return sensorName;
+    public Sensor getSensor() {
+        return sensor;
     }
 }

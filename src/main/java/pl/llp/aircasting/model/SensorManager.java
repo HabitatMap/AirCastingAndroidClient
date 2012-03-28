@@ -4,13 +4,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.event.ui.ToggleStreamEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
-import java.util.Set;
+import java.util.Map;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
 public class SensorManager {
@@ -21,39 +21,49 @@ public class SensorManager {
         eventBus.register(this);
     }
 
-    Set<String> disabledSensors = newHashSet();
-    private String visibleSensor = SimpleAudioReader.SENSOR_NAME;
-
-    /**
-     * Check if the given sensor is enabled for recording
-     *
-     * @param sensorName the name of the sensor to check
-     * @return true if the sensor is enabled, false otherwise
-     */
-    public boolean isEnabled(String sensorName) {
-        return !disabledSensors.contains(sensorName);
-    }
+    private Sensor visibleSensor = new Sensor(SimpleAudioReader.SENSOR_NAME);
+    private Map<String, Sensor> sensors = newHashMap();
 
     @Subscribe
-    public void onEvent(ToggleStreamEvent event) {
-        String name = event.getSensorName();
-
-        if (disabledSensors.contains(name)) {
-            disabledSensors.remove(name);
-        } else {
-            disabledSensors.add(name);
+    public void onEvent(SensorEvent event) {
+        if (!sensors.containsKey(event.getSensorName())) {
+            Sensor sensor = new Sensor(event);
+            sensors.put(sensor.getSensorName(), sensor);
         }
     }
 
     @Subscribe
     public void onEvent(ViewStreamEvent event) {
-        visibleSensor = event.getSensorName();
+        visibleSensor = sensors.get(event.getSensor().getSensorName());
     }
 
     /**
-     * @return The name of the sensor that is currently selected for viewing
+     * @return The Sensor that is currently selected for viewing
      */
-    public String getVisibleSensor() {
+    public Sensor getVisibleSensor() {
         return visibleSensor;
+    }
+
+    /**
+     * @return All currently known Sensors
+     */
+    public Iterable<Sensor> getSensors() {
+        return sensors.values();
+    }
+
+    /**
+     * @param sensorName the name of the Sensor
+     * @return The Sensor with the given name if known, null otherwise
+     */
+    public Sensor getSensor(String sensorName) {
+        return sensors.get(sensorName);
+    }
+
+    /**
+     * @param sensor toggle enabled/disabled status of this Sensor
+     */
+    public void toggleSensor(Sensor sensor) {
+        Sensor actualSensor = sensors.get(sensor.getSensorName());
+        actualSensor.toggle();
     }
 }

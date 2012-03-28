@@ -27,10 +27,7 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,6 +53,7 @@ public class MeasurementPresenterTest {
     private Measurement measurement2;
     private MeasurementPresenter.Listener listener;
     private MeasurementStream stream;
+    private Sensor sensor;
 
     @Before
     public void setup() {
@@ -64,8 +62,11 @@ public class MeasurementPresenterTest {
             measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
         }
 
+        sensor = mock(Sensor.class);
+        when(sensor.getSensorName()).thenReturn("LHC");
+        
         presenter.sensorManager = mock(SensorManager.class);
-        when(presenter.sensorManager.getVisibleSensor()).thenReturn("LHC");
+        when(presenter.sensorManager.getVisibleSensor()).thenReturn(sensor);
 
         stream = mock(MeasurementStream.class);
         when(stream.getMeasurements()).thenReturn(measurements);
@@ -91,7 +92,7 @@ public class MeasurementPresenterTest {
     }
 
     private void triggerMeasurement(Measurement measurement){
-        presenter.onEvent(new MeasurementEvent(measurement, "LHC"));
+        presenter.onEvent(new MeasurementEvent(measurement, sensor));
     }
 
     @Test
