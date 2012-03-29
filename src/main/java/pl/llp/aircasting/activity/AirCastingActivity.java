@@ -22,15 +22,12 @@ package pl.llp.aircasting.activity;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.MarkerSize;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
@@ -39,15 +36,14 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
 
-import static java.lang.String.valueOf;
 import static pl.llp.aircasting.Intents.triggerSync;
 
 /**
@@ -59,10 +55,7 @@ import static pl.llp.aircasting.Intents.triggerSync;
 public abstract class AirCastingActivity extends ButtonsActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
 
-    @InjectView(R.id.avg_gauge) TextView dbAvg;
-    @InjectView(R.id.now_gauge) TextView dbNow;
-    @InjectView(R.id.peak_gauge) TextView dbPeak;
-
+    @InjectView(R.id.gauge_container) View gauges;
     @InjectView(R.id.now_container) View dbNowContainer;
     @InjectView(R.id.avg_container) View dbAvgContainer;
     @InjectView(R.id.peak_container) View dbPeakContainer;
@@ -75,11 +68,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @InjectView(R.id.zoom_out) Button zoomOut;
 
     @InjectView(R.id.top_bar) View topBar;
-    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
-    @InjectView(R.id.top_bar_low) TextView topBarAverage;
-    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
-    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
     @InjectView(R.id.note_viewer) View noteViewer;
     @InjectView(R.id.note_date) TextView noteDate;
     @InjectView(R.id.note_number) TextView noteNumber;
@@ -94,11 +82,14 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
     @Inject LayoutInflater layoutInflater;
 
+    @Inject SensorManager sensorManager;
     @Inject LocationManager locationManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject ResourceHelper resourceHelper;
     @Inject PhotoHelper photoHelper;
+    @Inject TopBarHelper topBarHelper;
+    @Inject GaugeHelper gaugeHelper;
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
@@ -122,8 +113,8 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
         updateGauges();
         updateButtons();
-        updateTopBar();
         updateKeepScreenOn();
+        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     }
@@ -148,14 +139,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         } else {
             getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-    }
-
-    private void updateTopBar() {
-        topBarQuiet.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.VERY_LOW)));
-        topBarAverage.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.LOW)));
-        topBarLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.MID)));
-        topBarVeryLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.HIGH)));
-        topBarTooLoud.setText(valueOf(settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH)));
     }
 
     private void updateButtons() {
@@ -211,9 +194,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
                 dbAvgContainer.setVisibility(visibility);
                 dbPeakContainer.setVisibility(visibility);
 
-                updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
-                updatePowerView(dbNow, sessionManager.getNow(SimpleAudioReader.getSensor()), MarkerSize.BIG);
-                updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
+                gaugeHelper.updateGauges(sensorManager.getVisibleSensor(), gauges);
             }
         });
     }
@@ -232,12 +213,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @Subscribe
     public void onEvent(MeasurementEvent event) {
         updateGauges();
-    }
-
-    private void updatePowerView(TextView view, double power, MarkerSize size) {
-        view.setText(NumberFormat.getInstance().format((int) power));
-        view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
-        view.setBackgroundDrawable(resourceHelper.getGauge(SimpleAudioReader.getSensor(), size, power));
     }
 
     @Override
