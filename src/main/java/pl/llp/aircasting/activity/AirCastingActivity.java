@@ -187,13 +187,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                dbNowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
-
-                boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
-                int visibility = hasStats ? View.VISIBLE : View.GONE;
-                dbAvgContainer.setVisibility(visibility);
-                dbPeakContainer.setVisibility(visibility);
-
                 gaugeHelper.updateGauges(sensorManager.getVisibleSensor(), gauges);
             }
         });

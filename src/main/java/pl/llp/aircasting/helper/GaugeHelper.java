@@ -18,7 +18,7 @@ public class GaugeHelper {
     @Inject ResourceHelper resourceHelper;
     @Inject ThresholdsHelper thresholdHelper;
     @Inject SessionManager sessionManager;
-    
+
     @InjectResource(R.string.avg_label_template) String avgLabel;
     @InjectResource(R.string.now_label_template) String nowLabel;
     @InjectResource(R.string.peak_label_template) String peakLabel;
@@ -27,9 +27,11 @@ public class GaugeHelper {
      * Update a set of now/avg/peak gauges
      *
      * @param sensor The Sensor from which the readings are taken
-     * @param view The view containing the three gauges
+     * @param view   The view containing the three gauges
      */
     public void updateGauges(Sensor sensor, View view) {
+        updateVisibility(view);
+
         int now = (int) sessionManager.getNow(sensor);
         int avg = (int) sessionManager.getAvg(sensor);
         int peak = (int) sessionManager.getPeak(sensor);
@@ -37,10 +39,23 @@ public class GaugeHelper {
         updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
         updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
         updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
-        
+
         updateLabel(sensor, view.findViewById(R.id.now_label), nowLabel);
         updateLabel(sensor, view.findViewById(R.id.avg_label), avgLabel);
         updateLabel(sensor, view.findViewById(R.id.peak_label), peakLabel);
+    }
+
+    private void updateVisibility(View view) {
+        View nowContainer = view.findViewById(R.id.now_container);
+        View avgContainer = view.findViewById(R.id.avg_container);
+        View peakContainer = view.findViewById(R.id.peak_container);
+
+        nowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
+
+        boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
+        int visibility = hasStats ? View.VISIBLE : View.GONE;
+        avgContainer.setVisibility(visibility);
+        peakContainer.setVisibility(visibility);
     }
 
     private void updateLabel(Sensor sensor, View view, String label) {
