@@ -26,10 +26,10 @@ public class GaugeHelper {
     /**
      * Update a set of now/avg/peak gauges
      *
-     * @param view The view containing the three gauges
      * @param sensor The Sensor from which the readings are taken
+     * @param view The view containing the three gauges
      */
-    public void updateGauges(View view, Sensor sensor) {
+    public void updateGauges(Sensor sensor, View view) {
         int now = (int) sessionManager.getNow(sensor);
         int avg = (int) sessionManager.getAvg(sensor);
         int peak = (int) sessionManager.getPeak(sensor);

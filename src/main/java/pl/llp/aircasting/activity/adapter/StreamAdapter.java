@@ -10,9 +10,9 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
+import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -49,8 +49,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     public static final String SENSOR = "sensor";
 
     GaugeHelper gaugeHelper;
-    SessionManager sessionManager;
     EventBus eventBus;
+    TopBarHelper topBarHelper;
     SensorManager sensorManager;
 
     private List<Map<String, Object>> data;
@@ -59,13 +59,13 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private Activity context;
 
     public StreamAdapter(Activity context, List<Map<String, Object>> data, EventBus eventBus,
-                         SessionManager sessionManager, GaugeHelper gaugeHelper, SensorManager sensorManager) {
+                         GaugeHelper gaugeHelper, TopBarHelper topBarHelper, SensorManager sensorManager) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
-        this.sessionManager = sessionManager;
         this.gaugeHelper = gaugeHelper;
+        this.topBarHelper = topBarHelper;
         this.sensorManager = sensorManager;
     }
 
@@ -100,7 +100,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
 
-        gaugeHelper.updateGauges(view, sensor);
+        gaugeHelper.updateGauges(sensor, view);
+        topBarHelper.updateTopBar(sensor, view);
 
         initializeButtons(view, sensor);
         view.setClickable(true);

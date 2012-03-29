@@ -10,9 +10,9 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
+import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class StreamAdapterTest {
     @Before
     public void setup() {
         adapter = new StreamAdapter(mock(Activity.class), new ArrayList<Map<String, Object>>(),
-                mock(EventBus.class), mock(SessionManager.class), mock(GaugeHelper.class), mock(SensorManager.class));
+                mock(EventBus.class), mock(GaugeHelper.class), mock(TopBarHelper.class), mock(SensorManager.class));
         
         sensor = mock(Sensor.class);
 
