@@ -21,7 +21,7 @@ public class SensorManager {
         eventBus.register(this);
     }
 
-    private Sensor visibleSensor = new Sensor(SimpleAudioReader.SENSOR_NAME);
+    private Sensor visibleSensor = SimpleAudioReader.getSensor();
     private Map<String, Sensor> sensors = newHashMap();
 
     @Subscribe
