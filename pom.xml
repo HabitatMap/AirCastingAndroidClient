@@ -93,6 +93,12 @@
       </dependency>
 
      <dependency>
+       <groupId>com.intellij</groupId>
+       <artifactId>annotations</artifactId>
+       <version>9.0.4</version>
+     </dependency>
+
+     <dependency>
        <groupId>com.j256.ormlite</groupId>
        <artifactId>ormlite-android</artifactId>
        <version>4.38</version>
