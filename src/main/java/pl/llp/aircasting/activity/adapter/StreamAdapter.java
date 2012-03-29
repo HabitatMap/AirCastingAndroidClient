@@ -1,12 +1,12 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ButtonsActivity;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
@@ -52,13 +52,13 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     EventBus eventBus;
     TopBarHelper topBarHelper;
     SensorManager sensorManager;
+    ButtonsActivity context;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
 
-    private Activity context;
 
-    public StreamAdapter(Activity context, List<Map<String, Object>> data, EventBus eventBus,
+    public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          GaugeHelper gaugeHelper, TopBarHelper topBarHelper, SensorManager sensorManager) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
@@ -179,6 +179,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 break;
         }
 
+        context.suppressNextTap();
         notifyDataSetChanged();
     }
 }

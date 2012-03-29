@@ -34,12 +34,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
-import pl.llp.aircasting.event.sensor.LocationEvent;
-import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -244,7 +243,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     public void noteClicked(OverlayItem item, int index) {
-        suppressTap = true;
+        suppressNextTap();
 
         mapView.getController().animateTo(item.getPoint());
 
@@ -315,16 +314,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         if (settingsHelper.isShowRoute() && sessionManager.isRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
-        }
-    }
-
-    @Override
-    @Subscribe
-    public void onEvent(TapEvent event) {
-        if (suppressTap) {
-            suppressTap = false;
-        } else {
-            super.onEvent(event);
         }
     }
 

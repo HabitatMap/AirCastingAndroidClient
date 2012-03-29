@@ -41,6 +41,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Inject MainMenu mainMenu;
 
     private boolean initialized = false;
+    private boolean suppressTap = false;
 
     @Override
     protected void onResume() {
@@ -108,6 +109,15 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
+    /**
+     * The next tap will not change the state of the toggleable
+     * buttons. Use this if clicking something makes the toggleable
+     * buttons toggle.
+     */
+    public void suppressNextTap() {
+        suppressTap = true;
+    }
+
     private void hideButtons() {
         buttons.startAnimation(fadeOut);
         showButtons = false;
@@ -165,6 +175,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     @Subscribe
     public void onEvent(TapEvent event) {
-        toggleButtons();
+        if (suppressTap) {
+            suppressTap = false;
+        } else {
+            toggleButtons();
+        }
     }
 }
