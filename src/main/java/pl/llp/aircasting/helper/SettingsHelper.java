@@ -22,6 +22,7 @@ package pl.llp.aircasting.helper;
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 /**
@@ -281,7 +282,7 @@ public class SettingsHelper {
         return preferences.getString(SENSOR_ADDRESS, null);
     }
 
-    public Boolean hasThresholds(String sensorName) {
-        return sensorName.equals(SimpleAudioReader.SENSOR_NAME);
+    public Boolean hasThresholds(Sensor sensor) {
+        return sensor.getSensorName().equals(SimpleAudioReader.SENSOR_NAME);
     }
 }

@@ -29,15 +29,14 @@ public class GaugeHelper {
         TextView avgGauge = (TextView) view.findViewById(R.id.avg_gauge);
         TextView peakGauge = (TextView) view.findViewById(R.id.peak_gauge);
 
-        String sensorName = sensor.getSensorName();
-        updateGauge(nowGauge, sensorName, MarkerSize.BIG, now);
-        updateGauge(avgGauge, sensorName, MarkerSize.SMALL, avg);
-        updateGauge(peakGauge, sensorName, MarkerSize.SMALL, peak);
+        updateGauge(nowGauge, sensor, MarkerSize.BIG, now);
+        updateGauge(avgGauge, sensor, MarkerSize.SMALL, avg);
+        updateGauge(peakGauge, sensor, MarkerSize.SMALL, peak);
     }
 
-    private void updateGauge(TextView view, String sensorName, MarkerSize size, int value) {
+    private void updateGauge(TextView view, Sensor sensor, MarkerSize size, int value) {
         view.setText(valueOf(value));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(sensorName, size, value));
+        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(sensor, size, value));
     }
 }

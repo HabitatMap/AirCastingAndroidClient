@@ -30,6 +30,7 @@ import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
 import java.util.List;
@@ -78,8 +79,8 @@ public class SoundTraceOverlay extends BufferingOverlay<Measurement> {
             value = calibrationHelper.calibrate(value);
         }
 
-        if (soundHelper.shouldDisplayAbsolute(value)) {
-            Drawable bullet = resourceHelper.getBulletAbsolute(value);
+        if (soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), value)) {
+            Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(), value);
 
             GeoPoint geoPoint = LocationConversionHelper.geoPoint(measurement.getLatitude(), measurement.getLongitude());
             Point point = projection.toPixels(geoPoint, null);

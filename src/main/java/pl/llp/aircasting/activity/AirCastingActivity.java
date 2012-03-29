@@ -24,8 +24,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
@@ -239,7 +237,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     private void updatePowerView(TextView view, double power, MarkerSize size) {
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
-        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.SENSOR_NAME, size, power));
+        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.getSensor(), size, power));
     }
 
     @Override

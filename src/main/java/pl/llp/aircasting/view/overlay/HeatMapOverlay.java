@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 
@@ -57,8 +58,8 @@ public class HeatMapOverlay extends Overlay {
         for (Region region : regions) {
             double value = region.getValue();
 
-            if (soundHelper.shouldDisplayAbsolute(value)) {
-                int color = resourceHelper.getColorAbsolute(value);
+            if (soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), value)) {
+                int color = resourceHelper.getColorAbsolute(SimpleAudioReader.getSensor(), value);
 
                 paint.setColor(color);
                 paint.setAlpha(ALPHA);

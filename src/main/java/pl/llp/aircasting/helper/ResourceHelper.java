@@ -25,6 +25,7 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import roboguice.inject.InjectResource;
 
@@ -76,8 +77,8 @@ public class ResourceHelper {
 
     @Inject SoundHelper soundHelper;
 
-    public Drawable getGaugeAbsolute(String sensorName, MarkerSize size, double value) {
-        switch (soundHelper.soundLevelAbsolute(sensorName, value)) {
+    public Drawable getGaugeAbsolute(Sensor sensor, MarkerSize size, double value) {
+        switch (soundHelper.level(sensor, value)) {
             case TOO_LOW:
             case VERY_LOW:
                 return size == MarkerSize.SMALL ? smallGreenGauge : bigGreenGauge;
@@ -104,7 +105,7 @@ public class ResourceHelper {
     }
 
     public Drawable getLocationBullet(double value) {
-        switch (soundHelper.soundLevel(value)) {
+        switch (soundHelper.level(SimpleAudioReader.getSensor(), value)) {
             case LOW:
                 return dotYellow;
             case MID:
@@ -119,8 +120,8 @@ public class ResourceHelper {
         }
     }
 
-    public int getColorAbsolute(double value) {
-        switch (soundHelper.soundLevelAbsolute(SimpleAudioReader.SENSOR_NAME, value)) {
+    public int getColorAbsolute(Sensor sensor, double value) {
+        switch (soundHelper.level(sensor, value)) {
             case VERY_LOW:
                 return green;
             case LOW:
@@ -132,8 +133,8 @@ public class ResourceHelper {
         }
     }
 
-    public Drawable getBulletAbsolute(double value) {
-        MeasurementLevel measurementLevel = soundHelper.soundLevelAbsolute(SimpleAudioReader.SENSOR_NAME, value);
+    public Drawable getBulletAbsolute(Sensor sensor, double value) {
+        MeasurementLevel measurementLevel = soundHelper.level(sensor, value);
 
         switch (measurementLevel) {
             case TOO_LOW:

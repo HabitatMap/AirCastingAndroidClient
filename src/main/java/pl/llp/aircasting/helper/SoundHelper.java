@@ -21,7 +21,7 @@ package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
 import pl.llp.aircasting.MeasurementLevel;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.model.Sensor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,21 +42,17 @@ public class SoundHelper {
 
     @Inject ThresholdsHelper thresholdsHelper;
 
-    public MeasurementLevel soundLevel(double value) {
-        return soundLevelAbsolute(SimpleAudioReader.SENSOR_NAME, value);
-    }
-
-    public MeasurementLevel soundLevelAbsolute(String sensorName, double value) {
+    public MeasurementLevel level(Sensor sensor, double value) {
         for (MeasurementLevel measurementLevel : MEASUREMENT_LEVELS) {
-            if ((int) value > thresholdsHelper.getThreshold(sensorName, measurementLevel)) {
+            if ((int) value > thresholdsHelper.getThreshold(sensor, measurementLevel)) {
                 return measurementLevel;
             }
         }
         return MeasurementLevel.TOO_LOW;
     }
 
-    public boolean shouldDisplayAbsolute(double value) {
-        MeasurementLevel measurementLevel = soundLevelAbsolute(SimpleAudioReader.SENSOR_NAME, value);
+    public boolean shouldDisplay(Sensor sensor, double value) {
+        MeasurementLevel measurementLevel = level(sensor, value);
         return measurementLevel != MeasurementLevel.VERY_HIGH && measurementLevel != MeasurementLevel.TOO_LOW;
     }
 }

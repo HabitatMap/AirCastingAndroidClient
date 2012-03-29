@@ -25,6 +25,7 @@ import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Sensor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,11 +46,22 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public static final int HIGH = 80;
     public static final int VERY_HIGH = 100;
 
+    public static final Sensor sensor = new Sensor(
+            SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+    );
+
     @Inject SettingsHelper settingsHelper;
     @Inject AudioReader audioReader;
     @Inject SignalPower signalPower;
     @Inject EventBus eventBus;
     @Inject CalibrationHelper calibrationHelper;
+
+    /**
+     * @return A Sensor representing the internal microphone
+     */
+    public static Sensor getSensor() {
+        return sensor;
+    }
 
     public void start() {
         // The AudioReader sleeps as much as it records

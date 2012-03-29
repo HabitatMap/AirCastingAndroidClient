@@ -34,6 +34,7 @@ import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import java.text.NumberFormat;
 
@@ -81,7 +82,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
     }
 
     private void updateImage(ImageView view, double value) {
-        Drawable bullet = resourceHelper.getBulletAbsolute(value);
+        Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(),  value);
         view.setBackgroundDrawable(bullet);
     }
 

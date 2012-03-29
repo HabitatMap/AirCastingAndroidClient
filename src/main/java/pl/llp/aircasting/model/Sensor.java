@@ -17,16 +17,21 @@ public class Sensor {
     private boolean enabled = true;
 
     public Sensor(SensorEvent event) {
-        this.sensorName = event.getSensorName();
-        this.measurementType = event.getMeasurementType();
-        this.unit = event.getUnit();
-        this.symbol = event.getSymbol();
-        
-        thresholds.put(MeasurementLevel.VERY_HIGH, event.getVeryHigh());
-        thresholds.put(MeasurementLevel.HIGH, event.getHigh());
-        thresholds.put(MeasurementLevel.MID, event.getMid());
-        thresholds.put(MeasurementLevel.LOW, event.getLow());
-        thresholds.put(MeasurementLevel.VERY_LOW, event.getVeryLow());
+        this(event.getSensorName(), event.getMeasurementType(), event.getUnit(), event.getSymbol(),
+                event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
+    }
+
+    public Sensor(String name, String type, String unit, String symbol, int veryLow, int low, int mid, int high, int veryHigh) {
+        this.sensorName = name;
+        this.measurementType = type;
+        this.unit = unit;
+        this.symbol = symbol;
+
+        thresholds.put(MeasurementLevel.VERY_HIGH, veryHigh);
+        thresholds.put(MeasurementLevel.HIGH, high);
+        thresholds.put(MeasurementLevel.MID, mid);
+        thresholds.put(MeasurementLevel.LOW, low);
+        thresholds.put(MeasurementLevel.VERY_LOW, veryLow);
     }
 
     public Sensor(String name) {
