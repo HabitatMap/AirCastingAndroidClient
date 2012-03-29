@@ -32,6 +32,7 @@ import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectView;
@@ -60,10 +61,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
 
-        plot.initialize(this, settingsHelper, resourceHelper);
-
-        graphTop.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH) + " dB");
-        graphBottom.setText(settingsHelper.getThreshold(MeasurementLevel.VERY_LOW) + " dB");
+        plot.initialize(this, thresholdsHelper, resourceHelper);
     }
 
     @Override
@@ -89,17 +87,27 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
                 List<Measurement> measurements = measurementPresenter.getTimelineView();
                 ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
-                plot.update(measurements, notes);
+                plot.update(sensorManager.getVisibleSensor(), measurements, notes);
 
                 scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
                 scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
 
-                if (!measurements.isEmpty()) {
-                    graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
-                    graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
-                }
+                updateLabels(measurements);
             }
         });
+    }
+
+    private void updateLabels(List<Measurement> measurements) {
+        Sensor sensor = sensorManager.getVisibleSensor();
+        int high = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+        int low = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+        graphTop.setText(high + " " + sensor.getSymbol());
+        graphBottom.setText(low + " " + sensor.getSymbol());
+
+        if (!measurements.isEmpty()) {
+            graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
+            graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
+        }
     }
 
     @Override

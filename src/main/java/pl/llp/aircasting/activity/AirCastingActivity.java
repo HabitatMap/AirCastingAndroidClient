@@ -56,9 +56,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     public static final String NOTE_INDEX = "noteIndex";
 
     @InjectView(R.id.gauge_container) View gauges;
-    @InjectView(R.id.now_container) View dbNowContainer;
-    @InjectView(R.id.avg_container) View dbAvgContainer;
-    @InjectView(R.id.peak_container) View dbPeakContainer;
 
     @InjectView(R.id.context_button_left) FrameLayout contextButtonLeft;
     @InjectView(R.id.context_button_center) FrameLayout contextButtonCenter;
@@ -90,6 +87,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @Inject PhotoHelper photoHelper;
     @Inject TopBarHelper topBarHelper;
     @Inject GaugeHelper gaugeHelper;
+    @Inject ThresholdsHelper thresholdsHelper;
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 

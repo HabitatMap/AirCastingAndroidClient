@@ -28,9 +28,10 @@ import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ThresholdsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.util.Search;
 
 import java.util.ArrayList;
@@ -53,13 +54,14 @@ public class NoisePlot extends View {
     private Paint paint = new Paint();
 
     private AirCastingActivity activity;
-    private SettingsHelper settingsHelper;
+    private ThresholdsHelper thresholdsHelper;
 
     private List<Measurement> measurements = new ArrayList<Measurement>();
     private List<Note> notes;
     private ResourceHelper resourceHelper;
     private int bottom;
     private int top;
+    private Sensor sensor;
 
     @SuppressWarnings("UnusedDeclaration")
     public NoisePlot(Context context) {
@@ -76,26 +78,25 @@ public class NoisePlot extends View {
         super(context, attrs, defStyle);
     }
 
-    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
+    public void initialize(AirCastingActivity activity, ThresholdsHelper thresholdsHelper, ResourceHelper resourceHelper) {
         this.activity = activity;
-        this.settingsHelper = settingsHelper;
+        this.thresholdsHelper = thresholdsHelper;
         this.resourceHelper = resourceHelper;
-
-        bottom = settingsHelper.getThreshold(MeasurementLevel.VERY_LOW);
-        top = settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH);
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void update(List<Measurement> measurements, List<Note> notes) {
+    public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
         this.measurements = measurements;
         this.notes = notes;
+        this.sensor = sensor;
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
+        bottom = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+        top = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+        
         drawBackground(canvas);
 
         if (!measurements.isEmpty()) {
@@ -184,7 +185,7 @@ public class NoisePlot extends View {
 
     private void drawBackground(Canvas canvas) {
         // Make the NoisePlot play nicely with Layout preview
-        if (resourceHelper == null || settingsHelper == null) return;
+        if (resourceHelper == null || thresholdsHelper == null) return;
 
         paint.setStrokeWidth(0);
         paint.setStyle(Paint.Style.FILL);
@@ -193,7 +194,7 @@ public class NoisePlot extends View {
 
         for (MeasurementLevel measurementLevel : new MeasurementLevel[]{MeasurementLevel.HIGH, MeasurementLevel.MID, MeasurementLevel.LOW}) {
             paint.setColor(resourceHelper.getGraphColor(measurementLevel));
-            int threshold = settingsHelper.getThreshold(measurementLevel);
+            int threshold = thresholdsHelper.getThreshold(sensor, measurementLevel);
 
             canvas.drawRect(0, project(lastThreshold), getWidth(), project(threshold), paint);
             lastThreshold = threshold;
