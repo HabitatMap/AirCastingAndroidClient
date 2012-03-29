@@ -212,7 +212,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
                 dbPeakContainer.setVisibility(visibility);
 
                 updatePowerView(dbAvg, sessionManager.getDbAvg(), MarkerSize.SMALL);
-                updatePowerView(dbNow, sessionManager.getNow(SimpleAudioReader.SENSOR_NAME), MarkerSize.BIG);
+                updatePowerView(dbNow, sessionManager.getNow(SimpleAudioReader.getSensor()), MarkerSize.BIG);
                 updatePowerView(dbPeak, sessionManager.getDbPeak(), MarkerSize.SMALL);
             }
         });
@@ -237,7 +237,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     private void updatePowerView(TextView view, double power, MarkerSize size) {
         view.setText(NumberFormat.getInstance().format((int) power));
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(power, size));
-        view.setBackgroundDrawable(resourceHelper.getGaugeAbsolute(SimpleAudioReader.getSensor(), size, power));
+        view.setBackgroundDrawable(resourceHelper.getGauge(SimpleAudioReader.getSensor(), size, power));
     }
 
     @Override

@@ -25,12 +25,6 @@ import static java.util.Collections.sort;
 
 public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
     public static final String TITLE = "title";
-    public static final String NOW = "now";
-    public static final String AVERAGE = "average";
-    public static final String PEAK = "peak";
-    public static final String PEAK_LABEL = "peak_label";
-    public static final String AVG_LABEL = "avg_label";
-    public static final String NOW_LABEL = "now_label";
     public static final String VERY_LOW = "veryLow";
     public static final String LOW = "low";
     public static final String MID = "mid";
@@ -38,14 +32,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     public static final String VERY_HIGH = "veryHigh";
 
     private static final String[] FROM = new String[]{
-            TITLE, NOW, AVERAGE, PEAK,
-            NOW_LABEL, AVG_LABEL, PEAK_LABEL,
-            VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+            TITLE, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
     };
     private static final int[] TO = new int[]{
-            R.id.title, R.id.now_gauge, R.id.avg_gauge, R.id.peak_gauge,
-            R.id.now_label, R.id.avg_label, R.id.peak_label,
-            R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
+            R.id.title, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
     };
 
     private static final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
@@ -93,10 +83,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         eventBus.unregister(this);
     }
 
-    /**
-     * Adjust the state of the adapter to incorporate
-     * new sensor data.
-     */
     @Subscribe
     public void onEvent(SensorEvent event) {
         context.runOnUiThread(new Runnable() {
@@ -113,10 +99,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
-        Integer peak = (Integer) state.get(PEAK);
-        Integer avg = (Integer) state.get(AVERAGE);
-        Integer now = (Integer) state.get(NOW);
-        gaugeHelper.updateGauges(view, sensor, now, avg, peak);
+
+        gaugeHelper.updateGauges(view, sensor);
 
         initializeButtons(view, sensor);
         view.setClickable(true);
@@ -150,17 +134,9 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
         for (Sensor sensor : sensorManager.getSensors()) {
             Map<String, Object> map = prepareItem(sensor);
-            String name = sensor.getSensorName();
 
             map.put(TITLE, title(sensor));
             map.put(SENSOR, sensor);
-
-            map.put(NOW, (int) sessionManager.getNow(name));
-            map.put(AVERAGE, (int) sessionManager.getAvg(name));
-            map.put(PEAK, (int) sessionManager.getPeak(name));
-            map.put(PEAK_LABEL, label(R.string.peak_label_template, sensor));
-            map.put(NOW_LABEL, label(R.string.now_label_template, sensor));
-            map.put(AVG_LABEL, label(R.string.avg_label_template, sensor));
 
             data.add(map);
         }
@@ -187,11 +163,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 .append(" - ")
                 .append(sensor.getSensorName())
                 .toString();
-    }
-
-    private String label(int templateId, Sensor sensor) {
-        String template = context.getString(templateId);
-        return String.format(template, sensor.getSymbol());
     }
 
     @Override

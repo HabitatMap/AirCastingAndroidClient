@@ -77,7 +77,7 @@ public class ResourceHelper {
 
     @Inject SoundHelper soundHelper;
 
-    public Drawable getGaugeAbsolute(Sensor sensor, MarkerSize size, double value) {
+    public Drawable getGauge(Sensor sensor, MarkerSize size, double value) {
         switch (soundHelper.level(sensor, value)) {
             case TOO_LOW:
             case VERY_LOW:

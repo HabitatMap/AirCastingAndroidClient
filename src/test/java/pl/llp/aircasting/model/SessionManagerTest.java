@@ -72,6 +72,7 @@ public class SessionManagerTest {
 
         sensor = mock(Sensor.class);
         when(sensor.isEnabled()).thenReturn(true);
+        when(sensor.getSensorName()).thenReturn("LHC");
 
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
         when(sessionManager.sensorManager.getSensor(Mockito.any(String.class))).thenReturn(sensor);
@@ -145,13 +146,16 @@ public class SessionManagerTest {
         triggerMeasurement("LHC", 150);
         triggerMeasurement("LHC2", 123);
 
-        assertThat(sessionManager.getNow("LHC"), equalTo(150.0));
-        assertThat(sessionManager.getNow("LHC2"), equalTo(123.0));
+        Sensor sensor2 = mock(Sensor.class);
+        when(sensor2.getSensorName()).thenReturn("LHC2");
+
+        assertThat(sessionManager.getNow(sensor), equalTo(150.0));
+        assertThat(sessionManager.getNow(sensor2), equalTo(123.0));
     }
 
     @Test
     public void shouldAssumeLastMeasurementIsZeroByDefault() {
-        assertThat(sessionManager.getNow("Something that does not exist"), equalTo(0.0));
+        assertThat(sessionManager.getNow(sensor), equalTo(0.0));
     }
 
     @Test
@@ -159,8 +163,8 @@ public class SessionManagerTest {
         MeasurementStream stream = mock(MeasurementStream.class);
         sessionManager.measurementStreams.put("LHC", stream);
         when(stream.getAvg()).thenReturn(10.0);
-
-        assertThat(sessionManager.getAvg("LHC"), equalTo(10.0));
+        
+        assertThat(sessionManager.getAvg(sensor), equalTo(10.0));
     }
 
     @Test
@@ -168,8 +172,8 @@ public class SessionManagerTest {
         MeasurementStream stream = mock(MeasurementStream.class);
         sessionManager.measurementStreams.put("LHC", stream);
         when(stream.getPeak()).thenReturn(11.0);
-
-        assertThat(sessionManager.getPeak("LHC"), equalTo(11.0));
+        
+        assertThat(sessionManager.getPeak(sensor), equalTo(11.0));
     }
 
     @Test

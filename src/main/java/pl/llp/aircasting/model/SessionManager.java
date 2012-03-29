@@ -298,11 +298,11 @@ public class SessionManager {
         return session.getAvg();
     }
 
-    public synchronized double getNow(String sensorName) {
-        if (!recentMeasurements.containsKey(sensorName)) {
+    public synchronized double getNow(Sensor sensor) {
+        if (!recentMeasurements.containsKey(sensor.getSensorName())) {
             return 0;
         }
-        return recentMeasurements.get(sensorName);
+        return recentMeasurements.get(sensor.getSensorName());
     }
 
     private void notifyNewSession() {
@@ -353,17 +353,17 @@ public class SessionManager {
         return newArrayList(session.getMeasurements());
     }
 
-    public double getAvg(String sensorName) {
-        if (measurementStreams.containsKey(sensorName)) {
-            return measurementStreams.get(sensorName).getAvg();
+    public double getAvg(Sensor sensor) {
+        if (measurementStreams.containsKey(sensor.getSensorName())) {
+            return measurementStreams.get(sensor.getSensorName()).getAvg();
         } else {
             return 0;
         }
     }
 
-    public double getPeak(String sensorName) {
-        if (measurementStreams.containsKey(sensorName)) {
-            return measurementStreams.get(sensorName).getPeak();
+    public double getPeak(Sensor sensor) {
+        if (measurementStreams.containsKey(sensor.getSensorName())) {
+            return measurementStreams.get(sensor.getSensorName()).getPeak();
         } else {
             return 0;
         }

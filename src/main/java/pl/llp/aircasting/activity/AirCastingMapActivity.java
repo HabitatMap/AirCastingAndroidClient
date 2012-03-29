@@ -332,7 +332,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         Location location = locationHelper.getLastLocation();
         if (!sessionManager.isSessionSaved()) {
             if (!settingsHelper.isAveraging()) {
-                locationOverlay.setValue(sessionManager.getNow(SimpleAudioReader.SENSOR_NAME));
+                locationOverlay.setValue(sessionManager.getNow(SimpleAudioReader.getSensor()));
             }
 
             locationOverlay.setLocation(location);
