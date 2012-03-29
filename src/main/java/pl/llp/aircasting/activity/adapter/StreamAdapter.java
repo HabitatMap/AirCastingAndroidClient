@@ -162,12 +162,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
             map.put(NOW_LABEL, label(R.string.now_label_template, sensor));
             map.put(AVG_LABEL, label(R.string.avg_label_template, sensor));
 
-            map.put(VERY_LOW, String.valueOf(sensor.getVeryLow()));
-            map.put(LOW, String.valueOf(sensor.getLow()));
-            map.put(MID, String.valueOf(sensor.getMid()));
-            map.put(HIGH, String.valueOf(sensor.getHigh()));
-            map.put(VERY_HIGH, String.valueOf(sensor.getVeryHigh()));
-
             data.add(map);
         }
 

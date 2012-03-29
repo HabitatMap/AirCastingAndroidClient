@@ -1,17 +1,18 @@
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 public class Sensor {
     private String sensorName;
     private String measurementType;
     private String unit;
     private String symbol;
-    private int veryLow;
-    private int low;
-    private int mid;
-    private int high;
-    private int veryHigh;
+    private Map<MeasurementLevel, Integer> thresholds = newHashMap();
 
     private boolean enabled = true;
 
@@ -20,11 +21,12 @@ public class Sensor {
         this.measurementType = event.getMeasurementType();
         this.unit = event.getUnit();
         this.symbol = event.getSymbol();
-        this.veryLow = event.getVeryLow();
-        this.low = event.getLow();
-        this.mid = event.getMid();
-        this.high = event.getHigh();
-        this.veryHigh = event.getVeryHigh();
+        
+        thresholds.put(MeasurementLevel.VERY_HIGH, event.getVeryHigh());
+        thresholds.put(MeasurementLevel.HIGH, event.getHigh());
+        thresholds.put(MeasurementLevel.MID, event.getMid());
+        thresholds.put(MeasurementLevel.LOW, event.getLow());
+        thresholds.put(MeasurementLevel.VERY_LOW, event.getVeryLow());
     }
 
     public Sensor(String name) {
@@ -47,26 +49,6 @@ public class Sensor {
         return symbol;
     }
 
-    public int getVeryLow() {
-        return veryLow;
-    }
-
-    public int getLow() {
-        return low;
-    }
-
-    public int getMid() {
-        return mid;
-    }
-
-    public int getHigh() {
-        return high;
-    }
-
-    public int getVeryHigh() {
-        return veryHigh;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
@@ -76,6 +58,10 @@ public class Sensor {
      */
     public void toggle() {
         enabled = !enabled;
+    }
+
+    public int getThreshold(MeasurementLevel level) {
+        return thresholds.get(level);
     }
 
     @Override
@@ -102,11 +88,6 @@ public class Sensor {
                 ", measurementType='" + measurementType + '\'' +
                 ", unit='" + unit + '\'' +
                 ", symbol='" + symbol + '\'' +
-                ", veryLow=" + veryLow +
-                ", low=" + low +
-                ", mid=" + mid +
-                ", high=" + high +
-                ", veryHigh=" + veryHigh +
                 '}';
     }
 }
