@@ -20,6 +20,8 @@
     <RelativeLayout style="@style/Fill"
                     android:id="@+id/buttons"
             >
+        <include layout="@layout/context_buttons"/>
+
         <ImageButton style="@style/Wrap"
                      android:layout_alignParentLeft="true"
                      android:layout_centerVertical="true"

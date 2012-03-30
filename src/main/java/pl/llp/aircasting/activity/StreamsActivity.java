@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListView;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -15,41 +16,44 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
 public class StreamsActivity extends ButtonsActivity {
-    @Inject Context context;
-    @Inject StreamAdapterFactory adapterFactory;
+  @Inject Context context;
+  @Inject StreamAdapterFactory adapterFactory;
 
-    @InjectView(android.R.id.list) ListView listView;
+  @InjectView(android.R.id.list) ListView listView;
 
-    StreamAdapter adapter;
+  StreamAdapter adapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.streams);
+    setContentView(R.layout.streams);
 
-        adapter = adapterFactory.getAdapter(this);
-        listView.setAdapter(adapter);
-    }
+    adapter = adapterFactory.getAdapter(this);
+    listView.setAdapter(adapter);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    zoomIn.setVisibility(View.INVISIBLE);
+    zoomOut.setVisibility(View.INVISIBLE);
+  }
 
-        adapter.start();
-        startSensors(context);
-    }
+  @Override
+  protected void onResume() {
+    super.onResume();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    adapter.start();
+    startSensors(context);
+  }
 
-        adapter.stop();
-        stopSensors(context);
-    }
+  @Override
+  protected void onPause() {
+    super.onPause();
 
-    @Subscribe
-    public void onEvent(MotionEvent event) {
-        listView.dispatchTouchEvent(event);
-    }
+    adapter.stop();
+    stopSensors(context);
+  }
+
+  @Subscribe
+  public void onEvent(MotionEvent event) {
+    listView.dispatchTouchEvent(event);
+  }
 }

@@ -20,9 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
@@ -38,8 +36,6 @@ import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
@@ -53,355 +49,246 @@ import static pl.llp.aircasting.Intents.triggerSync;
  * Time: 3:18 PM
  */
 public abstract class AirCastingActivity extends ButtonsActivity implements View.OnClickListener {
-    public static final String NOTE_INDEX = "noteIndex";
+  public static final String NOTE_INDEX = "noteIndex";
 
-    @InjectView(R.id.gauge_container) View gauges;
+  @InjectView(R.id.gauge_container) View gauges;
 
-    @InjectView(R.id.context_button_left) FrameLayout contextButtonLeft;
-    @InjectView(R.id.context_button_center) FrameLayout contextButtonCenter;
-    @InjectView(R.id.context_button_right) FrameLayout contextButtonRight;
+  @InjectView(R.id.note_right) ImageButton noteRight;
+  @InjectView(R.id.note_number) TextView noteNumber;
+  @InjectView(R.id.note_left) ImageButton noteLeft;
+  @InjectView(R.id.note_delete) Button noteDelete;
+  @InjectView(R.id.note_viewer) View noteViewer;
+  @InjectView(R.id.note_date) TextView noteDate;
+  @InjectView(R.id.note_text) EditText noteText;
+  @InjectView(R.id.note_save) Button noteSave;
+  @InjectView(R.id.view_photo) View viewPhoto;
+  @InjectView(R.id.top_bar) View topBar;
 
-    @InjectView(R.id.zoom_in) Button zoomIn;
-    @InjectView(R.id.zoom_out) Button zoomOut;
+  @Inject ThresholdsHelper thresholdsHelper;
+  @Inject ResourceHelper resourceHelper;
+  @Inject SensorManager sensorManager;
+  @Inject TopBarHelper topBarHelper;
+  @Inject PhotoHelper photoHelper;
+  @Inject GaugeHelper gaugeHelper;
 
-    @InjectView(R.id.top_bar) View topBar;
-    @InjectView(R.id.note_viewer) View noteViewer;
-    @InjectView(R.id.note_date) TextView noteDate;
-    @InjectView(R.id.note_number) TextView noteNumber;
-    @InjectView(R.id.note_text) EditText noteText;
-    @InjectView(R.id.view_photo) View viewPhoto;
-    @InjectView(R.id.note_save) Button noteSave;
-    @InjectView(R.id.note_delete) Button noteDelete;
-    @InjectView(R.id.note_left) ImageButton noteLeft;
-    @InjectView(R.id.note_right) ImageButton noteRight;
+  NumberFormat numberFormat = NumberFormat.getInstance();
+  private boolean initialized = false;
+  int noteIndex = -1;
+  Note currentNote;
+  int noteTotal;
 
-    @Inject SessionManager sessionManager;
+  @Override
+  protected void onResume() {
+    super.onResume();
 
-    @Inject LayoutInflater layoutInflater;
+    initialize();
 
-    @Inject SensorManager sensorManager;
-    @Inject LocationManager locationManager;
-    @Inject LocationHelper locationHelper;
-    @Inject SettingsHelper settingsHelper;
-    @Inject ResourceHelper resourceHelper;
-    @Inject PhotoHelper photoHelper;
-    @Inject TopBarHelper topBarHelper;
-    @Inject GaugeHelper gaugeHelper;
-    @Inject ThresholdsHelper thresholdsHelper;
+    initializeNoteViewer();
 
-    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+    updateGauges();
+    updateKeepScreenOn();
+    topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+  }
 
-    NumberFormat numberFormat = NumberFormat.getInstance();
-    private boolean initialized = false;
-    int noteIndex = -1;
-    int noteTotal;
-    Note currentNote;
+  private void initialize() {
+    if (!initialized) {
+      zoomIn.setOnClickListener(this);
+      zoomOut.setOnClickListener(this);
+      topBar.setOnClickListener(this);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+      noteLeft.setOnClickListener(this);
+      noteRight.setOnClickListener(this);
+      noteSave.setOnClickListener(this);
+      noteDelete.setOnClickListener(this);
+      viewPhoto.setOnClickListener(this);
 
-        initialize();
+      initialized = true;
+    }
+  }
 
-        initializeNoteViewer();
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
 
-        if (!sessionManager.isSessionSaved()) {
-            Intents.startSensors(context);
+    outState.putInt(NOTE_INDEX, noteIndex);
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+
+    noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+  }
+
+  private void updateKeepScreenOn() {
+    if (settingsHelper.isKeepScreenOn()) {
+      getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    } else {
+      getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+  }
+
+  private void updateGauges() {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        gaugeHelper.updateGauges(sensorManager.getVisibleSensor(), gauges);
+      }
+    });
+  }
+
+  @Subscribe
+  public void onEvent(MeasurementEvent event) {
+    updateGauges();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case Intents.EDIT_SESSION:
+        if (resultCode == R.id.save_button) {
+          Session session = Intents.editSessionResult(data);
+
+          sessionManager.updateSession(session);
+          Intents.triggerSync(context);
         }
-
-        updateGauges();
-        updateButtons();
-        updateKeepScreenOn();
-        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
-
-        registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
     }
+  }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+  @Subscribe
+  public void onEvent(SessionChangeEvent event) {
+    updateGauges();
+  }
 
-        outState.putInt(NOTE_INDEX, noteIndex);
+  @Subscribe
+  public void onEvent(SensorEvent event) {
+    updateGauges();
+  }
+
+  @Subscribe
+  public void onEvent(AudioReaderErrorEvent event) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+      }
+    });
+  }
+
+  @Override
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.top_bar:
+        startActivity(new Intent(context, ThresholdsActivity.class));
+        break;
+      case R.id.note_save:
+        saveNote();
+        break;
+      case R.id.note_delete:
+        deleteNote();
+        break;
+      case R.id.note_left:
+        noteClicked(noteIndex - 1);
+        break;
+      case R.id.note_right:
+        noteClicked(noteIndex + 1);
+        break;
+      default:
+        super.onClick(view);
+        break;
     }
+  }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+  public void noteClicked(int index) {
+    int total = sessionManager.getNoteCount();
+    if (total == 0) return;
+    index = ((index % total) + total) % total;
 
-        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+    currentNote = sessionManager.getNote(index);
+
+    showNoteViewer();
+
+    String title = FormatHelper.dateTime(currentNote.getDate()).toString();
+    noteDate.setText(title);
+    noteText.setText(currentNote.getText());
+    noteNumber.setText(numberFormat.format(index + 1) + "/" + numberFormat.format(total));
+    viewPhoto.setVisibility(photoHelper.photoExists(currentNote) ? View.VISIBLE : View.GONE);
+
+    noteIndex = index;
+    noteTotal = total;
+  }
+
+  private void showNoteViewer() {
+    noteViewer.setVisibility(View.VISIBLE);
+  }
+
+  protected void initializeNoteViewer() {
+    if (noteIndex == -1) {
+      hideNoteViewer();
+    } else {
+      noteClicked(noteIndex);
     }
+  }
 
-    private void updateKeepScreenOn() {
-        if (settingsHelper.isKeepScreenOn()) {
-            getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        } else {
-            getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+  protected void hideNoteViewer() {
+    noteViewer.setVisibility(View.INVISIBLE);
+  }
+
+  @Override
+  public void onBackPressed() {
+    if (noteViewer.getVisibility() == View.VISIBLE) {
+      hideNoteViewer();
+    } else {
+      super.onBackPressed();
+    }
+  }
+
+  private void saveNote() {
+    String text = noteText.getText().toString();
+    currentNote.setText(text);
+
+    //noinspection unchecked
+    new SimpleProgressTask<Void, Void, Void>(this) {
+      @Override
+      protected Void doInBackground(Void... voids) {
+        if (sessionManager.isSessionSaved()) {
+          sessionManager.saveChanges();
+          triggerSync(context);
         }
-    }
+        return null;
+      }
 
-    private void updateButtons() {
-        if (sessionManager.isSessionStarted()) {
-            setButton(contextButtonLeft, R.layout.context_button_stop);
-            setButton(contextButtonRight, R.layout.context_button_note);
-        } else if (!sessionManager.isSessionSaved()) {
-            setButton(contextButtonLeft, R.layout.context_button_play);
-            setButton(contextButtonRight, R.layout.context_button_placeholder);
-        }
-    }
+      @Override
+      protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        hideNoteViewer();
+      }
+    }.execute();
+  }
 
-    private void initialize() {
-        if (!initialized) {
-            zoomIn.setOnClickListener(this);
-            zoomOut.setOnClickListener(this);
-            topBar.setOnClickListener(this);
+  private void deleteNote() {
+    //noinspection unchecked
+    new SimpleProgressTask<Void, Void, Void>(this) {
+      @Override
+      protected Void doInBackground(Void... voids) {
+        sessionManager.deleteNote(currentNote);
+        triggerSync(context);
 
-            noteLeft.setOnClickListener(this);
-            noteRight.setOnClickListener(this);
-            noteSave.setOnClickListener(this);
-            noteDelete.setOnClickListener(this);
-            viewPhoto.setOnClickListener(this);
+        return null;
+      }
 
-            if (sessionManager.isSessionSaved()) {
-                setButton(contextButtonLeft, R.layout.context_button_edit);
-                setButton(contextButtonCenter, R.layout.context_button_share);
-            } else if (sessionManager.isSessionStarted()) {
-                updateButtons();
-            }
+      @Override
+      protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
 
-            initialized = true;
-        }
-    }
+        refreshNotes();
+        hideNoteViewer();
+      }
+    }.execute();
+  }
 
-    protected void setButton(FrameLayout layout, int id) {
-        layout.removeAllViews();
-
-        View view = layoutInflater.inflate(id, null);
-        view.setOnClickListener(this);
-
-        layout.addView(view);
-    }
-
-    private void updateGauges() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                gaugeHelper.updateGauges(sensorManager.getVisibleSensor(), gauges);
-            }
-        });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (!sessionManager.isSessionSaved()) {
-            Intents.stopSensors(context);
-        }
-
-        unregisterReceiver(syncBroadcastReceiver);
-    }
-
-    @Subscribe
-    public void onEvent(MeasurementEvent event) {
-        updateGauges();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Intents.SAVE_DIALOG:
-                startActivity(new Intent(getApplicationContext(), SoundTraceActivity.class));
-                break;
-            case Intents.EDIT_SESSION:
-                if (resultCode == R.id.save_button) {
-                    Session session = Intents.editSessionResult(data);
-
-                    sessionManager.updateSession(session);
-                    Intents.triggerSync(context);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    private synchronized void toggleAirCasting() {
-        if (sessionManager.isSessionStarted()) {
-            stopAirCasting();
-        } else {
-            startAirCasting();
-        }
-
-        updateButtons();
-    }
-
-    private void stopAirCasting() {
-        if (sessionManager.getSoundMeasurements().isEmpty()) {
-            Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
-            sessionManager.discardSession();
-        } else {
-            Intent intent = new Intent(this, SaveSessionActivity.class);
-            startActivityForResult(intent, Intents.SAVE_DIALOG);
-        }
-    }
-
-    private void startAirCasting() {
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
-        } else if (!locationHelper.hasGPSFix()) {
-            Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
-        }
-
-        if (!settingsHelper.hasCredentials()) {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-        }
-
-        sessionManager.startSession();
-    }
-
-    @Subscribe
-    public void onEvent(SessionChangeEvent event) {
-        updateGauges();
-    }
-
-    @Subscribe
-    public void onEvent(SensorEvent event) {
-        updateGauges();
-    }
-
-    @Subscribe
-    public void onEvent(AudioReaderErrorEvent event) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.toggle_aircasting:
-                toggleAirCasting();
-                break;
-            case R.id.edit:
-                Intents.editSession(this, sessionManager.getSession());
-                break;
-            case R.id.note:
-                Intents.makeANote(this);
-                break;
-            case R.id.top_bar:
-                startActivity(new Intent(context, ThresholdsActivity.class));
-                break;
-            case R.id.share:
-                startActivity(new Intent(context, ShareSessionActivity.class));
-                break;
-            case R.id.note_save:
-                saveNote();
-                break;
-            case R.id.note_delete:
-                deleteNote();
-                break;
-            case R.id.note_left:
-                noteClicked(noteIndex - 1);
-                break;
-            case R.id.note_right:
-                noteClicked(noteIndex + 1);
-                break;
-            default:
-                super.onClick(view);
-                break;
-        }
-    }
-
-    public void noteClicked(int index) {
-        int total = sessionManager.getNoteCount();
-        if (total == 0) return;
-        index = ((index % total) + total) % total;
-
-        currentNote = sessionManager.getNote(index);
-
-        showNoteViewer();
-
-        String title = FormatHelper.dateTime(currentNote.getDate()).toString();
-        noteDate.setText(title);
-        noteText.setText(currentNote.getText());
-        noteNumber.setText(numberFormat.format(index + 1) + "/" + numberFormat.format(total));
-        viewPhoto.setVisibility(photoHelper.photoExists(currentNote) ? View.VISIBLE : View.GONE);
-
-        noteIndex = index;
-        noteTotal = total;
-    }
-
-    private void showNoteViewer() {
-        noteViewer.setVisibility(View.VISIBLE);
-    }
-
-    protected void initializeNoteViewer() {
-        if (noteIndex == -1) {
-            hideNoteViewer();
-        } else {
-            noteClicked(noteIndex);
-        }
-    }
-
-    protected void hideNoteViewer() {
-        noteViewer.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (noteViewer.getVisibility() == View.VISIBLE) {
-            hideNoteViewer();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    private void saveNote() {
-        String text = noteText.getText().toString();
-        currentNote.setText(text);
-
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                if (sessionManager.isSessionSaved()) {
-                    sessionManager.saveChanges();
-                    triggerSync(context);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                hideNoteViewer();
-            }
-        }.execute();
-    }
-
-    private void deleteNote() {
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                sessionManager.deleteNote(currentNote);
-                triggerSync(context);
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                refreshNotes();
-                hideNoteViewer();
-            }
-        }.execute();
-    }
-
-    protected abstract void refreshNotes();
+  protected abstract void refreshNotes();
 }
