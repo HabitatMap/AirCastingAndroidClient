@@ -109,7 +109,6 @@ public class SchemaMigrator
   {
     if (oldVersion < 19 && newVersion >= 19)
     {
-
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
     if (oldVersion < 20 && newVersion >= 20)

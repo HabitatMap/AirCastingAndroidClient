@@ -308,8 +308,8 @@ public class SessionRepository
 
   private void loadNotes(Session session)
   {
-    List<Note> loeadedNotes = notes.load(session);
-    session.addAll(loeadedNotes);
+    List<Note> loadedNotes = notes.load(session);
+    session.addAll(loadedNotes);
   }
 
   public void update(Session session)
