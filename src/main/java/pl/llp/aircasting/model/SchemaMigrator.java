@@ -30,7 +30,7 @@ public class SchemaMigrator
   public static final String CREATE_STREAMS_TABLE =
       "CREATE TABLE streams (\n  " +
           STREAM_ID + " INTEGER PRIMARY KEY,\n  " +
-          "stream_sensor_id INTEGER,\n  " +
+          "stream_session_id INTEGER,\n  " +
           "stream_avg REAL,\n  " +
           "stream_peak REAL,\n  " +
           "sensor_name  TEXT, \n  " +
