@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.model;
 
 import android.database.sqlite.SQLiteDatabase;
@@ -75,8 +75,8 @@ public class SchemaMigrator
 
   private void createMeasurementsTable(SQLiteDatabase db)
   {
-    db.execSQL("create table " + MEASUREMENT_TABLE_NAME + " (" +
-                   ", " + MEASUREMENT_ID + " integer primary key" +
+    db.execSQL("create table " + MEASUREMENT_TABLE_NAME +
+                   " (" + MEASUREMENT_ID + " integer primary key" +
                    ", " + MEASUREMENT_LATITUDE + " real" +
                    ", " + MEASUREMENT_LONGITUDE + " real" +
                    ", " + MEASUREMENT_VALUE + " real" +
@@ -105,8 +105,10 @@ public class SchemaMigrator
     db.execSQL(CREATE_STREAMS_TABLE);
   }
 
-  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) {
-    if (oldVersion < 19 && newVersion >= 19) {
+  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion)
+  {
+    if (oldVersion < 19 && newVersion >= 19)
+    {
 
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
@@ -119,7 +121,7 @@ public class SchemaMigrator
       addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, "boolean");
     }
 
-    if (oldVersion <22 && newVersion >= 22)
+    if (oldVersion < 22 && newVersion >= 22)
     {
       // migrate
     }

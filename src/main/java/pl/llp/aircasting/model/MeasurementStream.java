@@ -2,10 +2,8 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.helper.SoundHelper;
 
-import java.util.Date;
 import java.util.List;
 
-import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
 
 public class MeasurementStream
@@ -20,7 +18,7 @@ public class MeasurementStream
   private String unit;
   private String symbol;
   
-  private Double sum;
+  private Double sum = 0.0;
   private Double peak = Double.NEGATIVE_INFINITY;
 
   public MeasurementStream(String sensorName, String measurementType, String unit, String symbol) {

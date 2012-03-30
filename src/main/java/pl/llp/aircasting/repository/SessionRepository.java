@@ -41,26 +41,28 @@ import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class SessionRepository
 {
-    @Inject
-    AirCastingDB dbAccessor;
+  @Inject
+  AirCastingDB dbAccessor;
 
-    @Inject NoteRepository notes;
-  
-    SQLiteDatabase db;
+  NoteRepository notes;
+  SQLiteDatabase db;
 
-    @Inject
-    public void init() {
-      db = dbAccessor.getWritableDatabase();
-      notes = new NoteRepository(db);
-    }
+  @Inject
+  public void init()
+  {
+    db = dbAccessor.getWritableDatabase();
+    notes = new NoteRepository(db);
+  }
 
-    public void close() {
-        db.close();
-    }
+  public void close()
+  {
+    db.close();
+  }
 
-    public void save(Session session) {
-        save(session, null);
-    }
+  public void save(Session session)
+  {
+    save(session, null);
+  }
 
   public void deleteNote(Session session, Note note)
   {
@@ -93,7 +95,7 @@ public class SessionRepository
 
     int count = 0;
     Collection<MeasurementStream> streams = session.getMeasurementStreams();
-      
+
     for (MeasurementStream stream : streams)
     {
       List<Measurement> measurements = stream.getMeasurements();
@@ -110,7 +112,8 @@ public class SessionRepository
         db.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
 
         count += 1;
-        if (count % 100 == 0 && progressListener != null) {
+        if (count % 100 == 0 && progressListener != null)
+        {
           progressListener.onProgress(count);
         }
       }
@@ -133,173 +136,193 @@ public class SessionRepository
     Collection<MeasurementStream> streams = session.getMeasurementStreams();
     for (MeasurementStream stream : streams)
     {
-      size +=stream.getMeasurements().size();
+      size += stream.getMeasurements().size();
     }
 
     progressListener.onSizeCalculated(size);
   }
 
-    private void prepareHeader(Session session, ContentValues values) {
-        values.put(SESSION_TITLE, session.getTitle());
-        values.put(SESSION_DESCRIPTION, session.getDescription());
-        values.put(SESSION_TAGS, session.getTags());
-        values.put(SESSION_LOCATION, session.getLocation());
-    }
+  private void prepareHeader(Session session, ContentValues values)
+  {
+    values.put(SESSION_TITLE, session.getTitle());
+    values.put(SESSION_DESCRIPTION, session.getDescription());
+    values.put(SESSION_TAGS, session.getTags());
+    values.put(SESSION_LOCATION, session.getLocation());
+  }
 
-    public Session load(Cursor cursor) {
-        Session session = new Session();
+  public Session load(Cursor cursor)
+  {
+    Session session = new Session();
 
-        session.setId(getLong(cursor, SESSION_ID));
-        session.setTitle(getString(cursor, SESSION_TITLE));
-        session.setDescription(getString(cursor, SESSION_DESCRIPTION));
-        session.setTags(getString(cursor, SESSION_TAGS));
-        session.setStart(getDate(cursor, SESSION_START));
-        session.setEnd(getDate(cursor, SESSION_END));
-        session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
-        session.setLocation(getString(cursor, SESSION_LOCATION));
-        session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
-        session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
-        session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
-        session.setDataType(getString(cursor, SESSION_DATA_TYPE));
-        session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
-        session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
-        session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
-        session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
-        session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
+    session.setId(getLong(cursor, SESSION_ID));
+    session.setTitle(getString(cursor, SESSION_TITLE));
+    session.setDescription(getString(cursor, SESSION_DESCRIPTION));
+    session.setTags(getString(cursor, SESSION_TAGS));
+    session.setStart(getDate(cursor, SESSION_START));
+    session.setEnd(getDate(cursor, SESSION_END));
+    session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
+    session.setLocation(getString(cursor, SESSION_LOCATION));
+    session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
+    session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
+    session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
+    session.setDataType(getString(cursor, SESSION_DATA_TYPE));
+    session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
+    session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
+    session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
+    session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
+    session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
 
-        loadNotes(session);
+    loadNotes(session);
 
-        return session;
-    }
+    return session;
+  }
 
-    public Session load(long sessionID) {
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
-        try {
-            cursor.moveToFirst();
-            return load(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-
-    private Session load(UUID uuid) {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
-                new String[]{uuid.toString()});
-
-        try {
-            if (cursor.getCount() == 0) return null;
-
-            cursor.moveToFirst();
-            return load(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-
-    public void markSessionForRemoval(long id) {
-        ContentValues values = new ContentValues();
-        values.put(SESSION_MARKED_FOR_REMOVAL, true);
-
-        db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
-    }
-
-    public Iterable<Session> all() {
-        List<Session> result = newArrayList();
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast())
-        {
-          Session load = load(cursor);
-          result.add(load);
-          cursor.moveToNext();
-        }
-
-        cursor.close();
-
-        return result;
-    }
-
-    public Cursor notDeletedCursor() {
-        return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
-    }
-
-    public void deleteSubmitted() {
-        String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
-        delete(condition);
-    }
-
-    private void delete(String condition) {
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, condition, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            Long id = getLong(cursor, SESSION_ID);
-            delete(id);
-
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-    }
-
-    public void deleteUploaded() {
-        String condition = SESSION_LOCATION + " NOTNULL";
-        delete(condition);
-    }
-
-    private void delete(Long id) {
-        db.beginTransaction();
-
-        db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
-        db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    public Session loadEager(UUID uuid) {
-        Session session = load(uuid);
-
-        return fill(session, null);
-    }
-
-    public Session loadEager(long id, ProgressListener progressListener) {
-        Session session = load(id);
-        return fill(session, progressListener);
-    }
-
-    private Session fill(Session session, ProgressListener progressListener) {
-      List<MeasurementStream> streams = new StreamRepository(db).load(session);
-      MeasurementRepository r = new MeasurementRepository(db, progressListener);
-      Map<Integer,List<Measurement>> load = r.load(session);
-
-      for (MeasurementStream stream : streams)
-      {
-        stream.setMeasurements(load.get(stream.getId()));
-        session.add(stream);
-      }
-
-      return session;
-    }
-
-    private void loadNotes(Session session) {
-      List<Note> loeadedNotes = notes.load(session);
-      session.addAll(loeadedNotes);
-    }
-
-    public void update(Session session)
+  public Session load(long sessionID)
+  {
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
+    try
     {
-        ContentValues values = new ContentValues();
-        prepareHeader(session, values);
-
-        db.beginTransaction();
-
-        notes.save(session.getNotes(), session.getId());
-        db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
+      cursor.moveToFirst();
+      return load(cursor);
+    } finally
+    {
+      cursor.close();
     }
+  }
+
+  private Session load(UUID uuid)
+  {
+    Cursor cursor = db.rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
+                                new String[]{uuid.toString()});
+
+    try
+    {
+      if (cursor.getCount() == 0) return null;
+
+      cursor.moveToFirst();
+      return load(cursor);
+    } finally
+    {
+      cursor.close();
+    }
+  }
+
+  public void markSessionForRemoval(long id)
+  {
+    ContentValues values = new ContentValues();
+    values.put(SESSION_MARKED_FOR_REMOVAL, true);
+
+    db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
+  }
+
+  public Iterable<Session> all()
+  {
+    List<Session> result = newArrayList();
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
+
+    cursor.moveToFirst();
+    while (!cursor.isAfterLast())
+    {
+      Session load = load(cursor);
+      result.add(load);
+      cursor.moveToNext();
+    }
+
+    cursor.close();
+
+    return result;
+  }
+
+  public Cursor notDeletedCursor()
+  {
+    return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
+  }
+
+  public void deleteSubmitted()
+  {
+    String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
+    delete(condition);
+  }
+
+  private void delete(String condition)
+  {
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, condition, null, null, null, null);
+
+    cursor.moveToFirst();
+    while (!cursor.isAfterLast())
+    {
+      Long id = getLong(cursor, SESSION_ID);
+      delete(id);
+
+      cursor.moveToNext();
+    }
+
+    cursor.close();
+  }
+
+  public void deleteUploaded()
+  {
+    String condition = SESSION_LOCATION + " NOTNULL";
+    delete(condition);
+  }
+
+  private void delete(Long id)
+  {
+    db.beginTransaction();
+
+    db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
+    db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
+    db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
+
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
+
+  public Session loadEager(UUID uuid)
+  {
+    Session session = load(uuid);
+
+    return fill(session, null);
+  }
+
+  public Session loadEager(long id, ProgressListener progressListener)
+  {
+    Session session = load(id);
+    return fill(session, progressListener);
+  }
+
+  private Session fill(Session session, ProgressListener progressListener)
+  {
+    List<MeasurementStream> streams = new StreamRepository(db).load(session);
+    MeasurementRepository r = new MeasurementRepository(db, progressListener);
+    Map<Integer, List<Measurement>> load = r.load(session);
+
+    for (MeasurementStream stream : streams)
+    {
+      stream.setMeasurements(load.get(stream.getId()));
+      session.add(stream);
+    }
+
+    return session;
+  }
+
+  private void loadNotes(Session session)
+  {
+    List<Note> loeadedNotes = notes.load(session);
+    session.addAll(loeadedNotes);
+  }
+
+  public void update(Session session)
+  {
+    ContentValues values = new ContentValues();
+    prepareHeader(session, values);
+
+    db.beginTransaction();
+
+    notes.save(session.getNotes(), session.getId());
+    db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
+
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
 }
