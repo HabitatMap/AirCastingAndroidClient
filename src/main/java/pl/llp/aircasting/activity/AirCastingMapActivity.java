@@ -48,7 +48,7 @@ import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
 import pl.llp.aircasting.view.overlay.RouteOverlay;
-import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
+import pl.llp.aircasting.view.overlay.TraceOverlay;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -73,7 +73,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     @Inject NoteOverlay noteOverlay;
     @Inject LocationOverlay locationOverlay;
-    @Inject SoundTraceOverlay soundTraceOverlay;
+    @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
 
     @Inject RouteOverlay routeOverlay;
@@ -81,7 +81,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     boolean initialized = false;
     Measurement lastMeasurement;
     private boolean zoomToSession = true;
-    private boolean suppressTap;
     MapIdleDetector routeRefreshDetector;
 
     @Override
@@ -109,8 +108,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         spinnerAnimation.start();
 
         initializeMap();
-
-        initializeTraceOverlay();
 
         measurementPresenter.registerListener(this);
 
@@ -168,12 +165,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
             settingsHelper.setFirstLaunch(false);
         }
-    }
-
-    private void initializeTraceOverlay() {
-        soundTraceOverlay.setSaved(sessionManager.isSessionSaved());
-        soundTraceOverlay.setCalibration(sessionManager.getSession().getCalibration());
-        soundTraceOverlay.setOffset60DB(sessionManager.getSession().getOffset60DB());
     }
 
     protected void startSpinner() {
@@ -344,9 +335,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     public void onAveragedMeasurement(Measurement measurement) {
         if (sessionManager.isSessionStarted()) {
             if (!settingsHelper.isAveraging()) {
-                soundTraceOverlay.update(measurement);
+                traceOverlay.update(measurement);
             } else if (lastMeasurement != null) {
-                soundTraceOverlay.update(lastMeasurement);
+                traceOverlay.update(lastMeasurement);
             }
         }
 

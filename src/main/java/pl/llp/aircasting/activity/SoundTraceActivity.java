@@ -40,7 +40,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
         setContentView(R.layout.trace);
 
         mapView.getOverlays().add(routeOverlay);
-        mapView.getOverlays().add(soundTraceOverlay);
+        mapView.getOverlays().add(traceOverlay);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
 
         @Override
         protected Void doInBackground(Void... voids) {
-            soundTraceOverlay.refresh(mapView);
+            traceOverlay.refresh(mapView);
             return null;
         }
 

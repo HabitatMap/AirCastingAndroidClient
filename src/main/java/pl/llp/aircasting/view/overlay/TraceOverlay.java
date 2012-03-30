@@ -25,33 +25,23 @@ import android.graphics.drawable.Drawable;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
-import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
 import java.util.List;
 
 import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/26/11
- * Time: 3:23 PM
- */
-public class SoundTraceOverlay extends BufferingOverlay<Measurement> {
+public class TraceOverlay extends BufferingOverlay<Measurement> {
     @Inject MeasurementPresenter measurementPresenter;
     @Inject ResourceHelper resourceHelper;
+    @Inject SensorManager sensorManager;
     @Inject SoundHelper soundHelper;
-    @Inject CalibrationHelper calibrationHelper;
-
-    private boolean isSaved;
-    private int calibration;
-    private int offset60DB;
 
     @Override
     protected void performDraw(Canvas canvas, Projection projection) {
@@ -72,15 +62,10 @@ public class SoundTraceOverlay extends BufferingOverlay<Measurement> {
 
     private void drawPoint(Canvas canvas, Projection projection, Measurement measurement) {
         double value = measurement.getValue();
+        Sensor sensor = sensorManager.getVisibleSensor();
 
-        if (isSaved) {
-            value = calibrationHelper.calibrate(value, calibration, offset60DB);
-        } else {
-            value = calibrationHelper.calibrate(value);
-        }
-
-        if (soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), value)) {
-            Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(), value);
+        if (soundHelper.shouldDisplay(sensor, value)) {
+            Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);
 
             GeoPoint geoPoint = LocationConversionHelper.geoPoint(measurement.getLatitude(), measurement.getLongitude());
             Point point = projection.toPixels(geoPoint, null);
@@ -88,17 +73,5 @@ public class SoundTraceOverlay extends BufferingOverlay<Measurement> {
             centerAt(bullet, point);
             bullet.draw(canvas);
         }
-    }
-
-    public void setSaved(boolean saved) {
-        isSaved = saved;
-    }
-
-    public void setCalibration(int newCalibration) {
-        this.calibration = newCalibration;
-    }
-
-    public void setOffset60DB(int newOffset60DB) {
-        this.offset60DB = newOffset60DB;
     }
 }

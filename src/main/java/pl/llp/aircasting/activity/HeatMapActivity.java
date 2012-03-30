@@ -66,7 +66,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         mapView.getOverlays().add(heatMapOverlay);
         mapView.getOverlays().add(routeOverlay);
-        mapView.getOverlays().add(soundTraceOverlay);
+        mapView.getOverlays().add(traceOverlay);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         @Override
         protected Void doInBackground(Void... voids) {
-            soundTraceOverlay.refresh(mapView);
+            traceOverlay.refresh(mapView);
             return null;
         }
 
