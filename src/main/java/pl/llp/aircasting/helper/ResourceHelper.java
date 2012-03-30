@@ -26,7 +26,6 @@ import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import roboguice.inject.InjectResource;
 
 /**
@@ -104,8 +103,8 @@ public class ResourceHelper {
         }
     }
 
-    public Drawable getLocationBullet(double value) {
-        switch (soundHelper.level(SimpleAudioReader.getSensor(), value)) {
+    public Drawable getLocationBullet(Sensor sensor, double value) {
+        switch (soundHelper.level(sensor, value)) {
             case LOW:
                 return dotYellow;
             case MID:

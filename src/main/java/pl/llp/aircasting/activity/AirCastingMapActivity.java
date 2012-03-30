@@ -42,7 +42,6 @@ import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
@@ -224,10 +223,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!sessionManager.isSessionSaved()) {
-                    updateLocation();
-                }
-
                 mapView.invalidate();
             }
         });
@@ -295,7 +290,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     @Subscribe
     public void onEvent(LocationEvent event) {
-        updateLocation();
         updateRoute();
 
         mapView.invalidate();
@@ -305,17 +299,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         if (settingsHelper.isShowRoute() && sessionManager.isRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
-        }
-    }
-
-    private void updateLocation() {
-        Location location = locationHelper.getLastLocation();
-        if (!sessionManager.isSessionSaved()) {
-            if (!settingsHelper.isAveraging()) {
-                locationOverlay.setValue(sessionManager.getNow(SimpleAudioReader.getSensor()));
-            }
-
-            locationOverlay.setLocation(location);
         }
     }
 
@@ -342,7 +325,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
 
         if (settingsHelper.isAveraging()) {
-            locationOverlay.setValue(measurement.getValue());
             lastMeasurement = measurement;
         }
 
