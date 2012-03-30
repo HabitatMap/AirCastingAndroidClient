@@ -19,131 +19,142 @@
 */
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
+import org.intellij.lang.annotations.Language;
 
-public class SchemaMigrator extends SQLiteOpenHelper implements DBConstants
+import static pl.llp.aircasting.model.DBConstants.*;
+
+public class SchemaMigrator
 {
-  public SchemaMigrator(Context context) {
-    super(context, DB_NAME, null, DB_VERSION);
-  }
+  @Language("SQL")
+  public static final String CREATE_STREAMS_TABLE =
+      "CREATE TABLE streams (\n  " +
+          STREAM_ID + " INTEGER PRIMARY KEY,\n  " +
+          "stream_sensor_id INTEGER,\n  " +
+          "stream_avg REAL,\n  " +
+          "stream_peak REAL,\n  " +
+          "sensor_name  TEXT, \n  " +
+          "measurement_type TEXT, \n  " +
+          "measurement_unit TEXT, \n  " +
+          "measurement_symbol TEXT \n " +
+          ")";
 
-  @Override
-  public void onCreate(SQLiteDatabase sqLiteDatabase) {
-    sqLiteDatabase.execSQL("create table " + SESSION_TABLE_NAME + " (" +
-                               SESSION_ID + " integer primary key" +
-                               ", " + SESSION_TITLE + " text" +
-                               ", " + SESSION_DESCRIPTION + " text" +
-                               ", " + SESSION_TAGS + " text" +
-                               ", " + SESSION_AVG + " real" +
-                               ", " + SESSION_PEAK + " real" +
-                               ", " + SESSION_START + " integer" +
-                               ", " + SESSION_END + " integer" +
-                               ", " + SESSION_UUID + " text" +
-                               ", " + SESSION_LOCATION + " text" +
-                               ", " + SESSION_CALIBRATION + " integer" +
-                               ", " + SESSION_CONTRIBUTE + " boolean" +
-                               ", " + SESSION_OS_VERSION + " text" +
-                               ", " + SESSION_PHONE_MODEL + " text" +
-                               ", " + SESSION_DATA_TYPE + " text" +
-                               ", " + SESSION_INSTRUMENT + " text" +
-                               ", " + SESSION_OFFSET_60_DB + " integer" +
-                               ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
-                               ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
-                               ")"
-                          );
-    createMeasurementsTable(sqLiteDatabase);
+  MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
 
-    createSensorTable(sqLiteDatabase);
-
-    createNotesTable(sqLiteDatabase);
-  }
-
-  private void createMeasurementsTable(SQLiteDatabase sqLiteDatabase)
+  public void create(SQLiteDatabase db)
   {
-    sqLiteDatabase.execSQL("create table " + MEASUREMENT_TABLE_NAME + " (" +
-                               MEASUREMENT_SESSION_ID + " integer" +
-                               ", " + MEASUREMENT_ID + " integer primary key" +
-                               ", " + MEASUREMENT_LATITUDE + " real" +
-                               ", " + MEASUREMENT_LONGITUDE + " real" +
-                               ", " + MEASUREMENT_VALUE + " real" +
-                               ", " + MEASUREMENT_TIME + " integer" +
-                               ", " + MEASUREMENT_SENSOR_ID + " text" +
-                               ")"
-                          );
+    createSessionsTable(db);
+    createMeasurementsTable(db);
+    createStreamTable(db);
+    createNotesTable(db);
   }
 
-  private void createNotesTable(SQLiteDatabase sqLiteDatabase)
+  private void createSessionsTable(SQLiteDatabase db)
   {
-    sqLiteDatabase.execSQL("create table " + NOTE_TABLE_NAME + "(" +
-                               NOTE_SESSION_ID + " integer " +
-                               ", " + NOTE_LATITUDE + " real " +
-                               ", " + NOTE_LONGITUDE + " real " +
-                               ", " + NOTE_TEXT + " text " +
-                               ", " + NOTE_DATE + " integer " +
-                               ", " + NOTE_PHOTO + " text" +
-                               ", " + NOTE_NUMBER + " integer" +
-                               ")"
-                          );
-  }
-
-  private void createSensorTable(SQLiteDatabase db)
-  {
-    db.execSQL("CREATE TABLE " + SENSOR_TABLE_NAME + " ( " +
-                   SENSOR_ID + " integer, " +
-                   SENSOR_NAME + " text, " +
-                   SENSOR_MEASUREMENT_TYPE + " text, " +
-                   SENSOR_MEASUREMENT_UNIT + " text, " +
-                   SENSOR_MEASUREMENT_SYMBOL + " text " +
+    db.execSQL("create table " + SESSION_TABLE_NAME + " (" +
+                   SESSION_ID + " integer primary key" +
+                   ", " + SESSION_TITLE + " text" +
+                   ", " + SESSION_DESCRIPTION + " text" +
+                   ", " + SESSION_TAGS + " text" +
+                   ", " + SESSION_START + " integer" +
+                   ", " + SESSION_END + " integer" +
+                   ", " + SESSION_UUID + " text" +
+                   ", " + SESSION_LOCATION + " text" +
+                   ", " + SESSION_CALIBRATION + " integer" +
+                   ", " + SESSION_CONTRIBUTE + " boolean" +
+                   ", " + SESSION_OS_VERSION + " text" +
+                   ", " + SESSION_PHONE_MODEL + " text" +
+                   ", " + SESSION_DATA_TYPE + " text" +
+                   ", " + SESSION_INSTRUMENT + " text" +
+                   ", " + SESSION_OFFSET_60_DB + " integer" +
+                   ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
+                   ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
                    ")"
               );
   }
 
-  @Override
-  public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+  private void createMeasurementsTable(SQLiteDatabase db)
+  {
+    db.execSQL("create table " + MEASUREMENT_TABLE_NAME + " (" +
+                   ", " + MEASUREMENT_ID + " integer primary key" +
+                   ", " + MEASUREMENT_LATITUDE + " real" +
+                   ", " + MEASUREMENT_LONGITUDE + " real" +
+                   ", " + MEASUREMENT_VALUE + " real" +
+                   ", " + MEASUREMENT_TIME + " integer" +
+                   ", " + MEASUREMENT_STREAM_ID + " integer" +
+                   ")"
+              );
+  }
+
+  private void createNotesTable(SQLiteDatabase db)
+  {
+    db.execSQL("create table " + NOTE_TABLE_NAME + "(" +
+                   NOTE_SESSION_ID + " integer " +
+                   ", " + NOTE_LATITUDE + " real " +
+                   ", " + NOTE_LONGITUDE + " real " +
+                   ", " + NOTE_TEXT + " text " +
+                   ", " + NOTE_DATE + " integer " +
+                   ", " + NOTE_PHOTO + " text" +
+                   ", " + NOTE_NUMBER + " integer" +
+                   ")"
+              );
+  }
+
+  private void createStreamTable(SQLiteDatabase db)
+  {
+    db.execSQL(CREATE_STREAMS_TABLE);
+  }
+
+  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) {
     if (oldVersion < 19 && newVersion >= 19) {
-      db.execSQL("alter table " + NOTE_TABLE_NAME + " " +
-                     "add column " + NOTE_PHOTO + " text"
-                );
+
+      addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
     if (oldVersion < 20 && newVersion >= 20)
     {
-      db.execSQL("alter table " + NOTE_TABLE_NAME + " " +
-                     "add column " + NOTE_NUMBER + " integer"
-                );
+      addColumn(db, NOTE_TABLE_NAME, NOTE_NUMBER, "integer");
     }
     if (oldVersion < 21 && newVersion >= 21)
     {
-      db.execSQL("alter table " + SESSION_TABLE_NAME + " " +
-                     "add column " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean"
-                );
+      addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, "boolean");
     }
 
-    if (oldVersion < 22 && newVersion >= 22)
+    if (oldVersion <22 && newVersion >= 22)
     {
-      db.execSQL("ALTER TABLE " + MEASUREMENT_TABLE_NAME + " " +
-                     "ADD COLUMN " + MEASUREMENT_SENSOR_ID + " text");
-          
-      createSensorTable(db);
-      initializeSensors(db);
+      // migrate
+    }
+
+    if (oldVersion < 23 && newVersion >= 23)
+    {
+      addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID, "integer");
+
+      createStreamTable(db);
+      measurementsToStreams.migrate(db);
+
+      dropColumn(db, SESSION_TABLE_NAME, SESSION_PEAK);
+      dropColumn(db, SESSION_TABLE_NAME, SESSION_AVG);
     }
   }
 
-  private void initializeSensors(SQLiteDatabase db)
+  private void dropColumn(SQLiteDatabase db, String tableName, String column)
   {
-    SQLiteStatement ps = db.compileStatement("INSERT INTO SENSORS VALUES(?, ?, ?, ?, ?, ?) ");
-    ps.bindLong(1, 1L);
-    ps.bindString(2, SimpleAudioReader.SENSOR_NAME);
-    ps.bindString(3, SimpleAudioReader.UNIT);
-    ps.bindString(4, SimpleAudioReader.MEASUREMENT_TYPE);
-    ps.bindString(5, SimpleAudioReader.SYMBOL);
+    StringBuilder q = new StringBuilder(50);
 
-    ps.executeInsert();
+    q.append("ALTER TABLE ").append(tableName);
+    q.append(" DROP COLUMN ").append(column);
 
-    db.execSQL("UPDATE " + MEASUREMENT_TABLE_NAME + " SET " + MEASUREMENT_SENSOR_ID + " 1");
+    db.execSQL(q.toString());
+  }
+
+  private void addColumn(SQLiteDatabase db, String tableName, String columnName, String datatype)
+  {
+    StringBuilder q = new StringBuilder(50);
+
+    q.append("ALTER TABLE ");
+    q.append(tableName);
+    q.append(" ADD COLUMN ").append(columnName);
+    q.append(" ").append(datatype);
+
+    db.execSQL(q.toString());
   }
 }

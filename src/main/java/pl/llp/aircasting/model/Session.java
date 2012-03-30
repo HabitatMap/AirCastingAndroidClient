@@ -19,28 +19,28 @@
 */
 package pl.llp.aircasting.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import pl.llp.aircasting.helper.SoundHelper;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 1:55 PM
- */
-public class Session implements Serializable {
+public class Session implements Serializable
+{
     @Expose private UUID uuid = UUID.randomUUID();
 
     @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
+    @Expose @SerializedName("streams") transient Map<String, MeasurementStream> streams = newHashMap();
     @Expose private List<Note> notes = newArrayList();
 
     @Expose private String title;
@@ -63,7 +63,12 @@ public class Session implements Serializable {
     private Long id = null;
     private boolean submittedForRemoval = false;
 
-    public void add(Measurement measurement) {
+  public void add(MeasurementStream stream)
+  {
+    streams.put(stream.getSensorName(), stream);
+  }
+
+  public void add(Measurement measurement) {
         if (measurements.isEmpty()) {
             // If average has been set earlier manually
             sum = measurement.getValue();
@@ -84,7 +89,7 @@ public class Session implements Serializable {
         return measurements;
     }
 
-    public void setTitle(String text) {
+  public void setTitle(String text) {
         title = text;
     }
 
@@ -113,14 +118,14 @@ public class Session implements Serializable {
             peak = calculatePeak();
         }
         return peak;
-    }
+      }
 
     private double calculatePeak() {
         double newPeak = SoundHelper.TOTALLY_QUIET;
         for (Measurement measurement : measurements) {
             if (measurement.getValue() > newPeak) {
                 newPeak = measurement.getValue();
-            }
+    }
         }
         return newPeak;
     }
@@ -150,17 +155,17 @@ public class Session implements Serializable {
         this.peak = peak;
     }
 
-    public Date getEnd() {
+  public Date getEnd() {
         if (end == null) {
             end = getLast(measurements).getTime();
-        }
+      }
         return end;
     }
 
     public Date getStart() {
         if (start == null) {
             start = measurements.get(0).getTime();
-        }
+  }
         return start;
     }
 
@@ -173,120 +178,163 @@ public class Session implements Serializable {
     }
 
     public boolean isSaved() {
-        return id != null;
-    }
+    return id != null;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id)
+  {
+    this.id = id;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId()
+  {
+    return id;
+  }
 
-    public void updateHeader(Session session) {
-        this.title = session.getTitle();
-        this.tags = session.getTags();
-        this.description = session.getDescription();
-    }
+  public void updateHeader(Session session)
+  {
+    this.title = session.getTitle();
+    this.tags = session.getTags();
+    this.description = session.getDescription();
+  }
 
-    public List<Note> getNotes() {
-        return notes;
-    }
+  public List<Note> getNotes()
+  {
+    return notes;
+  }
 
-    public void add(Note note) {
-        notes.add(note);
-    }
+  public void add(Note note)
+  {
+    notes.add(note);
+  }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
+  public void addAll(Collection<Note> notesToAdd)
+  {
+    notes.addAll(notesToAdd);
+  }
 
-    public UUID getUUID() {
-        return uuid;
-    }
+  public void setUuid(UUID uuid)
+  {
+    this.uuid = uuid;
+  }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+  public UUID getUUID()
+  {
+    return uuid;
+  }
 
-    public String getLocation() {
-        return location;
-    }
+  public void setLocation(String location)
+  {
+    this.location = location;
+  }
 
-    public int getCalibration() {
-        return calibration;
-    }
+  public String getLocation()
+  {
+    return location;
+  }
 
-    public void setCalibration(int calibration) {
-        this.calibration = calibration;
-    }
+  public int getCalibration()
+  {
+    return calibration;
+  }
 
-    public void setContribute(boolean contribute) {
-        this.contribute = contribute;
-    }
+  public void setCalibration(int calibration)
+  {
+    this.calibration = calibration;
+  }
 
-    public boolean getContribute() {
-        return contribute;
-    }
+  public void setContribute(boolean contribute)
+  {
+    this.contribute = contribute;
+  }
 
-    public String getOSVersion() {
-        return osVersion;
-    }
+  public boolean getContribute()
+  {
+    return contribute;
+  }
 
-    public String getDataType() {
-        return dataType;
-    }
+  public String getOSVersion()
+  {
+    return osVersion;
+  }
 
-    public String getInstrument() {
-        return instrument;
-    }
+  public String getDataType()
+  {
+    return dataType;
+  }
 
-    public String getPhoneModel() {
-        return phoneModel;
-    }
+  public String getInstrument()
+  {
+    return instrument;
+  }
 
-    public void setOsVersion(String osVersion) {
-        this.osVersion = osVersion;
-    }
+  public String getPhoneModel()
+  {
+    return phoneModel;
+  }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
+  public void setOsVersion(String osVersion)
+  {
+    this.osVersion = osVersion;
+  }
 
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
-    }
+  public void setDataType(String dataType)
+  {
+    this.dataType = dataType;
+  }
 
-    public void setPhoneModel(String phoneModel) {
-        this.phoneModel = phoneModel;
-    }
+  public void setInstrument(String instrument)
+  {
+    this.instrument = instrument;
+  }
 
-    public int getOffset60DB() {
-        return offset60DB;
-    }
+  public void setPhoneModel(String phoneModel)
+  {
+    this.phoneModel = phoneModel;
+  }
 
-    public void setOffset60DB(int offset60DB) {
-        this.offset60DB = offset60DB;
-    }
+  public int getOffset60DB()
+  {
+    return offset60DB;
+  }
 
-    public boolean isMarkedForRemoval() {
-        return markedForRemoval;
-    }
+  public void setOffset60DB(int offset60DB)
+  {
+    this.offset60DB = offset60DB;
+  }
 
-    public void setMarkedForRemoval(boolean markedForRemoval) {
-        this.markedForRemoval = markedForRemoval;
-    }
+  public boolean isMarkedForRemoval()
+  {
+    return markedForRemoval;
+  }
 
-    public void deleteNote(Note note) {
-        notes.remove(note);
-    }
+  public void setMarkedForRemoval(boolean markedForRemoval)
+  {
+    this.markedForRemoval = markedForRemoval;
+  }
 
-    public void setSubmittedForRemoval(boolean submittedForRemoval) {
-        this.submittedForRemoval = submittedForRemoval;
-    }
+  public void deleteNote(Note note)
+  {
+    notes.remove(note);
+  }
 
-    public boolean isSubmittedForRemoval() {
-        return submittedForRemoval;
-    }
+  public void setSubmittedForRemoval(boolean submittedForRemoval)
+  {
+    this.submittedForRemoval = submittedForRemoval;
+  }
+
+  public boolean isSubmittedForRemoval()
+  {
+    return submittedForRemoval;
+  }
+
+  public Collection<MeasurementStream> getMeasurementStreams()
+  {
+    return streams.values();
+  }
+  
+  public MeasurementStream getStream(String name)
+  {
+    return streams.get(name);
+  }
 }

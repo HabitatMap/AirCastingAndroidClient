@@ -19,16 +19,18 @@
 */
 package pl.llp.aircasting.guice;
 
-import pl.llp.aircasting.model.SchemaMigrator;
+import pl.llp.aircasting.model.AirCastingDB;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class DBHelperProvider implements Provider<SchemaMigrator> {
+public class AirCastingDBProvider implements Provider<AirCastingDB>
+{
     @Inject AirCastingApplication application;
 
     @Override
-    public SchemaMigrator get() {
-        return new SchemaMigrator(application);
+    public AirCastingDB get()
+    {
+        return new AirCastingDB(application);
     }
 }

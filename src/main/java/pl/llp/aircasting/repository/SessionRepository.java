@@ -19,10 +19,10 @@
  */
 package pl.llp.aircasting.repository;
 
-import pl.llp.aircasting.model.DBConstants;
+import pl.llp.aircasting.model.AirCastingDB;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SchemaMigrator;
 import pl.llp.aircasting.model.Session;
 
 import android.content.ContentValues;
@@ -30,20 +30,28 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.DBHelper.*;
 
-public class SessionRepository implements DBConstants {
+public class SessionRepository
+{
+    @Inject
+    AirCastingDB dbAccessor;
 
-    @Inject SchemaMigrator dbAccessor;
+    @Inject NoteRepository notes;
+  
     SQLiteDatabase db;
 
     @Inject
     public void init() {
-        db = dbAccessor.getWritableDatabase();
+      db = dbAccessor.getWritableDatabase();
+      notes = new NoteRepository(db);
     }
 
     public void close() {
@@ -54,78 +62,82 @@ public class SessionRepository implements DBConstants {
         save(session, null);
     }
 
-    public void deleteNote(Session session, Note note) {
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
-                " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
-    }
+  public void deleteNote(Session session, Note note)
+  {
+    notes.delete(session, note);
+  }
 
-    public void save(Session session, ProgressListener progressListener) {
-        db.beginTransaction();
+  public void save(Session session, ProgressListener progressListener)
+  {
+    setupProgressListener(session, progressListener);
 
-        if (progressListener != null) progressListener.onSizeCalculated(session.getMeasurements().size());
+    db.beginTransaction();
+    ContentValues values = new ContentValues();
 
-        ContentValues values = new ContentValues();
+    prepareHeader(session, values);
+    values.put(SESSION_START, session.getStart().getTime());
+    values.put(SESSION_END, session.getEnd().getTime());
+    values.put(SESSION_UUID, session.getUUID().toString());
+    values.put(SESSION_CALIBRATION, session.getCalibration());
+    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
+    values.put(SESSION_CONTRIBUTE, session.getContribute());
+    values.put(SESSION_DATA_TYPE, session.getDataType());
+    values.put(SESSION_INSTRUMENT, session.getInstrument());
+    values.put(SESSION_OS_VERSION, session.getOSVersion());
+    values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
+    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
+    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
 
-        prepareHeader(session, values);
-        values.put(SESSION_AVG, session.getAvg());
-        values.put(SESSION_PEAK, session.getPeak());
-        values.put(SESSION_START, session.getStart().getTime());
-        values.put(SESSION_END, session.getEnd().getTime());
-        values.put(SESSION_UUID, session.getUUID().toString());
-        values.put(SESSION_CALIBRATION, session.getCalibration());
-        values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-        values.put(SESSION_CONTRIBUTE, session.getContribute());
-        values.put(SESSION_DATA_TYPE, session.getDataType());
-        values.put(SESSION_INSTRUMENT, session.getInstrument());
-        values.put(SESSION_OS_VERSION, session.getOSVersion());
-        values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-        values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
-        values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
+    long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
+    session.setId(sessionKey);
 
-        long key = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
-        session.setId(key);
+    int count = 0;
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+      
+    for (MeasurementStream stream : streams)
+    {
+      List<Measurement> measurements = stream.getMeasurements();
+      for (Measurement measurement : measurements)
+      {
+        values.clear();
+        values.put(MEASUREMENT_SESSION_ID, sessionKey);
+        values.put(MEASUREMENT_VALUE, measurement.getValue());
+        values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
+        values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
+        values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
+        values.put(MEASUREMENT_STREAM_ID, stream.getId());
 
-        int count = 0;
-        for (Measurement measurement : session.getMeasurements()) {
-            values.clear();
-            values.put(MEASUREMENT_SESSION_ID, key);
-            values.put(MEASUREMENT_VALUE, measurement.getValue());
-            values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
-            values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
-            values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
+        db.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
 
-            db.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
-
-            count += 1;
-            if (count % 100 == 0 && progressListener != null) {
-                progressListener.onProgress(count);
-            }
+        count += 1;
+        if (count % 100 == 0 && progressListener != null) {
+          progressListener.onProgress(count);
         }
-
-        saveNotes(session.getNotes(), key);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
+      }
     }
 
-    private void saveNotes(Iterable<Note> notes, long sessionId) {
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId, null);
+    notes.save(session.getNotes(), sessionKey);
 
-        ContentValues values = new ContentValues();
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
 
-        for (Note note : notes) {
-            values.clear();
-            values.put(NOTE_SESSION_ID, sessionId);
-            values.put(NOTE_LATITUDE, note.getLatitude());
-            values.put(NOTE_LONGITUDE, note.getLongitude());
-            values.put(NOTE_TEXT, note.getText());
-            values.put(NOTE_DATE, note.getDate().getTime());
-            values.put(NOTE_PHOTO, note.getPhotoPath());
-            values.put(NOTE_NUMBER, note.getNumber());
-
-            db.insertOrThrow(NOTE_TABLE_NAME, null, values);
-        }
+  private void setupProgressListener(Session session, ProgressListener progressListener)
+  {
+    if (progressListener == null)
+    {
+      return;
     }
+
+    int size = 0;
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    for (MeasurementStream stream : streams)
+    {
+      size +=stream.getMeasurements().size();
+    }
+
+    progressListener.onSizeCalculated(size);
+  }
 
     private void prepareHeader(Session session, ContentValues values) {
         values.put(SESSION_TITLE, session.getTitle());
@@ -141,8 +153,6 @@ public class SessionRepository implements DBConstants {
         session.setTitle(getString(cursor, SESSION_TITLE));
         session.setDescription(getString(cursor, SESSION_DESCRIPTION));
         session.setTags(getString(cursor, SESSION_TAGS));
-        session.setAvg(getDouble(cursor, SESSION_AVG));
-        session.setPeak(getDouble(cursor, SESSION_PEAK));
         session.setStart(getDate(cursor, SESSION_START));
         session.setEnd(getDate(cursor, SESSION_END));
         session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
@@ -198,10 +208,11 @@ public class SessionRepository implements DBConstants {
         Cursor cursor = db.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
 
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            result.add(load(cursor));
-
-            cursor.moveToNext();
+        while (!cursor.isAfterLast())
+        {
+          Session load = load(cursor);
+          result.add(load);
+          cursor.moveToNext();
         }
 
         cursor.close();
@@ -256,95 +267,39 @@ public class SessionRepository implements DBConstants {
 
     public Session loadEager(long id, ProgressListener progressListener) {
         Session session = load(id);
-
         return fill(session, progressListener);
     }
 
     private Session fill(Session session, ProgressListener progressListener) {
-        loadMeasurements(session, progressListener);
+      List<MeasurementStream> streams = new StreamRepository(db).load(session);
+      MeasurementRepository r = new MeasurementRepository(db, progressListener);
+      Map<Integer,List<Measurement>> load = r.load(session);
 
-        return session;
+      for (MeasurementStream stream : streams)
+      {
+        stream.setMeasurements(load.get(stream.getId()));
+        session.add(stream);
+      }
+
+      return session;
     }
 
     private void loadNotes(Session session) {
-        Cursor cursor = db.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(), null, null, null, null);
-        cursor.moveToFirst();
-
-        while (!cursor.isAfterLast()) {
-            Note note = new Note();
-
-            note.setLatitude(getDouble(cursor, NOTE_LATITUDE));
-            note.setLongitude(getDouble(cursor, NOTE_LONGITUDE));
-            note.setDate(getDate(cursor, NOTE_DATE));
-            note.setText(getString(cursor, NOTE_TEXT));
-            note.setPhotoPath(getString(cursor, NOTE_PHOTO));
-            note.setNumber(getInt(cursor, NOTE_NUMBER));
-
-            session.add(note);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
+      List<Note> loeadedNotes = notes.load(session);
+      session.addAll(loeadedNotes);
     }
 
-    private void loadMeasurements(Session session, ProgressListener progressListener) {
-        Cursor cursor = db.query(MEASUREMENT_TABLE_NAME, null, MEASUREMENT_SESSION_ID + " = " + session.getId(), null, null, null, MEASUREMENT_TIME);
-        cursor.moveToFirst();
-
-        if (progressListener != null) progressListener.onSizeCalculated(cursor.getCount());
-
-        while (!cursor.isAfterLast()) {
-            Measurement measurement = new Measurement();
-
-            measurement.setLatitude(getDouble(cursor, MEASUREMENT_LATITUDE));
-            measurement.setLongitude(getDouble(cursor, MEASUREMENT_LONGITUDE));
-            measurement.setValue(getDouble(cursor, MEASUREMENT_VALUE));
-            measurement.setTime(getDate(cursor, MEASUREMENT_TIME));
-
-            if (progressListener != null && cursor.getPosition() % 100 == 0) {
-                progressListener.onProgress(cursor.getPosition());
-            }
-            session.add(measurement);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-    }
-
-    public void update(Session session) {
+    public void update(Session session)
+    {
         ContentValues values = new ContentValues();
         prepareHeader(session, values);
 
         db.beginTransaction();
 
-        saveNotes(session.getNotes(), session.getId());
+        notes.save(session.getNotes(), session.getId());
         db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
 
         db.setTransactionSuccessful();
         db.endTransaction();
-    }
-
-    private double getDouble(Cursor cursor, String columnName) {
-        return cursor.getDouble(cursor.getColumnIndex(columnName));
-    }
-
-    private Date getDate(Cursor cursor, String columnName) {
-        return new Date(cursor.getLong(cursor.getColumnIndex(columnName)));
-    }
-
-    private String getString(Cursor cursor, String columnName) {
-        return cursor.getString(cursor.getColumnIndex(columnName));
-    }
-
-    private Long getLong(Cursor cursor, String columnName) {
-        return cursor.getLong(cursor.getColumnIndex(columnName));
-    }
-
-    private int getInt(Cursor cursor, String columnName) {
-        return cursor.getInt(cursor.getColumnIndex(columnName));
-    }
-
-    private boolean getBool(Cursor cursor, String columnName) {
-        return cursor.getInt(cursor.getColumnIndex(columnName)) == 1;
     }
 }

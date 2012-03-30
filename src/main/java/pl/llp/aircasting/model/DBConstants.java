@@ -24,7 +24,7 @@ import android.provider.BaseColumns;
 public interface DBConstants
 {
   String DB_NAME = "sessions.db";
-  int DB_VERSION = 22;
+  int DB_VERSION = 23;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -64,8 +64,6 @@ public interface DBConstants
   String STREAM_ID = BaseColumns._ID;
   String STREAM_AVG = "Average";
   String STREAM_PEAK = "Peak";
-  String STREAM_START = "Start";
-  String STREAM_END = "End";
   String STREAM_SESSION_ID = "stream_session_id";
   String STREAM_SENSOR_NAME = "sensor_name";
   String STREAM_MEASUREMENT_TYPE = "measurement_type";
