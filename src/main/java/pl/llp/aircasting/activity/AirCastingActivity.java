@@ -66,7 +66,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject SelectSensorHelper selectSensorHelper;
-    @Inject ThresholdsHelper thresholdsHelper;
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
     @Inject TopBarHelper topBarHelper;
@@ -186,7 +185,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.top_bar:
-                startActivity(new Intent(context, ThresholdsActivity.class));
+                Intents.thresholdsEditor(this, sensorManager.getVisibleSensor());
                 break;
             case R.id.note_save:
                 saveNote();

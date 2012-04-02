@@ -45,13 +45,13 @@ public class SoundHelperTest {
 
     @Before
     public void setup() {
-        soundHelper.thresholdsHelper = mock(ThresholdsHelper.class);
+        soundHelper.settingsHelper = mock(SettingsHelper.class);
 
-        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_HIGH)).thenReturn(60);
-        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.HIGH)).thenReturn(50);
-        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.MID)).thenReturn(30);
-        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.LOW)).thenReturn(10);
-        when(soundHelper.thresholdsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_LOW)).thenReturn(-20);
+        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_HIGH)).thenReturn(60);
+        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.HIGH)).thenReturn(50);
+        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.MID)).thenReturn(30);
+        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.LOW)).thenReturn(10);
+        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_LOW)).thenReturn(-20);
     }
 
     @Test

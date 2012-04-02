@@ -26,10 +26,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import pl.llp.aircasting.activity.EditSessionActivity;
-import pl.llp.aircasting.activity.MakeANoteActivity;
-import pl.llp.aircasting.activity.ShareSessionActivity;
-import pl.llp.aircasting.activity.StreamsActivity;
+import pl.llp.aircasting.activity.*;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.service.SyncService;
@@ -66,6 +64,7 @@ public final class Intents {
     public static final String MIME_TEXT_CSV = "text/csv";
     public static final String MIME_IMAGE_JPEG = "image/jpeg";
     public static final int REQUEST_ENABLE_BLUETOOTH = 5;
+    public static final String EXTRA_SENSOR = "sensor";
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -220,6 +219,12 @@ public final class Intents {
 
     public static void startStreamsActivity(Activity activity) {
         Intent intent = new Intent(activity, StreamsActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void thresholdsEditor(Activity activity, Sensor sensor) {
+        Intent intent = new Intent(activity, ThresholdsActivity.class);
+        intent.putExtra(EXTRA_SENSOR, sensor);
         activity.startActivity(intent);
     }
 }

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class TopBarHelperTest {
     @Inject TopBarHelper helper;
 
-    @Mock ThresholdsHelper thresholdsHelper;
+    @Mock SettingsHelper settingsHelper;
     @Mock Sensor sensor;
     @Mock View parent;
     @Mock TextView veryLow;
@@ -30,13 +30,13 @@ public class TopBarHelperTest {
 
     @Before
     public void setup() {
-        helper.thresholdsHelper = thresholdsHelper;
+        helper.settingsHelper = settingsHelper;
 
-        when(thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW)).thenReturn(0);
-        when(thresholdsHelper.getThreshold(sensor, MeasurementLevel.LOW)).thenReturn(10);
-        when(thresholdsHelper.getThreshold(sensor, MeasurementLevel.MID)).thenReturn(20);
-        when(thresholdsHelper.getThreshold(sensor, MeasurementLevel.HIGH)).thenReturn(30);
-        when(thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH)).thenReturn(40);
+        when(settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW)).thenReturn(0);
+        when(settingsHelper.getThreshold(sensor, MeasurementLevel.LOW)).thenReturn(10);
+        when(settingsHelper.getThreshold(sensor, MeasurementLevel.MID)).thenReturn(20);
+        when(settingsHelper.getThreshold(sensor, MeasurementLevel.HIGH)).thenReturn(30);
+        when(settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH)).thenReturn(40);
         
         when(parent.findViewById(R.id.top_bar_very_low)).thenReturn(veryLow);
         when(parent.findViewById(R.id.top_bar_low)).thenReturn(low);

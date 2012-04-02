@@ -16,7 +16,7 @@ import static java.lang.String.valueOf;
 @Singleton
 public class GaugeHelper {
     @Inject ResourceHelper resourceHelper;
-    @Inject ThresholdsHelper thresholdHelper;
+    @Inject SettingsHelper settingsHelper;
     @Inject SessionManager sessionManager;
 
     @InjectResource(R.string.avg_label_template) String avgLabel;

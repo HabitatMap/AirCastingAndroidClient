@@ -61,7 +61,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
 
-        plot.initialize(this, thresholdsHelper, resourceHelper);
+        plot.initialize(this, settingsHelper, resourceHelper);
     }
 
     @Override
@@ -99,8 +99,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     private void updateLabels(List<Measurement> measurements) {
         Sensor sensor = sensorManager.getVisibleSensor();
-        int high = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
-        int low = thresholdsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+        int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+        int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
         graphTop.setText(high + " " + sensor.getSymbol());
         graphBottom.setText(low + " " + sensor.getSymbol());
 

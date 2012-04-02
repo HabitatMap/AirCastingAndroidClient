@@ -29,16 +29,20 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
+import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
@@ -54,19 +58,17 @@ import roboguice.inject.InjectView;
  * Time: 3:59 PM
  */
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
+    @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SessionRepository sessionRepository;
     @Inject SessionManager sessionManager;
-    @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SettingsHelper settingsHelper;
-    @Inject MainMenu mainMenu;
+    @Inject SensorManager sensorManager;
+    @Inject TopBarHelper topBarHelper;
     @Inject Application context;
     @Inject SyncState syncState;
+    @Inject MainMenu mainMenu;
 
-    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
-    @InjectView(R.id.top_bar_low) TextView topBarAverage;
-    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
-    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
+    @InjectResource(R.id.top_bar) View topBar;
 
     @InjectView(R.id.sync_summary) Button syncSummary;
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
@@ -98,7 +100,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         super.onResume();
 
         refreshList();
-        updateTopBar();
+        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intents.ACTION_SYNC_UPDATE);
@@ -113,14 +115,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(syncBroadcastReceiver);
-    }
-
-    private void updateTopBar() {
-        topBarQuiet.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_LOW));
-        topBarAverage.setText("" + settingsHelper.getThreshold(MeasurementLevel.LOW));
-        topBarLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.MID));
-        topBarVeryLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.HIGH));
-        topBarTooLoud.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH));
     }
 
     private void refreshList() {

@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
@@ -24,10 +24,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Sensor;
 import roboguice.inject.InjectView;
+
+import static java.lang.String.valueOf;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,44 +40,48 @@ import roboguice.inject.InjectView;
  * Time: 2:37 PM
  */
 public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener {
-    @InjectView(R.id.color_scale_too_loud) EditText tooLoudEdit;
     @InjectView(R.id.color_scale_very_loud) EditText veryLoudEdit;
-    @InjectView(R.id.color_scale_loud) EditText loudEdit;
+    @InjectView(R.id.color_scale_too_loud) EditText tooLoudEdit;
     @InjectView(R.id.color_scale_average) EditText averageEdit;
     @InjectView(R.id.color_scale_quiet) EditText quietEdit;
+    @InjectView(R.id.color_scale_loud) EditText loudEdit;
 
     @InjectView(R.id.color_scale_very_loud_slider) SeekBar veryLoudSlider;
-    @InjectView(R.id.color_scale_loud_slider) SeekBar loudSlider;
     @InjectView(R.id.color_scale_average_slider) SeekBar averageSlider;
+    @InjectView(R.id.color_scale_loud_slider) SeekBar loudSlider;
 
     @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
-    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
-    @InjectView(R.id.top_bar_low) TextView topBarAverage;
     @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
+    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
+    @InjectView(R.id.top_bar_low) TextView topBarAverage;
+    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
 
-    @InjectView(R.id.save) Button save;
     @InjectView(R.id.reset) Button reset;
+    @InjectView(R.id.save) Button save;
 
     @Inject SettingsHelper settingsHelper;
     @Inject Application context;
 
-    private int tooLoud;
     private int veryLoud;
-    private int loud;
+    private int tooLoud;
     private int average;
+    private int loud;
     private int quiet;
+
+    private Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.color_scale);
 
-        tooLoudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_HIGH));
-        veryLoudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.HIGH));
-        loudEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.MID));
-        averageEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.LOW));
-        quietEdit.setText("" + settingsHelper.getThreshold(MeasurementLevel.VERY_LOW));
+        sensor = (Sensor) getIntent().getSerializableExtra(Intents.EXTRA_SENSOR);
+
+        tooLoudEdit.setText(valueOf(settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH)));
+        veryLoudEdit.setText(valueOf(settingsHelper.getThreshold(sensor, MeasurementLevel.HIGH)));
+        loudEdit.setText(valueOf(settingsHelper.getThreshold(sensor, MeasurementLevel.MID)));
+        averageEdit.setText(valueOf(settingsHelper.getThreshold(sensor, MeasurementLevel.LOW)));
+        quietEdit.setText(valueOf(settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW)));
 
         veryLoudEdit.setOnFocusChangeListener(this);
         loudEdit.setOnFocusChangeListener(this);
@@ -97,20 +105,20 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
                 break;
             case R.id.reset:
                 finish();
-                settingsHelper.resetThresholds();
+                settingsHelper.resetThresholds(sensor);
                 break;
         }
     }
 
     private void saveThresholds() {
         calculateThresholds();
-        fixThresholds();       
+        fixThresholds();
 
-        settingsHelper.setThreshold(MeasurementLevel.VERY_HIGH, tooLoud);
-        settingsHelper.setThreshold(MeasurementLevel.HIGH, veryLoud);
-        settingsHelper.setThreshold(MeasurementLevel.MID, loud);
-        settingsHelper.setThreshold(MeasurementLevel.LOW, average);
-        settingsHelper.setThreshold(MeasurementLevel.VERY_LOW, quiet);
+        settingsHelper.setThreshold(sensor, MeasurementLevel.VERY_HIGH, tooLoud);
+        settingsHelper.setThreshold(sensor, MeasurementLevel.HIGH, veryLoud);
+        settingsHelper.setThreshold(sensor, MeasurementLevel.MID, loud);
+        settingsHelper.setThreshold(sensor, MeasurementLevel.LOW, average);
+        settingsHelper.setThreshold(sensor, MeasurementLevel.VERY_LOW, quiet);
 
         finish();
     }
@@ -137,11 +145,11 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
     }
 
     private void updateEdits() {
-        tooLoudEdit.setText("" + tooLoud);
-        veryLoudEdit.setText("" + veryLoud);
-        loudEdit.setText("" + loud);
-        averageEdit.setText("" + average);
-        quietEdit.setText("" + quiet);
+        tooLoudEdit.setText(valueOf(tooLoud));
+        veryLoudEdit.setText(valueOf(veryLoud));
+        loudEdit.setText(valueOf(loud));
+        averageEdit.setText(valueOf(average));
+        quietEdit.setText(valueOf(quiet));
     }
 
     private MeasurementLevel toSoundLevel(int id) {
@@ -200,11 +208,11 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
     }
 
     private void updateTopBar() {
-        topBarQuiet.setText("" + quiet);
-        topBarAverage.setText("" + average);
-        topBarLoud.setText("" + loud);
-        topBarVeryLoud.setText("" + veryLoud);
-        topBarTooLoud.setText("" + tooLoud);
+        topBarQuiet.setText(valueOf(quiet));
+        topBarAverage.setText(valueOf(average));
+        topBarLoud.setText(valueOf(loud));
+        topBarVeryLoud.setText(valueOf(veryLoud));
+        topBarTooLoud.setText(valueOf(tooLoud));
     }
 
     private void updateSliders() {
@@ -223,13 +231,13 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
         MeasurementLevel measurementLevel = toSoundLevel(bar.getId());
         switch (measurementLevel) {
             case LOW:
-                averageEdit.setText("" + value);
+                averageEdit.setText(valueOf(value));
                 break;
             case MID:
-                loudEdit.setText("" + value);
+                loudEdit.setText(valueOf(value));
                 break;
             case HIGH:
-                veryLoudEdit.setText("" + value);
+                veryLoudEdit.setText(valueOf(value));
                 break;
         }
     }

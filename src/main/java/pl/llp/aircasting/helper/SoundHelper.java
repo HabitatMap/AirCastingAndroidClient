@@ -40,11 +40,11 @@ public class SoundHelper {
             MeasurementLevel.VERY_LOW
     };
 
-    @Inject ThresholdsHelper thresholdsHelper;
+    @Inject SettingsHelper settingsHelper;
 
     public MeasurementLevel level(Sensor sensor, double value) {
         for (MeasurementLevel measurementLevel : MEASUREMENT_LEVELS) {
-            if ((int) value > thresholdsHelper.getThreshold(sensor, measurementLevel)) {
+            if ((int) value > settingsHelper.getThreshold(sensor, measurementLevel)) {
                 return measurementLevel;
             }
         }

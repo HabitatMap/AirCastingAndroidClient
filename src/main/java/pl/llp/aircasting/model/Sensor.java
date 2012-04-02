@@ -3,11 +3,12 @@ package pl.llp.aircasting.model;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-public class Sensor {
+public class Sensor implements Serializable {
     private String sensorName;
     private String measurementType;
     private String unit;
@@ -18,7 +19,7 @@ public class Sensor {
 
     public Sensor(SensorEvent event) {
         this(event.getSensorName(), event.getMeasurementType(), event.getUnit(), event.getSymbol(),
-                event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
+             event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
     }
 
     public Sensor(String name, String type, String unit, String symbol, int veryLow, int low, int mid, int high, int veryHigh) {

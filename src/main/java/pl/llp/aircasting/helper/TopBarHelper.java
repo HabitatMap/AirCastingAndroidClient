@@ -12,7 +12,7 @@ import static java.lang.String.valueOf;
 
 @Singleton
 public class TopBarHelper {
-    @Inject ThresholdsHelper thresholdsHelper;
+    @Inject SettingsHelper settingsHelper;
 
     /**
      * Updates the top bar view with thresholds for the given sensor
@@ -31,7 +31,7 @@ public class TopBarHelper {
     private void fill(Sensor sensor, View parent, int id, MeasurementLevel level) {
         TextView veryLow = (TextView) parent.findViewById(id);
 
-        int veryLowValue = thresholdsHelper.getThreshold(sensor, level);
+        int veryLowValue = settingsHelper.getThreshold(sensor, level);
         veryLow.setText(valueOf(veryLowValue));
     }
 }
