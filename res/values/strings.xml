@@ -93,9 +93,6 @@
 
     <string name="no_internet">Please check your internet connection.</string>
 
-    <string name="note_template"
-            formatted="false">Registering %d dB peak and %d dB average near %s using AirCasting, www.aircasting.org.
-    </string>
     <string name="session_link_template"
             formatted="false">View my AirCasting session: %s
     </string>

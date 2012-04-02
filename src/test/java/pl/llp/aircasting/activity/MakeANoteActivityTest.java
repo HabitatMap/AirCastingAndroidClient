@@ -26,10 +26,8 @@ import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.GeocodingHelper;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -37,7 +35,6 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Mockito.*;
 import static pl.llp.aircasting.TestHelper.click;
 
@@ -57,12 +54,10 @@ public class MakeANoteActivityTest {
         activity.onCreate(null);
 
         activity.sessionManager = mock(SessionManager.class);
-        activity.geocodingHelper = mock(GeocodingHelper.class);
         activity.locationHelper = mock(LocationHelper.class);
 
         location = new Location("TEST");
 
-        when(activity.geocodingHelper.getFromLocation(Mockito.any(Location.class))).thenReturn("Test st.");
         when(activity.locationHelper.getLastLocation()).thenReturn(location);
         when(activity.sessionManager.getAvg(10)).thenReturn(3.0);
         when(activity.sessionManager.getPeak(10)).thenReturn(4.0);
@@ -77,13 +72,6 @@ public class MakeANoteActivityTest {
         click(activity, R.id.save_button);
 
         verify(activity.sessionManager).makeANote(activity.date, "Note text", null);
-    }
-
-    @Test
-    public void shouldFillNoteText() {
-        assertThat(activity.noteText.getText().toString(), containsString("4 dB peak"));
-        assertThat(activity.noteText.getText().toString(), containsString("3 dB average"));
-        assertThat(activity.noteText.getText().toString(), containsString("near Test st."));
     }
 
     @Test
