@@ -24,7 +24,7 @@ public class SensorManagerTest {
     public void setup() {
         manager.eventBus = mock(EventBus.class);
 
-        event = new SensorEvent("LHC", "Hadrons", "number", "#", 0, 10, 20, 30, 40, 12);
+        event = new SensorEvent("LHC", "Hadrons", "H", "number", "#", 0, 10, 20, 30, 40, 12);
         sensor = new Sensor(event);
 
         manager.onEvent(event);
@@ -37,9 +37,9 @@ public class SensorManagerTest {
 
     @Test
     public void shouldNotOverwriteSensors() {
-        manager.onEvent(new SensorEvent("LHC", "Muons", "number", "#", 0, 10, 20, 30, 40, 12));
+        manager.onEvent(new SensorEvent("LHC", "Muons", "M", "number", "#", 0, 10, 20, 30, 40, 12));
         sensor = manager.getSensor("LHC");
-        
+
         assertThat(sensor.getMeasurementType(), equalTo("Hadrons"));
     }
 

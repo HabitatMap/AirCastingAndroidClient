@@ -16,8 +16,8 @@ public class ExternalSensorParserTest {
 
     @Test
     public void shouldParseLines() throws ParseException {
-        SensorEvent actual = parser.parse("awesome sensor;Temp;degrees;C;1;2;3;4;5;12.5");
-        SensorEvent expected = new SensorEvent("awesome sensor", "Temp", "degrees", "C", 1, 2, 3, 4, 5, 12.5);
+        SensorEvent actual = parser.parse("awesome sensor;Temperature;Temp;degrees;C;1;2;3;4;5;12.5");
+        SensorEvent expected = new SensorEvent("awesome sensor", "Temperature", "Temp", "degrees", "C", 1, 2, 3, 4, 5, 12.5);
 
         assertThat(actual, equalTo(expected));
     }
@@ -29,11 +29,11 @@ public class ExternalSensorParserTest {
 
     @Test(expected = ParseException.class)
     public void shouldThrowExceptionsForMalformedValues() throws ParseException {
-        parser.parse("awesome sensor;temp;degrees;C;1;2;3;4;5;text");
+        parser.parse("awesome sensor;temp;t;degrees;C;1;2;3;4;5;text");
     }
 
     @Test(expected = ParseException.class)
     public void shouldThrowExceptionsForMalformedThresholds() throws ParseException {
-        parser.parse("awesome sensor;temp;degrees;C;1;2;text;4;5;10");
+        parser.parse("awesome sensor;temp;t;degrees;C;1;2;text;4;5;10");
     }
 }

@@ -6,160 +6,154 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class MeasurementStream
-{
-  private List<Measurement> measurements = newArrayList();
+public class MeasurementStream {
+    private List<Measurement> measurements = newArrayList();
 
-  private long id;
-  private long sessionId;
+    private long id;
+    private long sessionId;
 
-  private String sensorName;
-  private String measurementType;
-  private String unit;
-  private String symbol;
-  
-  private Double sum = 0.0;
-  private Double peak = Double.NEGATIVE_INFINITY;
+    private String sensorName;
+    private String measurementType;
+    private String unit;
+    private String symbol;
 
-  public MeasurementStream(String sensorName, String measurementType, String unit, String symbol) {
-    this.sensorName = sensorName;
-    this.measurementType = measurementType;
-    this.unit = unit;
-    this.symbol = symbol;
-  }
+    private Double sum = 0.0;
+    private Double peak = Double.NEGATIVE_INFINITY;
 
-  public List<Measurement> getMeasurements() {
-    return measurements;
-  }
-
-  public void add(Measurement measurement) {
-    measurements.add(measurement);
-
-    double value = measurement.getValue();
-    sum += value;
-    if (value > peak) {
-      peak = value;
+    public MeasurementStream(String sensorName, String measurementType, String unit, String symbol) {
+        this.sensorName = sensorName;
+        this.measurementType = measurementType;
+        this.unit = unit;
+        this.symbol = symbol;
     }
-  }
 
-  public String getSensorName() {
-    return sensorName;
-  }
+    public List<Measurement> getMeasurements() {
+        return measurements;
+    }
 
-  public String getMeasurementType() {
-    return measurementType;
-  }
+    public void add(Measurement measurement) {
+        measurements.add(measurement);
 
-  public String getUnit() {
-    return unit;
-  }
+        double value = measurement.getValue();
+        sum += value;
+        if (value > peak) {
+            peak = value;
+        }
+    }
 
-  public String getSymbol() {
-    return symbol;
-  }
+    public String getSensorName() {
+        return sensorName;
+    }
 
-  private double calculatePeak() {
-      double newPeak = SoundHelper.TOTALLY_QUIET;
-      for (Measurement measurement : measurements) {
-          if (measurement.getValue() > newPeak) {
-              newPeak = measurement.getValue();
-          }
-      }
-      return newPeak;
-  }
+    public String getMeasurementType() {
+        return measurementType;
+    }
 
-  public double getPeak() {
-       if (peak == null) {
-           peak = calculatePeak();
-       }
-       return peak;
-   }
+    public String getUnit() {
+        return unit;
+    }
 
-   public double getAvg() {
-       if (sum == null) {
-           sum = calculateSum();
-       }
-       return sum / (measurements.isEmpty() ? 1 : measurements.size());
-   }
+    public String getSymbol() {
+        return symbol;
+    }
 
-  private double calculateSum() {
-         if (measurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
+    private double calculatePeak() {
+        double newPeak = SoundHelper.TOTALLY_QUIET;
+        for (Measurement measurement : measurements) {
+            if (measurement.getValue() > newPeak) {
+                newPeak = measurement.getValue();
+            }
+        }
+        return newPeak;
+    }
 
-         double newSum = 0;
-         for (Measurement measurement : measurements) {
-             newSum += measurement.getValue();
-         }
-         return newSum;
-     }
+    public double getPeak() {
+        if (peak == null) {
+            peak = calculatePeak();
+        }
+        return peak;
+    }
 
-     public void setAvg(double avg) {
-         this.sum = avg;
-     }
+    public double getAvg() {
+        if (sum == null) {
+            sum = calculateSum();
+        }
+        return sum / (measurements.isEmpty() ? 1 : measurements.size());
+    }
 
-     public void setPeak(double peak) {
-         this.peak = peak;
-     }
+    private double calculateSum() {
+        if (measurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+        double newSum = 0;
+        for (Measurement measurement : measurements) {
+            newSum += measurement.getValue();
+        }
+        return newSum;
+    }
 
-    MeasurementStream stream = (MeasurementStream) o;
+    public void setAvg(double avg) {
+        this.sum = avg;
+    }
 
-    if (measurementType != null ? !measurementType.equals(stream.measurementType) : stream.measurementType != null)
-      return false;
-    if (sensorName != null ? !sensorName.equals(stream.sensorName) : stream.sensorName != null) return false;
-    if (symbol != null ? !symbol.equals(stream.symbol) : stream.symbol != null) return false;
-    if (unit != null ? !unit.equals(stream.unit) : stream.unit != null) return false;
+    public void setPeak(double peak) {
+        this.peak = peak;
+    }
 
-    return true;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-  @Override
-  public int hashCode() {
-    int result = sensorName != null ? sensorName.hashCode() : 0;
-    result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
-    result = 31 * result + (unit != null ? unit.hashCode() : 0);
-    result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
-    return result;
-  }
+        MeasurementStream stream = (MeasurementStream) o;
 
-  @Override
-  public String toString() {
-    return "MeasurementStream{" +
-        "measurements=" + measurements +
-        ", sensorName='" + sensorName + '\'' +
-        ", measurementType='" + measurementType + '\'' +
-        ", unit='" + unit + '\'' +
-        ", symbol='" + symbol + '\'' +
-        ", sum=" + sum +
-        ", peak=" + peak +
-        '}';
-  }
+        if (measurementType != null ? !measurementType.equals(stream.measurementType) : stream.measurementType != null)
+            return false;
+        if (sensorName != null ? !sensorName.equals(stream.sensorName) : stream.sensorName != null) return false;
+        if (symbol != null ? !symbol.equals(stream.symbol) : stream.symbol != null) return false;
+        if (unit != null ? !unit.equals(stream.unit) : stream.unit != null) return false;
 
-  public long getId()
-  {
-    return id;
-  }
+        return true;
+    }
 
-  public void setId(long id)
-  {
-    this.id = id;
-  }
+    @Override
+    public int hashCode() {
+        int result = sensorName != null ? sensorName.hashCode() : 0;
+        result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+        return result;
+    }
 
-  public long getSessionId()
-  {
-    return sessionId;
-  }
+    @Override
+    public String toString() {
+        return "MeasurementStream{" +
+                "measurements=" + measurements +
+                ", sensorName='" + sensorName + '\'' +
+                ", measurementType='" + measurementType + '\'' +
+                ", unit='" + unit + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", sum=" + sum +
+                ", peak=" + peak +
+                '}';
+    }
 
-  public void setSessionId(long sessionId)
-  {
-    this.sessionId = sessionId;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public void setMeasurements(List<Measurement> measurements)
-  {
-    this.measurements = measurements;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setMeasurements(List<Measurement> measurements) {
+        this.measurements = measurements;
+    }
 }

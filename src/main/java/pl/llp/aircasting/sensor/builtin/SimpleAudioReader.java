@@ -49,6 +49,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
     public static final Sensor sensor = new Sensor(
             SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
     );
+    public static final String SHORT_TYPE = "dB";
 
     @Inject SettingsHelper settingsHelper;
     @Inject AudioReader audioReader;
@@ -79,7 +80,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
         Double power = signalPower.calculatePowerDb(buffer);
         if (power != null) {
             double calibrated = calibrationHelper.calibrate(power);
-            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL,
+            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                     VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
             eventBus.post(event);
         }

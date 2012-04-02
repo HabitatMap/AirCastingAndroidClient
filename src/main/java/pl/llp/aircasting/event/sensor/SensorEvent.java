@@ -4,6 +4,7 @@ import pl.llp.aircasting.event.AirCastingEvent;
 
 public class SensorEvent extends AirCastingEvent {
     private String sensorName;
+    private String shortType;
     private String unit;
     private String symbol;
     private String measurementType;
@@ -54,10 +55,11 @@ public class SensorEvent extends AirCastingEvent {
         return veryHigh;
     }
 
-    public SensorEvent(String sensorName, String measurementType, String unit, String symbol,
+    public SensorEvent(String sensorName, String measurementType, String shortType, String unit, String symbol,
                        int veryLow, int low, int mid, int high, int veryHigh, double value) {
         this.sensorName = sensorName;
         this.measurementType = measurementType;
+        this.shortType = shortType;
         this.unit = unit;
         this.symbol = symbol;
         this.veryLow = veryLow;
@@ -66,22 +68,6 @@ public class SensorEvent extends AirCastingEvent {
         this.high = high;
         this.veryHigh = veryHigh;
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "SensorEvent{" +
-                "sensorName='" + sensorName + '\'' +
-                ", unit='" + unit + '\'' +
-                ", symbol='" + symbol + '\'' +
-                ", measurementType='" + measurementType + '\'' +
-                ", veryLow=" + veryLow +
-                ", low=" + low +
-                ", mid=" + mid +
-                ", high=" + high +
-                ", veryHigh=" + veryHigh +
-                ", value=" + value +
-                '}';
     }
 
     @Override
@@ -100,6 +86,7 @@ public class SensorEvent extends AirCastingEvent {
         if (measurementType != null ? !measurementType.equals(event.measurementType) : event.measurementType != null)
             return false;
         if (sensorName != null ? !sensorName.equals(event.sensorName) : event.sensorName != null) return false;
+        if (shortType != null ? !shortType.equals(event.shortType) : event.shortType != null) return false;
         if (symbol != null ? !symbol.equals(event.symbol) : event.symbol != null) return false;
         if (unit != null ? !unit.equals(event.unit) : event.unit != null) return false;
 
@@ -111,6 +98,7 @@ public class SensorEvent extends AirCastingEvent {
         int result;
         long temp;
         result = sensorName != null ? sensorName.hashCode() : 0;
+        result = 31 * result + (shortType != null ? shortType.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
         result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
@@ -122,5 +110,22 @@ public class SensorEvent extends AirCastingEvent {
         temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SensorEvent{" +
+                "sensorName='" + sensorName + '\'' +
+                ", shortType='" + shortType + '\'' +
+                ", unit='" + unit + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", measurementType='" + measurementType + '\'' +
+                ", veryLow=" + veryLow +
+                ", low=" + low +
+                ", mid=" + mid +
+                ", high=" + high +
+                ", veryHigh=" + veryHigh +
+                ", value=" + value +
+                '}';
     }
 }

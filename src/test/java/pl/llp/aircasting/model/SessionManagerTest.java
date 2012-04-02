@@ -85,7 +85,7 @@ public class SessionManagerTest {
     }
 
     private void triggerMeasurement(String name, double value) {
-        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "number", "#", 1, 2, 3, 4, 5, value));
+        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "HB", "number", "#", 1, 2, 3, 4, 5, value));
     }
 
     private void triggerMeasurement(double value) {
@@ -121,7 +121,7 @@ public class SessionManagerTest {
         sessionManager.startSession();
 
         triggerMeasurement();
-        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "number", "#", 1, 2, 3, 4, 5, 10));
+        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10));
 
         MeasurementStream expected = new MeasurementStream("LHC2", "Siggh boson", "number", "#");
         assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));

@@ -6,6 +6,6 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 public class SensorEventFactory implements Provider<SensorEvent> {
     @Override
     public SensorEvent get() {
-        return new SensorEvent("LHC", "Hadrons", "number", "#", 0, 10, 20, 30, 40, 12);
+        return new SensorEvent("LHC", "Hadrons", "H", "number", "#", 0, 10, 20, 30, 40, 12);
     }
 }

@@ -55,9 +55,10 @@ public class SimpleAudioReaderTest {
     }
 
     private SensorEvent expected(double value) {
-        return new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, "decibels", "dB",
-                SimpleAudioReader.VERY_LOW, SimpleAudioReader.LOW, SimpleAudioReader.MID, SimpleAudioReader.HIGH,
-                SimpleAudioReader.VERY_HIGH, value);
+        return new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, SimpleAudioReader.SHORT_TYPE,
+                               SimpleAudioReader.UNIT, SimpleAudioReader.SYMBOL,
+                               SimpleAudioReader.VERY_LOW, SimpleAudioReader.LOW, SimpleAudioReader.MID, SimpleAudioReader.HIGH,
+                               SimpleAudioReader.VERY_HIGH, value);
     }
 
     @Test
