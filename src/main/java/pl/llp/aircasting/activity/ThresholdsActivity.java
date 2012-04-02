@@ -27,7 +27,6 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
-import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
 /**
@@ -36,7 +35,7 @@ import roboguice.inject.InjectView;
  * Date: 11/8/11
  * Time: 2:37 PM
  */
-public class ThresholdsActivity extends RoboActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener {
+public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener {
     @InjectView(R.id.color_scale_too_loud) EditText tooLoudEdit;
     @InjectView(R.id.color_scale_very_loud) EditText veryLoudEdit;
     @InjectView(R.id.color_scale_loud) EditText loudEdit;
