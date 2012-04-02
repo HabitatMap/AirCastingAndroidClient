@@ -88,11 +88,10 @@ public class Sensor {
 
     @Override
     public String toString() {
-        return "Sensor{" +
-                "sensorName='" + sensorName + '\'' +
-                ", measurementType='" + measurementType + '\'' +
-                ", unit='" + unit + '\'' +
-                ", symbol='" + symbol + '\'' +
-                '}';
+        return new StringBuilder()
+                .append(getMeasurementType())
+                .append(" - ")
+                .append(getSensorName())
+                .toString();
     }
 }

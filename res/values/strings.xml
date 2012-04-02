@@ -186,4 +186,6 @@
     <string name="peak_label_template" formatted="false">Peak %s</string>
     <string name="now_label_template" formatted="false">Now %s</string>
     <string name="avg_label_template" formatted="false">Avg %s</string>
+
+    <string name="select_sensor">Select sensor</string>
 </resources>

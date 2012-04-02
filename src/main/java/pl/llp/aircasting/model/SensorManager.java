@@ -8,8 +8,10 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
+import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
@@ -47,8 +49,8 @@ public class SensorManager {
     /**
      * @return All currently known Sensors
      */
-    public Iterable<Sensor> getSensors() {
-        return sensors.values();
+    public List<Sensor> getSensors() {
+        return newArrayList(sensors.values());
     }
 
     /**
