@@ -44,7 +44,7 @@
                      android:layout_alignParentLeft="true"
                      android:layout_centerVertical="true"
                      android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_charts"
+                     android:background="@drawable/left_sensor"
                      android:id="@+id/streams_button"
                 />
 

@@ -115,18 +115,18 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         recordButton.setTag(sensor);
         recordButton.setOnClickListener(this);
         if (sensor.isEnabled()) {
-            recordButton.setBackgroundResource(R.drawable.minus_active);
+            recordButton.setBackgroundResource(R.drawable.rec_active);
         } else {
-            recordButton.setBackgroundResource(R.drawable.minus_regular);
+            recordButton.setBackgroundResource(R.drawable.rec_inactive);
         }
 
         View viewButton = view.findViewById(R.id.view_stream);
         viewButton.setTag(sensor);
         viewButton.setOnClickListener(this);
         if (sensorManager.getVisibleSensor().equals(sensor)) {
-            viewButton.setBackgroundResource(R.drawable.minus_active);
+            viewButton.setBackgroundResource(R.drawable.view_active);
         } else {
-            viewButton.setBackgroundResource(R.drawable.minus_regular);
+            viewButton.setBackgroundResource(R.drawable.view_inactive);
         }
     }
 

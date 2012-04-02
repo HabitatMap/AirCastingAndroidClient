@@ -27,12 +27,14 @@
 
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/minus"
+                 android:layout_margin="2dp"
                  android:layout_alignParentTop="true"
                  android:layout_alignParentLeft="true"
                  android:id="@+id/record_stream"
             />
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/minus"
+                 android:layout_margin="2dp"
                  android:layout_alignParentTop="true"
                  android:layout_alignParentRight="true"
                  android:id="@+id/view_stream"

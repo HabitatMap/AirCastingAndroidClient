@@ -112,7 +112,7 @@
                      android:layout_alignParentRight="true"
                      android:layout_centerVertical="true"
                      android:layout_marginRight="5dp"
-                     android:background="@drawable/right_heat_map"
+                     android:background="@drawable/right_sensor"
                      android:id="@+id/streams_button"
                 />
 
