@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
 import pl.llp.aircasting.event.sensor.SensorEvent;
@@ -48,11 +49,11 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     };
     public static final String SENSOR = "sensor";
 
-    GaugeHelper gaugeHelper;
-    EventBus eventBus;
-    TopBarHelper topBarHelper;
     SensorManager sensorManager;
+    TopBarHelper topBarHelper;
+    GaugeHelper gaugeHelper;
     ButtonsActivity context;
+    EventBus eventBus;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
@@ -128,6 +129,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         } else {
             viewButton.setBackgroundResource(R.drawable.view_inactive);
         }
+        
+        View topBar = view.findViewById(R.id.top_bar);
+        topBar.setTag(sensor);
+        topBar.setOnClickListener(this);
     }
 
     private void update() {
@@ -176,6 +181,9 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 break;
             case R.id.record_stream:
                 sensorManager.toggleSensor(sensor);
+                break;
+            case R.id.top_bar:
+                Intents.thresholdsEditor(context, sensor);
                 break;
         }
 

@@ -33,6 +33,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.SensorManager;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
@@ -50,9 +51,10 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
     @Inject Application context;
 
-    @Inject MainMenu mainMenu;
-    @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences sharedPreferences;
+    @Inject SettingsHelper settingsHelper;
+    @Inject SensorManager sensorManager;
+    @Inject MainMenu mainMenu;
 
     @InjectResource(R.string.profile_template) String profileTemplate;
 
@@ -82,7 +84,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference.getKey().equals(COLOR_SCALE_KEY)) {
-            startActivity(new Intent(this, ThresholdsActivity.class));
+            Intents.thresholdsEditor(this, sensorManager.getVisibleSensor());
             return true;
         } else if (preference.getKey().equals(ACCOUNT_KEY)) {
             signInOrOut();
