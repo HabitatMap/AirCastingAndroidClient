@@ -111,6 +111,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         measurementPresenter.registerListener(this);
 
         initializeRouteOverlay();
+
+        traceOverlay.startDrawing();
     }
 
     private void initializeRouteOverlay() {
@@ -148,6 +150,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
         measurementPresenter.unregisterListener(this);
         routeRefreshDetector.stop();
+        traceOverlay.stopDrawing(mapView);
     }
 
     private void initializeMap() {

@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
 import pl.llp.aircasting.helper.LocationConversionHelper;
@@ -73,5 +74,9 @@ public class TraceOverlay extends BufferingOverlay<Measurement> {
             centerAt(bullet, point);
             bullet.draw(canvas);
         }
+    }
+
+    public void stopDrawing(MapView view) {
+        super.stopDrawing(view);
     }
 }

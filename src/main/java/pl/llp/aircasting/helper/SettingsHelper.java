@@ -68,7 +68,7 @@ public class SettingsHelper {
     }
 
     private int getInt(String key, int defaultValue) {
-        String value = preferences.getString(key, "" + defaultValue);
+        String value = preferences.getString(key, Integer.toString(defaultValue));
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -166,11 +166,11 @@ public class SettingsHelper {
 
     private boolean validateRange(String key, int value, int min, int max) {
         if (value < min) {
-            writeString(key, "" + min);
+            writeString(key, Integer.toString(min));
             return false;
         }
         if (value > max) {
-            writeString(key, "" + max);
+            writeString(key, Integer.toString(max));
             return false;
         }
 
@@ -245,10 +245,5 @@ public class SettingsHelper {
 
     public String getSensorAddress() {
         return preferences.getString(SENSOR_ADDRESS, null);
-    }
-
-    public Boolean hasThresholds(Sensor sensor) {
-        String key = thresholdKey(sensor, MeasurementLevel.MID);
-        return preferences.contains(key);
     }
 }

@@ -229,6 +229,7 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
     public void onProgressChanged(SeekBar bar, int i, boolean b) {
         int value = unProject(bar.getProgress(), bar.getMax());
         MeasurementLevel measurementLevel = toSoundLevel(bar.getId());
+
         switch (measurementLevel) {
             case LOW:
                 averageEdit.setText(valueOf(value));

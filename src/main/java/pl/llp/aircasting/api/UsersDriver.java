@@ -41,7 +41,7 @@ public class UsersDriver {
                 .with("user[email]", email)
                 .with("user[username]", username)
                 .with("user[password]", password)
-                .with("user[send_emails]", "" + sendEmails)
+                .with("user[send_emails]", Boolean.valueOf(sendEmails).toString())
                 .into(UserInfo.class);
     }
 

@@ -21,7 +21,7 @@ public class LocalDateAdapter implements JsonDeserializer<Date> {
     private static final String TAG = LocalDateAdapter.class.getSimpleName();
 
     // 2012-01-29T10:22:33
-    private  static final SimpleDateFormat localFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private final SimpleDateFormat localFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     @Override
     public Date deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
