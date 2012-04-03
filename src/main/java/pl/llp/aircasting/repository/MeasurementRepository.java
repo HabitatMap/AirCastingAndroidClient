@@ -5,24 +5,35 @@ import pl.llp.aircasting.model.Session;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import org.intellij.lang.annotations.Language;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.model.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.getDate;
 import static pl.llp.aircasting.repository.DBHelper.getDouble;
 import static pl.llp.aircasting.repository.DBHelper.getInt;
 
-/**
- * Created by ags on 30/03/12 at 12:18
- */
 class MeasurementRepository
 {
   private SQLiteDatabase db;
   private ProgressListener progress = new NullProgressListener();
-  private Map<Integer, List<Measurement>> result;
+
+  @Language("SQL")
+  private static final String INSERT_MEASUREMENTS = "" +
+      "INSERT INTO " + MEASUREMENT_TABLE_NAME + "(" +
+      MEASUREMENT_STREAM_ID + ", " +
+      MEASUREMENT_SESSION_ID + ", " +
+      MEASUREMENT_TIME + ", " +
+      MEASUREMENT_LATITUDE + ", " +
+      MEASUREMENT_LONGITUDE + ", " +
+      MEASUREMENT_VALUE + ") " +
+      " VALUES(?, ?, ?, ?, ?, ?)";
+
 
   public MeasurementRepository(SQLiteDatabase db, ProgressListener progressListener)
   {
@@ -35,39 +46,64 @@ class MeasurementRepository
 
   Map<Integer, List<Measurement>> load(Session session)
   {
-    Cursor c = db.rawQuery("" +
+    Cursor measurements = db.rawQuery("" +
                     "SELECT * FROM " + MEASUREMENT_TABLE_NAME + " " +
                     "WHERE " + MEASUREMENT_SESSION_ID  +" = " + session.getId(), null);
 
-    progress.onSizeCalculated(c.getCount());
+    progress.onSizeCalculated(measurements.getCount());
 
-    c.moveToFirst();
-    while(!c.isAfterLast())
+    measurements.moveToFirst();
+    Map<Integer, List<Measurement>> results = newHashMap();
+    while(!measurements.isAfterLast())
     {
       Measurement measurement = new Measurement();
-      measurement.setLatitude(getDouble(c, MEASUREMENT_LATITUDE));
-      measurement.setLongitude(getDouble(c, MEASUREMENT_LONGITUDE));
-      measurement.setValue(getDouble(c, MEASUREMENT_VALUE));
-      measurement.setTime(getDate(c, MEASUREMENT_TIME));
+      measurement.setLatitude(getDouble(measurements, MEASUREMENT_LATITUDE));
+      measurement.setLongitude(getDouble(measurements, MEASUREMENT_LONGITUDE));
+      measurement.setValue(getDouble(measurements, MEASUREMENT_VALUE));
+      measurement.setTime(getDate(measurements, MEASUREMENT_TIME));
 
-      values(getInt(c, MEASUREMENT_STREAM_ID)).add(measurement);
+      int id = getInt(measurements, MEASUREMENT_STREAM_ID);
+      stream(id, results).add(measurement);
 
-      if(c.getPosition() % 100 == 0)
+      int position = measurements.getPosition();
+      if(position % 100 == 0)
       {
-        progress.onProgress(c.getPosition());
+        progress.onProgress(position);
       }
-      c.moveToNext();
+      measurements.moveToNext();
     }
 
-    return result;
+    return results;
   }
 
-  private List<Measurement> values(int anInt)
+  private List<Measurement> stream(int anInt, Map<Integer, List<Measurement>> results)
   {
-    if(!result.containsKey(anInt))
+    if(!results.containsKey(anInt))
     {
-      result.put(anInt, new ArrayList<Measurement>());
+      results.put(anInt, new ArrayList<Measurement>());
     }
-    return result.get(anInt);
+    return results.get(anInt);
+  }
+
+  public void save(List<Measurement> measurementsToSave, long sessionId, long streamId)
+  {
+    SQLiteStatement st = db.compileStatement(INSERT_MEASUREMENTS);
+
+    for (Measurement measurement : measurementsToSave)
+    {
+      int pos = 1;
+
+      st.bindLong(pos++, streamId);
+      st.bindLong(pos++, sessionId);
+      st.bindLong(pos++, measurement.getTime().getTime());
+      st.bindDouble(pos++, measurement.getLatitude());
+      st.bindDouble(pos++, measurement.getLongitude());
+      st.bindDouble(pos++, measurement.getValue());
+
+      st.executeInsert();
+      st.clearBindings();
+    }
+
+    st.close();
   }
 }

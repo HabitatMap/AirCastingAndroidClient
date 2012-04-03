@@ -19,35 +19,29 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.view.overlay.RouteOverlay;
+
 import android.content.Intent;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/20/11
- * Time: 11:34 AM
- */
 @RunWith(InjectedTestRunner.class)
 public class AirCastingActivityEditSessionTest {
-    private static class TestAirCastingActivity extends AirCastingActivity {
-        @Override
-        protected void refreshNotes() {
-        }
-    }
 
-    @Inject TestAirCastingActivity activity;
+    @Inject AirCastingMapActivity activity;
     private Session session;
     private Intent data;
 
@@ -57,6 +51,7 @@ public class AirCastingActivityEditSessionTest {
         session = mock(Session.class);
         data = mock(Intent.class);
         when(activity.sessionManager.getSession()).thenReturn(session);
+        activity.routeOverlay = mock(RouteOverlay.class);
     }
 
     @Test

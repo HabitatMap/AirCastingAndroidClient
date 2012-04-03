@@ -44,14 +44,17 @@ public class SessionRepository
   @Inject
   AirCastingDB dbAccessor;
 
-  NoteRepository notes;
   SQLiteDatabase db;
+
+  NoteRepository notes;
+  StreamRepository streams;
 
   @Inject
   public void init()
   {
     db = dbAccessor.getWritableDatabase();
     notes = new NoteRepository(db);
+    streams = new StreamRepository(db);
   }
 
   public void close()
@@ -59,9 +62,10 @@ public class SessionRepository
     db.close();
   }
 
-  public void save(Session session)
+  public Session save(Session session)
   {
-    save(session, null);
+    save(session, new NullProgressListener());
+    return session;
   }
 
   public void deleteNote(Session session, Note note)
@@ -80,44 +84,23 @@ public class SessionRepository
     values.put(SESSION_START, session.getStart().getTime());
     values.put(SESSION_END, session.getEnd().getTime());
     values.put(SESSION_UUID, session.getUUID().toString());
+
     values.put(SESSION_CALIBRATION, session.getCalibration());
-    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
     values.put(SESSION_CONTRIBUTE, session.getContribute());
-    values.put(SESSION_DATA_TYPE, session.getDataType());
-    values.put(SESSION_INSTRUMENT, session.getInstrument());
-    values.put(SESSION_OS_VERSION, session.getOSVersion());
     values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
+    values.put(SESSION_INSTRUMENT, session.getInstrument());
+    values.put(SESSION_DATA_TYPE, session.getDataType());
+    values.put(SESSION_OS_VERSION, session.getOSVersion());
+    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
     values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
     values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
 
     long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
     session.setId(sessionKey);
 
-    int count = 0;
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
 
-    for (MeasurementStream stream : streams)
-    {
-      List<Measurement> measurements = stream.getMeasurements();
-      for (Measurement measurement : measurements)
-      {
-        values.clear();
-        values.put(MEASUREMENT_SESSION_ID, sessionKey);
-        values.put(MEASUREMENT_VALUE, measurement.getValue());
-        values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
-        values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
-        values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
-        values.put(MEASUREMENT_STREAM_ID, stream.getId());
-
-        db.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
-
-        count += 1;
-        if (count % 100 == 0 && progressListener != null)
-        {
-          progressListener.onProgress(count);
-        }
-      }
-    }
+    streams.saveAll(streamsToSave, sessionKey);
 
     notes.save(session.getNotes(), sessionKey);
 
@@ -182,9 +165,17 @@ public class SessionRepository
     Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
     try
     {
-      cursor.moveToFirst();
-      return load(cursor);
-    } finally
+      if(cursor.getCount() > 0)
+      {
+        cursor.moveToFirst();
+        return load(cursor);
+      }
+      else
+      {
+        return null;
+      }
+    }
+    finally
     {
       cursor.close();
     }
@@ -293,7 +284,7 @@ public class SessionRepository
 
   private Session fill(Session session, ProgressListener progressListener)
   {
-    List<MeasurementStream> streams = new StreamRepository(db).load(session);
+    List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
     MeasurementRepository r = new MeasurementRepository(db, progressListener);
     Map<Integer, List<Measurement>> load = r.load(session);
 

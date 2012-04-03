@@ -23,32 +23,39 @@ public class MeasurementToStreamMigrator
           STREAM_MEASUREMENT_UNIT + ", " +
           STREAM_MEASUREMENT_SYMBOL + ", " +
           STREAM_AVG + ", " +
-          STREAM_PEAK +
-          ") VALUES(?, ?, ?, ?, ?, ?, ?)";
+          STREAM_PEAK + ", " +
+          STREAM_THRESHOLD_VERY_LOW + ", " +
+          STREAM_THRESHOLD_LOW + ", " +
+          STREAM_THRESHOLD_MEDIUM + ", " +
+          STREAM_THRESHOLD_HIGH + ", " +
+          STREAM_THRESHOLD_VERY_HIGH +
+          ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   void migrate(SQLiteDatabase db)
     {
-      SQLiteStatement st = db
+      SQLiteStatement insertStreamStmt = db
           .compileStatement("UPDATE " + MEASUREMENT_TABLE_NAME + " SET " + MEASUREMENT_STREAM_ID + " = ? " +
                                 "WHERE " + STREAM_SESSION_ID + " = ?");
 
-      Cursor c  = db.rawQuery("SELECT " + SESSION_ID + ", " + SESSION_AVG + ", " + SESSION_PEAK
+      Cursor oldSessions  = db.rawQuery("SELECT " + SESSION_ID + ", " + SESSION_AVG + ", " + SESSION_PEAK
                                       + SESSION_START + ", " + SESSION_END, null);
 
       db.beginTransaction();
 
-      c.moveToFirst();
-      while(!c.isAfterLast())
+      oldSessions.moveToFirst();
+      while(!oldSessions.isAfterLast())
       {
-        int sessionId = c.getInt(0);
-        MeasurementStream s = readFrom(c);
-        long streamId = save(db, s);
-        st.bindLong(1, streamId);
-        st.bindLong(2, sessionId);
-        st.execute();
+        int sessionId = oldSessions.getInt(0);
+        MeasurementStream s = readFrom(oldSessions);
 
-        c.moveToNext();
+        long streamId = save(db, s);
+        insertStreamStmt.bindLong(1, streamId);
+        insertStreamStmt.bindLong(2, sessionId);
+        insertStreamStmt.execute();
+
+        oldSessions.moveToNext();
       }
+      oldSessions.close();
 
       db.setTransactionSuccessful();
       db.endTransaction();
@@ -56,15 +63,13 @@ public class MeasurementToStreamMigrator
 
   private MeasurementStream readFrom(Cursor c)
   {
-    MeasurementStream s = new MeasurementStream(SimpleAudioReader.SENSOR_NAME,
-                                                                SimpleAudioReader.MEASUREMENT_TYPE,
-                                                                SimpleAudioReader.UNIT,
-                                                                SimpleAudioReader.SYMBOL);
-    s.setSessionId(c.getInt(0));
-    s.setAvg(c.getDouble(1));
-    s.setPeak(c.getDouble(2));
+    MeasurementStream existingAudioStream = new MeasurementStream(SimpleAudioReader.getSensor());
 
-    return s;
+    existingAudioStream.setSessionId(c.getInt(0));
+    existingAudioStream.setAvg(c.getDouble(1));
+    existingAudioStream.setPeak(c.getDouble(2));
+
+    return existingAudioStream;
   }
 
   public long save(SQLiteDatabase db, MeasurementStream stream)

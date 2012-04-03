@@ -23,38 +23,33 @@ import com.google.gson.annotations.Expose;
 
 import java.util.Date;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/28/11
- * Time: 1:04 PM
- */
-public class Measurement {
-    @Expose private double latitude;
-    @Expose private double longitude;
-    @Expose private double value;
-    @Expose private Date time;
+public class Measurement
+{
+  @Expose private double latitude;
+  @Expose private double longitude;
+  @Expose private double value;
+  @Expose private Date time;
 
-    public Measurement(double value) {
-        this.value = value;
-    }
+  public Measurement(double value) {
+    this.value = value;
+  }
 
-    public Measurement(double latitude, double longitude, double value) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.value = value;
-        time = new Date();
-    }
+  public Measurement(double latitude, double longitude, double value) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.value = value;
+    time = new Date();
+  }
 
-    public Measurement(double latitude, double longitude, double value, Date time) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.value = value;
-        this.time = time;
-    }
+  public Measurement(double latitude, double longitude, double value, Date time) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.value = value;
+    this.time = time;
+  }
 
-    public Measurement() {
-    }
+  public Measurement() {
+  }
 
     public double getValue() {
         return value;

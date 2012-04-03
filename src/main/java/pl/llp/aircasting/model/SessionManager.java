@@ -46,9 +46,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.primitives.Ints.min;
-import static com.google.inject.internal.Lists.newArrayList;
 import static pl.llp.aircasting.util.Lists.getLast;
 
 @Singleton
@@ -233,7 +233,7 @@ public class SessionManager
             String measurementType = event.getMeasurementType();
             String unit = event.getUnit();
             String symbol = event.getSymbol();
-            MeasurementStream stream = new MeasurementStream(sensorName, measurementType, unit, symbol);
+            MeasurementStream stream = new MeasurementStream(event);
             measurementStreams.put(sensorName, stream);
         }
 

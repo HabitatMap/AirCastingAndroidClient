@@ -30,13 +30,18 @@ public class SchemaMigrator
   public static final String CREATE_STREAMS_TABLE =
       "CREATE TABLE streams (\n  " +
           STREAM_ID + " INTEGER PRIMARY KEY,\n  " +
-          "stream_session_id INTEGER,\n  " +
-          "stream_avg REAL,\n  " +
-          "stream_peak REAL,\n  " +
-          "sensor_name  TEXT, \n  " +
-          "measurement_type TEXT, \n  " +
-          "measurement_unit TEXT, \n  " +
-          "measurement_symbol TEXT \n " +
+          STREAM_SESSION_ID + " INTEGER, \n" +
+          STREAM_AVG + " REAL,\n  " +
+          STREAM_PEAK + " REAL,\n  " +
+          STREAM_SENSOR_NAME + " TEXT, \n  " +
+          STREAM_MEASUREMENT_UNIT + " TEXT, \n  " +
+          STREAM_MEASUREMENT_TYPE + " TEXT, \n  " +
+          STREAM_MEASUREMENT_SYMBOL + " TEXT,\n " +
+          STREAM_THRESHOLD_VERY_LOW + " INTEGER, \n " +
+          STREAM_THRESHOLD_LOW + " INTEGER, \n " +
+          STREAM_THRESHOLD_MEDIUM + " INTEGER, \n " +
+          STREAM_THRESHOLD_HIGH + " INTEGER, \n " +
+          STREAM_THRESHOLD_VERY_HIGH + " INTEGER " +
           ")";
 
   MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
@@ -62,10 +67,10 @@ public class SchemaMigrator
                    ", " + SESSION_LOCATION + " text" +
                    ", " + SESSION_CALIBRATION + " integer" +
                    ", " + SESSION_CONTRIBUTE + " boolean" +
-                   ", " + SESSION_OS_VERSION + " text" +
                    ", " + SESSION_PHONE_MODEL + " text" +
-                   ", " + SESSION_DATA_TYPE + " text" +
                    ", " + SESSION_INSTRUMENT + " text" +
+                   ", " + SESSION_DATA_TYPE + " text" +
+                   ", " + SESSION_OS_VERSION + " text" +
                    ", " + SESSION_OFFSET_60_DB + " integer" +
                    ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
                    ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
@@ -82,6 +87,7 @@ public class SchemaMigrator
                    ", " + MEASUREMENT_VALUE + " real" +
                    ", " + MEASUREMENT_TIME + " integer" +
                    ", " + MEASUREMENT_STREAM_ID + " integer" +
+                   ", " + MEASUREMENT_SESSION_ID + " integer" +
                    ")"
               );
   }
@@ -111,21 +117,18 @@ public class SchemaMigrator
     {
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
+
     if (oldVersion < 20 && newVersion >= 20)
     {
       addColumn(db, NOTE_TABLE_NAME, NOTE_NUMBER, "integer");
     }
+
     if (oldVersion < 21 && newVersion >= 21)
     {
       addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, "boolean");
     }
 
     if (oldVersion < 22 && newVersion >= 22)
-    {
-      // migrate
-    }
-
-    if (oldVersion < 23 && newVersion >= 23)
     {
       addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID, "integer");
 
@@ -137,7 +140,7 @@ public class SchemaMigrator
     }
   }
 
-  private void dropColumn(SQLiteDatabase db, String tableName, String column)
+  void dropColumn(SQLiteDatabase db, String tableName, String column)
   {
     StringBuilder q = new StringBuilder(50);
 

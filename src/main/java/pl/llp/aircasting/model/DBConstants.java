@@ -52,7 +52,6 @@ public interface DBConstants
 
   String MEASUREMENT_TABLE_NAME = "Measurements";
   String MEASUREMENT_ID = BaseColumns._ID;
-  /** @deprecated measurements belong to streams now */
   String MEASUREMENT_SESSION_ID = "SessionID";
   String MEASUREMENT_LATITUDE = "Latitude";
   String MEASUREMENT_LONGITUDE = "Longitude";
@@ -60,15 +59,20 @@ public interface DBConstants
   String MEASUREMENT_TIME = "Time";
   String MEASUREMENT_STREAM_ID = "stream_id";
 
-  String STREAM_TABLE_NAME = "Streams";
+  String STREAM_TABLE_NAME = "streams";
   String STREAM_ID = BaseColumns._ID;
-  String STREAM_AVG = "Average";
-  String STREAM_PEAK = "Peak";
+  String STREAM_AVG = "average";
+  String STREAM_PEAK = "peak";
   String STREAM_SESSION_ID = "stream_session_id";
   String STREAM_SENSOR_NAME = "sensor_name";
   String STREAM_MEASUREMENT_TYPE = "measurement_type";
   String STREAM_MEASUREMENT_UNIT = "measurement_unit";
   String STREAM_MEASUREMENT_SYMBOL = "measurement_symbol";
+  String STREAM_THRESHOLD_VERY_LOW = "threshold_very_low";
+  String STREAM_THRESHOLD_LOW = "threshold_low";
+  String STREAM_THRESHOLD_MEDIUM = "threshold_mid";
+  String STREAM_THRESHOLD_HIGH = "threshold_high";
+  String STREAM_THRESHOLD_VERY_HIGH = "threshold_very_high";
 
   String NOTE_TABLE_NAME = "Notes";
   String NOTE_SESSION_ID = "SessionID";
