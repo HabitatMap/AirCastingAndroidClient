@@ -16,44 +16,46 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
 public class StreamsActivity extends ButtonsActivity {
-  @Inject Context context;
-  @Inject StreamAdapterFactory adapterFactory;
+    @Inject Context context;
+    @Inject StreamAdapterFactory adapterFactory;
 
-  @InjectView(android.R.id.list) ListView listView;
+    @InjectView(android.R.id.list) ListView listView;
 
-  StreamAdapter adapter;
+    StreamAdapter adapter;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.streams);
+        setContentView(R.layout.streams);
 
-    adapter = adapterFactory.getAdapter(this);
-    listView.setAdapter(adapter);
+        adapter = adapterFactory.getAdapter(this);
+        listView.setAdapter(adapter);
 
-    zoomIn.setVisibility(View.INVISIBLE);
-    zoomOut.setVisibility(View.INVISIBLE);
-  }
+        zoomIn.setVisibility(View.INVISIBLE);
+        zoomOut.setVisibility(View.INVISIBLE);
+    }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-    adapter.start();
-    startSensors(context);
-  }
+        adapter.start();
+        adapter.notifyDataSetChanged();
 
-  @Override
-  protected void onPause() {
-    super.onPause();
+        startSensors(context);
+    }
 
-    adapter.stop();
-    stopSensors(context);
-  }
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-  @Subscribe
-  public void onEvent(MotionEvent event) {
-    listView.dispatchTouchEvent(event);
-  }
+        adapter.stop();
+        stopSensors(context);
+    }
+
+    @Subscribe
+    public void onEvent(MotionEvent event) {
+        listView.dispatchTouchEvent(event);
+    }
 }

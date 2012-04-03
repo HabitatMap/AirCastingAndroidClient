@@ -32,6 +32,7 @@ import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SensorManager;
@@ -145,22 +146,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         updateGauges();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Intents.EDIT_SESSION:
-                if (resultCode == R.id.save_button) {
-                    Session session = Intents.editSessionResult(data);
-
-                    sessionManager.updateSession(session);
-                    Intents.triggerSync(context);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
     @Subscribe
     public void onEvent(SessionChangeEvent event) {
         updateGauges();
@@ -179,6 +164,27 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
                 Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Subscribe
+    public void onEvent(ViewStreamEvent event) {
+        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Intents.EDIT_SESSION:
+                if (resultCode == R.id.save_button) {
+                    Session session = Intents.editSessionResult(data);
+
+                    sessionManager.updateSession(session);
+                    Intents.triggerSync(context);
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
