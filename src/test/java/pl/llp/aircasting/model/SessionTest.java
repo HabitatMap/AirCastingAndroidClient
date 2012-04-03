@@ -19,12 +19,13 @@
 */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
 
 import java.util.Date;
 
@@ -33,12 +34,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 2:02 PM
- */
 @RunWith(InjectedTestRunner.class)
 public class SessionTest {
     @Inject Gson gson;
@@ -85,19 +80,9 @@ public class SessionTest {
     }
 
     @Test
-    public void shouldProvideStartDate() {
-        assertThat(session.getStart(), equalTo(measurement.getTime()));
-    }
-
-    @Test
     public void shouldAllowSettingStart() {
         emptySession.setStart(date);
         assertThat(emptySession.getStart(), equalTo(date));
-    }
-
-    @Test
-    public void shouldProvideEndDate() {
-        assertThat(session.getEnd(), equalTo(otherMeasurement.getTime()));
     }
 
     @Test

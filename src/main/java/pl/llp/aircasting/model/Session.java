@@ -31,37 +31,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 public class Session implements Serializable
 {
-    @Expose private UUID uuid = UUID.randomUUID();
+  @Expose private UUID uuid = UUID.randomUUID();
 
-    @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
-    @Expose @SerializedName("streams") transient Map<String, MeasurementStream> streams = newHashMap();
-    @Expose private List<Note> notes = newArrayList();
+  @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
+  @Expose @SerializedName("streams") transient Map<String, MeasurementStream> streams = newHashMap();
+  @Expose private List<Note> notes = newArrayList();
 
-    @Expose private String title;
-    @Expose @SerializedName("tag_list") private String tags;
-    @Expose private String description;
-    @Expose private int calibration;
-    @Expose private boolean contribute;
-    @Expose @SerializedName("os_version") private String osVersion;
-    @Expose @SerializedName("data_type") private String dataType;
-    @Expose private String instrument;
-    @Expose @SerializedName("phone_model") private String phoneModel;
-    @Expose @SerializedName("offset_60_db") private int offset60DB;
-    @Expose private String location;
-    @Expose @SerializedName("deleted") private boolean markedForRemoval;
+  @Expose private String title;
+  @Expose @SerializedName("tag_list") private String tags;
+  @Expose private String description;
+  @Expose private int calibration;
+  @Expose private boolean contribute;
+  @Expose @SerializedName("os_version") private String osVersion;
+  @Expose @SerializedName("data_type") private String dataType;
+  @Expose private String instrument;
+  @Expose @SerializedName("phone_model") private String phoneModel;
+  @Expose @SerializedName("offset_60_db") private int offset60DB;
+  @Expose private String location;
+  @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-    private Double sum;
-    private Double peak;
-    private Date end;
-    private Date start;
-    private Long id = null;
-    private boolean submittedForRemoval = false;
+  private Double sum;
+  private Double peak;
+  private Date end;
+  private Date start;
+  private Long id = null;
+  private boolean submittedForRemoval = false;
 
   public void add(MeasurementStream stream)
   {
@@ -155,18 +154,14 @@ public class Session implements Serializable
         this.peak = peak;
     }
 
-  public Date getEnd() {
-        if (end == null) {
-            end = getLast(measurements).getTime();
-      }
-        return end;
-    }
-
-    public Date getStart() {
-        if (start == null) {
-            start = measurements.get(0).getTime();
+  public Date getEnd()
+  {
+    return end;
   }
-        return start;
+
+    public Date getStart()
+    {
+      return start;
     }
 
     public void setEnd(Date end) {
