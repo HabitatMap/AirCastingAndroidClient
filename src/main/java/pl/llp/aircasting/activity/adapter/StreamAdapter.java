@@ -129,7 +129,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         } else {
             viewButton.setBackgroundResource(R.drawable.view_inactive);
         }
-        
+
         View topBar = view.findViewById(R.id.top_bar);
         topBar.setTag(sensor);
         topBar.setOnClickListener(this);

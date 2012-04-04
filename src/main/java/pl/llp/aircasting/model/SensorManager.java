@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
@@ -17,6 +18,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class SensorManager {
     @Inject EventBus eventBus;
+    @Inject SessionManager sessionManager;
 
     @Inject
     public void init() {
@@ -28,7 +30,7 @@ public class SensorManager {
 
     @Subscribe
     public void onEvent(SensorEvent event) {
-        if (!sensors.containsKey(event.getSensorName())) {
+        if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName())) {
             Sensor sensor = new Sensor(event);
             sensors.put(sensor.getSensorName(), sensor);
         }
@@ -67,5 +69,18 @@ public class SensorManager {
     public void toggleSensor(Sensor sensor) {
         Sensor actualSensor = sensors.get(sensor.getSensorName());
         actualSensor.toggle();
+    }
+
+    @Subscribe
+    public void onEvent(SessionChangeEvent event) {
+        sensors = newHashMap();
+
+        for (MeasurementStream stream : sessionManager.getMeasurementStreams()) {
+            Sensor sensor = new Sensor(stream);
+            String name = sensor.getSensorName();
+            sensors.put(name, sensor);
+
+            visibleSensor = sensor;
+        }
     }
 }

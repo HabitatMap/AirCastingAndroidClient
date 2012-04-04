@@ -22,6 +22,12 @@ public class Sensor implements Serializable {
              event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
     }
 
+    public Sensor(MeasurementStream stream) {
+        this(stream.getSensorName(), stream.getMeasurementType(), stream.getUnit(), stream.getSymbol(),
+             stream.getThresholdVeryLow(), stream.getThresholdLow(), stream.getThresholdMedium(),
+             stream.getThresholdHigh(), stream.getThresholdVeryHigh());
+    }
+
     public Sensor(String name, String type, String unit, String symbol, int veryLow, int low, int mid, int high, int veryHigh) {
         this.sensorName = name;
         this.measurementType = type;
