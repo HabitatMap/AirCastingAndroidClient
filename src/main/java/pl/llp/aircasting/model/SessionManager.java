@@ -76,8 +76,6 @@ public class SessionManager
     private boolean paused;
     private int noteNumber = 0;
 
-    Map<String, MeasurementStream> measurementStreams = newHashMap();
-
     @Inject
     public void init() {
         telephonyManager.listen(new PhoneStateListener() {
@@ -201,12 +199,13 @@ public class SessionManager
 
     private MeasurementStream prepareStream(SensorEvent event) {
         String sensorName = event.getSensorName();
-        if (!measurementStreams.containsKey(sensorName)) {
+
+        if (!session.hasStream(sensorName)) {
             MeasurementStream stream = new MeasurementStream(event);
-            measurementStreams.put(sensorName, stream);
+            session.add(stream);
         }
 
-        return measurementStreams.get(sensorName);
+        return session.getStream(sensorName);
     }
 
     public Note getNote(int i) {
@@ -233,11 +232,11 @@ public class SessionManager
     }
 
     public Collection<MeasurementStream> getMeasurementStreams() {
-        return measurementStreams.values();
+        return session.getMeasurementStreams();
     }
 
     public MeasurementStream getMeasurementStream(String sensorName) {
-        return measurementStreams.get(sensorName);
+        return session.getStream(sensorName);
     }
 
     public void discardSession() {
@@ -299,7 +298,6 @@ public class SessionManager
         sessionStarted = false;
         noteNumber = 0;
         setSession(new Session());
-        measurementStreams = newHashMap();
         notificationHelper.hideRecordingNotification();
     }
 
@@ -312,16 +310,20 @@ public class SessionManager
     }
 
     public double getAvg(Sensor sensor) {
-        if (measurementStreams.containsKey(sensor.getSensorName())) {
-            return measurementStreams.get(sensor.getSensorName()).getAvg();
+        String sensorName = sensor.getSensorName();
+
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getAvg();
         } else {
             return 0;
         }
     }
 
     public double getPeak(Sensor sensor) {
-        if (measurementStreams.containsKey(sensor.getSensorName())) {
-            return measurementStreams.get(sensor.getSensorName()).getPeak();
+        String sensorName = sensor.getSensorName();
+        
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getPeak();
         } else {
             return 0;
         }

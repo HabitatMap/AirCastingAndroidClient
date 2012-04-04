@@ -19,20 +19,18 @@
 */
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.InjectedTestRunner;
-
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.llp.aircasting.InjectedTestRunner;
 
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
 @RunWith(InjectedTestRunner.class)
 public class SessionTest {
@@ -41,42 +39,11 @@ public class SessionTest {
     Session session = new Session();
     Date date = new Date();
     Session emptySession = new Session();
-    Measurement measurement = new Measurement(0, 0, 0);
-    Measurement otherMeasurement = new Measurement(0, 0, 1);
     Note note = new Note();
 
     @Before
     public void setup() {
-        session.add(measurement);
-        session.add(otherMeasurement);
         session.add(note);
-    }
-
-    @Test
-    public void shouldStoreSoundMeasurements() {
-        assertThat(session.getMeasurements(), hasItem(equalTo(measurement)));
-    }
-
-    @Test
-    public void shouldProvideAvg() {
-        assertThat(session.getAvg(), equalTo(0.5));
-    }
-
-    @Test
-    public void shouldAllowSettingAvg() {
-        emptySession.setAvg(1);
-        assertThat(emptySession.getAvg(), equalTo(1.0));
-    }
-
-    @Test
-    public void shouldProvidePeak() {
-        assertThat(session.getPeak(), equalTo(1.0));
-    }
-
-    @Test
-    public void shouldAllowSettingPeak() {
-        emptySession.setPeak(1);
-        assertThat(emptySession.getPeak(), equalTo(1.0));
     }
 
     @Test
@@ -89,28 +56,6 @@ public class SessionTest {
     public void shouldAllowSettingEnd() {
         emptySession.setEnd(date);
         assertThat(emptySession.getEnd(), equalTo(date));
-    }
-
-    @Test
-    public void shouldUpdateAverage() {
-        emptySession.getAvg();
-        emptySession.add(otherMeasurement);
-        assertThat(emptySession.getAvg(), equalTo(1.0));
-    }
-
-    @Test
-    public void shouldUpdatePeak() {
-        emptySession.getPeak();
-        emptySession.add(otherMeasurement);
-        assertThat(emptySession.getPeak(), equalTo(1.0));
-    }
-
-    @Test
-    public void shouldExposeMeasurementsToGSON() {
-        Session result = gson.fromJson(gson.toJson(session), Session.class);
-
-        assertThat(result.getMeasurements(), hasItem(measurement));
-        assertThat(result.getMeasurements(), hasItem(measurement));
     }
 
     @Test

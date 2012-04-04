@@ -119,7 +119,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            for (Measurement measurement : sessionManager.getSoundMeasurements()) {
+            for (Measurement measurement : sessionManager.getSession().getMeasurements()) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
             }

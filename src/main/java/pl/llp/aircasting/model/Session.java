@@ -19,17 +19,11 @@
 */
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.helper.SoundHelper;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
@@ -55,8 +49,6 @@ public class Session implements Serializable
   @Expose private String location;
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-  private Double sum;
-  private Double peak;
   private Date end;
   private Date start;
   private Long id = null;
@@ -66,20 +58,6 @@ public class Session implements Serializable
   {
     streams.put(stream.getSensorName(), stream);
   }
-
-  public void add(Measurement measurement) {
-        if (measurements.isEmpty()) {
-            // If average has been set earlier manually
-            sum = measurement.getValue();
-        } else {
-            sum += measurement.getValue();
-        }
-        if (peak == null || measurement.getValue() > peak) {
-            peak = measurement.getValue();
-        }
-
-        measurements.add(measurement);
-    }
 
     public List<Measurement> getMeasurements() {
         if (measurements == null) {
@@ -110,48 +88,6 @@ public class Session implements Serializable
 
     public String getDescription() {
         return description;
-    }
-
-    public double getPeak() {
-        if (peak == null) {
-            peak = calculatePeak();
-        }
-        return peak;
-      }
-
-    private double calculatePeak() {
-        double newPeak = SoundHelper.TOTALLY_QUIET;
-        for (Measurement measurement : measurements) {
-            if (measurement.getValue() > newPeak) {
-                newPeak = measurement.getValue();
-    }
-        }
-        return newPeak;
-    }
-
-    public double getAvg() {
-        if (sum == null) {
-            sum = calculateSum();
-        }
-        return sum / (measurements.isEmpty() ? 1 : measurements.size());
-    }
-
-    private double calculateSum() {
-        if (measurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
-
-        double newSum = 0;
-        for (Measurement measurement : measurements) {
-            newSum += measurement.getValue();
-        }
-        return newSum;
-    }
-
-    public void setAvg(double avg) {
-        this.sum = avg;
-    }
-
-    public void setPeak(double peak) {
-        this.peak = peak;
     }
 
   public Date getEnd()
@@ -327,9 +263,13 @@ public class Session implements Serializable
   {
     return streams.values();
   }
-  
+
   public MeasurementStream getStream(String name)
   {
     return streams.get(name);
   }
+
+    public boolean hasStream(String sensorName) {
+        return streams.containsKey(sensorName);
+    }
 }
