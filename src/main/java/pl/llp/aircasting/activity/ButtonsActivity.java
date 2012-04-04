@@ -261,7 +261,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void stopAirCasting() {
-        if (sessionManager.getSoundMeasurements().isEmpty()) {
+        if (sessionManager.getSession().isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
             sessionManager.discardSession();
         } else {

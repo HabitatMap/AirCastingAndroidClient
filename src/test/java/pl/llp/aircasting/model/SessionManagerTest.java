@@ -19,6 +19,17 @@
  */
 package pl.llp.aircasting.model;
 
+import android.location.Location;
+import android.location.LocationManager;
+import com.google.common.collect.Iterables;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
@@ -31,17 +42,7 @@ import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
-import android.location.Location;
-import android.location.LocationManager;
-import com.google.common.collect.Iterables;
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -176,7 +177,7 @@ public class SessionManagerTest {
         String name = sensor.getSensorName();
         when(stream.getSensorName()).thenReturn(name);
         sessionManager.session.add(stream);
-        
+
         assertThat(sessionManager.getPeak(sensor), equalTo(11.0));
     }
 
@@ -317,6 +318,36 @@ public class SessionManagerTest {
         triggerMeasurement(10);
 
         assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+    }
+
+    @Test
+    public void shouldSetSessionStart() {
+        sessionManager.startSession();
+
+        int oneSecond = 1000;
+        assertThat(new Date().getTime() - sessionManager.session.getStart().getTime() < oneSecond, equalTo(true));
+    }
+
+    @Test
+    public void shouldSetSessionEnd() {
+        sessionManager.startSession();
+        triggerMeasurement();
+
+        sessionManager.finishSession(null);
+
+        verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>() {
+            @Override
+            public boolean matches(Object o) {
+                Session other = (Session) o;
+                long oneSecond = 1000;
+                return new Date().getTime() - other.getEnd().getTime() < oneSecond;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Session with end set");
+            }
+        }), Mockito.<ProgressListener>any());
     }
 
     @Test

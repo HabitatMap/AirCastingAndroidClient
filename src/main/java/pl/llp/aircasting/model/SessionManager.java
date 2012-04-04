@@ -268,6 +268,7 @@ public class SessionManager
 
     public void startSession() {
         setSession(new Session());
+        session.setStart(new Date());
         startSensors();
         sessionStarted = true;
         notificationHelper.showRecordingNotification();
@@ -291,6 +292,8 @@ public class SessionManager
         session.setInstrument(metadataHelper.getInstrument());
         session.setOsVersion(metadataHelper.getOSVersion());
         session.setPhoneModel(metadataHelper.getPhoneModel());
+
+        session.setEnd(new Date());
     }
 
     private void cleanup() {
