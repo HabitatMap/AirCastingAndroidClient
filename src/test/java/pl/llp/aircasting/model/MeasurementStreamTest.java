@@ -23,9 +23,20 @@ public class MeasurementStreamTest {
     public void setup() {
         event = Any.sensorEvent();
         stream = new MeasurementStream(event);
-        
+
         stream.add(measurement);
         stream.add(otherMeasurement);
+    }
+
+    @Test
+    public void should_not_be_empty_with_measurements() {
+        assertThat(stream.isEmpty(), equalTo(false));
+    }
+
+    @Test
+    public void should_be_empty_without_measurements() {
+        MeasurementStream stream = new MeasurementStream(event);
+        assertThat(stream.isEmpty(), equalTo(true));
     }
 
     @Test

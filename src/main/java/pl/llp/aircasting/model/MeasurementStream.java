@@ -8,248 +8,235 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class MeasurementStream
-{
-  private List<Measurement> measurements = newArrayList();
+public class MeasurementStream {
+    private List<Measurement> measurements = newArrayList();
 
-  private long id;
+    private long id;
 
-  private long sessionId;
+    private long sessionId;
 
-  private String sensorName;
+    private String sensorName;
 
-  private String measurementType;
+    private String measurementType;
 
-  private String unit;
+    private String unit;
 
-  private String symbol;
+    private String symbol;
 
-  private Double sum = 0.0;
+    private Double sum = 0.0;
 
-  private Double avg;
+    private Double avg;
 
-  private Double peak = Double.NEGATIVE_INFINITY;
+    private Double peak = Double.NEGATIVE_INFINITY;
 
-  private int thresholdVeryHigh;
+    private int thresholdVeryHigh;
 
-  private int thresholdVeryLow;
+    private int thresholdVeryLow;
 
-  private int thresholdLow;
+    private int thresholdLow;
 
-  private int thresholdMedium;
+    private int thresholdMedium;
 
-  private int thresholdHigh;
+    private int thresholdHigh;
 
-  private transient boolean avgDirty;
+    private transient boolean avgDirty;
 
-  public MeasurementStream() { }
-
-  public MeasurementStream(Sensor sensor)
-  {
-    this(sensor.getSensorName(),
-         sensor.getMeasurementType(),
-         sensor.getUnit(),
-         sensor.getSymbol(),
-         sensor.getThreshold(MeasurementLevel.VERY_LOW),
-         sensor.getThreshold(MeasurementLevel.MID),
-         sensor.getThreshold(MeasurementLevel.LOW),
-         sensor.getThreshold(MeasurementLevel.HIGH),
-         sensor.getThreshold(MeasurementLevel.VERY_HIGH));
-  }
-
-  public MeasurementStream(SensorEvent evt)
-  {
-    this(evt.getSensorName(), evt.getMeasurementType(), evt.getUnit(), evt.getSymbol(),
-         evt.getVeryLow(),
-         evt.getLow(),
-         evt.getMid(),
-         evt.getHigh(),
-         evt.getVeryHigh());
-  }
-
-  public MeasurementStream(String sensor, String type, String unit, String symbol,
-                           int thresholdVeryLow, int thresholdLow,
-                           int thresholdMedium,
-                           int thresholdHigh, int thresholdVeryHigh
-                          )
-  {
-    this.sensorName = sensor;
-    this.measurementType = type;
-    this.unit = unit;
-    this.symbol = symbol;
-
-    this.thresholdVeryLow = thresholdVeryLow;
-    this.thresholdLow = thresholdLow;
-    this.thresholdMedium = thresholdMedium;
-    this.thresholdHigh = thresholdHigh;
-    this.thresholdVeryHigh =  thresholdVeryHigh;
-  }
-
-  public List<Measurement> getMeasurements() {
-    return measurements;
-  }
-
-  public void add(Measurement measurement) {
-    measurements.add(measurement);
-    avgDirty = true;
-
-    double value = measurement.getValue();
-    sum += value;
-    if (value > peak) {
-      peak = value;
+    public MeasurementStream() {
     }
-  }
 
-  public String getSensorName() {
-    return sensorName;
-  }
+    public MeasurementStream(Sensor sensor) {
+        this(sensor.getSensorName(),
+             sensor.getMeasurementType(),
+             sensor.getUnit(),
+             sensor.getSymbol(),
+             sensor.getThreshold(MeasurementLevel.VERY_LOW),
+             sensor.getThreshold(MeasurementLevel.MID),
+             sensor.getThreshold(MeasurementLevel.LOW),
+             sensor.getThreshold(MeasurementLevel.HIGH),
+             sensor.getThreshold(MeasurementLevel.VERY_HIGH));
+    }
 
-  public String getMeasurementType() {
-    return measurementType;
-  }
+    public MeasurementStream(SensorEvent evt) {
+        this(evt.getSensorName(), evt.getMeasurementType(), evt.getUnit(), evt.getSymbol(),
+             evt.getVeryLow(),
+             evt.getLow(),
+             evt.getMid(),
+             evt.getHigh(),
+             evt.getVeryHigh());
+    }
 
-  public String getUnit() {
-    return unit;
-  }
+    public MeasurementStream(String sensor, String type, String unit, String symbol,
+                             int thresholdVeryLow, int thresholdLow,
+                             int thresholdMedium,
+                             int thresholdHigh, int thresholdVeryHigh
+                            ) {
+        this.sensorName = sensor;
+        this.measurementType = type;
+        this.unit = unit;
+        this.symbol = symbol;
 
-  public String getSymbol() {
-    return symbol;
-  }
+        this.thresholdVeryLow = thresholdVeryLow;
+        this.thresholdLow = thresholdLow;
+        this.thresholdMedium = thresholdMedium;
+        this.thresholdHigh = thresholdHigh;
+        this.thresholdVeryHigh = thresholdVeryHigh;
+    }
 
-  private double calculatePeak() {
-      double newPeak = SoundHelper.TOTALLY_QUIET;
-      for (Measurement measurement : measurements) {
-          if (measurement.getValue() > newPeak) {
-              newPeak = measurement.getValue();
-          }
-      }
-      return newPeak;
-  }
+    public List<Measurement> getMeasurements() {
+        return measurements;
+    }
 
-  public double getPeak() {
-       if (peak == null) {
-           peak = calculatePeak();
-       }
-       return peak;
-   }
+    public void add(Measurement measurement) {
+        measurements.add(measurement);
+        avgDirty = true;
 
-   public double getAvg() {
-     if(avgDirty)
-     {
-      avg = calculateAvg();
-      avgDirty = false;
-     }
-     return avg;
-   }
+        double value = measurement.getValue();
+        sum += value;
+        if (value > peak) {
+            peak = value;
+        }
+    }
 
-  private double calculateAvg()
-  {
-    double sum = getSum();
-    double avg = sum / (measurements.isEmpty() ? 1 : measurements.size());
-    return avg;
-  }
+    public String getSensorName() {
+        return sensorName;
+    }
 
-  public void setPeak(double peak) {
-    this.peak = peak;
-  }
+    public String getMeasurementType() {
+        return measurementType;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    public String getUnit() {
+        return unit;
+    }
 
-    MeasurementStream stream = (MeasurementStream) o;
+    public String getSymbol() {
+        return symbol;
+    }
 
-    if (measurementType != null ? !measurementType.equals(stream.measurementType) : stream.measurementType != null)
-      return false;
-    if (sensorName != null ? !sensorName.equals(stream.sensorName) : stream.sensorName != null) return false;
-    if (symbol != null ? !symbol.equals(stream.symbol) : stream.symbol != null) return false;
-    if (unit != null ? !unit.equals(stream.unit) : stream.unit != null) return false;
+    private double calculatePeak() {
+        double newPeak = SoundHelper.TOTALLY_QUIET;
+        for (Measurement measurement : measurements) {
+            if (measurement.getValue() > newPeak) {
+                newPeak = measurement.getValue();
+            }
+        }
+        return newPeak;
+    }
 
-    return true;
-  }
+    public double getPeak() {
+        if (peak == null) {
+            peak = calculatePeak();
+        }
+        return peak;
+    }
 
-  @Override
-  public int hashCode() {
-    int result = sensorName != null ? sensorName.hashCode() : 0;
-    result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
-    result = 31 * result + (unit != null ? unit.hashCode() : 0);
-    result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
-    return result;
-  }
+    public double getAvg() {
+        if (avgDirty) {
+            avg = calculateAvg();
+            avgDirty = false;
+        }
+        return avg;
+    }
 
-  @Override
-  public String toString() {
-    return "MeasurementStream{" +
-        "measurements=" + measurements +
-        ", sensorName='" + sensorName + '\'' +
-        ", measurementType='" + measurementType + '\'' +
-        ", unit='" + unit + '\'' +
-        ", symbol='" + symbol + '\'' +
-        ", sum=" + sum +
-        ", peak=" + peak +
-        '}';
-  }
+    private double calculateAvg() {
+        double sum = getSum();
+        double avg = sum / (measurements.isEmpty() ? 1 : measurements.size());
+        return avg;
+    }
 
-  public long getId()
-  {
-    return id;
-  }
+    public void setPeak(double peak) {
+        this.peak = peak;
+    }
 
-  public void setId(long id)
-  {
-    this.id = id;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-  public long getSessionId()
-  {
-    return sessionId;
-  }
+        MeasurementStream stream = (MeasurementStream) o;
 
-  public void setSessionId(long sessionId)
-  {
-    this.sessionId = sessionId;
-  }
+        if (measurementType != null ? !measurementType.equals(stream.measurementType) : stream.measurementType != null)
+            return false;
+        if (sensorName != null ? !sensorName.equals(stream.sensorName) : stream.sensorName != null) return false;
+        if (symbol != null ? !symbol.equals(stream.symbol) : stream.symbol != null) return false;
+        if (unit != null ? !unit.equals(stream.unit) : stream.unit != null) return false;
 
-  public void setMeasurements(List<Measurement> measurements)
-  {
-    this.measurements = measurements;
-    avgDirty = true;
-  }
+        return true;
+    }
 
-  public Double getSum()
-  {
-    return sum;
-  }
+    @Override
+    public int hashCode() {
+        int result = sensorName != null ? sensorName.hashCode() : 0;
+        result = 31 * result + (measurementType != null ? measurementType.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+        return result;
+    }
 
-  public void setAvg(double avg)
-  {
-    this.avg = avg;
-    avgDirty = false;
-  }
+    @Override
+    public String toString() {
+        return "MeasurementStream{" +
+                "measurements=" + measurements +
+                ", sensorName='" + sensorName + '\'' +
+                ", measurementType='" + measurementType + '\'' +
+                ", unit='" + unit + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", sum=" + sum +
+                ", peak=" + peak +
+                '}';
+    }
 
-  public int getThresholdVeryHigh()
-  {
-    return thresholdVeryHigh;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public int getThresholdVeryLow()
-  {
-    return thresholdVeryLow;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public int getThresholdLow()
-  {
-    return thresholdLow;
-  }
+    public long getSessionId() {
+        return sessionId;
+    }
 
-  public int getThresholdMedium()
-  {
-    return thresholdMedium;
-  }
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
+    }
 
-  public int getThresholdHigh()
-  {
-    return thresholdHigh;
-  }
+    public void setMeasurements(List<Measurement> measurements) {
+        this.measurements = measurements;
+        avgDirty = true;
+    }
+
+    public Double getSum() {
+        return sum;
+    }
+
+    public void setAvg(double avg) {
+        this.avg = avg;
+        avgDirty = false;
+    }
+
+    public int getThresholdVeryHigh() {
+        return thresholdVeryHigh;
+    }
+
+    public int getThresholdVeryLow() {
+        return thresholdVeryLow;
+    }
+
+    public int getThresholdLow() {
+        return thresholdLow;
+    }
+
+    public int getThresholdMedium() {
+        return thresholdMedium;
+    }
+
+    public int getThresholdHigh() {
+        return thresholdHigh;
+    }
+
+    public boolean isEmpty() {
+        return measurements.isEmpty();
+    }
 }
