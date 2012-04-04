@@ -19,6 +19,13 @@
  */
 package pl.llp.aircasting.model;
 
+import android.app.Application;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
@@ -33,14 +40,6 @@ import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
 
-import android.app.Application;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -48,8 +47,6 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.primitives.Ints.min;
-import static pl.llp.aircasting.util.Lists.getLast;
 
 @Singleton
 public class SessionManager
@@ -174,31 +171,6 @@ public class SessionManager
 
     public boolean isRecording() {
         return recording;
-    }
-
-    public synchronized double getPeak(int n) {
-        if (session.getMeasurements().isEmpty()) return 0;
-
-        Iterable<Measurement> measurements = getLast(session.getMeasurements(), n);
-        double max = Double.NEGATIVE_INFINITY;
-        for (Measurement measurement : measurements) {
-            if (measurement.getValue() > max) max = measurement.getValue();
-        }
-
-        return max;
-    }
-
-    public synchronized double getAvg(int n) {
-        if (session.getMeasurements().isEmpty()) return 0;
-
-        double result = 0;
-
-        Iterable<Measurement> measurements = getLast(session.getMeasurements(), n);
-        for (Measurement measurement : measurements) {
-            result += measurement.getValue();
-        }
-
-        return result / min(n, session.getMeasurements().size());
     }
 
     public void setContribute(boolean value) {

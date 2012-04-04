@@ -59,8 +59,6 @@ public class MakeANoteActivityTest {
         location = new Location("TEST");
 
         when(activity.locationHelper.getLastLocation()).thenReturn(location);
-        when(activity.sessionManager.getAvg(10)).thenReturn(3.0);
-        when(activity.sessionManager.getPeak(10)).thenReturn(4.0);
 
         activity.onResume();
     }

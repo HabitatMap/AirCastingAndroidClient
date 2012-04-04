@@ -312,34 +312,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldProvideRunningAverage() {
-        fail("Needs a redo");
-
-        sessionManager.session = new Session();
-        sessionManager.session.add(new Measurement(2));
-        sessionManager.session.add(new Measurement(4));
-        sessionManager.session.add(new Measurement(6));
-
-        assertThat(sessionManager.getAvg(4), equalTo(4.0));
-        assertThat(sessionManager.getAvg(3), equalTo(4.0));
-        assertThat(sessionManager.getAvg(2), equalTo(5.0));
-    }
-
-    @Test
-    public void shouldProvideRunningPeak() {
-        fail("Needs a redo");
-
-        sessionManager.session = new Session();
-        sessionManager.session.add(new Measurement(6));
-        sessionManager.session.add(new Measurement(4));
-        sessionManager.session.add(new Measurement(2));
-
-        assertThat(sessionManager.getPeak(4), equalTo(6.0));
-        assertThat(sessionManager.getPeak(3), equalTo(6.0));
-        assertThat(sessionManager.getPeak(2), equalTo(4.0));
-    }
-
-    @Test
     public void shouldSaveAdditionalData() {
         fail("Needs a redo");
 
