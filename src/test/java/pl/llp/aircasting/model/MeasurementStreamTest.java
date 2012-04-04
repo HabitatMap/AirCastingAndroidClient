@@ -1,13 +1,14 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
@@ -73,4 +74,31 @@ public class MeasurementStreamTest {
     public void shouldProvidePeak() {
         assertThat(stream.getPeak(), equalTo(1.0));
     }
+
+  @Test
+  public void setting_average_should_override_calculated() throws Exception
+  {
+    // given
+    assertEquals(0.5, stream.getAvg(), 0.1);
+
+    // when
+    stream.setAvg(2);
+
+    // then
+    assertEquals(2, stream.getAvg(), 0.1);
+  }
+
+  @Test
+  public void adding_a_measurement_should_override_set() throws Exception
+  {
+    // given
+    stream.setAvg(2);
+    assertEquals(2, stream.getAvg(), 0.1);
+
+    // when
+    stream.add(new Measurement(0.5, 1, 5));
+
+    // then
+    assertEquals(2, stream.getAvg(), 0.1);
+  }
 }
