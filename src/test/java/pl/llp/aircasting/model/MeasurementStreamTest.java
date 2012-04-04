@@ -12,8 +12,7 @@ import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
 @RunWith(InjectedTestRunner.class)
 public class MeasurementStreamTest {
-
-  MeasurementStream stream = new MeasurementStream("big sensor", "temperature", "degrees Celsius", "C");
+    MeasurementStream stream = new MeasurementStream("big sensor", "temperature", "degrees Celsius", "C");
     Measurement measurement = new Measurement(0, 0, 0);
     Measurement otherMeasurement = new Measurement(0, 0, 1);
 

@@ -29,6 +29,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Any;
 import pl.llp.aircasting.model.Sensor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -47,10 +48,12 @@ import static pl.llp.aircasting.TestHelper.fill;
 public class ThresholdsActivityTest {
     @Inject ThresholdsActivity activity;
 
-    @Inject Sensor sensor;
+    Sensor sensor;
 
     @Before
     public void setup() {
+        sensor = Any.sensor();
+
         Intent intent = new Intent();
         intent.putExtra(Intents.EXTRA_SENSOR, sensor);
         activity.setIntent(intent);

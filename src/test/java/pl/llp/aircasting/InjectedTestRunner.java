@@ -19,7 +19,6 @@
 */
 package pl.llp.aircasting;
 
-import android.app.Application;
 import com.google.inject.Injector;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
@@ -36,11 +35,6 @@ import pl.llp.aircasting.guice.AirCastingApplication;
 public class InjectedTestRunner extends RobolectricTestRunner {
     public InjectedTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
-    }
-
-    @Override
-    protected Application createApplication() {
-        return new TestApplication();
     }
 
     @Override

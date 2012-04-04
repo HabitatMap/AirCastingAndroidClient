@@ -1,6 +1,5 @@
 package pl.llp.aircasting.model;
 
-import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +12,12 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(InjectedTestRunner.class)
 public class SensorTest {
-    @Inject SensorEvent event;
+    private SensorEvent event;
     private Sensor sensor;
 
     @Before
     public void setup() {
+        event = Any.sensorEvent();
         sensor = new Sensor(event);
     }
 
