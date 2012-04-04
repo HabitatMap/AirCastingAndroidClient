@@ -230,9 +230,6 @@ public class SessionManager
     private MeasurementStream prepareStream(SensorEvent event) {
         String sensorName = event.getSensorName();
         if (!measurementStreams.containsKey(sensorName)) {
-            String measurementType = event.getMeasurementType();
-            String unit = event.getUnit();
-            String symbol = event.getSymbol();
             MeasurementStream stream = new MeasurementStream(event);
             measurementStreams.put(sensorName, stream);
         }
@@ -285,14 +282,6 @@ public class SessionManager
 
     public void setDescription(String text) {
         session.setDescription(text);
-    }
-
-    public double getDbPeak() {
-        return session.getPeak();
-    }
-
-    public double getDbAvg() {
-        return session.getAvg();
     }
 
     public synchronized double getNow(Sensor sensor) {
