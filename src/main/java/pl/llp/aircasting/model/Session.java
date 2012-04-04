@@ -19,12 +19,15 @@
 */
 package pl.llp.aircasting.model;
 
+import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.google.common.collect.Iterables.all;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -271,5 +274,14 @@ public class Session implements Serializable
 
     public boolean hasStream(String sensorName) {
         return streams.containsKey(sensorName);
+    }
+
+    public boolean isEmpty() {
+        return all(streams.values(), new Predicate<MeasurementStream>() {
+            @Override
+            public boolean apply(@Nullable MeasurementStream input) {
+                return input.isEmpty();
+            }
+        });
     }
 }

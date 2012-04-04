@@ -69,8 +69,8 @@ public class SessionAdapter extends SimpleCursorAdapter {
             sessionTitle.setText(Html.fromHtml(unnamed));
         }
 
-        int peak = (int) calibrationHelper.calibrate(session.getPeak(), session);
-        int avg = (int) calibrationHelper.calibrate(session.getAvg(), session);
+        int peak = 0;
+        int avg = 0;
 
         ((TextView) view.findViewById(R.id.session_peak)).setText(NumberFormat.getInstance().format(peak) + " dB");
         ((TextView) view.findViewById(R.id.session_average)).setText(NumberFormat.getInstance().format(avg) + " dB");
