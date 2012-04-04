@@ -39,7 +39,7 @@ public class MeasurementStream {
 
     private int thresholdHigh;
 
-    private transient boolean avgDirty;
+    private transient boolean avgDirty = true;
 
     public MeasurementStream() {
     }
