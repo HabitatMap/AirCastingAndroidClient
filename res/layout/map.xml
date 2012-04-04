@@ -21,17 +21,14 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <pl.llp.aircasting.view.AirCastingMapView
-            xmlns:android="http://schemas.android.com/apk/res/android"
+            style="@style/Fill"
             android:id="@+id/mapview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:clickable="true"
             android:apiKey="${com.google.maps.api.key}"
             />
 
-    <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
-                                      android:layout_width="fill_parent"
+    <pl.llp.aircasting.view.TouchPane style="@style/Fill"
                                       android:id="@+id/touch_pane"
             />
 </merge>
