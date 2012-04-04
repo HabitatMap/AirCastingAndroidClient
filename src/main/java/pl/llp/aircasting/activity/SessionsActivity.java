@@ -68,10 +68,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Inject SyncState syncState;
     @Inject MainMenu mainMenu;
 
-    @InjectResource(R.id.top_bar) View topBar;
+    @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
     @InjectView(R.id.sync_summary) Button syncSummary;
-    @InjectResource(R.string.sync_in_progress) String syncInProgress;
+    @InjectView(R.id.top_bar) View topBar;
 
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 

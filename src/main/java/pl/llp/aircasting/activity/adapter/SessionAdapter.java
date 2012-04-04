@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity.adapter;
 
 import android.content.Context;
@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.Session;
@@ -38,19 +37,12 @@ import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import java.text.NumberFormat;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 4:27 PM
- */
 public class SessionAdapter extends SimpleCursorAdapter {
     SessionRepository sessionRepository;
     ResourceHelper resourceHelper;
 
     private static final int[] backgrounds = new int[]{R.drawable.session_list_odd, R.drawable.session_list_even};
     private Context context;
-    private CalibrationHelper calibrationHelper;
 
     public SessionAdapter(Context context, Cursor cursor) {
         super(context, R.layout.session_row, cursor, new String[]{}, new int[]{});
@@ -82,7 +74,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
     }
 
     private void updateImage(ImageView view, double value) {
-        Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(),  value);
+        Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(), value);
         view.setBackgroundDrawable(bullet);
     }
 
@@ -107,9 +99,5 @@ public class SessionAdapter extends SimpleCursorAdapter {
 
     public void setResourceHelper(ResourceHelper resourceHelper) {
         this.resourceHelper = resourceHelper;
-    }
-
-    public void setCalibrationHelper(CalibrationHelper calibrationHelper) {
-        this.calibrationHelper = calibrationHelper;
     }
 }

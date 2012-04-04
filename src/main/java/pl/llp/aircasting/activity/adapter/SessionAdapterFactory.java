@@ -36,13 +36,11 @@ import pl.llp.aircasting.repository.SessionRepository;
 public class SessionAdapterFactory {
     @Inject SessionRepository sessionRepository;
     @Inject ResourceHelper resourceHelper;
-    @Inject CalibrationHelper calibrationHelper;
 
     public SessionAdapter getSessionAdapter(Context context, Cursor cursor) {
         SessionAdapter adapter = new SessionAdapter(context, cursor);
         adapter.setSessionRepository(sessionRepository);
         adapter.setResourceHelper(resourceHelper);
-        adapter.setCalibrationHelper(calibrationHelper);
 
         return adapter;
     }
