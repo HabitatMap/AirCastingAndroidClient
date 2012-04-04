@@ -58,6 +58,8 @@ public class SessionManagerTest {
     Location location;
     Sensor sensor;
 
+    SensorEvent lastEvent;
+
     private void mockSensors() {
         sessionManager.locationHelper = mock(LocationHelper.class);
         sessionManager.audioReader = mock(SimpleAudioReader.class);
@@ -85,7 +87,8 @@ public class SessionManagerTest {
     }
 
     private void triggerMeasurement(String name, double value) {
-        sessionManager.onEvent(new SensorEvent(name, "Higgs boson", "HB", "number", "#", 1, 2, 3, 4, 5, value));
+        lastEvent = new SensorEvent(name, "Higgs boson", "HB", "number", "#", 1, 2, 3, 4, 5, value);
+        sessionManager.onEvent(lastEvent);
     }
 
     private void triggerMeasurement(double value) {
@@ -102,7 +105,7 @@ public class SessionManagerTest {
 
         triggerMeasurement();
 
-        MeasurementStream expected = new MeasurementStream("LHC", "Higgs boson", "number", "#");
+        MeasurementStream expected = new MeasurementStream(lastEvent);
         assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
     }
 
@@ -121,9 +124,10 @@ public class SessionManagerTest {
         sessionManager.startSession();
 
         triggerMeasurement();
-        sessionManager.onEvent(new SensorEvent("LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10));
+        SensorEvent event = new SensorEvent("LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
+        sessionManager.onEvent(event);
 
-        MeasurementStream expected = new MeasurementStream("LHC2", "Siggh boson", "number", "#");
+        MeasurementStream expected = new MeasurementStream(event);
         assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
     }
 

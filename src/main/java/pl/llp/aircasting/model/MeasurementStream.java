@@ -67,18 +67,6 @@ public class MeasurementStream
          evt.getVeryHigh());
   }
 
-  /** @deprecated
-   * Constructor without thresholds is no longer valid
-   * It remains for tests only
-   **/
-  public MeasurementStream(String sensor, String type, String unit, String symbol)
-  {
-    this.sensorName = sensor;
-    this.measurementType = type;
-    this.unit = unit;
-    this.symbol = symbol;
-  }
-
   public MeasurementStream(String sensor, String type, String unit, String symbol,
                            int thresholdVeryLow, int thresholdLow,
                            int thresholdMedium,
