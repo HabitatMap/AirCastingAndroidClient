@@ -140,8 +140,8 @@ public class MeasurementStream {
 
     private double calculateAvg() {
         double sum = getSum();
-        double avg = sum / (measurements.isEmpty() ? 1 : measurements.size());
-        return avg;
+
+        return sum / (measurements.isEmpty() ? 1 : measurements.size());
     }
 
     public void setPeak(double peak) {

@@ -286,7 +286,7 @@ public class SessionRepository
   {
     List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
     MeasurementRepository r = new MeasurementRepository(db, progressListener);
-    Map<Integer, List<Measurement>> load = r.load(session);
+    Map<Long, List<Measurement>> load = r.load(session);
 
     for (MeasurementStream stream : streams)
     {

@@ -14,9 +14,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.model.DBConstants.*;
-import static pl.llp.aircasting.repository.DBHelper.getDate;
-import static pl.llp.aircasting.repository.DBHelper.getDouble;
-import static pl.llp.aircasting.repository.DBHelper.getInt;
+import static pl.llp.aircasting.repository.DBHelper.*;
 
 class MeasurementRepository
 {
@@ -44,7 +42,7 @@ class MeasurementRepository
     }
   }
 
-  Map<Integer, List<Measurement>> load(Session session)
+  Map<Long, List<Measurement>> load(Session session)
   {
     Cursor measurements = db.rawQuery("" +
                     "SELECT * FROM " + MEASUREMENT_TABLE_NAME + " " +
@@ -53,7 +51,7 @@ class MeasurementRepository
     progress.onSizeCalculated(measurements.getCount());
 
     measurements.moveToFirst();
-    Map<Integer, List<Measurement>> results = newHashMap();
+    Map<Long, List<Measurement>> results = newHashMap();
     while(!measurements.isAfterLast())
     {
       Measurement measurement = new Measurement();
@@ -62,7 +60,7 @@ class MeasurementRepository
       measurement.setValue(getDouble(measurements, MEASUREMENT_VALUE));
       measurement.setTime(getDate(measurements, MEASUREMENT_TIME));
 
-      int id = getInt(measurements, MEASUREMENT_STREAM_ID);
+      long id = getLong(measurements, MEASUREMENT_STREAM_ID);
       stream(id, results).add(measurement);
 
       int position = measurements.getPosition();
@@ -76,13 +74,13 @@ class MeasurementRepository
     return results;
   }
 
-  private List<Measurement> stream(int anInt, Map<Integer, List<Measurement>> results)
+  private List<Measurement> stream(long id, Map<Long, List<Measurement>> results)
   {
-    if(!results.containsKey(anInt))
+    if(!results.containsKey(id))
     {
-      results.put(anInt, new ArrayList<Measurement>());
+      results.put(id, new ArrayList<Measurement>());
     }
-    return results.get(anInt);
+    return results.get(id);
   }
 
   public void save(List<Measurement> measurementsToSave, long sessionId, long streamId)
