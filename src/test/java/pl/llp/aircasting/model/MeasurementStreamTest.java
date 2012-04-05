@@ -7,6 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -75,30 +78,36 @@ public class MeasurementStreamTest {
         assertThat(stream.getPeak(), equalTo(1.0));
     }
 
-  @Test
-  public void setting_average_should_override_calculated() throws Exception
-  {
-    // given
-    assertEquals(0.5, stream.getAvg(), 0.1);
+    @Test
+    public void setting_all_measurements_should_properly_average() {
+        ArrayList<Measurement> measurements = newArrayList(new Measurement(10), new Measurement(20));
+        stream.setMeasurements(measurements);
 
-    // when
-    stream.setAvg(2);
+        assertThat(stream.getAvg(), equalTo(15.0));
+    }
 
-    // then
-    assertEquals(2, stream.getAvg(), 0.1);
-  }
+    @Test
+    public void setting_average_should_override_calculated() throws Exception {
+        // given
+        assertEquals(0.5, stream.getAvg(), 0.1);
 
-  @Test
-  public void adding_a_measurement_should_override_set() throws Exception
-  {
-    // given
-    stream.setAvg(2);
-    assertEquals(2, stream.getAvg(), 0.1);
+        // when
+        stream.setAvg(2);
 
-    // when
-    stream.add(new Measurement(0.5, 1, 5));
+        // then
+        assertEquals(2, stream.getAvg(), 0.1);
+    }
 
-    // then
-    assertEquals(2, stream.getAvg(), 0.1);
-  }
+    @Test
+    public void adding_a_measurement_should_override_set() throws Exception {
+        // given
+        stream.setAvg(2);
+        assertEquals(2, stream.getAvg(), 0.1);
+
+        // when
+        stream.add(new Measurement(0.5, 1, 5));
+
+        // then
+        assertEquals(2, stream.getAvg(), 0.1);
+    }
 }

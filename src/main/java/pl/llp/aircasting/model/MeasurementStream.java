@@ -204,6 +204,12 @@ public class MeasurementStream {
 
     public void setMeasurements(List<Measurement> measurements) {
         this.measurements = measurements;
+
+        sum = 0.0;
+        for (Measurement measurement : measurements) {
+            sum += measurement.getValue();
+        }
+
         avgDirty = true;
     }
 
