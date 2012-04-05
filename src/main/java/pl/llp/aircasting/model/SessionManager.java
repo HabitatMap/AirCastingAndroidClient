@@ -49,8 +49,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
-public class SessionManager
-{
+public class SessionManager {
     @Inject SimpleAudioReader audioReader;
     @Inject ExternalSensor externalSensor;
     @Inject EventBus eventBus;
@@ -324,11 +323,22 @@ public class SessionManager
 
     public double getPeak(Sensor sensor) {
         String sensorName = sensor.getSensorName();
-        
+
         if (session.hasStream(sensorName)) {
             return session.getStream(sensorName).getPeak();
         } else {
             return 0;
+        }
+    }
+
+    public List<Measurement> getMeasurements(Sensor sensor) {
+        String name = sensor.getSensorName();
+
+        if (session.hasStream(name)) {
+            MeasurementStream stream = session.getStream(name);
+            return stream.getMeasurements();
+        } else {
+            return newArrayList();
         }
     }
 }

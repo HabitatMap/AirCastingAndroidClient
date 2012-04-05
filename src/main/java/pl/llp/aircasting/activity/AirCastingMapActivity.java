@@ -41,7 +41,9 @@ import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.LocationOverlay;
@@ -53,6 +55,7 @@ import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.File;
+import java.util.List;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
@@ -119,7 +122,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            for (Measurement measurement : sessionManager.getSession().getMeasurements()) {
+            Sensor sensor = sensorManager.getVisibleSensor();
+            List<Measurement> measurements = sessionManager.getMeasurements(sensor);
+
+            for (Measurement measurement : measurements) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
             }
