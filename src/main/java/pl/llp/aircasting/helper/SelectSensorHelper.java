@@ -2,6 +2,7 @@ package pl.llp.aircasting.helper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -22,22 +23,24 @@ import static com.google.common.collect.Iterables.indexOf;
 import static java.util.Collections.sort;
 
 public class SelectSensorHelper {
+    public static final int DIALOG_ID = 175483;
+
     @InjectResource(R.string.select_sensor) String title;
     @Inject SensorManager sensorManager;
     @Inject EventBus eventBus;
 
     /**
-     * Show a dialog displaying a list of sensors, allowing the user to select
+     * Prepare a dialog displaying a list of sensors, allowing the user to select
      * one to view
      *
      * @param context The activity in
      */
-    public void chooseSensor(Activity context) {
+    public Dialog chooseSensor(final Activity context) {
         final List<Sensor> sensors = sortedSensors();
         int selected = selectedSensorIndex(sensors);
         String[] listItems = listItems(sensors);
 
-        new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setSingleChoiceItems(listItems, selected, new DialogInterface.OnClickListener() {
                     @Override
@@ -46,10 +49,11 @@ public class SelectSensorHelper {
                         ViewStreamEvent event = new ViewStreamEvent(sensor);
 
                         eventBus.post(event);
+
+                        context.dismissDialog(DIALOG_ID);
                     }
                 })
-                .create()
-                .show();
+                .create();
     }
 
     private String[] listItems(List<Sensor> sensors) {

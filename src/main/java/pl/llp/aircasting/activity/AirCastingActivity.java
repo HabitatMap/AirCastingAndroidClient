@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -53,7 +54,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     public static final String NOTE_INDEX = "noteIndex";
 
     @InjectView(R.id.gauge_container) View gauges;
-    @InjectView(R.id.now_gauge) View nowGauge;
 
     @InjectView(R.id.note_right) ImageButton noteRight;
     @InjectView(R.id.note_number) TextView noteNumber;
@@ -104,7 +104,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
             noteLeft.setOnClickListener(this);
             noteSave.setOnClickListener(this);
 
-            nowGauge.setOnClickListener(this);
+            gauges.setOnClickListener(this);
 
             initialized = true;
         }
@@ -205,12 +205,20 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
             case R.id.note_right:
                 noteClicked(noteIndex + 1);
                 break;
-            case R.id.now_gauge:
-                selectSensorHelper.chooseSensor(this);
+            case R.id.gauge_container:
+                showDialog(SelectSensorHelper.DIALOG_ID);
                 break;
             default:
                 super.onClick(view);
                 break;
+        }
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch(id){
+            case SelectSensorHelper.DIALOG_ID: return selectSensorHelper.chooseSensor(this);
+            default: return super.onCreateDialog(id);
         }
     }
 
