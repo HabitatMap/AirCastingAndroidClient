@@ -203,7 +203,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     private void showSession() {
         if (sessionManager.isSessionSaved() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSoundMeasurements());
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
             mapView.getController().animateTo(boundingBox.getCenter());

@@ -94,15 +94,15 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
     private void initialize() {
         if (!initialized) {
-            zoomIn.setOnClickListener(this);
             zoomOut.setOnClickListener(this);
+            zoomIn.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
-            noteLeft.setOnClickListener(this);
-            noteRight.setOnClickListener(this);
-            noteSave.setOnClickListener(this);
             noteDelete.setOnClickListener(this);
+            noteRight.setOnClickListener(this);
             viewPhoto.setOnClickListener(this);
+            noteLeft.setOnClickListener(this);
+            noteSave.setOnClickListener(this);
 
             nowGauge.setOnClickListener(this);
 
