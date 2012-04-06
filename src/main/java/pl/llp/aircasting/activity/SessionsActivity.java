@@ -30,6 +30,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -44,13 +46,16 @@ import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
+import pl.llp.aircasting.repository.SensorRepository;
 import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.repository.StreamRepository;
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
+import javax.annotation.Nullable;
 import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,7 +69,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SessionRepository sessionRepository;
-    @Inject StreamRepository streamRepository;
+    @Inject SensorRepository sensorRepository;
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SensorManager sensorManager;
@@ -89,9 +94,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         }
     };
 
-    private ArrayAdapter<String> sensorAdapter;
+    private ArrayAdapter<SensorWrapper> sensorAdapter;
     private SessionAdapter sessionAdapter;
-    private String selectedSensor;
+    private Sensor selectedSensor;
     private long sessionId;
     Cursor sessionCursor;
 
@@ -133,9 +138,16 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshSensors() {
-        List<String> typeList = streamRepository.getDataTypes();
-        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, typeList);
-        sensorAdapter.insert(all, ALL_ID);
+        List<Sensor> sensors = sensorRepository.getAll();
+        Iterable<SensorWrapper> wrappers = Iterables.transform(sensors, new Function<Sensor, SensorWrapper>() {
+            @Override
+            public SensorWrapper apply(@Nullable Sensor input) {
+                return new SensorWrapper(input);
+            }
+        });
+        List<SensorWrapper> wrapperList = newArrayList(wrappers);
+        sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
+        sensorAdapter.insert(new DummySensor(), ALL_ID);
 
         sensorSpinner.setPromptId(R.string.select_sensor);
         sensorSpinner.setAdapter(sensorAdapter);
@@ -168,7 +180,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         super.onDestroy();
 
         sessionRepository.close();
-        streamRepository.close();
+        sensorRepository.close();
     }
 
     @Override
@@ -264,17 +276,41 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (id == ALL_ID) {
-            selectedSensor = null;
-            sessionAdapter.setForSensor(null);
-        } else {
-            selectedSensor = sensorAdapter.getItem(position);
-            sessionAdapter.setForSensor(new Sensor("asdf"));
-        }
+        selectedSensor = sensorAdapter.getItem(position).getSensor();
+        sessionAdapter.setForSensor(selectedSensor);
+
         refreshItems();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    private class SensorWrapper {
+        private Sensor sensor;
+
+        public SensorWrapper(Sensor sensor) {
+            this.sensor = sensor;
+        }
+
+        public Sensor getSensor() {
+            return sensor;
+        }
+
+        @Override
+        public String toString() {
+            return sensor.getSensorName() + " - " + sensor.getMeasurementType();
+        }
+    }
+
+    private class DummySensor extends SensorWrapper {
+        public DummySensor() {
+            super(null);
+        }
+
+        @Override
+        public String toString() {
+            return all;
+        }
     }
 }

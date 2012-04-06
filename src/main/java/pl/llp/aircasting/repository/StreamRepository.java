@@ -1,14 +1,11 @@
 package pl.llp.aircasting.repository;
 
-import com.google.inject.Inject;
-import pl.llp.aircasting.model.AirCastingDB;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import org.jetbrains.annotations.NotNull;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,27 +13,9 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.DBConstants.*;
-import static pl.llp.aircasting.repository.DBHelper.getDouble;
-import static pl.llp.aircasting.repository.DBHelper.getInt;
-import static pl.llp.aircasting.repository.DBHelper.getLong;
-import static pl.llp.aircasting.repository.DBHelper.getString;
+import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class StreamRepository {
-    @Inject AirCastingDB airCastingDB;
-
-    @Inject
-    public void init() {
-        db = airCastingDB.getWritableDatabase();
-    }
-
-    @Inject
-    public StreamRepository(){
-    }
-
-    public void close() {
-        airCastingDB.close();
-    }
-
     private SQLiteDatabase db;
 
     MeasurementRepository measurements;
@@ -125,24 +104,5 @@ public class StreamRepository {
 
     public void save(MeasurementStream stream, long sessionId) {
         saveAll(Collections.singletonList(stream), sessionId);
-    }
-
-    public List<String> getDataTypes() {
-        List<String> result = newArrayList();
-
-        boolean distinct = true;
-        Cursor cursor = db.query(distinct, STREAM_TABLE_NAME, new String[]{STREAM_MEASUREMENT_TYPE},
-                                 null, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            String type = cursor.getString(0);
-            result.add(type);
-
-            cursor.moveToNext();
-        }
-        cursor.close();
-
-        return result;
     }
 }

@@ -36,6 +36,7 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
+import javax.annotation.Nullable;
 import java.text.NumberFormat;
 
 public class SessionAdapter extends SimpleCursorAdapter {
@@ -123,7 +124,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
         this.resourceHelper = resourceHelper;
     }
 
-    public void setForSensor(Sensor forSensor) {
+    public void setForSensor(@Nullable Sensor forSensor) {
         this.forSensor = forSensor;
     }
 }

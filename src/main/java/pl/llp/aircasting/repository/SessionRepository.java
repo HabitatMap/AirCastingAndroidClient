@@ -19,16 +19,11 @@
  */
 package pl.llp.aircasting.repository;
 
-import pl.llp.aircasting.model.AirCastingDB;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
+import pl.llp.aircasting.model.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,11 +35,11 @@ import static pl.llp.aircasting.model.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class SessionRepository {
-    private static final String SESSIONS_BY_MEASUREMENT_TYPE_QUERY =
+    private static final String SESSIONS_BY_SENSOR_QUERY =
             "SELECT * FROM " + SESSION_TABLE_NAME +
                     " JOIN " + STREAM_TABLE_NAME +
                     " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_SESSION_ID +
-                    " WHERE " + STREAM_MEASUREMENT_TYPE + " = ?";
+                    " WHERE " + STREAM_SENSOR_NAME + " = ?";
 
     @Inject
     AirCastingDB dbAccessor;
@@ -206,11 +201,11 @@ public class SessionRepository {
         return result;
     }
 
-    public Cursor notDeletedCursor(String measurementType) {
-        if (measurementType == null) {
+    public Cursor notDeletedCursor(Sensor sensor) {
+        if (sensor == null) {
             return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
         } else {
-            return db.rawQuery(SESSIONS_BY_MEASUREMENT_TYPE_QUERY, new String[]{measurementType});
+            return db.rawQuery(SESSIONS_BY_SENSOR_QUERY, new String[]{sensor.getSensorName()});
         }
     }
 
