@@ -136,7 +136,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typeList);
         sensorAdapter.insert(all, ALL_ID);
 
-        sensorSpinner.setPromptId(R.string.data_type);
+        sensorSpinner.setPromptId(R.string.select_sensor);
         sensorSpinner.setAdapter(sensorAdapter);
         sensorSpinner.setOnItemSelectedListener(this);
     }

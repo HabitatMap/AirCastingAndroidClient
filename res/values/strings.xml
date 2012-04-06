@@ -184,7 +184,6 @@
     <string name="now_label_template" formatted="false">Now %s</string>
     <string name="avg_label_template" formatted="false">Avg %s</string>
 
-    <string name="select_sensor">Select sensor</string>
-    <string name="data_type">Data type</string>
+    <string name="select_sensor">Select a sensor</string>
     <string name="all">All</string>
 </resources>
