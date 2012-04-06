@@ -29,10 +29,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -47,6 +44,7 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.repository.StreamRepository;
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -60,6 +58,7 @@ import roboguice.inject.InjectView;
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SessionRepository sessionRepository;
+    @Inject StreamRepository streamRepository;
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SensorManager sensorManager;
@@ -70,6 +69,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
 
+    @InjectView(R.id.sensor_spinner) Spinner sensorSpinner;
     @InjectView(R.id.sync_summary) Button syncSummary;
     @InjectView(R.id.top_bar) View topBar;
 
@@ -82,9 +82,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         }
     };
 
-    Cursor cursor;
+    private SessionAdapter sessionAdapter;
     private long sessionId;
-    private SessionAdapter adapter;
+    Cursor sessionCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,15 +119,25 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     private void refreshList() {
         refreshBottomBar();
+        refreshSensors();
+        refreshItems();
+    }
 
-        cursor = sessionRepository.notDeletedCursor();
-        startManagingCursor(cursor);
+    private void refreshSensors() {
+        String[] types = streamRepository.getDataTypes().toArray(new String[]{});
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
+        sensorSpinner.setAdapter(adapter);
+    }
 
-        if (adapter == null) {
-            adapter = sessionAdapterFactory.getSessionAdapter(this, cursor);
-            setListAdapter(adapter);
+    private void refreshItems() {
+        sessionCursor = sessionRepository.notDeletedCursor();
+        startManagingCursor(sessionCursor);
+
+        if (sessionAdapter == null) {
+            sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
+            setListAdapter(sessionAdapter);
         } else {
-            adapter.changeCursor(cursor);
+            sessionAdapter.changeCursor(sessionCursor);
         }
     }
 
@@ -143,7 +153,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         sessionRepository.close();
+        streamRepository.close();
     }
 
     @Override
