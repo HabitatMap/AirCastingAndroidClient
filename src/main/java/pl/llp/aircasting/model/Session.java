@@ -36,7 +36,7 @@ public class Session implements Serializable
   @Expose private UUID uuid = UUID.randomUUID();
 
   @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
-  @Expose @SerializedName("streams") transient Map<String, MeasurementStream> streams = newHashMap();
+  @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
   @Expose private List<Note> notes = newArrayList();
 
   @Expose private String title;

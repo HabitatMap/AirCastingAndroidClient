@@ -39,6 +39,7 @@ import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
@@ -265,8 +266,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (id == ALL_ID) {
             selectedSensor = null;
+            sessionAdapter.setForSensor(null);
         } else {
             selectedSensor = sensorAdapter.getItem(position);
+            sessionAdapter.setForSensor(new Sensor("asdf"));
         }
         refreshItems();
     }

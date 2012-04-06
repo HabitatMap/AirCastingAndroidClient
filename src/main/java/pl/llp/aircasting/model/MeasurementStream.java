@@ -4,12 +4,13 @@ import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SoundHelper;
 
+import java.io.Serializable;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class MeasurementStream {
-    private List<Measurement> measurements = newArrayList();
+public class MeasurementStream implements Serializable {
+    private transient List<Measurement> measurements = newArrayList();
 
     private long id;
 

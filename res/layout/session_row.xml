@@ -48,6 +48,12 @@
               android:ellipsize="end"
             />
 
+    <TextView style="@style/SessionsBigText"
+              android:layout_alignParentRight="true"
+              android:id="@+id/data_types"
+              android:text="CO/dB/K"
+            />
+
     <LinearLayout android:layout_height="wrap_content"
                   android:layout_width="wrap_content"
                   android:orientation="vertical"
