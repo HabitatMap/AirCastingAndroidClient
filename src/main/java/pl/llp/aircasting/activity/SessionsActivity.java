@@ -55,7 +55,8 @@ import roboguice.inject.InjectView;
  * Date: 10/5/11
  * Time: 3:59 PM
  */
-public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener {
+public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
+        AdapterView.OnItemSelectedListener {
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SessionRepository sessionRepository;
     @Inject StreamRepository streamRepository;
@@ -82,7 +83,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
         }
     };
 
+    private ArrayAdapter<String> sensorAdapter;
     private SessionAdapter sessionAdapter;
+    private String selectedSensor;
     private long sessionId;
     Cursor sessionCursor;
 
@@ -125,12 +128,14 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     private void refreshSensors() {
         String[] types = streamRepository.getDataTypes().toArray(new String[]{});
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
-        sensorSpinner.setAdapter(adapter);
+        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
+
+        sensorSpinner.setAdapter(sensorAdapter);
+        sensorSpinner.setOnItemSelectedListener(this);
     }
 
     private void refreshItems() {
-        sessionCursor = sessionRepository.notDeletedCursor();
+        sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
         startManagingCursor(sessionCursor);
 
         if (sessionAdapter == null) {
@@ -247,5 +252,16 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
                 finish();
             }
         }.execute(id);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectedSensor = sensorAdapter.getItem(position);
+        refreshItems();
+    }
+
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
     }
 }
