@@ -133,7 +133,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     private void refreshSensors() {
         List<String> typeList = streamRepository.getDataTypes();
-        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typeList);
+        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, typeList);
         sensorAdapter.insert(all, ALL_ID);
 
         sensorSpinner.setPromptId(R.string.select_sensor);

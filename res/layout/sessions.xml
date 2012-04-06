@@ -44,7 +44,6 @@
             />
 
     <ListView style="@style/Fill"
-              android:layout_weight="1"
               android:layout_below="@id/sensor_spinner"
               android:layout_above="@+id/sync_summary"
               android:id="@android:id/list"
