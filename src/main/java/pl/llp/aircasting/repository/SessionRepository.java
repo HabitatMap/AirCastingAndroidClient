@@ -155,12 +155,26 @@ public class SessionRepository
     session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
     session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
 
-    loadNotes(session);
+    List<Note> loadedNotes = notes.load(session);
+    session.addAll(loadedNotes);
+
+    loadStreams(session);
 
     return session;
   }
 
-  public Session load(long sessionID)
+  private Session loadStreams(Session session)
+  {
+    List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
+    for (MeasurementStream stream : streams)
+    {
+      session.add(stream);
+    }
+
+    return session;
+  }
+
+  public Session loadShallow(long sessionID)
   {
     Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
     try
@@ -181,7 +195,7 @@ public class SessionRepository
     }
   }
 
-  private Session load(UUID uuid)
+  private Session loadShallow(UUID uuid)
   {
     Cursor cursor = db.rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
                                 new String[]{uuid.toString()});
@@ -269,38 +283,35 @@ public class SessionRepository
     db.endTransaction();
   }
 
-  public Session loadEager(UUID uuid)
+  public Session loadFully(UUID uuid)
   {
-    Session session = load(uuid);
+    Session session = loadShallow(uuid);
 
     return fill(session, null);
   }
 
-  public Session loadEager(long id, ProgressListener progressListener)
+  public Session loadFully(long id, ProgressListener progressListener)
   {
-    Session session = load(id);
+    Session session = loadShallow(id);
     return fill(session, progressListener);
   }
 
   private Session fill(Session session, ProgressListener progressListener)
   {
-    List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
     MeasurementRepository r = new MeasurementRepository(db, progressListener);
     Map<Long, List<Measurement>> load = r.load(session);
 
     for (MeasurementStream stream : streams)
     {
-      stream.setMeasurements(load.get(stream.getId()));
-      session.add(stream);
+      if(load.containsKey(stream.getId()))
+      {
+        stream.setMeasurements(load.get(stream.getId()));
+        session.add(stream);
+      }
     }
 
     return session;
-  }
-
-  private void loadNotes(Session session)
-  {
-    List<Note> loadedNotes = notes.load(session);
-    session.addAll(loadedNotes);
   }
 
   public void update(Session session)
