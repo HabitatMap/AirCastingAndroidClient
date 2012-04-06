@@ -49,6 +49,8 @@ import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
@@ -57,6 +59,8 @@ import roboguice.inject.InjectView;
  */
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
         AdapterView.OnItemSelectedListener {
+    private static final int ALL_ID = 0;
+
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SessionRepository sessionRepository;
     @Inject StreamRepository streamRepository;
@@ -69,6 +73,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Inject MainMenu mainMenu;
 
     @InjectResource(R.string.sync_in_progress) String syncInProgress;
+    @InjectResource(R.string.all) String all;
 
     @InjectView(R.id.sensor_spinner) Spinner sensorSpinner;
     @InjectView(R.id.sync_summary) Button syncSummary;
@@ -127,9 +132,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void refreshSensors() {
-        String[] types = streamRepository.getDataTypes().toArray(new String[]{});
-        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
+        List<String> typeList = streamRepository.getDataTypes();
+        sensorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typeList);
+        sensorAdapter.insert(all, ALL_ID);
 
+        sensorSpinner.setPromptId(R.string.data_type);
         sensorSpinner.setAdapter(sensorAdapter);
         sensorSpinner.setOnItemSelectedListener(this);
     }
@@ -256,10 +263,13 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedSensor = sensorAdapter.getItem(position);
+        if (id == ALL_ID) {
+            selectedSensor = null;
+        } else {
+            selectedSensor = sensorAdapter.getItem(position);
+        }
         refreshItems();
     }
-
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
