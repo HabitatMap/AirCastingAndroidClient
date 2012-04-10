@@ -173,7 +173,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     } else {
       sessionAdapter.changeCursor(sessionCursor);
     }
-    sessionAdapter.setForSensor(selectedSensor);
+    sessionAdapter.setSensor(selectedSensor);
   }
 
   private void refreshBottomBar() {

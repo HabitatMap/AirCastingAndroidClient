@@ -38,7 +38,6 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +47,7 @@ import static java.lang.String.valueOf;
 public class SessionAdapter extends SimpleCursorAdapter {
   SessionRepository sessionRepository;
   ResourceHelper resourceHelper;
-  Sensor forSensor;
+  Sensor sensor;
 
   private static final int[] backgrounds = new int[]{R.drawable.session_list_odd, R.drawable.session_list_even};
   private Context context;
@@ -69,7 +68,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
 
   private void fillTypes(View view, Session session) {
     TextView dataTypes = (TextView) view.findViewById(R.id.data_types);
-    if (forSensor == null) {
+    if (sensor == null) {
       dataTypes.setVisibility(View.VISIBLE);
 
       Iterable<String> types = transform(session.getMeasurementStreams(), new Function<MeasurementStream, String>() {
@@ -90,14 +89,14 @@ public class SessionAdapter extends SimpleCursorAdapter {
   private void fillStats(View view, Session session) {
     ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
 
-    if (forSensor == null) {
+    if (sensor == null) {
       view.findViewById(R.id.avg_container).setVisibility(View.INVISIBLE);
       view.findViewById(R.id.peak_container).setVisibility(View.INVISIBLE);
     } else {
       view.findViewById(R.id.avg_container).setVisibility(View.VISIBLE);
       view.findViewById(R.id.peak_container).setVisibility(View.VISIBLE);
 
-      String name = forSensor.getSensorName();
+      String name = sensor.getSensorName();
       MeasurementStream stream = session.getStream(name);
       int peak = (int) stream.getPeak();
       int avg = (int) stream.getAvg();
@@ -122,7 +121,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
   }
 
   private void updateImage(ImageView view, double value) {
-    Drawable bullet = resourceHelper.getBulletAbsolute(SimpleAudioReader.getSensor(), value);
+    Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);
     view.setBackgroundDrawable(bullet);
   }
 
@@ -149,7 +148,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
     this.resourceHelper = resourceHelper;
   }
 
-  public void setForSensor(@Nullable Sensor forSensor) {
-    this.forSensor = forSensor;
+  public void setSensor(@Nullable Sensor sensor) {
+    this.sensor = sensor;
   }
 }
