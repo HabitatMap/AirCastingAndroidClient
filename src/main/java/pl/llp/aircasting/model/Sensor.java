@@ -16,7 +16,7 @@ public class Sensor implements Serializable {
   private String symbol;
   private Map<MeasurementLevel, Integer> thresholds = newHashMap();
 
-  private boolean enabled = true;
+  protected boolean enabled = true;
 
   public Sensor(SensorEvent event) {
     this(event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
@@ -72,13 +72,6 @@ public class Sensor implements Serializable {
     return enabled;
   }
 
-  /**
-   * Toggle the enabled/disabled status of this Sensor
-   */
-  public void toggle() {
-    enabled = !enabled;
-  }
-
   public int getThreshold(MeasurementLevel level) {
     return thresholds.get(level);
   }
@@ -86,7 +79,7 @@ public class Sensor implements Serializable {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Sensor)) return false;
 
     Sensor sensor = (Sensor) o;
 
