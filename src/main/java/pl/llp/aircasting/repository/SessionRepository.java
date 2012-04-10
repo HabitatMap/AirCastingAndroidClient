@@ -42,6 +42,7 @@ public class SessionRepository {
           " JOIN " + STREAM_TABLE_NAME +
           " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_SESSION_ID +
           " WHERE " + STREAM_SENSOR_NAME + " = ?" +
+          " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
           " ORDER BY " + SESSION_START + " DESC";
 
   @Inject
