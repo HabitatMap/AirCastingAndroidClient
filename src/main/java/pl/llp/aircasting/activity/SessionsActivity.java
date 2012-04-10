@@ -227,7 +227,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     private void editSession(long id) {
-        Session session = sessionRepository.load(id);
+        Session session = sessionRepository.loadShallow(id);
         Intents.editSession(this, session);
     }
 

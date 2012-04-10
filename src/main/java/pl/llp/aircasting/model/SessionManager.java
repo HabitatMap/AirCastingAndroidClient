@@ -96,7 +96,7 @@ public class SessionManager {
     }
 
     public void loadSession(long id, ProgressListener listener) {
-        Session newSession = sessionRepository.loadEager(id, listener);
+        Session newSession = sessionRepository.loadFully(id, listener);
         setSession(newSession);
     }
 

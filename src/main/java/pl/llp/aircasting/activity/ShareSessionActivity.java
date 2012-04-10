@@ -99,7 +99,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     private void shareLink() {
         if (getIntent().hasExtra(Intents.SESSION_ID)) {
             long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
-            session = sessionRepository.load(sessionId);
+            session = sessionRepository.loadShallow(sessionId);
         } else {
             session = sessionManager.getSession();
         }
@@ -157,7 +157,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... ids) {
-                session = sessionRepository.loadEager(ids[0], this);
+                session = sessionRepository.loadFully(ids[0], this);
                 return session;
             }
 

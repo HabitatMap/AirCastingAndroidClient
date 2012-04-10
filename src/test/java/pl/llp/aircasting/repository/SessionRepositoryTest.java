@@ -54,7 +54,7 @@ public class SessionRepositoryTest
 
     // when
     sessions.save(session);
-    Session loaded = sessions.load(1);
+    Session loaded = sessions.loadShallow(1);
 
     // then
     assertNotSame(loaded, session);
