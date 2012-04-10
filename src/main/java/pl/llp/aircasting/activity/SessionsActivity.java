@@ -114,13 +114,22 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     super.onResume();
 
     refreshList();
-    topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+    refreshTopBar();
 
     IntentFilter filter = new IntentFilter();
     filter.addAction(Intents.ACTION_SYNC_UPDATE);
 
     registerReceiver(broadcastReceiver, filter);
     registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+  }
+
+  private void refreshTopBar() {
+    if (selectedSensor == null) {
+      topBar.setVisibility(View.GONE);
+    } else {
+      topBar.setVisibility(View.VISIBLE);
+      topBarHelper.updateTopBar(selectedSensor, topBar);
+    }
   }
 
   @Override
@@ -280,6 +289,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     selectedSensor = sensorAdapter.getItem(position).getSensor();
 
     refreshItems();
+    refreshTopBar();
   }
 
   @Override
