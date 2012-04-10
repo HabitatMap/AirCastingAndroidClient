@@ -103,9 +103,9 @@ public class SessionAdapter extends SimpleCursorAdapter {
 
       updateImage((ImageView) view.findViewById(R.id.session_average_marker), avg);
       updateImage((ImageView) view.findViewById(R.id.session_peak_marker), peak);
-
-      ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
     }
+
+    ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
   }
 
   private void fillTitle(View view, Context context, Session session) {

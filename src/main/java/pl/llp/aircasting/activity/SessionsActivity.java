@@ -64,253 +64,253 @@ import static com.google.common.collect.Lists.newArrayList;
  * Time: 3:59 PM
  */
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
-        AdapterView.OnItemSelectedListener {
-    private static final int ALL_ID = 0;
+    AdapterView.OnItemSelectedListener {
+  private static final int ALL_ID = 0;
 
-    @Inject SessionAdapterFactory sessionAdapterFactory;
-    @Inject SessionRepository sessionRepository;
-    @Inject SensorRepository sensorRepository;
-    @Inject SessionManager sessionManager;
-    @Inject SettingsHelper settingsHelper;
-    @Inject SensorManager sensorManager;
-    @Inject TopBarHelper topBarHelper;
-    @Inject Application context;
-    @Inject SyncState syncState;
-    @Inject MainMenu mainMenu;
+  @Inject SessionAdapterFactory sessionAdapterFactory;
+  @Inject SessionRepository sessionRepository;
+  @Inject SensorRepository sensorRepository;
+  @Inject SessionManager sessionManager;
+  @Inject SettingsHelper settingsHelper;
+  @Inject SensorManager sensorManager;
+  @Inject TopBarHelper topBarHelper;
+  @Inject Application context;
+  @Inject SyncState syncState;
+  @Inject MainMenu mainMenu;
 
-    @InjectResource(R.string.sync_in_progress) String syncInProgress;
-    @InjectResource(R.string.all) String all;
+  @InjectResource(R.string.sync_in_progress) String syncInProgress;
+  @InjectResource(R.string.all) String all;
 
-    @InjectView(R.id.sensor_spinner) Spinner sensorSpinner;
-    @InjectView(R.id.sync_summary) Button syncSummary;
-    @InjectView(R.id.top_bar) View topBar;
+  @InjectView(R.id.sensor_spinner) Spinner sensorSpinner;
+  @InjectView(R.id.sync_summary) Button syncSummary;
+  @InjectView(R.id.top_bar) View topBar;
 
-    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+  @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            refreshList();
-        }
-    };
+  BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      refreshList();
+    }
+  };
 
-    private ArrayAdapter<SensorWrapper> sensorAdapter;
-    private SessionAdapter sessionAdapter;
-    private Sensor selectedSensor;
-    private long sessionId;
-    Cursor sessionCursor;
+  private ArrayAdapter<SensorWrapper> sensorAdapter;
+  private SessionAdapter sessionAdapter;
+  private Sensor selectedSensor;
+  private long sessionId;
+  Cursor sessionCursor;
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setContentView(R.layout.sessions);
+
+    getListView().setOnItemLongClickListener(this);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    refreshList();
+    topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Intents.ACTION_SYNC_UPDATE);
+
+    registerReceiver(broadcastReceiver, filter);
+    registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    unregisterReceiver(broadcastReceiver);
+    unregisterReceiver(syncBroadcastReceiver);
+  }
+
+  private void refreshList() {
+    refreshBottomBar();
+    refreshSensors();
+    refreshItems();
+  }
+
+  private void refreshSensors() {
+    List<Sensor> sensors = sensorRepository.getAll();
+    Iterable<SensorWrapper> wrappers = Iterables.transform(sensors, new Function<Sensor, SensorWrapper>() {
+      @Override
+      public SensorWrapper apply(@Nullable Sensor input) {
+        return new SensorWrapper(input);
+      }
+    });
+    List<SensorWrapper> wrapperList = newArrayList(wrappers);
+    sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
+    sensorAdapter.insert(new DummySensor(), ALL_ID);
+
+    sensorSpinner.setPromptId(R.string.select_sensor);
+    sensorSpinner.setAdapter(sensorAdapter);
+    sensorSpinner.setOnItemSelectedListener(this);
+  }
+
+  private void refreshItems() {
+    sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
+    startManagingCursor(sessionCursor);
+
+    if (sessionAdapter == null) {
+      sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
+      setListAdapter(sessionAdapter);
+    } else {
+      sessionAdapter.changeCursor(sessionCursor);
+    }
+  }
+
+  private void refreshBottomBar() {
+    if (syncState.isInProgress()) {
+      syncSummary.setVisibility(View.VISIBLE);
+      syncSummary.setText(syncInProgress);
+    } else {
+      syncSummary.setVisibility(View.GONE);
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    sessionRepository.close();
+    sensorRepository.close();
+  }
+
+  @Override
+  protected void onListItemClick(ListView listView, View view, int position, long id) {
+    viewSession(id);
+  }
+
+  @Override
+  public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+    Intent intent = new Intent(this, OpenSessionActivity.class);
+    sessionId = id;
+    startActivityForResult(intent, 0);
+    return true;
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (resultCode) {
+      case R.id.view:
+        viewSession(sessionId);
+        break;
+      case R.id.delete:
+        deleteSession(sessionId);
+        break;
+      case R.id.edit:
+        editSession(sessionId);
+        break;
+      case R.id.save_button:
+        updateSession(data);
+        break;
+      case R.id.share:
+        Intents.shareSession(this, sessionId);
+        break;
+    }
+  }
+
+  private void updateSession(Intent data) {
+    Session session = Intents.editSessionResult(data);
+
+    sessionRepository.update(session);
+    Intents.triggerSync(context);
+
+    refreshList();
+  }
+
+  private void editSession(long id) {
+    Session session = sessionRepository.loadShallow(id);
+    Intents.editSession(this, session);
+  }
+
+  private void deleteSession(long id) {
+    sessionRepository.markSessionForRemoval(id);
+    Intents.triggerSync(context);
+
+    refreshList();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    return mainMenu.create(this, menu);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    return mainMenu.handleClick(this, item);
+  }
+
+  private void viewSession(long id) {
+    if (sessionManager.isSessionStarted()) {
+      Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
+      return;
+    }
+
+    new OpenSessionTask(this) {
+      @Override
+      protected Session doInBackground(Long... longs) {
+        sessionManager.loadSession(longs[0], this);
+
+        return null;
+      }
+
+      @Override
+      protected void onPostExecute(Session session) {
+        super.onPostExecute(session);
+
+        Intent intent = new Intent(getApplicationContext(), SoundTraceActivity.class);
+        startActivity(intent);
+
+        finish();
+      }
+    }.execute(id);
+  }
+
+  @Override
+  public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    selectedSensor = sensorAdapter.getItem(position).getSensor();
+    sessionAdapter.setForSensor(selectedSensor);
+
+    refreshItems();
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> parent) {
+  }
+
+  private class SensorWrapper {
+    private Sensor sensor;
+
+    public SensorWrapper(Sensor sensor) {
+      this.sensor = sensor;
+    }
+
+    public Sensor getSensor() {
+      return sensor;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public String toString() {
+      return sensor.getShortType() + " - " + sensor.getSensorName();
+    }
+  }
 
-        setContentView(R.layout.sessions);
-
-        getListView().setOnItemLongClickListener(this);
+  private class DummySensor extends SensorWrapper {
+    public DummySensor() {
+      super(null);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        refreshList();
-        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intents.ACTION_SYNC_UPDATE);
-
-        registerReceiver(broadcastReceiver, filter);
-        registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+    public String toString() {
+      return all;
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        unregisterReceiver(broadcastReceiver);
-        unregisterReceiver(syncBroadcastReceiver);
-    }
-
-    private void refreshList() {
-        refreshBottomBar();
-        refreshSensors();
-        refreshItems();
-    }
-
-    private void refreshSensors() {
-        List<Sensor> sensors = sensorRepository.getAll();
-        Iterable<SensorWrapper> wrappers = Iterables.transform(sensors, new Function<Sensor, SensorWrapper>() {
-            @Override
-            public SensorWrapper apply(@Nullable Sensor input) {
-                return new SensorWrapper(input);
-            }
-        });
-        List<SensorWrapper> wrapperList = newArrayList(wrappers);
-        sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
-        sensorAdapter.insert(new DummySensor(), ALL_ID);
-
-        sensorSpinner.setPromptId(R.string.select_sensor);
-        sensorSpinner.setAdapter(sensorAdapter);
-        sensorSpinner.setOnItemSelectedListener(this);
-    }
-
-    private void refreshItems() {
-        sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
-        startManagingCursor(sessionCursor);
-
-        if (sessionAdapter == null) {
-            sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
-            setListAdapter(sessionAdapter);
-        } else {
-            sessionAdapter.changeCursor(sessionCursor);
-        }
-    }
-
-    private void refreshBottomBar() {
-        if (syncState.isInProgress()) {
-            syncSummary.setVisibility(View.VISIBLE);
-            syncSummary.setText(syncInProgress);
-        } else {
-            syncSummary.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        sessionRepository.close();
-        sensorRepository.close();
-    }
-
-    @Override
-    protected void onListItemClick(ListView listView, View view, int position, long id) {
-        viewSession(id);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent intent = new Intent(this, OpenSessionActivity.class);
-        sessionId = id;
-        startActivityForResult(intent, 0);
-        return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) {
-            case R.id.view:
-                viewSession(sessionId);
-                break;
-            case R.id.delete:
-                deleteSession(sessionId);
-                break;
-            case R.id.edit:
-                editSession(sessionId);
-                break;
-            case R.id.save_button:
-                updateSession(data);
-                break;
-            case R.id.share:
-                Intents.shareSession(this, sessionId);
-                break;
-        }
-    }
-
-    private void updateSession(Intent data) {
-        Session session = Intents.editSessionResult(data);
-
-        sessionRepository.update(session);
-        Intents.triggerSync(context);
-
-        refreshList();
-    }
-
-    private void editSession(long id) {
-        Session session = sessionRepository.loadShallow(id);
-        Intents.editSession(this, session);
-    }
-
-    private void deleteSession(long id) {
-        sessionRepository.markSessionForRemoval(id);
-        Intents.triggerSync(context);
-
-        refreshList();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
-    }
-
-    private void viewSession(long id) {
-        if (sessionManager.isSessionStarted()) {
-            Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        new OpenSessionTask(this) {
-            @Override
-            protected Session doInBackground(Long... longs) {
-                sessionManager.loadSession(longs[0], this);
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Session session) {
-                super.onPostExecute(session);
-
-                Intent intent = new Intent(getApplicationContext(), SoundTraceActivity.class);
-                startActivity(intent);
-
-                finish();
-            }
-        }.execute(id);
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedSensor = sensorAdapter.getItem(position).getSensor();
-        sessionAdapter.setForSensor(selectedSensor);
-
-        refreshItems();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
-
-    private class SensorWrapper {
-        private Sensor sensor;
-
-        public SensorWrapper(Sensor sensor) {
-            this.sensor = sensor;
-        }
-
-        public Sensor getSensor() {
-            return sensor;
-        }
-
-        @Override
-        public String toString() {
-            return sensor.getSensorName() + " - " + sensor.getMeasurementType();
-        }
-    }
-
-    private class DummySensor extends SensorWrapper {
-        public DummySensor() {
-            super(null);
-        }
-
-        @Override
-        public String toString() {
-            return all;
-        }
-    }
+  }
 }
