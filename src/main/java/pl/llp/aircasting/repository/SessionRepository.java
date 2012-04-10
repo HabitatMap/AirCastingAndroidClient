@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.*;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,12 @@ import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class SessionRepository {
   private static final String SESSIONS_BY_SENSOR_QUERY =
-      "SELECT * FROM " + SESSION_TABLE_NAME +
+      "SELECT " + SESSION_TABLE_NAME + ".*" +
+          " FROM " + SESSION_TABLE_NAME +
           " JOIN " + STREAM_TABLE_NAME +
           " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_SESSION_ID +
-          " WHERE " + STREAM_SENSOR_NAME + " = ?";
+          " WHERE " + STREAM_SENSOR_NAME + " = ?" +
+          " ORDER BY " + SESSION_START + " DESC";
 
   @Inject
   AirCastingDB dbAccessor;
@@ -124,7 +127,7 @@ public class SessionRepository {
     values.put(SESSION_LOCATION, session.getLocation());
   }
 
-  public Session load(Cursor cursor) {
+  public Session loadShallow(Cursor cursor) {
     Session session = new Session();
 
     session.setId(getLong(cursor, SESSION_ID));
@@ -170,7 +173,7 @@ public class SessionRepository {
     try {
       if (cursor.getCount() > 0) {
         cursor.moveToFirst();
-        return load(cursor);
+        return loadShallow(cursor);
       } else {
         return null;
       }
@@ -188,7 +191,7 @@ public class SessionRepository {
       if (cursor.getCount() == 0) return null;
 
       cursor.moveToFirst();
-      return load(cursor);
+      return loadShallow(cursor);
     } finally {
       cursor.close();
     }
@@ -207,7 +210,7 @@ public class SessionRepository {
 
     cursor.moveToFirst();
     while (!cursor.isAfterLast()) {
-      Session load = load(cursor);
+      Session load = loadShallow(cursor);
       result.add(load);
       cursor.moveToNext();
     }
@@ -217,7 +220,7 @@ public class SessionRepository {
     return result;
   }
 
-  public Cursor notDeletedCursor(Sensor sensor) {
+  public Cursor notDeletedCursor(@Nullable Sensor sensor) {
     if (sensor == null) {
       return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
     } else {

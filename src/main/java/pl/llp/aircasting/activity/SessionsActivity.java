@@ -147,7 +147,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     });
     List<SensorWrapper> wrapperList = newArrayList(wrappers);
     sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
-    sensorAdapter.insert(new DummySensor(), ALL_ID);
+    sensorAdapter.insert(new DummySensor(all), ALL_ID);
 
     sensorSpinner.setPromptId(R.string.select_sensor);
     sensorSpinner.setAdapter(sensorAdapter);
@@ -164,6 +164,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     } else {
       sessionAdapter.changeCursor(sessionCursor);
     }
+    sessionAdapter.setForSensor(selectedSensor);
   }
 
   private void refreshBottomBar() {
@@ -277,7 +278,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
     selectedSensor = sensorAdapter.getItem(position).getSensor();
-    sessionAdapter.setForSensor(selectedSensor);
 
     refreshItems();
   }
@@ -286,7 +286,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   public void onNothingSelected(AdapterView<?> parent) {
   }
 
-  private class SensorWrapper {
+  private static class SensorWrapper {
     private Sensor sensor;
 
     public SensorWrapper(Sensor sensor) {
@@ -303,14 +303,17 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
   }
 
-  private class DummySensor extends SensorWrapper {
-    public DummySensor() {
+  private static class DummySensor extends SensorWrapper {
+    private String name;
+
+    public DummySensor(String name) {
       super(null);
+      this.name = name;
     }
 
     @Override
     public String toString() {
-      return all;
+      return name;
     }
   }
 }
