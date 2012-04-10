@@ -156,6 +156,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     });
     List<SensorWrapper> wrapperList = newArrayList(wrappers);
     sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
+    sensorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     sensorAdapter.insert(new DummySensor(all), ALL_ID);
 
     sensorSpinner.setPromptId(R.string.select_sensor);
