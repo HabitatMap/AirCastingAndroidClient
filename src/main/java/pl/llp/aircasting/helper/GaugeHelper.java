@@ -61,7 +61,7 @@ public class GaugeHelper {
     private void updateLabel(Sensor sensor, View view, String label) {
         TextView textView = (TextView) view;
 
-        String formatted = String.format(label, sensor.getSymbol());
+        String formatted = String.format(label, sensor.getShortType());
         textView.setText(formatted);
     }
 

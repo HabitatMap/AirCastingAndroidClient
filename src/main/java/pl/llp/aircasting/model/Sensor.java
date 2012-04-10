@@ -106,6 +106,9 @@ public class Sensor implements Serializable {
         .append(getMeasurementType())
         .append(" - ")
         .append(getSensorName())
+        .append(" (")
+        .append(getSymbol())
+        .append(")")
         .toString();
   }
 }

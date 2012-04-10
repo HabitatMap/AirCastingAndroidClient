@@ -141,7 +141,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         for (Sensor sensor : sensorManager.getSensors()) {
             Map<String, Object> map = prepareItem(sensor);
 
-            map.put(TITLE, title(sensor));
+            map.put(TITLE, sensor.toString());
             map.put(SENSOR, sensor);
 
             data.add(map);
@@ -160,15 +160,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
             data.add(map);
         }
         return sensors.get(name);
-    }
-
-    private String title(Sensor sensor) {
-        StringBuilder builder = new StringBuilder();
-
-        return builder.append(sensor.getMeasurementType())
-                .append(" - ")
-                .append(sensor.getSensorName())
-                .toString();
     }
 
     @Override
