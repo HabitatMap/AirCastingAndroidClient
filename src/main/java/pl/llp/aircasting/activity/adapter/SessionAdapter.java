@@ -68,6 +68,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
 
   private void fillTypes(View view, Session session) {
     TextView dataTypes = (TextView) view.findViewById(R.id.data_types);
+
     if (sensor == null) {
       dataTypes.setVisibility(View.VISIBLE);
 
@@ -82,7 +83,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
       String text = Joiner.on("/").join(types);
       dataTypes.setText(text);
     } else {
-      dataTypes.setVisibility(View.INVISIBLE);
+      dataTypes.setVisibility(View.GONE);
     }
   }
 
@@ -90,8 +91,8 @@ public class SessionAdapter extends SimpleCursorAdapter {
     ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
 
     if (sensor == null) {
-      view.findViewById(R.id.avg_container).setVisibility(View.INVISIBLE);
-      view.findViewById(R.id.peak_container).setVisibility(View.INVISIBLE);
+      view.findViewById(R.id.avg_container).setVisibility(View.GONE);
+      view.findViewById(R.id.peak_container).setVisibility(View.GONE);
     } else {
       view.findViewById(R.id.avg_container).setVisibility(View.VISIBLE);
       view.findViewById(R.id.peak_container).setVisibility(View.VISIBLE);
