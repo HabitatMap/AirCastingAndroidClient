@@ -38,6 +38,7 @@ public class StreamRepository {
             String symbol = getString(c, STREAM_MEASUREMENT_SYMBOL);
             String unit = getString(c, STREAM_MEASUREMENT_UNIT);
             String type = getString(c, STREAM_MEASUREMENT_TYPE);
+            String shortType = getString(c, STREAM_SHORT_TYPE);
 
             int thresholdVeryLow = getInt(c, STREAM_THRESHOLD_VERY_LOW);
             int thresholdLow = getInt(c, STREAM_THRESHOLD_LOW);
@@ -47,7 +48,7 @@ public class StreamRepository {
 
             MeasurementStream stream;
 
-            stream = new MeasurementStream(sensor, type, unit, symbol,
+            stream = new MeasurementStream(sensor, type, shortType, unit, symbol,
                                            thresholdVeryLow,
                                            thresholdLow,
                                            thresholdMedium,
@@ -78,6 +79,7 @@ public class StreamRepository {
         values.put(STREAM_MEASUREMENT_SYMBOL, stream.getSymbol());
         values.put(STREAM_MEASUREMENT_UNIT, stream.getUnit());
         values.put(STREAM_MEASUREMENT_TYPE, stream.getMeasurementType());
+        values.put(STREAM_SHORT_TYPE, stream.getShortType());
         values.put(STREAM_AVG, stream.getAvg());
         values.put(STREAM_PEAK, stream.getPeak());
         values.put(STREAM_THRESHOLD_VERY_LOW, stream.getThresholdVeryLow());

@@ -75,7 +75,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
       Iterable<String> types = transform(session.getMeasurementStreams(), new Function<MeasurementStream, String>() {
         @Override
         public String apply(MeasurementStream input) {
-          return input.getMeasurementType();
+          return input.getShortType();
         }
       });
       types = Ordering.natural().sortedCopy(types);

@@ -34,60 +34,60 @@ import pl.llp.aircasting.model.Sensor;
  * Time: 2:20 PM
  */
 public class SimpleAudioReader extends AudioReader.Listener {
-    private static final int SAMPLE_RATE = 44100;
-    public static final String SYMBOL = "dB";
-    public static final String UNIT = "decibels";
-    public static final String MEASUREMENT_TYPE = "Sound Level";
-    public static final String SENSOR_NAME = "Phone Microphone";
+  private static final int SAMPLE_RATE = 44100;
+  public static final String SYMBOL = "dB";
+  public static final String UNIT = "decibels";
+  public static final String MEASUREMENT_TYPE = "Sound Level";
+  public static final String SHORT_TYPE = "dB";
+  public static final String SENSOR_NAME = "Phone Microphone";
 
-    public static final int VERY_LOW = 20;
-    public static final int LOW = 60;
-    public static final int MID = 70;
-    public static final int HIGH = 80;
-    public static final int VERY_HIGH = 100;
+  public static final int VERY_LOW = 20;
+  public static final int LOW = 60;
+  public static final int MID = 70;
+  public static final int HIGH = 80;
+  public static final int VERY_HIGH = 100;
 
-    public static final Sensor sensor = new Sensor(
-            SENSOR_NAME, MEASUREMENT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
-    );
-    public static final String SHORT_TYPE = "dB";
+  public static final Sensor sensor = new Sensor(
+      SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+  );
 
-    @Inject SettingsHelper settingsHelper;
-    @Inject AudioReader audioReader;
-    @Inject SignalPower signalPower;
-    @Inject EventBus eventBus;
-    @Inject CalibrationHelper calibrationHelper;
+  @Inject SettingsHelper settingsHelper;
+  @Inject AudioReader audioReader;
+  @Inject SignalPower signalPower;
+  @Inject EventBus eventBus;
+  @Inject CalibrationHelper calibrationHelper;
 
-    /**
-     * @return A Sensor representing the internal microphone
-     */
-    public static Sensor getSensor() {
-        return sensor;
+  /**
+   * @return A Sensor representing the internal microphone
+   */
+  public static Sensor getSensor() {
+    return sensor;
+  }
+
+  public void start() {
+    // The AudioReader sleeps as much as it records
+    int block = SAMPLE_RATE / 2;
+
+    audioReader.startReader(SAMPLE_RATE, block, this);
+  }
+
+  public void stop() {
+    audioReader.stopReader();
+  }
+
+  @Override
+  public void onReadComplete(short[] buffer) {
+    Double power = signalPower.calculatePowerDb(buffer);
+    if (power != null) {
+      double calibrated = calibrationHelper.calibrate(power);
+      SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
+                                          VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
+      eventBus.post(event);
     }
+  }
 
-    public void start() {
-        // The AudioReader sleeps as much as it records
-        int block = SAMPLE_RATE / 2;
-
-        audioReader.startReader(SAMPLE_RATE, block, this);
-    }
-
-    public void stop() {
-        audioReader.stopReader();
-    }
-
-    @Override
-    public void onReadComplete(short[] buffer) {
-        Double power = signalPower.calculatePowerDb(buffer);
-        if (power != null) {
-            double calibrated = calibrationHelper.calibrate(power);
-            SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
-                    VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
-            eventBus.post(event);
-        }
-    }
-
-    @Override
-    public void onReadError(int error) {
-        eventBus.post(new AudioReaderErrorEvent());
-    }
+  @Override
+  public void onReadError(int error) {
+    eventBus.post(new AudioReaderErrorEvent());
+  }
 }

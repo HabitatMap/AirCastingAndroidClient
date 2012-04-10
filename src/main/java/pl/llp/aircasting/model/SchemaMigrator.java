@@ -21,11 +21,11 @@ package pl.llp.aircasting.model;
 
 import android.database.sqlite.SQLiteDatabase;
 import org.intellij.lang.annotations.Language;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static pl.llp.aircasting.model.DBConstants.*;
 
-public class SchemaMigrator
-{
+public class SchemaMigrator {
   @Language("SQL")
   public static final String CREATE_STREAMS_TABLE =
       "CREATE TABLE streams (\n  " +
@@ -36,6 +36,7 @@ public class SchemaMigrator
           STREAM_SENSOR_NAME + " TEXT, \n  " +
           STREAM_MEASUREMENT_UNIT + " TEXT, \n  " +
           STREAM_MEASUREMENT_TYPE + " TEXT, \n  " +
+          STREAM_SHORT_TYPE + " TEXT, \n  " +
           STREAM_MEASUREMENT_SYMBOL + " TEXT,\n " +
           STREAM_THRESHOLD_VERY_LOW + " INTEGER, \n " +
           STREAM_THRESHOLD_LOW + " INTEGER, \n " +
@@ -46,16 +47,14 @@ public class SchemaMigrator
 
   MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
 
-  public void create(SQLiteDatabase db)
-  {
+  public void create(SQLiteDatabase db) {
     createSessionsTable(db);
     createMeasurementsTable(db);
     createStreamTable(db);
     createNotesTable(db);
   }
 
-  private void createSessionsTable(SQLiteDatabase db)
-  {
+  private void createSessionsTable(SQLiteDatabase db) {
     db.execSQL("create table " + SESSION_TABLE_NAME + " (" +
                    SESSION_ID + " integer primary key" +
                    ", " + SESSION_TITLE + " text" +
@@ -78,8 +77,7 @@ public class SchemaMigrator
               );
   }
 
-  private void createMeasurementsTable(SQLiteDatabase db)
-  {
+  private void createMeasurementsTable(SQLiteDatabase db) {
     db.execSQL("create table " + MEASUREMENT_TABLE_NAME +
                    " (" + MEASUREMENT_ID + " integer primary key" +
                    ", " + MEASUREMENT_LATITUDE + " real" +
@@ -92,8 +90,7 @@ public class SchemaMigrator
               );
   }
 
-  private void createNotesTable(SQLiteDatabase db)
-  {
+  private void createNotesTable(SQLiteDatabase db) {
     db.execSQL("create table " + NOTE_TABLE_NAME + "(" +
                    NOTE_SESSION_ID + " integer " +
                    ", " + NOTE_LATITUDE + " real " +
@@ -106,30 +103,24 @@ public class SchemaMigrator
               );
   }
 
-  private void createStreamTable(SQLiteDatabase db)
-  {
+  private void createStreamTable(SQLiteDatabase db) {
     db.execSQL(CREATE_STREAMS_TABLE);
   }
 
-  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion)
-  {
-    if (oldVersion < 19 && newVersion >= 19)
-    {
+  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) {
+    if (oldVersion < 19 && newVersion >= 19) {
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
 
-    if (oldVersion < 20 && newVersion >= 20)
-    {
+    if (oldVersion < 20 && newVersion >= 20) {
       addColumn(db, NOTE_TABLE_NAME, NOTE_NUMBER, "integer");
     }
 
-    if (oldVersion < 21 && newVersion >= 21)
-    {
+    if (oldVersion < 21 && newVersion >= 21) {
       addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, "boolean");
     }
 
-    if (oldVersion < 22 && newVersion >= 22)
-    {
+    if (oldVersion < 22 && newVersion >= 22) {
       addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID, "integer");
 
       createStreamTable(db);
@@ -138,10 +129,15 @@ public class SchemaMigrator
       dropColumn(db, SESSION_TABLE_NAME, SESSION_PEAK);
       dropColumn(db, SESSION_TABLE_NAME, SESSION_AVG);
     }
+
+    if (oldVersion < 25 && newVersion >= 25) {
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SHORT_TYPE, "text");
+      db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SHORT_TYPE +
+                     " = '" + SimpleAudioReader.SHORT_TYPE + "'");
+    }
   }
 
-  void dropColumn(SQLiteDatabase db, String tableName, String column)
-  {
+  void dropColumn(SQLiteDatabase db, String tableName, String column) {
     StringBuilder q = new StringBuilder(50);
 
     q.append("ALTER TABLE ").append(tableName);
@@ -150,8 +146,7 @@ public class SchemaMigrator
     db.execSQL(q.toString());
   }
 
-  private void addColumn(SQLiteDatabase db, String tableName, String columnName, String datatype)
-  {
+  private void addColumn(SQLiteDatabase db, String tableName, String columnName, String datatype) {
     StringBuilder q = new StringBuilder(50);
 
     q.append("ALTER TABLE ");
