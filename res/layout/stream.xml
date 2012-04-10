@@ -8,6 +8,8 @@
     <TextView style="@style/Wrap"
               android:id="@+id/title"
               android:text="Title"
+              android:textStyle="bold"
+              android:textColor="@android:color/white"
               android:layout_alignParentTop="true"
               android:layout_centerHorizontal="true"
             />
