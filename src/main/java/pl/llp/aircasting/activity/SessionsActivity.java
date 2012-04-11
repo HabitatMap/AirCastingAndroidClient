@@ -20,6 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,8 @@ import android.view.View;
 import android.widget.*;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -39,6 +42,8 @@ import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
@@ -68,6 +73,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   private static final int ALL_ID = 0;
 
   @Inject SessionAdapterFactory sessionAdapterFactory;
+  @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
   @Inject SensorRepository sensorRepository;
   @Inject SessionManager sessionManager;
@@ -76,6 +82,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Inject TopBarHelper topBarHelper;
   @Inject Application context;
   @Inject SyncState syncState;
+  @Inject EventBus eventBus;
   @Inject MainMenu mainMenu;
 
   @InjectResource(R.string.sync_in_progress) String syncInProgress;
@@ -121,6 +128,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     registerReceiver(broadcastReceiver, filter);
     registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+    eventBus.register(this);
   }
 
   private void refreshTopBar() {
@@ -138,6 +146,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     unregisterReceiver(broadcastReceiver);
     unregisterReceiver(syncBroadcastReceiver);
+    eventBus.unregister(this);
   }
 
   private void refreshList() {
@@ -277,12 +286,34 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       protected void onPostExecute(Session session) {
         super.onPostExecute(session);
 
-        Intent intent = new Intent(getApplicationContext(), SoundTraceActivity.class);
-        startActivity(intent);
-
-        finish();
+        selectSensor();
       }
     }.execute(id);
+  }
+
+  private void selectSensor() {
+    if (selectedSensor != null) {
+      ViewStreamEvent event = new ViewStreamEvent(selectedSensor);
+      eventBus.post(event);
+    } else {
+      showDialog(SelectSensorHelper.DIALOG_ID);
+    }
+  }
+
+  @Subscribe
+  public void onEvent(ViewStreamEvent event){
+    Intent intent = new Intent(getApplicationContext(), SoundTraceActivity.class);
+    startActivity(intent);
+  }
+
+  @Override
+  protected Dialog onCreateDialog(int id) {
+    switch (id) {
+      case SelectSensorHelper.DIALOG_ID:
+        return selectSensorHelper.chooseSensor(this);
+      default:
+        return super.onCreateDialog(id);
+    }
   }
 
   @Override
