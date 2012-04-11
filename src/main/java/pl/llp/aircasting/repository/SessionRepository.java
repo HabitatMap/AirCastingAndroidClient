@@ -19,17 +19,24 @@
  */
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.model.AirCastingDB;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.Session;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.*;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.DBConstants.*;
@@ -93,6 +100,7 @@ public class SessionRepository {
     values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
     values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
     values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
+    values.put(SESSION_CALIBRATED, true);
 
     long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
     session.setId(sessionKey);
@@ -292,11 +300,6 @@ public class SessionRepository {
     }
 
     return session;
-  }
-
-  private void loadNotes(Session session) {
-    List<Note> loadedNotes = notes.load(session);
-    session.addAll(loadedNotes);
   }
 
   public void update(Session session) {

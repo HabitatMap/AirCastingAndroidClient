@@ -19,6 +19,27 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.adapter.SessionAdapter;
+import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
+import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
+import pl.llp.aircasting.activity.task.OpenSessionTask;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.SelectSensorHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.UncalibratedMeasurementCalibrator;
+import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
+import pl.llp.aircasting.repository.SensorRepository;
+import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.util.SyncState;
+
 import android.app.Application;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -30,46 +51,29 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.SessionAdapter;
-import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
-import pl.llp.aircasting.activity.menu.MainMenu;
-import pl.llp.aircasting.activity.task.OpenSessionTask;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.helper.SelectSensorHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.helper.TopBarHelper;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.repository.SensorRepository;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 3:59 PM
- */
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
-    AdapterView.OnItemSelectedListener {
+    AdapterView.OnItemSelectedListener
+{
   private static final int ALL_ID = 0;
 
   @Inject SessionAdapterFactory sessionAdapterFactory;
@@ -84,6 +88,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Inject SyncState syncState;
   @Inject EventBus eventBus;
   @Inject MainMenu mainMenu;
+
+  @Inject UncalibratedMeasurementCalibrator calibrator;
 
   @InjectResource(R.string.sync_in_progress) String syncInProgress;
   @InjectResource(R.string.all) String all;
@@ -140,6 +146,30 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
   }
 
+  private void refreshItems() {
+    sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
+
+    calibrateOldRecords();
+
+    startManagingCursor(sessionCursor);
+
+    if (sessionAdapter == null) {
+      sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
+      setListAdapter(sessionAdapter);
+    } else {
+      sessionAdapter.changeCursor(sessionCursor);
+    }
+  }
+
+  private void calibrateOldRecords()
+  {
+    if(calibrator.sessionsToCalibrate() > 0)
+    {
+      CalibrateSessionsTask task = new CalibrateSessionsTask(this, calibrator);
+      task.execute();
+    }
+  }
+
   @Override
   protected void onPause() {
     super.onPause();
@@ -173,19 +203,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     sensorSpinner.setOnItemSelectedListener(this);
   }
 
-  private void refreshItems() {
-    sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
-    startManagingCursor(sessionCursor);
-
-    if (sessionAdapter == null) {
-      sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
-      setListAdapter(sessionAdapter);
-    } else {
-      sessionAdapter.changeCursor(sessionCursor);
-    }
-    sessionAdapter.setSensor(selectedSensor);
-  }
-
   private void refreshBottomBar() {
     if (syncState.isInProgress()) {
       syncSummary.setVisibility(View.VISIBLE);
@@ -199,6 +216,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   protected void onDestroy() {
     super.onDestroy();
 
+    calibrator.close();
     sessionRepository.close();
     sensorRepository.close();
   }
