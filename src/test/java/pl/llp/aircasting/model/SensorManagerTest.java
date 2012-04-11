@@ -16,11 +16,8 @@ import java.util.ArrayList;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
 public class SensorManagerTest {
@@ -118,6 +115,22 @@ public class SensorManagerTest {
 
   @Test
   public void should_not_lose_sensor_enabled_state() {
-    fail("Figure this out");
+    manager.onEvent(sensorEvent);
+    manager.onEvent(sessionChangeEvent);
+    manager.onEvent(sensorEvent);
+
+    Sensor sensor1 = manager.getSensor(sensor.getSensorName());
+    assertThat(sensor1.isEnabled(), equalTo(true));
+  }
+
+  @Test
+  public void should_not_lose_sensor_disabled_state() {
+    manager.onEvent(sensorEvent);
+    manager.toggleSensor(sensor);
+    manager.onEvent(sessionChangeEvent);
+    manager.onEvent(sensorEvent);
+
+    Sensor sensor1 = manager.getSensor(sensor.getSensorName());
+    assertThat(sensor1.isEnabled(), equalTo(false));
   }
 }

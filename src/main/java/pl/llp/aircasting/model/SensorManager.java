@@ -12,14 +12,16 @@ import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
 
 @Singleton
 public class SensorManager {
-  @Inject EventBus eventBus;
   @Inject SessionManager sessionManager;
+  @Inject EventBus eventBus;
 
   @Inject
   public void init() {
@@ -28,11 +30,16 @@ public class SensorManager {
 
   private Sensor visibleSensor = SimpleAudioReader.getSensor();
   private Map<String, ToggleableSensor> sensors = newHashMap();
+  private Set<Sensor> disabled = newHashSet();
 
   @Subscribe
   public void onEvent(SensorEvent event) {
     if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName())) {
       ToggleableSensor sensor = new ToggleableSensor(event);
+      if (disabled.contains(sensor)) {
+        sensor.toggle();
+      }
+
       sensors.put(sensor.getSensorName(), sensor);
     }
   }
@@ -53,7 +60,7 @@ public class SensorManager {
    * @return All currently known Sensors
    */
   public List<Sensor> getSensors() {
-    ArrayList<Sensor> result= newArrayList();
+    ArrayList<Sensor> result = newArrayList();
     result.addAll(sensors.values());
     return result;
   }
@@ -76,6 +83,13 @@ public class SensorManager {
 
   @Subscribe
   public void onEvent(SessionChangeEvent event) {
+    disabled = newHashSet();
+    for (ToggleableSensor sensor : sensors.values()) {
+      if (!sensor.isEnabled()) {
+        disabled.add(sensor);
+      }
+    }
+
     sensors = newHashMap();
 
     for (MeasurementStream stream : sessionManager.getMeasurementStreams()) {
