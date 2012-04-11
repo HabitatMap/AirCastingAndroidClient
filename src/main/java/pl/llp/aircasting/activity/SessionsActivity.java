@@ -295,14 +295,20 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     if (selectedSensor != null) {
       ViewStreamEvent event = new ViewStreamEvent(selectedSensor);
       eventBus.post(event);
-    } else {
+    } else if (sessionManager.getMeasurementStreams().size() > 1) {
       showDialog(SelectSensorHelper.DIALOG_ID);
+    } else {
+      startSessionView();
     }
   }
 
   @Subscribe
-  public void onEvent(ViewStreamEvent event){
-    Intent intent = new Intent(getApplicationContext(), SoundTraceActivity.class);
+  public void onEvent(ViewStreamEvent event) {
+    startSessionView();
+  }
+
+  private void startSessionView() {
+    Intent intent = new Intent(context, SoundTraceActivity.class);
     startActivity(intent);
   }
 
