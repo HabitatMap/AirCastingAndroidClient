@@ -24,7 +24,8 @@ import android.provider.BaseColumns;
 public interface DBConstants
 {
   String DB_NAME = "sessions.db";
-  int DB_VERSION = 25;
+
+  int DB_VERSION = 26;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -44,6 +45,7 @@ public interface DBConstants
   String SESSION_OFFSET_60_DB = "Offset60DB";
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
   String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
+  String SESSION_CALIBRATED = "is_calibrated";
 
   /** @deprecated belongs to streams */
   String SESSION_AVG = "Average";

@@ -19,9 +19,10 @@
  */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+
 import android.database.sqlite.SQLiteDatabase;
 import org.intellij.lang.annotations.Language;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import static pl.llp.aircasting.model.DBConstants.*;
 
@@ -73,6 +74,7 @@ public class SchemaMigrator {
                    ", " + SESSION_OFFSET_60_DB + " integer" +
                    ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
                    ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
+                   ", " + SESSION_CALIBRATED + " boolean" +
                    ")"
               );
   }
@@ -135,9 +137,14 @@ public class SchemaMigrator {
       db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SHORT_TYPE +
                      " = '" + SimpleAudioReader.SHORT_TYPE + "'");
     }
+
+    if( oldVersion < 26 && newVersion >= 26)
+    {
+      addColumn(db, SESSION_TABLE_NAME, SESSION_CALIBRATED, "boolean");
+    }
   }
 
-  void dropColumn(SQLiteDatabase db, String tableName, String column) {
+  private void dropColumn(SQLiteDatabase db, String tableName, String column) {
     StringBuilder q = new StringBuilder(50);
 
     q.append("ALTER TABLE ").append(tableName);
