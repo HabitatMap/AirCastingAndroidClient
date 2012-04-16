@@ -4,27 +4,32 @@ import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SoundHelper;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class MeasurementStream implements Serializable {
+public class MeasurementStream implements Serializable
+{
+  @Expose @SerializedName("measurements")
   private transient List<Measurement> measurements = newArrayList();
 
   private long id;
 
   private long sessionId;
 
-  private String sensorName;
+  @Expose @SerializedName("sensor_name") private String sensorName;
 
-  private String measurementType;
+  @Expose @SerializedName("measurement_type") private String measurementType;
 
-  private String shortType;
+  @Expose @SerializedName("measurement_short_type") private String shortType;
 
-  private String unit;
+  @Expose @SerializedName("unit_name") private String unit;
 
-  private String symbol;
+  @Expose @SerializedName("unit_symbol") private String symbol;
 
   private Double sum = 0.0;
 
@@ -32,15 +37,15 @@ public class MeasurementStream implements Serializable {
 
   private Double peak = Double.NEGATIVE_INFINITY;
 
-  private int thresholdVeryHigh;
+  @Expose @SerializedName("threshold_very_high") private int thresholdVeryHigh;
 
-  private int thresholdVeryLow;
+  @Expose @SerializedName("threshold_very_low") private int thresholdVeryLow;
 
-  private int thresholdLow;
+  @Expose @SerializedName("threshold_low") private int thresholdLow;
 
-  private int thresholdMedium;
+  @Expose @SerializedName("threshold_medium") private int thresholdMedium;
 
-  private int thresholdHigh;
+  @Expose @SerializedName("threshold_high") private int thresholdHigh;
 
   private transient boolean avgDirty = true;
 

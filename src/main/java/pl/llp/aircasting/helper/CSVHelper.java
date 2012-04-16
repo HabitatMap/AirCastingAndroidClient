@@ -31,12 +31,6 @@ import java.text.SimpleDateFormat;
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.String.valueOf;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/21/11
- * Time: 2:31 PM
- */
 public class CSVHelper {
     // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
     public static final String BASE_PATH = "/mnt/sdcard/../..";

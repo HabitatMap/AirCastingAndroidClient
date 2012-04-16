@@ -23,9 +23,14 @@ import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.collect.Iterables.all;
 import static com.google.common.collect.Lists.newArrayList;
@@ -35,7 +40,8 @@ public class Session implements Serializable
 {
   @Expose private UUID uuid = UUID.randomUUID();
 
-  @Expose @SerializedName("measurements") transient List<Measurement> measurements = newArrayList();
+  /** @deprecated will be removed*/
+  transient List<Measurement> measurements = newArrayList();
   @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
   @Expose private List<Note> notes = newArrayList();
 
@@ -52,8 +58,9 @@ public class Session implements Serializable
   @Expose private String location;
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-  private Date end;
-  private Date start;
+  @Expose @SerializedName("start_time") private Date end;
+  @Expose @SerializedName("end_time") private Date start;
+
   private Long id = null;
   private boolean submittedForRemoval = false;
 
@@ -62,6 +69,7 @@ public class Session implements Serializable
     streams.put(stream.getSensorName(), stream);
   }
 
+  /** @deprecated will be removed*/
     public List<Measurement> getMeasurements() {
         if (measurements == null) {
             measurements = newArrayList();
