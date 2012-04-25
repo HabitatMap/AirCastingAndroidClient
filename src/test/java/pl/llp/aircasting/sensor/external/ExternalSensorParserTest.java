@@ -1,10 +1,11 @@
 package pl.llp.aircasting.sensor.external;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+
 import com.google.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -16,8 +17,8 @@ public class ExternalSensorParserTest {
 
     @Test
     public void shouldParseLines() throws ParseException {
-        SensorEvent actual = parser.parse("awesome sensor;Temperature;Temp;degrees;C;1;2;3;4;5;12.5");
-        SensorEvent expected = new SensorEvent("awesome sensor", "Temperature", "Temp", "degrees", "C", 1, 2, 3, 4, 5, 12.5);
+        SensorEvent actual = parser.parse("12.5;Awesome company with unicorns;awesome sensor;Temperature;Temp;degrees;C;1;2;3;4;5;");
+        SensorEvent expected = new SensorEvent("Awesome company with unicorns", "awesome sensor", "Temperature", "Temp", "degrees", "C", 1, 2, 3, 4, 5, 12.5);
 
         assertThat(actual, equalTo(expected));
     }
@@ -34,6 +35,6 @@ public class ExternalSensorParserTest {
 
     @Test(expected = ParseException.class)
     public void shouldThrowExceptionsForMalformedThresholds() throws ParseException {
-        parser.parse("awesome sensor;temp;t;degrees;C;1;2;text;4;5;10");
+        parser.parse("10,company,awesome sensor;temp;t;degrees;C;1;2;text;4;5");
     }
 }

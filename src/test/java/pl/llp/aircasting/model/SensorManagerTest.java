@@ -1,15 +1,16 @@
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
 public class SensorManagerTest {
@@ -34,7 +37,7 @@ public class SensorManagerTest {
     manager.eventBus = mock(EventBus.class);
     manager.sessionManager = sessionManager;
 
-    sensorEvent = new SensorEvent("LHC", "Hadrons", "H", "number", "#", 0, 10, 20, 30, 40, 12);
+    sensorEvent = Any.sensorEvent();
     sensor = new Sensor(sensorEvent);
 
     manager.onEvent(sensorEvent);
@@ -47,7 +50,7 @@ public class SensorManagerTest {
 
   @Test
   public void shouldNotOverwriteSensors() {
-    manager.onEvent(new SensorEvent("LHC", "Muons", "M", "number", "#", 0, 10, 20, 30, 40, 12));
+    manager.onEvent(sensorEvent);
     sensor = manager.getSensor("LHC");
 
     assertThat(sensor.getMeasurementType(), equalTo("Hadrons"));

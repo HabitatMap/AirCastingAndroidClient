@@ -19,7 +19,8 @@ public class Any {
     }
 
     public static MeasurementStream stream() {
-        MeasurementStream stream = new MeasurementStream("sensor0",
+        MeasurementStream stream = new MeasurementStream("someVendor",
+                                                         "sensor0",
                                                          "type1",
                                                          "t1",
                                                          "unit2",
@@ -29,7 +30,7 @@ public class Any {
     }
 
     public static SensorEvent sensorEvent() {
-        return new SensorEvent("LHC", "Hadrons", "H", "number", "#", 0, 10, 20, 30, 40, 12);
+        return new SensorEvent("CERN", "LHC", "Hadrons", "H", "number", "#", 0, 10, 20, 30, 40, 12);
     }
 
     public static Sensor sensor() {

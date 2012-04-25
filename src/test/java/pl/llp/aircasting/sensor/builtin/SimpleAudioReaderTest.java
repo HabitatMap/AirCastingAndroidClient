@@ -19,28 +19,27 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 
-import static org.mockito.Mockito.*;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 12/21/11
- * Time: 2:23 PM
- */
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(InjectedTestRunner.class)
-public class SimpleAudioReaderTest {
+public class SimpleAudioReaderTest
+{
     public static final int SAMPLE_RATE = 44100;
 
     @Inject SimpleAudioReader audioReader;
@@ -55,7 +54,8 @@ public class SimpleAudioReaderTest {
     }
 
     private SensorEvent expected(double value) {
-        return new SensorEvent(SimpleAudioReader.SENSOR_NAME, SimpleAudioReader.MEASUREMENT_TYPE, SimpleAudioReader.SHORT_TYPE,
+        return new SensorEvent(SimpleAudioReader.SENSOR_PACKAGE_NAME, SimpleAudioReader.SENSOR_NAME,
+                               SimpleAudioReader.MEASUREMENT_TYPE, SimpleAudioReader.SHORT_TYPE,
                                SimpleAudioReader.UNIT, SimpleAudioReader.SYMBOL,
                                SimpleAudioReader.VERY_LOW, SimpleAudioReader.LOW, SimpleAudioReader.MID, SimpleAudioReader.HIGH,
                                SimpleAudioReader.VERY_HIGH, value);

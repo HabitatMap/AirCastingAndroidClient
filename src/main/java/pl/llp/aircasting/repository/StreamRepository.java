@@ -1,11 +1,12 @@
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import org.jetbrains.annotations.NotNull;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,10 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.DBConstants.*;
-import static pl.llp.aircasting.repository.DBHelper.*;
+import static pl.llp.aircasting.repository.DBHelper.getDouble;
+import static pl.llp.aircasting.repository.DBHelper.getInt;
+import static pl.llp.aircasting.repository.DBHelper.getLong;
+import static pl.llp.aircasting.repository.DBHelper.getString;
 
 public class StreamRepository {
   private SQLiteDatabase db;
@@ -25,7 +29,8 @@ public class StreamRepository {
     measurements = new MeasurementRepository(db, new NullProgressListener());
   }
 
-  List<MeasurementStream> findAllForSession(@NotNull Long sessionId) {
+  List<MeasurementStream> findAllForSession(@NotNull Long sessionId)
+  {
     List<MeasurementStream> result = newArrayList();
 
     Cursor c = db.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
@@ -34,6 +39,7 @@ public class StreamRepository {
     c.moveToFirst();
     while (!c.isAfterLast()) {
       String sensor = getString(c, STREAM_SENSOR_NAME);
+      String packageName = getString(c, STREAM_SENSOR_PACKAGE_NAME);
       String symbol = getString(c, STREAM_MEASUREMENT_SYMBOL);
       String unit = getString(c, STREAM_MEASUREMENT_UNIT);
       String type = getString(c, STREAM_MEASUREMENT_TYPE);
@@ -47,7 +53,7 @@ public class StreamRepository {
 
       MeasurementStream stream;
 
-      stream = new MeasurementStream(sensor, type, shortType, unit, symbol,
+      stream = new MeasurementStream(packageName, sensor, type, shortType, unit, symbol,
                                      thresholdVeryLow,
                                      thresholdLow,
                                      thresholdMedium,
@@ -74,6 +80,7 @@ public class StreamRepository {
     ContentValues values = new ContentValues();
 
     values.put(STREAM_SESSION_ID, sessionId);
+    values.put(STREAM_SENSOR_PACKAGE_NAME, stream.getPackageName());
     values.put(STREAM_SENSOR_NAME, stream.getSensorName());
     values.put(STREAM_MEASUREMENT_SYMBOL, stream.getSymbol());
     values.put(STREAM_MEASUREMENT_UNIT, stream.getUnit());

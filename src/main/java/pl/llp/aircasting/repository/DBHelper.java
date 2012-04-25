@@ -4,9 +4,6 @@ import android.database.Cursor;
 
 import java.util.Date;
 
-/**
- * Created by ags on 29/03/12 at 13:19
- */
 public class DBHelper
 {
   static double getDouble(Cursor cursor, String columnName) {

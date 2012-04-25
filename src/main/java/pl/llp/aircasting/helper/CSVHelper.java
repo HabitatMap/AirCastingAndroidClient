@@ -44,8 +44,8 @@ public class CSVHelper
   public static final String BASE_PATH = "/mnt/sdcard/../..";
   public static final String SESSION_TEMP_FILE = "session.csv";
 
-  public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-  public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+  final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
 
   public Uri prepareCSV(Context context, Session session) throws IOException
   {
@@ -58,13 +58,14 @@ public class CSVHelper
 
       CsvWriter csvWriter = new CsvWriter(writer, ',');
 
-      csvWriter.write("SensorName");
-      csvWriter.write("MeasurementType");
+      csvWriter.write("sensor:model");
+      csvWriter.write("sensor:package");
+      csvWriter.write("sensor:capability");
       csvWriter.write("Date");
       csvWriter.write("Time");
-      csvWriter.write("Latitude");
-      csvWriter.write("Longitude");
-      csvWriter.write("Unit");
+      csvWriter.write("geo:lat");
+      csvWriter.write("geo:long");
+      csvWriter.write("sensor:units");
       csvWriter.write("Value");
       csvWriter.endRecord();
 
@@ -74,6 +75,7 @@ public class CSVHelper
         for (Measurement measurement : stream.getMeasurements())
         {
           csvWriter.write(stream.getSensorName());
+          csvWriter.write(stream.getPackageName());
           csvWriter.write(stream.getMeasurementType());
           csvWriter.write(DATE_FORMAT.format(measurement.getTime()));
           csvWriter.write(TIME_FORMAT.format(measurement.getTime()));

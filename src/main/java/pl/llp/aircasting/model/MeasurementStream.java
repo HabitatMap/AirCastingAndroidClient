@@ -23,6 +23,8 @@ public class MeasurementStream implements Serializable
 
   @Expose @SerializedName("sensor_name") private String sensorName;
 
+  @Expose @SerializedName("sensor_package_name") private String packageName;
+
   @Expose @SerializedName("measurement_type") private String measurementType;
 
   @Expose @SerializedName("measurement_short_type") private String shortType;
@@ -52,8 +54,10 @@ public class MeasurementStream implements Serializable
   public MeasurementStream() {
   }
 
-  public MeasurementStream(Sensor sensor) {
-    this(sensor.getSensorName(),
+  public MeasurementStream(Sensor sensor)
+  {
+    this(sensor.getPackageName(),
+         sensor.getSensorName(),
          sensor.getMeasurementType(),
          sensor.getShortType(),
          sensor.getUnit(),
@@ -65,8 +69,11 @@ public class MeasurementStream implements Serializable
          sensor.getThreshold(MeasurementLevel.VERY_HIGH));
   }
 
-  public MeasurementStream(SensorEvent evt) {
-    this(evt.getSensorName(), evt.getMeasurementType(), evt.getShortType(), evt.getUnit(), evt.getSymbol(),
+  public MeasurementStream(SensorEvent evt)
+  {
+    this(evt.getPackageName(),
+         evt.getSensorName(),
+         evt.getMeasurementType(), evt.getShortType(), evt.getUnit(), evt.getSymbol(),
          evt.getVeryLow(),
          evt.getLow(),
          evt.getMid(),
@@ -74,12 +81,13 @@ public class MeasurementStream implements Serializable
          evt.getVeryHigh());
   }
 
-  public MeasurementStream(String sensor, String type, String shortType, String unit, String symbol,
+  public MeasurementStream(String packageName, String sensorName, String type, String shortType, String unit, String symbol,
                            int thresholdVeryLow, int thresholdLow,
                            int thresholdMedium,
                            int thresholdHigh, int thresholdVeryHigh
                           ) {
-    this.sensorName = sensor;
+    this.packageName = packageName;
+    this.sensorName = sensorName;
     this.measurementType = type;
     this.shortType = shortType;
     this.unit = unit;
@@ -258,5 +266,10 @@ public class MeasurementStream implements Serializable
 
   public boolean isEmpty() {
     return measurements.isEmpty();
+  }
+
+  public String getPackageName()
+  {
+    return packageName;
   }
 }

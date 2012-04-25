@@ -1,11 +1,12 @@
 package pl.llp.aircasting.repository;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import com.google.inject.Inject;
 import pl.llp.aircasting.model.AirCastingDB;
 import pl.llp.aircasting.model.DBConstants;
 import pl.llp.aircasting.model.Sensor;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.google.inject.Inject;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class SensorRepository implements DBConstants {
     cursor.moveToFirst();
     while (!cursor.isAfterLast()) {
       String name = getString(cursor, STREAM_SENSOR_NAME);
+      String packageName = getString(cursor, STREAM_SENSOR_PACKAGE_NAME);
       String measurementType = getString(cursor, STREAM_MEASUREMENT_TYPE);
       String shortType = getString(cursor, STREAM_SHORT_TYPE);
       String unit = getString(cursor, STREAM_MEASUREMENT_UNIT);
@@ -52,7 +54,7 @@ public class SensorRepository implements DBConstants {
       int high = getInt(cursor, STREAM_THRESHOLD_HIGH);
       int veryHigh = getInt(cursor, STREAM_THRESHOLD_VERY_HIGH);
 
-      Sensor sensor = new Sensor(name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
+      Sensor sensor = new Sensor(packageName, name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
       result.add(sensor);
 
       cursor.moveToNext();

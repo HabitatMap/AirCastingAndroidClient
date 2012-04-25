@@ -26,7 +26,8 @@ import org.intellij.lang.annotations.Language;
 
 import static pl.llp.aircasting.model.DBConstants.*;
 
-public class SchemaMigrator {
+public class SchemaMigrator
+{
   @Language("SQL")
   public static final String CREATE_STREAMS_TABLE =
       "CREATE TABLE streams (\n  " +
@@ -35,6 +36,7 @@ public class SchemaMigrator {
           STREAM_AVG + " REAL,\n  " +
           STREAM_PEAK + " REAL,\n  " +
           STREAM_SENSOR_NAME + " TEXT, \n  " +
+          STREAM_SENSOR_PACKAGE_NAME + " TEXT, \n  " +
           STREAM_MEASUREMENT_UNIT + " TEXT, \n  " +
           STREAM_MEASUREMENT_TYPE + " TEXT, \n  " +
           STREAM_SHORT_TYPE + " TEXT, \n  " +
@@ -48,7 +50,8 @@ public class SchemaMigrator {
 
   MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
 
-  public void create(SQLiteDatabase db) {
+  public void create(SQLiteDatabase db)
+  {
     createSessionsTable(db);
     createMeasurementsTable(db);
     createStreamTable(db);
@@ -141,6 +144,11 @@ public class SchemaMigrator {
     if( oldVersion < 26 && newVersion >= 26)
     {
       addColumn(db, SESSION_TABLE_NAME, SESSION_CALIBRATED, "boolean");
+    }
+
+    if(oldVersion < 27 && newVersion >= 27)
+    {
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SENSOR_PACKAGE_NAME, "text");
     }
   }
 

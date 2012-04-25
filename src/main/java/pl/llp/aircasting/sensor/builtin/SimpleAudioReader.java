@@ -19,27 +19,24 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 12/21/11
- * Time: 2:20 PM
- */
-public class SimpleAudioReader extends AudioReader.Listener {
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+
+public class SimpleAudioReader extends AudioReader.Listener
+{
   private static final int SAMPLE_RATE = 44100;
   public static final String SYMBOL = "dB";
   public static final String UNIT = "decibels";
   public static final String MEASUREMENT_TYPE = "Sound Level";
   public static final String SHORT_TYPE = "dB";
   public static final String SENSOR_NAME = "Phone Microphone";
+  public static final String SENSOR_PACKAGE_NAME = "Builtin";
 
   public static final int VERY_LOW = 20;
   public static final int LOW = 60;
@@ -48,7 +45,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
   public static final int VERY_HIGH = 100;
 
   public static final Sensor sensor = new Sensor(
-      SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+      SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
   );
 
   @Inject SettingsHelper settingsHelper;
@@ -80,7 +77,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
     Double power = signalPower.calculatePowerDb(buffer);
     if (power != null) {
       double calibrated = calibrationHelper.calibrate(power);
-      SensorEvent event = new SensorEvent(SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
+      SensorEvent event = new SensorEvent(SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                                           VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
       eventBus.post(event);
     }

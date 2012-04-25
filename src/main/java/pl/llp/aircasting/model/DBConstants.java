@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 26;
+  int DB_VERSION = 27;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -67,6 +67,7 @@ public interface DBConstants
   String STREAM_PEAK = "peak";
   String STREAM_SESSION_ID = "stream_session_id";
   String STREAM_SENSOR_NAME = "sensor_name";
+  String STREAM_SENSOR_PACKAGE_NAME = "sensor_package_name";
   String STREAM_MEASUREMENT_TYPE = "measurement_type";
   String STREAM_SHORT_TYPE= "short_type";
   String STREAM_MEASUREMENT_UNIT = "measurement_unit";

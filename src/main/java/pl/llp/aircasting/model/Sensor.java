@@ -8,8 +8,10 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-public class Sensor implements Serializable {
+public class Sensor implements Serializable
+{
   private String sensorName;
+  private String packageName;
   private String measurementType;
   private String shortType;
   private String unit;
@@ -18,19 +20,24 @@ public class Sensor implements Serializable {
 
   protected boolean enabled = true;
 
+
   public Sensor(SensorEvent event) {
-    this(event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
+    this(event.getPackageName(), event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
          event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
   }
 
-  public Sensor(MeasurementStream stream) {
-    this(stream.getSensorName(), stream.getMeasurementType(), stream.getShortType(), stream.getUnit(), stream.getSymbol(),
+  public Sensor(MeasurementStream stream)
+  {
+    this(stream.getPackageName(), stream.getSensorName(),
+         stream.getMeasurementType(), stream.getShortType(), stream.getUnit(), stream.getSymbol(),
          stream.getThresholdVeryLow(), stream.getThresholdLow(), stream.getThresholdMedium(),
          stream.getThresholdHigh(), stream.getThresholdVeryHigh());
   }
 
-  public Sensor(String name, String type, String shortType, String unit, String symbol,
-                int veryLow, int low, int mid, int high, int veryHigh) {
+  public Sensor(String packageName, String name, String type, String shortType, String unit, String symbol,
+                int veryLow, int low, int mid, int high, int veryHigh)
+  {
+    this.packageName = packageName;
     this.sensorName = name;
     this.measurementType = type;
     this.shortType = shortType;
@@ -103,5 +110,10 @@ public class Sensor implements Serializable {
         .append(getSymbol())
         .append(")")
         .toString();
+  }
+
+  public String getPackageName()
+  {
+    return packageName;
   }
 }

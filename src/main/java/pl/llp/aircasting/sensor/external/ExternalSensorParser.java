@@ -2,33 +2,59 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
-public class ExternalSensorParser {
+public class ExternalSensorParser
+{
+  /**
+   * This has to match what Arduino produces
+  * Value;Sensor package name;Sensor name;Type of measurement;Short type of measurement;Unit name;Unit symbol/abbreviation;T1;T2;T3;T4;T5
+  **/
+   enum Fields
+   {
+
+      MEASUREMENT_VALUE,
+
+      SENSOR_PACKAGE_NAME,
+      SENSOR_NAME,
+
+      MEASUREMENT_TYPE,
+      MEASUREMENT_SHORT_TYPE,
+      MEASUREMENT_UNIT,
+      MEASUREMENT_SYMBOL,
+
+      THRESHOLD_VERY_LOW,
+      THRESHOLD_LOW,
+      THRESHOLD_MEDIUM,
+      THRESHOLD_HIGH,
+      THRESHOLD_VERY_HIGH
+   }
+
     public SensorEvent parse(String string) throws ParseException {
         String[] parts = string.split(";");
         if (parts.length < 10) {
             throw new ParseException("Field count is wrong");
         }
 
-        String name = parts[0];
-        String type = parts[1];
-        String shortType = parts[2];
-        String unit = parts[3];
-        String symbol = parts[4];
+        String packageName = parts[Fields.SENSOR_PACKAGE_NAME.ordinal()];
+        String name = parts[Fields.SENSOR_NAME.ordinal()];
+        String type = parts[Fields.MEASUREMENT_TYPE.ordinal()];
+        String shortType = parts[Fields.MEASUREMENT_SHORT_TYPE.ordinal()];
+        String unit = parts[Fields.MEASUREMENT_UNIT.ordinal()];
+        String symbol = parts[Fields.MEASUREMENT_SYMBOL.ordinal()];
 
         double value;
         int veryLow, low, mid, high, veryHigh;
         try {
-            veryLow = Integer.parseInt(parts[5]);
-            low = Integer.parseInt(parts[6]);
-            mid = Integer.parseInt(parts[7]);
-            high = Integer.parseInt(parts[8]);
-            veryHigh = Integer.parseInt(parts[9]);
+            veryLow = Integer.parseInt(parts[Fields.THRESHOLD_VERY_LOW.ordinal()]);
+            low = Integer.parseInt(parts[Fields.THRESHOLD_LOW.ordinal()]);
+            mid = Integer.parseInt(parts[Fields.THRESHOLD_MEDIUM.ordinal()]);
+            high = Integer.parseInt(parts[Fields.THRESHOLD_HIGH.ordinal()]);
+            veryHigh = Integer.parseInt(parts[Fields.THRESHOLD_VERY_HIGH.ordinal()]);
 
-            value = Double.parseDouble(parts[10]);
+            value = Double.parseDouble(parts[Fields.MEASUREMENT_VALUE.ordinal()]);
         } catch (NumberFormatException e) {
             throw new ParseException(e);
         }
 
-        return new SensorEvent(name, type, shortType, unit, symbol, veryLow, low, mid, high, veryHigh, value);
+        return new SensorEvent(packageName, name, type, shortType, unit, symbol, veryLow, low, mid, high, veryHigh, value);
     }
 }
