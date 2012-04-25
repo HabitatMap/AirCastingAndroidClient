@@ -30,9 +30,21 @@
              android:id="@+id/top_bar"
             />
 
-    <ListView style="@style/Fill"
-              android:layout_weight="1"
+    <TextView style="@style/Wide"
               android:layout_below="@id/top_bar"
+              android:id="@+id/select_a_sensor"
+              android:text="@string/select_sensor"
+              android:textColor="@android:color/black"
+              android:layout_marginLeft="5dp"
+            />
+
+    <Spinner style="@style/Wide"
+             android:layout_below="@id/select_a_sensor"
+             android:id="@+id/sensor_spinner"
+            />
+
+    <ListView style="@style/Fill"
+              android:layout_below="@id/sensor_spinner"
               android:layout_above="@+id/sync_summary"
               android:id="@android:id/list"
               android:divider="@color/list_even"

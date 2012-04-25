@@ -24,9 +24,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,23 +48,35 @@ import static org.mockito.Mockito.*;
 @RunWith(InjectedTestRunner.class)
 public class MeasurementPresenterTest {
     @Inject MeasurementPresenter presenter;
-    List<SoundMeasurement> measurements;
-    private SoundMeasurement measurement1;
+    List<Measurement> measurements;
+    private Measurement measurement1;
+    private Measurement measurement2;
     private MeasurementPresenter.Listener listener;
-    private SoundMeasurement measurement2;
+    private MeasurementStream stream;
+    private Sensor sensor;
 
     @Before
     public void setup() {
-        measurements = new ArrayList<SoundMeasurement>();
+        measurements = new ArrayList<Measurement>();
         for (int i = 0; i < 4; i++) {
-            measurements.add(new SoundMeasurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
+            measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
         }
+
+        sensor = mock(Sensor.class);
+        when(sensor.getSensorName()).thenReturn("LHC");
+        
+        presenter.sensorManager = mock(SensorManager.class);
+        when(presenter.sensorManager.getVisibleSensor()).thenReturn(sensor);
+
+        stream = mock(MeasurementStream.class);
+        when(stream.getMeasurements()).thenReturn(measurements);
+        
         presenter.sessionManager = mockSessionManager();
-        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(measurements);
+        when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
         when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
 
-        measurement1 = new SoundMeasurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
-        measurement2 = new SoundMeasurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
+        measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
+        measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
 
         listener = mock(MeasurementPresenter.Listener.class);
         presenter.registerListener(listener);
@@ -78,11 +91,15 @@ public class MeasurementPresenterTest {
         return result;
     }
 
+    private void triggerMeasurement(Measurement measurement){
+        presenter.onEvent(new MeasurementEvent(measurement, sensor));
+    }
+
     @Test
     public void shouldShowLastNMillis() {
         presenter.setZoom(100);
 
-        List<SoundMeasurement> result = presenter.getTimelineView();
+        List<Measurement> result = presenter.getTimelineView();
 
         assertThat(result, hasItem(equalTo(measurements.get(3))));
         assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
@@ -98,7 +115,7 @@ public class MeasurementPresenterTest {
 
     @Test
     public void shouldHandleEmptyList() {
-        when(presenter.sessionManager.getSoundMeasurements()).thenReturn(new ArrayList<SoundMeasurement>());
+        when(stream.getMeasurements()).thenReturn(new ArrayList<Measurement>());
 
         assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
     }
@@ -109,8 +126,8 @@ public class MeasurementPresenterTest {
         presenter.getTimelineView();
         presenter.sessionManager = mockSessionManager();
 
-        presenter.onNewMeasurement(measurement1);
-        List<SoundMeasurement> result = presenter.getTimelineView();
+        triggerMeasurement(measurement1);
+        List<Measurement> result = presenter.getTimelineView();
 
         verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
@@ -120,7 +137,7 @@ public class MeasurementPresenterTest {
 
     @Test
     public void shouldNotifyListeners() {
-        presenter.onNewMeasurement(measurement1);
+        triggerMeasurement(measurement1);
 
         verify(listener).onViewUpdated();
     }
@@ -129,7 +146,7 @@ public class MeasurementPresenterTest {
     public void shouldUnregisterListeners() {
         presenter.unregisterListener(listener);
 
-        presenter.onNewMeasurement(measurement1);
+        triggerMeasurement(measurement1);
 
         verifyZeroInteractions(listener);
     }
@@ -150,7 +167,7 @@ public class MeasurementPresenterTest {
     public void shouldAllowToZoomOutAfterMoreDataArrives() {
         presenter.setZoom(8000);
         presenter.getTimelineView();
-        presenter.onNewMeasurement(measurement1);
+        triggerMeasurement(measurement1);
         assertThat(presenter.canZoomOut(), equalTo(true));
     }
 
@@ -159,8 +176,8 @@ public class MeasurementPresenterTest {
         presenter.getFullView();
         presenter.sessionManager = mockSessionManager();
 
-        presenter.onNewMeasurement(measurement1);
-        List<SoundMeasurement> result = presenter.getFullView();
+        triggerMeasurement(measurement1);
+        List<Measurement> result = presenter.getFullView();
 
         verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
@@ -173,8 +190,21 @@ public class MeasurementPresenterTest {
         when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
         when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
 
-        presenter.onNewSession();
-        presenter.onNewMeasurement(measurement1);
+        presenter.onEvent(new SessionChangeEvent());
+        triggerMeasurement(measurement1);
+
+        assertThat(presenter.getFullView().isEmpty(), equalTo(true));
+    }
+
+    @Test
+    public void shouldOnlyUpdateFromVisibleSensorEvents() {
+        presenter.getFullView();
+        presenter.sessionManager = mockSessionManager();
+        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+        when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+
+        presenter.onEvent(new SessionChangeEvent());
+        triggerMeasurement(measurement1);
 
         assertThat(presenter.getFullView().isEmpty(), equalTo(true));
     }
@@ -184,7 +214,7 @@ public class MeasurementPresenterTest {
         when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
         when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
 
-        presenter.onNewMeasurement(measurement1);
+        triggerMeasurement(measurement1);
 
         assertThat(presenter.getFullView().isEmpty(), equalTo(true));
     }
@@ -251,7 +281,7 @@ public class MeasurementPresenterTest {
         presenter.scroll(-0.5);
 
         presenter.getTimelineView();
-        presenter.onNewMeasurement(measurement1);
+        triggerMeasurement(measurement1);
 
         assertThat(presenter.getTimelineView(), not(hasItem(equalTo(measurement1))));
     }
@@ -259,9 +289,9 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverage() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
+        Measurement expected = new Measurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
 
         assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
     }
@@ -269,11 +299,11 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverageOnTheFly() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
-        presenter.onNewSession();
-        presenter.onNewMeasurement(measurement1);
-        presenter.onNewMeasurement(measurement2);
+        presenter.onEvent(new SessionChangeEvent());
+        triggerMeasurement(measurement1);
+        triggerMeasurement(measurement2);
 
         assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
         assertThat(presenter.getFullView(), hasItem(equalTo(measurement2)));
@@ -282,12 +312,12 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldAverageTimelineOnTheFly() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
-        presenter.onNewSession();
+        presenter.onEvent(new SessionChangeEvent());
         presenter.getTimelineView();
-        presenter.onNewMeasurement(measurement1);
-        presenter.onNewMeasurement(measurement2);
+        triggerMeasurement(measurement1);
+        triggerMeasurement(measurement2);
 
         assertThat(presenter.getTimelineView(), hasItem(equalTo(expected)));
         assertThat(presenter.getTimelineView(), hasItem(equalTo(measurement2)));
@@ -296,12 +326,12 @@ public class MeasurementPresenterTest {
     @Test
     public void shouldNotifyListenersAboutNewAveragedMeasurements() {
         when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        SoundMeasurement expected = new SoundMeasurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
         presenter.registerListener(listener);
 
-        presenter.onNewMeasurement(measurement1);
-        presenter.onNewMeasurement(measurement2);
-        presenter.onNewMeasurement(new SoundMeasurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
+        triggerMeasurement(measurement1);
+        triggerMeasurement(measurement2);
+        triggerMeasurement(new Measurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
 
         verify(listener, atLeastOnce()).onAveragedMeasurement(expected);
     }

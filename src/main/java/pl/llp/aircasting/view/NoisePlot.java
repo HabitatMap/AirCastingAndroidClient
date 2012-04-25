@@ -24,21 +24,20 @@ import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import pl.llp.aircasting.SoundLevel;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
-import pl.llp.aircasting.event.TapEvent;
-import pl.llp.aircasting.helper.CalibrationHelper;
+import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.util.Search;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
-import static com.google.common.collect.Iterables.skip;
 import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
 import static pl.llp.aircasting.util.Search.binarySearch;
 
@@ -57,12 +56,12 @@ public class NoisePlot extends View {
     private AirCastingActivity activity;
     private SettingsHelper settingsHelper;
 
-    private List<SoundMeasurement> measurements = new ArrayList<SoundMeasurement>();
+    private List<Measurement> measurements = new ArrayList<Measurement>();
     private List<Note> notes;
     private ResourceHelper resourceHelper;
-    private CalibrationHelper calibrationHelper;
     private int bottom;
     private int top;
+    private Sensor sensor;
 
     @SuppressWarnings("UnusedDeclaration")
     public NoisePlot(Context context) {
@@ -79,36 +78,36 @@ public class NoisePlot extends View {
         super(context, attrs, defStyle);
     }
 
-    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper, CalibrationHelper calibrationHelper) {
+    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
         this.activity = activity;
         this.settingsHelper = settingsHelper;
         this.resourceHelper = resourceHelper;
-        this.calibrationHelper = calibrationHelper;
-
-        bottom = settingsHelper.getThreshold(SoundLevel.QUIET);
-        top = settingsHelper.getThreshold(SoundLevel.TOO_LOUD);
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void update(List<SoundMeasurement> measurements, List<Note> notes) {
+    public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
         this.measurements = measurements;
         this.notes = notes;
+        this.sensor = sensor;
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
+        bottom = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+        top = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+        
         drawBackground(canvas);
 
         if (!measurements.isEmpty()) {
             Path path = new Path();
 
-            float lastY = project(calibrationHelper.calibrate(measurements.get(0).getValue()));
+            float lastY = project(measurements.get(0).getValue());
             path.moveTo(0, lastY);
 
-            for (SoundMeasurement measurement : skip(measurements, 1)) {
+            // Avoid concurrent modification
+            for (int i = 1; i < measurements.size(); i++) {
+                Measurement measurement = measurements.get(i);
                 Point place = place(measurement);
                 path.lineTo(place.x, place.y);
             }
@@ -123,13 +122,13 @@ public class NoisePlot extends View {
         }
     }
 
-    private Point place(SoundMeasurement measurement) {
+    private Point place(Measurement measurement) {
         long time = measurement.getTime().getTime();
         float span = lastTime() - firstTime();
         float place = time - firstTime();
         int x = (int) (getWidth() * (place / span));
 
-        double value = calibrationHelper.calibrate(measurement.getValue());
+        double value = measurement.getValue();
         int y = project(value);
 
         return new Point(x, y);
@@ -146,7 +145,7 @@ public class NoisePlot extends View {
     }
 
     private Point place(Note note) {
-        SoundMeasurement measurement = findClosestMeasurement(note);
+        Measurement measurement = findClosestMeasurement(note);
         return place(measurement);
     }
 
@@ -163,10 +162,10 @@ public class NoisePlot extends View {
         return measurements.get(0).getTime().getTime();
     }
 
-    private SoundMeasurement findClosestMeasurement(final Note note) {
-        int index = binarySearch(measurements, new Search.Visitor<SoundMeasurement>() {
+    private Measurement findClosestMeasurement(final Note note) {
+        int index = binarySearch(measurements, new Search.Visitor<Measurement>() {
             @Override
-            public int compareTo(SoundMeasurement value) {
+            public int compareTo(Measurement value) {
                 return note.getDate().compareTo(value.getTime());
             }
         });
@@ -193,15 +192,15 @@ public class NoisePlot extends View {
 
         int lastThreshold = top;
 
-        for (SoundLevel soundLevel : new SoundLevel[]{SoundLevel.VERY_LOUD, SoundLevel.LOUD, SoundLevel.AVERAGE}) {
-            paint.setColor(resourceHelper.getGraphColor(soundLevel));
-            int threshold = settingsHelper.getThreshold(soundLevel);
+        for (MeasurementLevel measurementLevel : new MeasurementLevel[]{MeasurementLevel.HIGH, MeasurementLevel.MID, MeasurementLevel.LOW}) {
+            paint.setColor(resourceHelper.getGraphColor(measurementLevel));
+            int threshold = settingsHelper.getThreshold(sensor, measurementLevel);
 
             canvas.drawRect(0, project(lastThreshold), getWidth(), project(threshold), paint);
             lastThreshold = threshold;
         }
 
-        paint.setColor(resourceHelper.getGraphColor(SoundLevel.QUIET));
+        paint.setColor(resourceHelper.getGraphColor(MeasurementLevel.VERY_LOW));
         canvas.drawRect(0, project(lastThreshold), getWidth(), getHeight(), paint);
     }
 

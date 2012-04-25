@@ -19,12 +19,14 @@
 */
 package pl.llp.aircasting.activity.task;
 
-import android.app.ProgressDialog;
 import pl.llp.aircasting.activity.ActivityWithProgress;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.repository.ProgressListener;
 
-public abstract class OpenSessionTask extends SimpleProgressTask<Long, Void, Session> implements SessionRepository.ProgressListener {
+import android.app.ProgressDialog;
+
+public abstract class OpenSessionTask extends SimpleProgressTask<Long, Void, Session> implements ProgressListener
+{
     public OpenSessionTask(ActivityWithProgress context) {
         super(context, ProgressDialog.STYLE_HORIZONTAL);
     }

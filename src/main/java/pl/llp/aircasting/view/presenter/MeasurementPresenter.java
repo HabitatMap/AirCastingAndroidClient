@@ -24,12 +24,18 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.SoundMeasurement;
 
 import java.util.*;
 
@@ -47,22 +53,24 @@ import static java.util.Collections.sort;
  * Time: 1:47 PM
  */
 @Singleton
-public class MeasurementPresenter implements SessionManager.Listener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final long MILLIS_IN_SECOND = 1000;
 
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences preferences;
+    @Inject EventBus eventBus;
+    @Inject SensorManager sensorManager;
 
     @Inject
     public void init() {
-        sessionManager.registerListener(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
+        eventBus.register(this);
     }
 
     private double anchor = 0;
 
-    private LinkedList<SoundMeasurement> fullView = null;
+    private LinkedList<Measurement> fullView = null;
     private int measurementsSize;
 
     private MeasurementAggregator aggregator = new MeasurementAggregator();
@@ -70,24 +78,27 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     private static final long MIN_ZOOM = 30000;
     private long zoom = MIN_ZOOM;
 
-    private LinkedList<SoundMeasurement> timelineView;
+    private LinkedList<Measurement> timelineView;
     private List<Listener> listeners = newArrayList();
 
-    @Override
-    public void onNewMeasurement(SoundMeasurement measurement) {
-        if (!sessionManager.isSessionSaved()) {
-            prepareFullView();
-            updateFullView(measurement);
+    @Subscribe
+    public void onEvent(MeasurementEvent event) {
+        if (sessionManager.isSessionSaved()) return;
+        if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
-            if (timelineView != null && (int) anchor == 0) {
-                updateTimelineView();
-            }
+        Measurement measurement = event.getMeasurement();
+
+        prepareFullView();
+        updateFullView(measurement);
+
+        if (timelineView != null && (int) anchor == 0) {
+            updateTimelineView();
         }
 
         notifyListeners();
     }
 
-    private void updateFullView(SoundMeasurement measurement) {
+    private void updateFullView(Measurement measurement) {
         boolean newBucket = isNewBucket(measurement);
 
         if (newBucket) {
@@ -105,72 +116,74 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         fullView.add(aggregator.getAverage());
     }
 
-    private boolean isNewBucket(SoundMeasurement measurement) {
+    private boolean isNewBucket(Measurement measurement) {
         if (fullView.isEmpty()) return true;
 
-        SoundMeasurement last = getLast(fullView);
+        Measurement last = getLast(fullView);
 
         return bucket(last) != bucket(measurement);
     }
 
-    @Override
-    public synchronized void onNewSession() {
+    @Subscribe
+    public synchronized void onEvent(SessionChangeEvent event) {
         reset();
+    }
 
-        notifyListeners();
+    @Subscribe
+    public synchronized void onEvent(ViewStreamEvent event) {
+        reset();
     }
 
     private void reset() {
         fullView = null;
         timelineView = null;
         anchor = 0;
+
+        notifyListeners();
     }
 
     private void prepareFullView() {
         if (fullView != null) return;
 
-        ImmutableListMultimap<Long, SoundMeasurement> forAveraging =
-                index(sessionManager.getSoundMeasurements(), new Function<SoundMeasurement, Long>() {
+        String visibleSensor = sensorManager.getVisibleSensor().getSensorName();
+        MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
+        Iterable<Measurement> measurements;
+        if (stream == null) {
+            measurements = newArrayList();
+        } else {
+            measurements = stream.getMeasurements();
+        }
+
+        ImmutableListMultimap<Long, Measurement> forAveraging =
+                index(measurements, new Function<Measurement, Long>() {
                     @Override
-                    public Long apply(SoundMeasurement measurement) {
+                    public Long apply(Measurement measurement) {
                         return bucket(measurement);
                     }
                 });
 
-        ArrayList<Long> keys = newArrayList(forAveraging.keySet());
-        sort(keys);
-        fullView = newLinkedList();
+        ArrayList<Long> times = newArrayList(forAveraging.keySet());
+        sort(times);
 
-        for (Long key : keys) {
-            ImmutableList<SoundMeasurement> measurements = forAveraging.get(key);
-            fullView.add(average(measurements));
+        fullView = newLinkedList();
+        for (Long time : times) {
+            ImmutableList<Measurement> chunk = forAveraging.get(time);
+            fullView.add(average(chunk));
         }
     }
 
-    private long bucket(SoundMeasurement measurement) {
+    private long bucket(Measurement measurement) {
         return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * MILLIS_IN_SECOND);
     }
 
-    private SoundMeasurement average(Collection<SoundMeasurement> measurements) {
+    private Measurement average(Collection<Measurement> measurements) {
         aggregator.reset();
 
-        for (SoundMeasurement measurement : measurements) {
+        for (Measurement measurement : measurements) {
             aggregator.add(measurement);
         }
 
         return aggregator.getAverage();
-    }
-
-    @Override
-    public void onNewNote(Note eq) {
-    }
-
-    @Override
-    public void onNewReading() {
-    }
-
-    @Override
-    public void onError() {
     }
 
     private void notifyListeners() {
@@ -185,26 +198,26 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         notifyListeners();
     }
 
-    public List<SoundMeasurement> getTimelineView() {
+    public List<Measurement> getTimelineView() {
         if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted()) {
             prepareTimelineView();
             return timelineView;
         } else {
-            return new ArrayList<SoundMeasurement>();
+            return new ArrayList<Measurement>();
         }
     }
 
     protected synchronized void prepareTimelineView() {
         if (timelineView != null) return;
 
-        final List<SoundMeasurement> measurements = getFullView();
+        final List<Measurement> measurements = getFullView();
         int position = measurements.size() - 1 - (int) anchor;
         final long last = measurements.isEmpty()
                 ? 0 : measurements.get(position).getTime().getTime();
 
-        timelineView = newLinkedList(filter(measurements, new Predicate<SoundMeasurement>() {
+        timelineView = newLinkedList(filter(measurements, new Predicate<Measurement>() {
             @Override
-            public boolean apply(SoundMeasurement measurement) {
+            public boolean apply(Measurement measurement) {
                 return measurement.getTime().getTime() <= last &&
                         last - measurement.getTime().getTime() <= zoom;
             }
@@ -214,7 +227,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     }
 
     private void updateTimelineView() {
-        SoundMeasurement measurement = aggregator.getAverage();
+        Measurement measurement = aggregator.getAverage();
 
         if (aggregator.isComposite()) {
             if (!timelineView.isEmpty()) timelineView.removeLast();
@@ -260,19 +273,19 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         }
     }
 
-    public List<SoundMeasurement> getFullView() {
+    public List<Measurement> getFullView() {
         if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted()) {
             prepareFullView();
             return fullView;
         } else {
-            return new ArrayList<SoundMeasurement>();
+            return new ArrayList<Measurement>();
         }
     }
 
-    public void scroll(double scroll) {
+    public void scroll(double scrollAmount) {
         prepareTimelineView();
 
-        anchor -= scroll * timelineView.size();
+        anchor -= scrollAmount * timelineView.size();
         fixAnchor();
         timelineView = null;
 
@@ -301,14 +314,13 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
     public synchronized void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         if (key.equals(SettingsHelper.AVERAGING_TIME)) {
             reset();
-            notifyListeners();
         }
     }
 
     public interface Listener {
         void onViewUpdated();
 
-        void onAveragedMeasurement(SoundMeasurement measurement);
+        void onAveragedMeasurement(Measurement measurement);
     }
 
     private static class MeasurementAggregator {
@@ -318,7 +330,7 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
         private long time = 0;
         private int count = 0;
 
-        public void add(SoundMeasurement measurement) {
+        public void add(Measurement measurement) {
             longitude += measurement.getLongitude();
             latitude += measurement.getLatitude();
             value += measurement.getValue();
@@ -330,8 +342,8 @@ public class MeasurementPresenter implements SessionManager.Listener, SharedPref
             longitude = latitude = value = time = count = 0;
         }
 
-        public SoundMeasurement getAverage() {
-            return new SoundMeasurement(latitude / count, longitude / count, value / count, new Date(time / count));
+        public Measurement getAverage() {
+            return new Measurement(latitude / count, longitude / count, value / count, new Date(time / count));
         }
 
         public boolean isComposite() {

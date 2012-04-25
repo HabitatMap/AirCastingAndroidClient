@@ -23,17 +23,18 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
-import pl.llp.aircasting.event.DoubleTapEvent;
-import pl.llp.aircasting.event.ScrollEvent;
-import pl.llp.aircasting.event.TapEvent;
+import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.ScrollEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
-import roboguice.event.Observes;
 import roboguice.inject.InjectView;
 
 import java.util.ArrayList;
@@ -60,10 +61,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
 
-        plot.initialize(this, settingsHelper, resourceHelper, calibrationHelper);
-
-        graphTop.setText(settingsHelper.getThreshold(SoundLevel.TOO_LOUD) + " dB");
-        graphBottom.setText(settingsHelper.getThreshold(SoundLevel.QUIET) + " dB");
+        plot.initialize(this, settingsHelper, resourceHelper);
     }
 
     @Override
@@ -80,16 +78,31 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     private void refresh() {
-        zoomIn.setEnabled(measurementPresenter.canZoomIn());
-        zoomOut.setEnabled(measurementPresenter.canZoomOut());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                zoomIn.setEnabled(measurementPresenter.canZoomIn());
+                zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
-        List<SoundMeasurement> measurements = measurementPresenter.getTimelineView();
-        ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
+                List<Measurement> measurements = measurementPresenter.getTimelineView();
+                ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
-        plot.update(measurements, notes);
+                plot.update(sensorManager.getVisibleSensor(), measurements, notes);
 
-        scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
-        scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
+                scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
+                scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
+
+                updateLabels(measurements);
+            }
+        });
+    }
+
+    private void updateLabels(List<Measurement> measurements) {
+        Sensor sensor = sensorManager.getVisibleSensor();
+        int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+        int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+        graphTop.setText(high + " " + sensor.getSymbol());
+        graphBottom.setText(low + " " + sensor.getSymbol());
 
         if (!measurements.isEmpty()) {
             graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
@@ -125,10 +138,10 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @Override
-    public void onAveragedMeasurement(SoundMeasurement measurement) {
+    public void onAveragedMeasurement(Measurement measurement) {
     }
 
-    @Override
+    @Subscribe
     public void onEvent(TapEvent event) {
         if (!plot.onTap(event)) {
             super.onEvent(event);
@@ -140,13 +153,13 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         refresh();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes DoubleTapEvent event) {
+    @Subscribe
+    public void onEvent(DoubleTapEvent event) {
         zoomIn();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes ScrollEvent event) {
+    @Subscribe
+    public void onEvent(ScrollEvent event) {
         float relativeScroll = event.getDistanceX() / plot.getWidth();
         measurementPresenter.scroll(relativeScroll);
     }

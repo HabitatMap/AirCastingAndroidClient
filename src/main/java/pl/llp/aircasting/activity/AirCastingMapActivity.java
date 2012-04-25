@@ -20,22 +20,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.DoubleTapEvent;
-import pl.llp.aircasting.event.LocationEvent;
-import pl.llp.aircasting.event.TapEvent;
-import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.SoundMeasurement;
-import pl.llp.aircasting.view.AirCastingMapView;
-import pl.llp.aircasting.view.MapIdleDetector;
-import pl.llp.aircasting.view.overlay.LocationOverlay;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
-import pl.llp.aircasting.view.overlay.RouteOverlay;
-import pl.llp.aircasting.view.overlay.SoundTraceOverlay;
-import pl.llp.aircasting.view.presenter.MeasurementPresenter;
-
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,12 +30,32 @@ import android.widget.ImageView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import roboguice.event.Observes;
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.LocationEvent;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.view.AirCastingMapView;
+import pl.llp.aircasting.view.MapIdleDetector;
+import pl.llp.aircasting.view.overlay.LocationOverlay;
+import pl.llp.aircasting.view.overlay.NoteOverlay;
+import pl.llp.aircasting.view.overlay.RouteOverlay;
+import pl.llp.aircasting.view.overlay.TraceOverlay;
+import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.File;
+import java.util.List;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
@@ -71,15 +75,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     @Inject NoteOverlay noteOverlay;
     @Inject LocationOverlay locationOverlay;
-    @Inject SoundTraceOverlay soundTraceOverlay;
+    @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
 
     @Inject RouteOverlay routeOverlay;
 
     boolean initialized = false;
-    SoundMeasurement lastMeasurement;
+    Measurement lastMeasurement;
     private boolean zoomToSession = true;
-    private boolean suppressTap;
     MapIdleDetector routeRefreshDetector;
 
     @Override
@@ -106,22 +109,23 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
         spinnerAnimation.start();
 
-        locationHelper.setContext(this);
-
         initializeMap();
-
-        initializeTraceOverlay();
 
         measurementPresenter.registerListener(this);
 
         initializeRouteOverlay();
+
+        traceOverlay.startDrawing();
     }
 
     private void initializeRouteOverlay() {
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            for (SoundMeasurement measurement : sessionManager.getSoundMeasurements()) {
+            Sensor sensor = sensorManager.getVisibleSensor();
+            List<Measurement> measurements = sessionManager.getMeasurements(sensor);
+
+            for (Measurement measurement : measurements) {
                 GeoPoint geoPoint = geoPoint(measurement);
                 routeOverlay.addPoint(geoPoint);
             }
@@ -152,7 +156,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
         measurementPresenter.unregisterListener(this);
         routeRefreshDetector.stop();
-        soundTraceOverlay.stopDrawing(mapView);
+        traceOverlay.stopDrawing(mapView);
     }
 
     private void initializeMap() {
@@ -169,13 +173,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
             settingsHelper.setFirstLaunch(false);
         }
-    }
-
-    private void initializeTraceOverlay() {
-        soundTraceOverlay.setSaved(sessionManager.isSessionSaved());
-        soundTraceOverlay.setCalibration(sessionManager.getSession().getCalibration());
-        soundTraceOverlay.setOffset60DB(sessionManager.getSession().getOffset60DB());
-        soundTraceOverlay.startDrawing();
     }
 
     protected void startSpinner() {
@@ -212,7 +209,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
 
     private void showSession() {
         if (sessionManager.isSessionSaved() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSoundMeasurements());
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
             mapView.getController().animateTo(boundingBox.getCenter());
@@ -227,19 +224,21 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
+    @Subscribe
     @Override
-    public void onNewMeasurement(SoundMeasurement measurement) {
-        super.onNewMeasurement(measurement);
+    public void onEvent(MeasurementEvent event) {
+        super.onEvent(event);
 
-        if (!sessionManager.isSessionSaved()) {
-            updateLocation();
-        }
-
-        mapView.invalidate();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapView.invalidate();
+            }
+        });
     }
 
     public void noteClicked(OverlayItem item, int index) {
-        suppressTap = true;
+        suppressNextTap();
 
         mapView.getController().animateTo(item.getPoint());
 
@@ -276,31 +275,30 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onNewSession() {
-        super.onNewSession();
+    @Subscribe
+    public void onEvent(SessionChangeEvent event) {
+        super.onEvent(event);
         refreshNotes();
         mapView.invalidate();
     }
 
-    @Override
-    public void onNewNote(Note note) {
-        super.onNewNote(note);
+    @Subscribe
+    public void onEvent(NoteCreatedEvent event) {
         refreshNotes();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes DoubleTapEvent event) {
+    @Subscribe
+    public void onEvent(DoubleTapEvent event) {
         mapView.getController().zoomIn();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes MotionEvent event) {
+    @Subscribe
+    public void onEvent(MotionEvent event) {
         mapView.dispatchTouchEvent(event);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(@Observes LocationEvent event) {
-        updateLocation();
+    @Subscribe
+    public void onEvent(LocationEvent event) {
         updateRoute();
 
         mapView.invalidate();
@@ -310,26 +308,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         if (settingsHelper.isShowRoute() && sessionManager.isRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
-        }
-    }
-
-    @Override
-    public void onEvent(@Observes TapEvent event) {
-        if (suppressTap) {
-            suppressTap = false;
-        } else {
-            super.onEvent(event);
-        }
-    }
-
-    private void updateLocation() {
-        Location location = locationHelper.getLastLocation();
-        if (!sessionManager.isSessionSaved()) {
-            if (!settingsHelper.isAveraging()) {
-                locationOverlay.setValue(sessionManager.getDbNow());
-            }
-
-            locationOverlay.setLocation(location);
         }
     }
 
@@ -346,20 +324,24 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     }
 
     @Override
-    public void onAveragedMeasurement(SoundMeasurement measurement) {
+    public void onAveragedMeasurement(Measurement measurement) {
         if (sessionManager.isSessionStarted()) {
             if (!settingsHelper.isAveraging()) {
-                soundTraceOverlay.update(measurement);
+                traceOverlay.update(measurement);
             } else if (lastMeasurement != null) {
-                soundTraceOverlay.update(lastMeasurement);
+                traceOverlay.update(lastMeasurement);
             }
         }
 
         if (settingsHelper.isAveraging()) {
-            locationOverlay.setValue(measurement.getValue());
             lastMeasurement = measurement;
         }
 
-        mapView.invalidate();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapView.invalidate();
+            }
+        });
     }
 }

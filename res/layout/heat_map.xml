@@ -44,8 +44,8 @@
                      android:layout_alignParentLeft="true"
                      android:layout_centerVertical="true"
                      android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_charts"
-                     android:id="@+id/graph_button"
+                     android:background="@drawable/left_sensor"
+                     android:id="@+id/streams_button"
                 />
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"

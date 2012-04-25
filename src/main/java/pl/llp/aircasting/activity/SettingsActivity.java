@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
@@ -29,9 +29,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.SensorManager;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
@@ -44,12 +46,15 @@ import roboguice.inject.InjectResource;
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACCOUNT_KEY = "account";
     public static final String COLOR_SCALE_KEY = "color_scale";
+    public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
+    public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
 
     @Inject Application context;
 
-    @Inject MainMenu mainMenu;
-    @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences sharedPreferences;
+    @Inject SettingsHelper settingsHelper;
+    @Inject SensorManager sensorManager;
+    @Inject MainMenu mainMenu;
 
     @InjectResource(R.string.profile_template) String profileTemplate;
 
@@ -79,10 +84,16 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference.getKey().equals(COLOR_SCALE_KEY)) {
-            startActivity(new Intent(this, ThresholdsActivity.class));
+            Intents.thresholdsEditor(this, sensorManager.getVisibleSensor());
             return true;
         } else if (preference.getKey().equals(ACCOUNT_KEY)) {
             signInOrOut();
+            return true;
+        } else if (preference.getKey().equals(EXTERNAL_SENSOR_KEY)) {
+            startActivity(new Intent(this, ExternalSensorActivity.class));
+            return true;
+        } else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY)) {
+            Intents.startStreamsActivity(this);
             return true;
         } else {
             return super.onPreferenceTreeClick(preferenceScreen, preference);

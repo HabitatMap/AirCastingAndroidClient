@@ -21,8 +21,13 @@ package pl.llp.aircasting.helper;
 
 import android.location.Location;
 import com.google.android.maps.GeoPoint;
-import pl.llp.aircasting.model.SoundMeasurement;
+import com.google.common.base.Function;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Session;
 
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.transform;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -39,7 +44,7 @@ public class LocationConversionHelper {
         return (int) (latLng * INTEGER_1E6);
     }
 
-    public static GeoPoint geoPoint(SoundMeasurement measurement) {
+    public static GeoPoint geoPoint(Measurement measurement) {
         return geoPoint(measurement.getLatitude(), measurement.getLongitude());
     }
 
@@ -54,12 +59,12 @@ public class LocationConversionHelper {
         return location;
     }
 
-    public static BoundingBox boundingBox(Iterable<SoundMeasurement> measurements) {
+    public static BoundingBox boundingBox(Session session) {
         int north, south, east, west;
         north = east = Integer.MIN_VALUE;
         south = west = Integer.MAX_VALUE;
 
-        for (SoundMeasurement measurement : measurements) {
+        for (Measurement measurement : allMeasurements(session)) {
             north = max(north, geoPointize(measurement.getLatitude()));
             south = min(south, geoPointize(measurement.getLatitude()));
             east = max(east, geoPointize(measurement.getLongitude()));
@@ -71,6 +76,18 @@ public class LocationConversionHelper {
         int lonSpan = east - west;
 
         return new BoundingBox(center, latSpan, lonSpan);
+    }
+
+    private static Iterable<Measurement> allMeasurements(Session session) {
+        Iterable<Iterable<Measurement>> measurements =
+                transform(session.getMeasurementStreams(), new Function<MeasurementStream, Iterable<Measurement>>() {
+                    @Override
+                    public Iterable<Measurement> apply(MeasurementStream input) {
+                        return input.getMeasurements();
+                    }
+                });
+
+        return concat(measurements);
     }
 
     public static class BoundingBox {

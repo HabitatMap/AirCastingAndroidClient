@@ -19,339 +19,299 @@
  */
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.model.AirCastingDB;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.Session;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.*;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.collect.Lists.newArrayList;
+import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.DBHelper.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/6/11
- * Time: 11:29 AM
- */
-public class SessionRepository implements DBConstants {
-    public interface ProgressListener {
+public class SessionRepository {
+  private static final String SESSIONS_BY_SENSOR_QUERY =
+      "SELECT " + SESSION_TABLE_NAME + ".*" +
+          " FROM " + SESSION_TABLE_NAME +
+          " JOIN " + STREAM_TABLE_NAME +
+          " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_SESSION_ID +
+          " WHERE " + STREAM_SENSOR_NAME + " = ?" +
+          " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
+          " ORDER BY " + SESSION_START + " DESC";
 
-        public void onSizeCalculated(int workSize);
+  @Inject
+  AirCastingDB dbAccessor;
 
-        public void onProgress(int progress);
+  SQLiteDatabase db;
+
+  NoteRepository notes;
+  StreamRepository streams;
+
+  @Inject
+  public void init() {
+    db = dbAccessor.getWritableDatabase();
+    notes = new NoteRepository(db);
+    streams = new StreamRepository(db);
+  }
+
+  public void close() {
+    db.close();
+  }
+
+  public Session save(Session session) {
+    save(session, new NullProgressListener());
+    return session;
+  }
+
+  public void deleteNote(Session session, Note note) {
+    notes.delete(session, note);
+  }
+
+  public void save(Session session, ProgressListener progressListener) {
+    setupProgressListener(session, progressListener);
+
+    db.beginTransaction();
+    ContentValues values = new ContentValues();
+
+    prepareHeader(session, values);
+    values.put(SESSION_START, session.getStart().getTime());
+    values.put(SESSION_END, session.getEnd().getTime());
+    values.put(SESSION_UUID, session.getUUID().toString());
+
+    values.put(SESSION_CALIBRATION, session.getCalibration());
+    values.put(SESSION_CONTRIBUTE, session.getContribute());
+    values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
+    values.put(SESSION_INSTRUMENT, session.getInstrument());
+    values.put(SESSION_DATA_TYPE, session.getDataType());
+    values.put(SESSION_OS_VERSION, session.getOSVersion());
+    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
+    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
+    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
+    values.put(SESSION_CALIBRATED, true);
+
+    long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
+    session.setId(sessionKey);
+
+    Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
+
+    streams.saveAll(streamsToSave, sessionKey);
+
+    notes.save(session.getNotes(), sessionKey);
+
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
+
+  private void setupProgressListener(Session session, ProgressListener progressListener) {
+    if (progressListener == null) {
+      return;
     }
 
-    @Inject DBUtils dbHelper;
-    SQLiteDatabase db;
-
-    @Inject
-    public void init() {
-        db = dbHelper.getWritableDatabase();
+    int size = 0;
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    for (MeasurementStream stream : streams) {
+      size += stream.getMeasurements().size();
     }
 
-    public void close() {
-        db.close();
+    progressListener.onSizeCalculated(size);
+  }
+
+  private void prepareHeader(Session session, ContentValues values) {
+    values.put(SESSION_TITLE, session.getTitle());
+    values.put(SESSION_DESCRIPTION, session.getDescription());
+    values.put(SESSION_TAGS, session.getTags());
+    values.put(SESSION_LOCATION, session.getLocation());
+  }
+
+  public Session loadShallow(Cursor cursor) {
+    Session session = new Session();
+
+    session.setId(getLong(cursor, SESSION_ID));
+    session.setTitle(getString(cursor, SESSION_TITLE));
+    session.setDescription(getString(cursor, SESSION_DESCRIPTION));
+    session.setTags(getString(cursor, SESSION_TAGS));
+    session.setStart(getDate(cursor, SESSION_START));
+    session.setEnd(getDate(cursor, SESSION_END));
+    session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
+    session.setLocation(getString(cursor, SESSION_LOCATION));
+    session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
+    session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
+    session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
+    session.setDataType(getString(cursor, SESSION_DATA_TYPE));
+    session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
+    session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
+    session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
+    session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
+    session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
+
+    List<Note> loadedNotes = notes.load(session);
+    session.addAll(loadedNotes);
+
+    loadStreams(session);
+
+    return session;
+  }
+
+  private Session loadStreams(Session session)
+  {
+    List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
+    for (MeasurementStream stream : streams)
+    {
+      session.add(stream);
     }
 
-    public void save(Session session) {
-        save(session, null);
-    }
+    return session;
+  }
 
-    public void deleteNote(Session session, Note note) {
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
-                " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
-    }
-
-    public void save(Session session, ProgressListener progressListener) {
-        db.beginTransaction();
-
-        if (progressListener != null) progressListener.onSizeCalculated(session.getSoundMeasurements().size());
-
-        ContentValues values = new ContentValues();
-
-        prepareHeader(session, values);
-        values.put(SESSION_AVG, session.getAvg());
-        values.put(SESSION_PEAK, session.getPeak());
-        values.put(SESSION_START, session.getStart().getTime());
-        values.put(SESSION_END, session.getEnd().getTime());
-        values.put(SESSION_UUID, session.getUUID().toString());
-        values.put(SESSION_CALIBRATION, session.getCalibration());
-        values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-        values.put(SESSION_CONTRIBUTE, session.getContribute());
-        values.put(SESSION_DATA_TYPE, session.getDataType());
-        values.put(SESSION_INSTRUMENT, session.getInstrument());
-        values.put(SESSION_OS_VERSION, session.getOSVersion());
-        values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-        values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
-        values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
-
-        long key = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
-        session.setId(key);
-
-        int count = 0;
-        for (SoundMeasurement measurement : session.getSoundMeasurements()) {
-            values.clear();
-            values.put(MEASUREMENT_SESSION_ID, key);
-            values.put(MEASUREMENT_VALUE, measurement.getValue());
-            values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
-            values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
-            values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
-
-            db.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
-
-            count += 1;
-            if (count % 100 == 0 && progressListener != null) {
-                progressListener.onProgress(count);
-            }
-        }
-
-        saveNotes(session.getNotes(), key);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    private void saveNotes(Iterable<Note> notes, long sessionId) {
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId, null);
-
-        ContentValues values = new ContentValues();
-
-        for (Note note : notes) {
-            values.clear();
-            values.put(NOTE_SESSION_ID, sessionId);
-            values.put(NOTE_LATITUDE, note.getLatitude());
-            values.put(NOTE_LONGITUDE, note.getLongitude());
-            values.put(NOTE_TEXT, note.getText());
-            values.put(NOTE_DATE, note.getDate().getTime());
-            values.put(NOTE_PHOTO, note.getPhotoPath());
-            values.put(NOTE_NUMBER, note.getNumber());
-
-            db.insertOrThrow(NOTE_TABLE_NAME, null, values);
-        }
-    }
-
-    private void prepareHeader(Session session, ContentValues values) {
-        values.put(SESSION_TITLE, session.getTitle());
-        values.put(SESSION_DESCRIPTION, session.getDescription());
-        values.put(SESSION_TAGS, session.getTags());
-        values.put(SESSION_LOCATION, session.getLocation());
-    }
-
-    public Session load(Cursor cursor) {
-        Session session = new Session();
-
-        session.setId(getLong(cursor, SESSION_ID));
-        session.setTitle(getString(cursor, SESSION_TITLE));
-        session.setDescription(getString(cursor, SESSION_DESCRIPTION));
-        session.setTags(getString(cursor, SESSION_TAGS));
-        session.setAvg(getDouble(cursor, SESSION_AVG));
-        session.setPeak(getDouble(cursor, SESSION_PEAK));
-        session.setStart(getDate(cursor, SESSION_START));
-        session.setEnd(getDate(cursor, SESSION_END));
-        session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
-        session.setLocation(getString(cursor, SESSION_LOCATION));
-        session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
-        session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
-        session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
-        session.setDataType(getString(cursor, SESSION_DATA_TYPE));
-        session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
-        session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
-        session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
-        session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
-        session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
-
-        loadNotes(session);
-
-        return session;
-    }
-
-    public Session load(long sessionID) {
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
-        try {
-            cursor.moveToFirst();
-            return load(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-
-    private Session load(UUID uuid) {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
-                new String[]{uuid.toString()});
-
-        try {
-            if (cursor.getCount() == 0) return null;
-
-            cursor.moveToFirst();
-            return load(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-
-    public void markSessionForRemoval(long id) {
-        ContentValues values = new ContentValues();
-        values.put(SESSION_MARKED_FOR_REMOVAL, true);
-
-        db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
-    }
-
-    public Iterable<Session> all() {
-        List<Session> result = newArrayList();
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
-
+  public Session loadShallow(long sessionID)
+  {
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, SESSION_ID + " = " + sessionID, null, null, null, null);
+    try {
+      if (cursor.getCount() > 0) {
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            result.add(load(cursor));
+        return loadShallow(cursor);
+      } else {
+        return null;
+      }
+    } finally {
+      cursor.close();
+    }
+  }
 
-            cursor.moveToNext();
-        }
+  private Session loadShallow(UUID uuid)
+  {
+    Cursor cursor = db.rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
+                                new String[]{uuid.toString()});
 
-        cursor.close();
+    try {
+      if (cursor.getCount() == 0) return null;
 
-        return result;
+      cursor.moveToFirst();
+      return loadShallow(cursor);
+    } finally {
+      cursor.close();
+    }
+  }
+
+  public void markSessionForRemoval(long id) {
+    ContentValues values = new ContentValues();
+    values.put(SESSION_MARKED_FOR_REMOVAL, true);
+
+    db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
+  }
+
+  public Iterable<Session> all() {
+    List<Session> result = newArrayList();
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
+
+    cursor.moveToFirst();
+    while (!cursor.isAfterLast()) {
+      Session load = loadShallow(cursor);
+      result.add(load);
+      cursor.moveToNext();
     }
 
-    public Cursor notDeletedCursor() {
-        return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
+    cursor.close();
+
+    return result;
+  }
+
+  public Cursor notDeletedCursor(@Nullable Sensor sensor) {
+    if (sensor == null) {
+      return db.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
+    } else {
+      return db.rawQuery(SESSIONS_BY_SENSOR_QUERY, new String[]{sensor.getSensorName()});
+    }
+  }
+
+  public void deleteSubmitted() {
+    String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
+    delete(condition);
+  }
+
+  private void delete(String condition) {
+    Cursor cursor = db.query(SESSION_TABLE_NAME, null, condition, null, null, null, null);
+
+    cursor.moveToFirst();
+    while (!cursor.isAfterLast()) {
+      Long id = getLong(cursor, SESSION_ID);
+      delete(id);
+
+      cursor.moveToNext();
     }
 
-    public void deleteSubmitted() {
-        String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
-        delete(condition);
+    cursor.close();
+  }
+
+  public void deleteUploaded() {
+    String condition = SESSION_LOCATION + " NOTNULL";
+    delete(condition);
+  }
+
+  private void delete(Long id) {
+    db.beginTransaction();
+
+    db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
+    db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
+    db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
+
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
+
+  public Session loadFully(UUID uuid)
+  {
+    Session session = loadShallow(uuid);
+    return fill(session, null);
+  }
+
+  public Session loadFully(long id, ProgressListener progressListener)
+  {
+    Session session = loadShallow(id);
+    return fill(session, progressListener);
+  }
+
+  private Session fill(Session session, ProgressListener progressListener)
+  {
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    MeasurementRepository r = new MeasurementRepository(db, progressListener);
+    Map<Long, List<Measurement>> load = r.load(session);
+
+    for (MeasurementStream stream : streams)
+    {
+      if(load.containsKey(stream.getId()))
+      {
+        stream.setMeasurements(load.get(stream.getId()));
+        session.add(stream);
+      }
     }
 
-    private void delete(String condition) {
-        Cursor cursor = db.query(SESSION_TABLE_NAME, null, condition, null, null, null, null);
+    return session;
+  }
 
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            Long id = getLong(cursor, SESSION_ID);
-            delete(id);
+  public void update(Session session) {
+    ContentValues values = new ContentValues();
+    prepareHeader(session, values);
 
-            cursor.moveToNext();
-        }
+    db.beginTransaction();
 
-        cursor.close();
-    }
+    notes.save(session.getNotes(), session.getId());
+    db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
 
-    public void deleteUploaded() {
-        String condition = SESSION_LOCATION + " NOTNULL";
-        delete(condition);
-    }
-
-    private void delete(Long id) {
-        db.beginTransaction();
-
-        db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
-        db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
-        db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    public Session loadEager(UUID uuid) {
-        Session session = load(uuid);
-
-        return fill(session, null);
-    }
-
-    public Session loadEager(long id, ProgressListener progressListener) {
-        Session session = load(id);
-
-        return fill(session, progressListener);
-    }
-
-    private Session fill(Session session, ProgressListener progressListener) {
-        loadMeasurements(session, progressListener);
-
-        return session;
-    }
-
-    private void loadNotes(Session session) {
-        Cursor cursor = db.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(), null, null, null, null);
-        cursor.moveToFirst();
-
-        while (!cursor.isAfterLast()) {
-            Note note = new Note();
-
-            note.setLatitude(getDouble(cursor, NOTE_LATITUDE));
-            note.setLongitude(getDouble(cursor, NOTE_LONGITUDE));
-            note.setDate(getDate(cursor, NOTE_DATE));
-            note.setText(getString(cursor, NOTE_TEXT));
-            note.setPhotoPath(getString(cursor, NOTE_PHOTO));
-            note.setNumber(getInt(cursor, NOTE_NUMBER));
-
-            session.add(note);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-    }
-
-    private void loadMeasurements(Session session, ProgressListener progressListener) {
-        Cursor cursor = db.query(MEASUREMENT_TABLE_NAME, null, MEASUREMENT_SESSION_ID + " = " + session.getId(), null, null, null, MEASUREMENT_TIME);
-        cursor.moveToFirst();
-
-        if (progressListener != null) progressListener.onSizeCalculated(cursor.getCount());
-
-        while (!cursor.isAfterLast()) {
-            SoundMeasurement measurement = new SoundMeasurement();
-
-            measurement.setLatitude(getDouble(cursor, MEASUREMENT_LATITUDE));
-            measurement.setLongitude(getDouble(cursor, MEASUREMENT_LONGITUDE));
-            measurement.setValue(getDouble(cursor, MEASUREMENT_VALUE));
-            measurement.setTime(getDate(cursor, MEASUREMENT_TIME));
-
-            if (progressListener != null && cursor.getPosition() % 100 == 0) {
-                progressListener.onProgress(cursor.getPosition());
-            }
-            session.add(measurement);
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-    }
-
-    public void update(Session session) {
-        ContentValues values = new ContentValues();
-        prepareHeader(session, values);
-
-        db.beginTransaction();
-
-        saveNotes(session.getNotes(), session.getId());
-        db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    private double getDouble(Cursor cursor, String columnName) {
-        return cursor.getDouble(cursor.getColumnIndex(columnName));
-    }
-
-    private Date getDate(Cursor cursor, String columnName) {
-        return new Date(cursor.getLong(cursor.getColumnIndex(columnName)));
-    }
-
-    private String getString(Cursor cursor, String columnName) {
-        return cursor.getString(cursor.getColumnIndex(columnName));
-    }
-
-    private Long getLong(Cursor cursor, String columnName) {
-        return cursor.getLong(cursor.getColumnIndex(columnName));
-    }
-
-    private int getInt(Cursor cursor, String columnName) {
-        return cursor.getInt(cursor.getColumnIndex(columnName));
-    }
-
-    private boolean getBool(Cursor cursor, String columnName) {
-        return cursor.getInt(cursor.getColumnIndex(columnName)) == 1;
-    }
+    db.setTransactionSuccessful();
+    db.endTransaction();
+  }
 }

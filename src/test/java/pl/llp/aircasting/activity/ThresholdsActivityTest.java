@@ -19,14 +19,18 @@
 */
 package pl.llp.aircasting.activity;
 
+import android.content.Intent;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.SoundLevel;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Any;
+import pl.llp.aircasting.model.Sensor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -44,8 +48,16 @@ import static pl.llp.aircasting.TestHelper.fill;
 public class ThresholdsActivityTest {
     @Inject ThresholdsActivity activity;
 
+    Sensor sensor;
+
     @Before
     public void setup() {
+        sensor = Any.sensor();
+
+        Intent intent = new Intent();
+        intent.putExtra(Intents.EXTRA_SENSOR, sensor);
+        activity.setIntent(intent);
+        
         activity.onCreate(null);
 
         activity.settingsHelper = mock(SettingsHelper.class);
@@ -61,11 +73,11 @@ public class ThresholdsActivityTest {
     public void shouldSaveThresholds() {
         click(activity, R.id.save);
 
-        verify(activity.settingsHelper).setThreshold(SoundLevel.TOO_LOUD, 100);
-        verify(activity.settingsHelper).setThreshold(SoundLevel.VERY_LOUD, 90);
-        verify(activity.settingsHelper).setThreshold(SoundLevel.LOUD, 80);
-        verify(activity.settingsHelper).setThreshold(SoundLevel.AVERAGE, 70);
-        verify(activity.settingsHelper).setThreshold(SoundLevel.QUIET, 60);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_HIGH, 100);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.HIGH, 90);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.MID, 80);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.LOW, 70);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_LOW, 60);
 
         assertThat(activity.isFinishing(), equalTo(true));
     }
@@ -78,8 +90,8 @@ public class ThresholdsActivityTest {
 
         click(activity, R.id.save);
 
-        verify(activity.settingsHelper).setThreshold(SoundLevel.TOO_LOUD, 111);
-        verify(activity.settingsHelper).setThreshold(SoundLevel.VERY_LOUD, 110);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_HIGH, 111);
+        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.HIGH, 110);
 
         assertThat(activity.isFinishing(), equalTo(true));
     }
@@ -88,7 +100,7 @@ public class ThresholdsActivityTest {
     public void shouldResetThresholds() {
         click(activity, R.id.reset);
 
-        verify(activity.settingsHelper).resetThresholds();
+        verify(activity.settingsHelper).resetThresholds(sensor);
         assertThat(activity.isFinishing(), equalTo(true));
     }
 }

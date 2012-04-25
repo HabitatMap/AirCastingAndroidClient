@@ -21,6 +21,7 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.AveragesDriver;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Region;
 import pl.llp.aircasting.util.http.HttpResult;
@@ -59,6 +60,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
     private AsyncTask<Void, Void, Void> refreshTask;
     private MapIdleDetector heatMapDetector;
     private MapIdleDetector soundTraceDetector;
+    private HeatMapUpdater updater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         mapView.getOverlays().add(heatMapOverlay);
         mapView.getOverlays().add(routeOverlay);
-        mapView.getOverlays().add(soundTraceOverlay);
+        mapView.getOverlays().add(traceOverlay);
     }
 
     @Override
@@ -76,7 +78,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         checkConnection();
 
-        HeatMapUpdater updater = new HeatMapUpdater();
+        updater = new HeatMapUpdater();
         heatMapDetector = detectMapIdle(mapView, HEAT_MAP_UPDATE_TIMEOUT, updater);
         soundTraceDetector = detectMapIdle(mapView, SOUND_TRACE_UPDATE_TIMEOUT, this);
     }
@@ -87,6 +89,14 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         heatMapDetector.stop();
         soundTraceDetector.stop();
+    }
+
+    @Override
+    public void onEvent(ViewStreamEvent event) {
+        super.onEvent(event);
+
+        updater.onMapIdle();
+        onMapIdle();
     }
 
     private void checkConnection() {
@@ -149,7 +159,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
             int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
             int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            return averagesDriver.index(northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+            return averagesDriver.index(sensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
         }
 
@@ -175,7 +185,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
 
         @Override
         protected Void doInBackground(Void... voids) {
-            soundTraceOverlay.refresh(mapView);
+            traceOverlay.refresh(mapView);
             return null;
         }
 

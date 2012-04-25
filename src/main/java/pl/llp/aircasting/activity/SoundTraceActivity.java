@@ -21,7 +21,9 @@ package pl.llp.aircasting.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.view.MapIdleDetector;
 
 import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
@@ -40,7 +42,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
         setContentView(R.layout.trace);
 
         mapView.getOverlays().add(routeOverlay);
-        mapView.getOverlays().add(soundTraceOverlay);
+        mapView.getOverlays().add(traceOverlay);
     }
 
     @Override
@@ -61,6 +63,13 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
 
         if (centerDetector != null) centerDetector.stop();
         refreshDetector.stop();
+    }
+
+    @Subscribe
+    @Override
+    public void onEvent(ViewStreamEvent event) {
+        super.onEvent(event);
+        refreshSoundTrace();
     }
 
     @Override
@@ -88,7 +97,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
 
         @Override
         protected Void doInBackground(Void... voids) {
-            soundTraceOverlay.refresh(mapView);
+            traceOverlay.refresh(mapView);
             return null;
         }
 

@@ -1,65 +1,73 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.model;
 
 import android.app.Application;
-import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.audio.SimpleAudioReader;
-import pl.llp.aircasting.audio.SoundVolumeListener;
-import pl.llp.aircasting.helper.*;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
+import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.MetadataHelper;
+import pl.llp.aircasting.helper.NotificationHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import static com.google.common.collect.Iterables.skip;
-import static com.google.common.primitives.Ints.min;
-import static com.google.inject.internal.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/29/11
- * Time: 1:09 PM
- */
 @Singleton
-public class SessionManager implements SoundVolumeListener {
+public class SessionManager {
     @Inject SimpleAudioReader audioReader;
+    @Inject ExternalSensor externalSensor;
+    @Inject EventBus eventBus;
+
     @Inject SessionRepository sessionRepository;
+
     @Inject SettingsHelper settingsHelper;
-    @Inject Application applicationContext;
     @Inject LocationHelper locationHelper;
     @Inject MetadataHelper metadataHelper;
-    @Inject TelephonyManager telephonyManager;
     @Inject NotificationHelper notificationHelper;
+
+    @Inject Application applicationContext;
+    @Inject TelephonyManager telephonyManager;
+    @Inject SensorManager sensorManager;
 
     Session session = new Session();
 
-    private double dbLast = SoundHelper.TOTALLY_QUIET;
+    private Map<String, Double> recentMeasurements = newHashMap();
 
     boolean sessionStarted = false;
 
@@ -79,14 +87,16 @@ public class SessionManager implements SoundVolumeListener {
                 }
             }
         }, PhoneStateListener.LISTEN_CALL_STATE);
+
+        eventBus.register(this);
     }
 
     public Session getSession() {
         return session;
     }
 
-    public void loadSession(long id, SessionRepository.ProgressListener listener) {
-        Session newSession = sessionRepository.loadEager(id, listener);
+    public void loadSession(long id, ProgressListener listener) {
+        Session newSession = sessionRepository.loadFully(id, listener);
         setSession(newSession);
     }
 
@@ -113,9 +123,7 @@ public class SessionManager implements SoundVolumeListener {
     }
 
     private void notifyNote(Note note) {
-        for (Listener listener : listeners) {
-            listener.onNewNote(note);
-        }
+        eventBus.post(new NoteCreatedEvent(note));
     }
 
     public Iterable<Note> getNotes() {
@@ -126,7 +134,9 @@ public class SessionManager implements SoundVolumeListener {
         if (!recording) {
             locationHelper.start();
 
-            audioReader.start(this);
+            audioReader.start();
+
+            externalSensor.start();
 
             recording = true;
         }
@@ -142,7 +152,7 @@ public class SessionManager implements SoundVolumeListener {
     public synchronized void continueSession() {
         if (paused) {
             paused = false;
-            audioReader.start(this);
+            audioReader.start();
         }
     }
 
@@ -160,69 +170,41 @@ public class SessionManager implements SoundVolumeListener {
         return recording;
     }
 
-    public synchronized double getPeak(int n) {
-        if (session.getSoundMeasurements().isEmpty()) return 0;
-
-        Iterable<SoundMeasurement> measurements = getLast(n);
-        double max = Double.NEGATIVE_INFINITY;
-        for (SoundMeasurement measurement : measurements) {
-            if (measurement.getValue() > max) max = measurement.getValue();
-        }
-
-        return max;
-    }
-
-    private Iterable<SoundMeasurement> getLast(int n) {
-        int toSkip = session.getSoundMeasurements().size() - n;
-        if (toSkip < 0) toSkip = 0;
-        return skip(session.getSoundMeasurements(), toSkip);
-    }
-
-    public synchronized double getAvg(int n) {
-        if (session.getSoundMeasurements().isEmpty()) return 0;
-
-        double result = 0;
-
-        Iterable<SoundMeasurement> measurements = getLast(n);
-        for (SoundMeasurement measurement : measurements) {
-            result += measurement.getValue();
-        }
-
-        return result / min(n, session.getSoundMeasurements().size());
-    }
-
     public void setContribute(boolean value) {
         session.setContribute(value);
     }
 
-    @Override
-    public void onError() {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onError();
-                }
-            }
-        });
-    }
+    @Subscribe
+    public synchronized void onEvent(SensorEvent event) {
+        double value = event.getValue();
+        String sensorName = event.getSensorName();
+        Sensor sensor = sensorManager.getSensor(sensorName);
 
-    @Override
-    public synchronized void onMeasurement(double value) {
-        dbLast = value;
+        recentMeasurements.put(sensorName, value);
 
-        if (locationHelper.getLastLocation() != null) {
+        if (locationHelper.getLastLocation() != null && sensor.isEnabled()) {
             double latitude = locationHelper.getLastLocation().getLatitude();
             double longitude = locationHelper.getLastLocation().getLongitude();
 
-            SoundMeasurement measurement = new SoundMeasurement(latitude, longitude, value);
+            Measurement measurement = new Measurement(latitude, longitude, value);
             if (sessionStarted) {
-                session.add(measurement);
+                MeasurementStream stream = prepareStream(event);
+                stream.add(measurement);
             }
-            notifyMeasurement(measurement);
+
+            eventBus.post(new MeasurementEvent(measurement, sensor));
+        }
+    }
+
+    private MeasurementStream prepareStream(SensorEvent event) {
+        String sensorName = event.getSensorName();
+
+        if (!session.hasStream(sensorName)) {
+            MeasurementStream stream = new MeasurementStream(event);
+            session.add(stream);
         }
 
-        notifyNewReading();
+        return session.getStream(sensorName);
     }
 
     public Note getNote(int i) {
@@ -244,26 +226,16 @@ public class SessionManager implements SoundVolumeListener {
         return session.getNotes().size();
     }
 
-    public interface Listener {
-        public void onNewMeasurement(SoundMeasurement measurement);
-
-        public void onNewSession();
-
-        public void onNewNote(Note note);
-
-        public void onNewReading();
-
-        public void onError();
+    public void restartSensors() {
+        externalSensor.start();
     }
 
-    private Set<Listener> listeners = new HashSet<Listener>();
-
-    public void registerListener(Listener listener) {
-        listeners.add(listener);
+    public Collection<MeasurementStream> getMeasurementStreams() {
+        return session.getMeasurementStreams();
     }
 
-    public void unregisterListener(Listener listener) {
-        listeners.remove(listener);
+    public MeasurementStream getMeasurementStream(String sensorName) {
+        return session.getStream(sensorName);
     }
 
     public void discardSession() {
@@ -282,56 +254,26 @@ public class SessionManager implements SoundVolumeListener {
         session.setDescription(text);
     }
 
-    public double getDbPeak() {
-        return session.getPeak();
-    }
-
-    public double getDbAvg() {
-        return session.getAvg();
-    }
-
-    public synchronized double getDbNow() {
-        return dbLast;
-    }
-
-    Handler notificationHandler = new Handler();
-
-    private void notifyMeasurement(final SoundMeasurement measurement) {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onNewMeasurement(measurement);
-                }
-            }
-        });
+    public synchronized double getNow(Sensor sensor) {
+        if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+            return 0;
+        }
+        return recentMeasurements.get(sensor.getSensorName());
     }
 
     private void notifyNewSession() {
-        for (Listener listener : listeners) {
-            listener.onNewSession();
-        }
-    }
-
-    private void notifyNewReading() {
-        notificationHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Listener listener : listeners) {
-                    listener.onNewReading();
-                }
-            }
-        });
+        eventBus.post(new SessionChangeEvent());
     }
 
     public void startSession() {
         setSession(new Session());
+        session.setStart(new Date());
         startSensors();
         sessionStarted = true;
         notificationHelper.showRecordingNotification();
     }
 
-    public void finishSession(SessionRepository.ProgressListener progressListener) {
+    public void finishSession(ProgressListener progressListener) {
         synchronized (this) {
             fillInDetails();
 
@@ -349,6 +291,8 @@ public class SessionManager implements SoundVolumeListener {
         session.setInstrument(metadataHelper.getInstrument());
         session.setOsVersion(metadataHelper.getOSVersion());
         session.setPhoneModel(metadataHelper.getPhoneModel());
+
+        session.setEnd(new Date());
     }
 
     private void cleanup() {
@@ -363,7 +307,38 @@ public class SessionManager implements SoundVolumeListener {
         return sessionStarted;
     }
 
-    public synchronized List<SoundMeasurement> getSoundMeasurements() {
-        return newArrayList(session.getSoundMeasurements());
+    public synchronized List<Measurement> getSoundMeasurements() {
+        return newArrayList(session.getMeasurements());
+    }
+
+    public double getAvg(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getAvg();
+        } else {
+            return 0;
+        }
+    }
+
+    public double getPeak(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getPeak();
+        } else {
+            return 0;
+        }
+    }
+
+    public List<Measurement> getMeasurements(Sensor sensor) {
+        String name = sensor.getSensorName();
+
+        if (session.hasStream(name)) {
+            MeasurementStream stream = session.getStream(name);
+            return stream.getMeasurements();
+        } else {
+            return newArrayList();
+        }
     }
 }

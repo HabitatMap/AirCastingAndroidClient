@@ -20,14 +20,14 @@
 package pl.llp.aircasting;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import pl.llp.aircasting.activity.EditSessionActivity;
-import pl.llp.aircasting.activity.MakeANoteActivity;
-import pl.llp.aircasting.activity.ShareSessionActivity;
+import pl.llp.aircasting.activity.*;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.service.SyncService;
@@ -50,6 +50,7 @@ public final class Intents {
     public static final String SESSION_SERVICE_TASK = "session_service_task";
     public static final int START_SENSORS = 0;
     public static final int STOP_SENSORS = 1;
+    public static final int RESTART_SENSORS = 2;
     public static final int UNKNOWN = -1;
 
     public static final String SESSION_ID = "session_id";
@@ -62,6 +63,8 @@ public final class Intents {
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String MIME_TEXT_CSV = "text/csv";
     public static final String MIME_IMAGE_JPEG = "image/jpeg";
+    public static final int REQUEST_ENABLE_BLUETOOTH = 5;
+    public static final String EXTRA_SENSOR = "sensor";
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -88,6 +91,13 @@ public final class Intents {
     public static void stopSensors(Context context) {
         Intent intent = new Intent(context, SensorService.class);
         intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
+
+        context.startService(intent);
+    }
+
+    public static void restartSensors(Context context) {
+        Intent intent = new Intent(context, SensorService.class);
+        intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
 
         context.startService(intent);
     }
@@ -200,6 +210,22 @@ public final class Intents {
         } else {
             return null;
         }
+    }
+
+    public static void requestEnableBluetooth(Activity context) {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        context.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+    }
+
+    public static void startStreamsActivity(Activity activity) {
+        Intent intent = new Intent(activity, StreamsActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void thresholdsEditor(Activity activity, Sensor sensor) {
+        Intent intent = new Intent(activity, ThresholdsActivity.class);
+        intent.putExtra(EXTRA_SENSOR, sensor);
+        activity.startActivity(intent);
     }
 }
 

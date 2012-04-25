@@ -1,23 +1,23 @@
 <resources>
-<!--
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+    <!--
+        AirCasting - Share your Air!
+        Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+        You should have received a copy of the GNU General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
--->
+        You can contact the authors by email at <info@habitatmap.org>
+    -->
     <style name="Dialog"
            parent="android:Theme.Dialog"
             >
@@ -107,5 +107,43 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textSize">16dp</item>
         <item name="android:layout_marginLeft">5dp</item>
+    </style>
+
+    <style name="GaugeContainer"
+           parent="Wrap"
+            >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">1sp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="GaugeLabel"
+           parent="Wide"
+            >
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@color/gauge_transparent</item>
+    </style>
+
+    <style name="Gauge"
+           parent="Wrap"
+            >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/round_bottom_green</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">0</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SessionsBigText"
+           parent="Wrap"
+            >
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">0dp</item>
     </style>
 </resources>

@@ -124,7 +124,7 @@ public class SyncService extends RoboIntentService {
 
     private void uploadSessions(UUID[] uuids) {
         for (UUID uuid : uuids) {
-            Session session = sessionRepository.loadEager(uuid);
+            Session session = sessionRepository.loadFully(uuid);
             if (session != null && !session.isMarkedForRemoval()) {
                 HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
 

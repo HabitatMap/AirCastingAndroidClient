@@ -93,9 +93,6 @@
 
     <string name="no_internet">Please check your internet connection.</string>
 
-    <string name="note_template"
-            formatted="false">Registering %d dB peak and %d dB average near %s using AirCasting, www.aircasting.org.
-    </string>
     <string name="session_link_template"
             formatted="false">View my AirCasting session: %s
     </string>
@@ -109,8 +106,8 @@
     <string name="description_label">Description:</string>
 
     <string name="db_avg">Avg dB</string>
-    <string name="db_peak">Peak dB</string>
-    <string name="db_now">Now dB</string>
+    <string name="peak_gauge">Peak dB</string>
+    <string name="now_gauge">Now dB</string>
     <string name="save_changes">Save Changes</string>
     <string name="reset_to_default">Reset to Default</string>
 
@@ -179,4 +176,14 @@
     <string name="sync_only_wifi">Sync only through Wi-Fi</string>
     <string name="aircasting_is_recording">AirCasting is recording a session</string>
     <string name="show_route">Show route trace</string>
+    <string name="external_sensor">External sensor</string>
+    <string name="bluetooth_not_supported">Your phone does not support bluetooth.</string>
+    <string name="measurement_streams">Measurement streams</string>
+    
+    <string name="peak_label_template" formatted="false">Peak %s</string>
+    <string name="now_label_template" formatted="false">Now %s</string>
+    <string name="avg_label_template" formatted="false">Avg %s</string>
+
+    <string name="select_sensor">Select a sensor</string>
+    <string name="all">All</string>
 </resources>

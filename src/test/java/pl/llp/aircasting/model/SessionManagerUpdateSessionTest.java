@@ -46,7 +46,7 @@ public class SessionManagerUpdateSessionTest {
     public void setup(){
         sessionManager.sessionRepository = mock(SessionRepository.class);
         sessionManager.session = new Session();
-        sessionManager.session.add(new SoundMeasurement());
+        sessionManager.session.add(new MeasurementStream());
         session = new Session();
         session.setTitle("New title");
     }
@@ -62,7 +62,7 @@ public class SessionManagerUpdateSessionTest {
     public void shouldKeepMeasurements(){
         sessionManager.updateSession(session);
 
-        assertThat(sessionManager.getSoundMeasurements().size(), equalTo(1));
+        assertThat(sessionManager.getMeasurementStreams().size(), equalTo(1));
     }
 
     @Test

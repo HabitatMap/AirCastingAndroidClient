@@ -23,6 +23,7 @@ import com.google.inject.Injector;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.runners.model.InitializationError;
+import org.mockito.MockitoAnnotations;
 import pl.llp.aircasting.guice.AirCastingApplication;
 
 /**
@@ -41,5 +42,7 @@ public class InjectedTestRunner extends RobolectricTestRunner {
         AirCastingApplication application = (AirCastingApplication) Robolectric.application;
         Injector injector = application.getInjector();
         injector.injectMembers(test);
+
+        MockitoAnnotations.initMocks(test);
     }
 }

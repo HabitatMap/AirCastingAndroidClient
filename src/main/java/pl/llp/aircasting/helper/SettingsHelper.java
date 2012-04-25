@@ -19,10 +19,10 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.SoundLevel;
-
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
+import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.Sensor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,15 +31,6 @@ import com.google.inject.Inject;
  * Time: 12:59 PM
  */
 public class SettingsHelper {
-    public static final String AVERAGE_THRESHOLD = "average_threshold_int";
-    public static final String LOUD_THRESHOLD = "loud_threshold_int";
-    public static final String VERY_LOUD_THRESHOLD = "very_loud_threshold_int";
-    public static final String TOO_LOUD_THRESHOLD = "too_loud_threshold";
-    public static final String QUIET_THRESHOLD = "quiet_threshold";
-    public static final String[] THRESHOLDS = new String[]{
-            QUIET_THRESHOLD, AVERAGE_THRESHOLD, LOUD_THRESHOLD, VERY_LOUD_THRESHOLD, TOO_LOUD_THRESHOLD
-    };
-
     public static final String AUTH_TOKEN = "auth_token";
     public static final String USER_LOGIN = "user_login";
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
@@ -60,11 +51,6 @@ public class SettingsHelper {
     public static final int DEFAULT_OFFSET_60_DB = 0;
     public static final int MIN_OFFSET_60_DB = -5;
     public static final int MAX_OFFSET_60_DB = 5;
-    public static final int DEFAULT_QUIET_THRESHOLD = 20;
-    public static final int DEFAULT_AVERAGE_THRESHOLD = 60;
-    public static final int DEFAULT_LOUD_THRESHOLD = 70;
-    public static final int DEFAULT_VERY_LOUD_THRESHOLD = 80;
-    public static final int DEFAULT_TOO_LOUT_THRESHOLD = 100;
     public static final String SAMPLE_INTERVAL = "sample_interval";
     public static final int MIN_SAMPLE_INTERVAL = 1;
     public static final int MAX_SAMPLE_INTERVAL = 3600;
@@ -73,6 +59,7 @@ public class SettingsHelper {
     private static final int MAX_AVERAGING_TIME = 3600;
     public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
     public static final String SHOW_ROUTE = "show_route";
+    public static final String SENSOR_ADDRESS = "sensor_address";
 
     @Inject SharedPreferences preferences;
 
@@ -106,44 +93,23 @@ public class SettingsHelper {
         return getInt(HEAT_MAP_DENSITY, DEFAULT_HEAT_MAP_DENSITY);
     }
 
-    public int getThreshold(SoundLevel soundLevel) {
-        switch (soundLevel) {
-            case QUIET:
-                return preferences.getInt(QUIET_THRESHOLD, DEFAULT_QUIET_THRESHOLD);
-            case AVERAGE:
-                return preferences.getInt(AVERAGE_THRESHOLD, DEFAULT_AVERAGE_THRESHOLD);
-            case LOUD:
-                return preferences.getInt(LOUD_THRESHOLD, DEFAULT_LOUD_THRESHOLD);
-            case VERY_LOUD:
-                return preferences.getInt(VERY_LOUD_THRESHOLD, DEFAULT_VERY_LOUD_THRESHOLD);
-            case TOO_LOUD:
-                return preferences.getInt(TOO_LOUD_THRESHOLD, DEFAULT_TOO_LOUT_THRESHOLD);
-        }
-        throw new RuntimeException("Could not provide a threshold for sound level " + soundLevel);
+    public int getThreshold(Sensor sensor, MeasurementLevel measurementLevel) {
+        int defValue = sensor.getThreshold(measurementLevel);
+        String key = thresholdKey(sensor, measurementLevel);
+        return preferences.getInt(key, defValue);
     }
 
-    public void setThreshold(SoundLevel soundLevel, int value) {
+    public void setThreshold(Sensor sensor, MeasurementLevel measurementLevel, int value) {
         SharedPreferences.Editor editor = preferences.edit();
 
-        switch (soundLevel) {
-            case QUIET:
-                editor.putInt(QUIET_THRESHOLD, value);
-                break;
-            case AVERAGE:
-                editor.putInt(AVERAGE_THRESHOLD, value);
-                break;
-            case LOUD:
-                editor.putInt(LOUD_THRESHOLD, value);
-                break;
-            case VERY_LOUD:
-                editor.putInt(VERY_LOUD_THRESHOLD, value);
-                break;
-            case TOO_LOUD:
-                editor.putInt(TOO_LOUD_THRESHOLD, value);
-                break;
-        }
+        String key = thresholdKey(sensor, measurementLevel);
+        editor.putInt(key, value);
 
         editor.commit();
+    }
+
+    private String thresholdKey(Sensor sensor, MeasurementLevel level) {
+        return sensor.getSensorName() + ";" + level;
     }
 
     public void setAuthToken(String token) {
@@ -154,10 +120,11 @@ public class SettingsHelper {
         return preferences.getString(AUTH_TOKEN, "");
     }
 
-    public void resetThresholds() {
+    public void resetThresholds(Sensor sensor) {
         SharedPreferences.Editor editor = preferences.edit();
 
-        for (String key : THRESHOLDS) {
+        for (MeasurementLevel level : MeasurementLevel.values()) {
+            String key = thresholdKey(sensor, level);
             editor.remove(key);
         }
 
@@ -270,5 +237,13 @@ public class SettingsHelper {
 
     public boolean isShowRoute() {
         return preferences.getBoolean(SHOW_ROUTE, true);
+    }
+
+    public void setSensorAddress(String address) {
+        writeString(SENSOR_ADDRESS, address);
+    }
+
+    public String getSensorAddress() {
+        return preferences.getString(SENSOR_ADDRESS, null);
     }
 }

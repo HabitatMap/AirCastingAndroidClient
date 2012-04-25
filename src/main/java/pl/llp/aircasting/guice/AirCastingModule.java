@@ -19,43 +19,45 @@
 */
 package pl.llp.aircasting.guice;
 
+import pl.llp.aircasting.model.AirCastingDB;
+import pl.llp.aircasting.util.http.HttpBuilder;
+import pl.llp.aircasting.view.overlay.NoteOverlay;
+
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.location.Geocoder;
 import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.Scopes;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import pl.llp.aircasting.model.DBUtils;
-import pl.llp.aircasting.util.http.HttpBuilder;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
 import roboguice.config.AbstractAndroidModule;
 import roboguice.inject.SharedPreferencesName;
 import roboguice.inject.SystemServiceProvider;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/27/11
- * Time: 10:41 AM
- */
-public class AirCastingModule extends AbstractAndroidModule {
-    @Override
-    protected void configure() {
-        requestStaticInjection(HttpBuilder.class);
+public class AirCastingModule extends AbstractAndroidModule
+{
+  @Override
+  protected void configure() {
+    requestStaticInjection(HttpBuilder.class);
 
-        bind(Gson.class).toProvider(GsonProvider.class).in(Scopes.SINGLETON);
+    bind(Gson.class).toProvider(GsonProvider.class).in(Scopes.SINGLETON);
 
-        bind(HttpClient.class).to(DefaultHttpClient.class);
+    bind(HttpClient.class).to(DefaultHttpClient.class);
 
-        bind(DBUtils.class).toProvider(DBHelperProvider.class);
+    bind(AirCastingDB.class).toProvider(AirCastingDBProvider.class);
 
-        bind(NoteOverlay.class).toProvider(NoteOverlayProvider.class);
+    bind(NoteOverlay.class).toProvider(NoteOverlayProvider.class);
+        
+    bind(Geocoder.class).toProvider(GeocoderProvider.class);
+        
+    bind(EventBus.class).in(Scopes.SINGLETON);
 
-        bind(Geocoder.class).toProvider(GeocoderProvider.class);
+    bindConstant().annotatedWith(SharedPreferencesName.class).to("pl.llp.aircasting_preferences");
+        
+    bind(BluetoothAdapter.class).toProvider(BluetoothAdapterProvider.class);
 
-        bindConstant().annotatedWith(SharedPreferencesName.class).to("pl.llp.aircasting_preferences");
-
-        bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));
-    }
+    bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));
+  }
 }

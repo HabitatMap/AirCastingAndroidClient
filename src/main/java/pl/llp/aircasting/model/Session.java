@@ -19,73 +19,65 @@
 */
 package pl.llp.aircasting.model;
 
+import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import pl.llp.aircasting.helper.SoundHelper;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static com.google.common.collect.Iterables.getLast;
+import javax.annotation.Nullable;
+
+import static com.google.common.collect.Iterables.all;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/5/11
- * Time: 1:55 PM
- */
-public class Session implements Serializable {
-    @Expose private UUID uuid = UUID.randomUUID();
+public class Session implements Serializable
+{
+  @Expose private UUID uuid = UUID.randomUUID();
 
-    @Expose @SerializedName("measurements") transient List<SoundMeasurement> soundMeasurements = new ArrayList<SoundMeasurement>();
-    @Expose private List<Note> notes = newArrayList();
+  /** @deprecated will be removed*/
+  transient List<Measurement> measurements = newArrayList();
+  @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
+  @Expose private List<Note> notes = newArrayList();
 
-    @Expose private String title;
-    @Expose @SerializedName("tag_list") private String tags;
-    @Expose private String description;
-    @Expose private int calibration;
-    @Expose private boolean contribute;
-    @Expose @SerializedName("os_version") private String osVersion;
-    @Expose @SerializedName("data_type") private String dataType;
-    @Expose private String instrument;
-    @Expose @SerializedName("phone_model") private String phoneModel;
-    @Expose @SerializedName("offset_60_db") private int offset60DB;
-    @Expose private String location;
-    @Expose @SerializedName("deleted") private boolean markedForRemoval;
+  @Expose private String title;
+  @Expose @SerializedName("tag_list") private String tags;
+  @Expose private String description;
+  @Expose private int calibration;
+  @Expose private boolean contribute;
+  @Expose @SerializedName("os_version") private String osVersion;
+  @Expose @SerializedName("data_type") private String dataType;
+  @Expose private String instrument;
+  @Expose @SerializedName("phone_model") private String phoneModel;
+  @Expose @SerializedName("offset_60_db") private int offset60DB;
+  @Expose private String location;
+  @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-    private Double sum;
-    private Double peak;
-    private Date end;
-    private Date start;
-    private Long id = null;
-    private boolean submittedForRemoval = false;
+  @Expose @SerializedName("start_time") private Date end;
+  @Expose @SerializedName("end_time") private Date start;
 
-    public void add(SoundMeasurement measurement) {
-        if (soundMeasurements.isEmpty()) {
-            // If average has been set earlier manually
-            sum = measurement.getValue();
-        } else {
-            sum += measurement.getValue();
+  private Long id = null;
+  private boolean submittedForRemoval = false;
+
+  public void add(MeasurementStream stream)
+  {
+    streams.put(stream.getSensorName(), stream);
+  }
+
+  /** @deprecated will be removed*/
+    public List<Measurement> getMeasurements() {
+        if (measurements == null) {
+            measurements = newArrayList();
         }
-        if (peak == null || measurement.getValue() > peak) {
-            peak = measurement.getValue();
-        }
-
-        soundMeasurements.add(measurement);
+        return measurements;
     }
 
-    public List<SoundMeasurement> getSoundMeasurements() {
-        if (soundMeasurements == null) {
-            soundMeasurements = newArrayList();
-        }
-        return soundMeasurements;
-    }
-
-    public void setTitle(String text) {
+  public void setTitle(String text) {
         title = text;
     }
 
@@ -109,60 +101,14 @@ public class Session implements Serializable {
         return description;
     }
 
-    public double getPeak() {
-        if (peak == null) {
-            peak = calculatePeak();
-        }
-        return peak;
-    }
+  public Date getEnd()
+  {
+    return end;
+  }
 
-    private double calculatePeak() {
-        double newPeak = SoundHelper.TOTALLY_QUIET;
-        for (SoundMeasurement measurement : soundMeasurements) {
-            if (measurement.getValue() > newPeak) {
-                newPeak = measurement.getValue();
-            }
-        }
-        return newPeak;
-    }
-
-    public double getAvg() {
-        if (sum == null) {
-            sum = calculateSum();
-        }
-        return sum / (soundMeasurements.isEmpty() ? 1 : soundMeasurements.size());
-    }
-
-    private double calculateSum() {
-        if (soundMeasurements.isEmpty()) return SoundHelper.TOTALLY_QUIET;
-
-        double newSum = 0;
-        for (SoundMeasurement measurement : soundMeasurements) {
-            newSum += measurement.getValue();
-        }
-        return newSum;
-    }
-
-    public void setAvg(double avg) {
-        this.sum = avg;
-    }
-
-    public void setPeak(double peak) {
-        this.peak = peak;
-    }
-
-    public Date getEnd() {
-        if (end == null) {
-            end = getLast(soundMeasurements).getTime();
-        }
-        return end;
-    }
-
-    public Date getStart() {
-        if (start == null) {
-            start = soundMeasurements.get(0).getTime();
-        }
-        return start;
+    public Date getStart()
+    {
+      return start;
     }
 
     public void setEnd(Date end) {
@@ -174,120 +120,176 @@ public class Session implements Serializable {
     }
 
     public boolean isSaved() {
-        return id != null;
+    return id != null;
+  }
+
+  public void setId(Long id)
+  {
+    this.id = id;
+  }
+
+  public Long getId()
+  {
+    return id;
+  }
+
+  public void updateHeader(Session session)
+  {
+    this.title = session.getTitle();
+    this.tags = session.getTags();
+    this.description = session.getDescription();
+  }
+
+  public List<Note> getNotes()
+  {
+    return notes;
+  }
+
+  public void add(Note note)
+  {
+    notes.add(note);
+  }
+
+  public void addAll(Collection<Note> notesToAdd)
+  {
+    notes.addAll(notesToAdd);
+  }
+
+  public void setUuid(UUID uuid)
+  {
+    this.uuid = uuid;
+  }
+
+  public UUID getUUID()
+  {
+    return uuid;
+  }
+
+  public void setLocation(String location)
+  {
+    this.location = location;
+  }
+
+  public String getLocation()
+  {
+    return location;
+  }
+
+  public int getCalibration()
+  {
+    return calibration;
+  }
+
+  public void setCalibration(int calibration)
+  {
+    this.calibration = calibration;
+  }
+
+  public void setContribute(boolean contribute)
+  {
+    this.contribute = contribute;
+  }
+
+  public boolean getContribute()
+  {
+    return contribute;
+  }
+
+  public String getOSVersion()
+  {
+    return osVersion;
+  }
+
+  public String getDataType()
+  {
+    return dataType;
+  }
+
+  public String getInstrument()
+  {
+    return instrument;
+  }
+
+  public String getPhoneModel()
+  {
+    return phoneModel;
+  }
+
+  public void setOsVersion(String osVersion)
+  {
+    this.osVersion = osVersion;
+  }
+
+  public void setDataType(String dataType)
+  {
+    this.dataType = dataType;
+  }
+
+  public void setInstrument(String instrument)
+  {
+    this.instrument = instrument;
+  }
+
+  public void setPhoneModel(String phoneModel)
+  {
+    this.phoneModel = phoneModel;
+  }
+
+  public int getOffset60DB()
+  {
+    return offset60DB;
+  }
+
+  public void setOffset60DB(int offset60DB)
+  {
+    this.offset60DB = offset60DB;
+  }
+
+  public boolean isMarkedForRemoval()
+  {
+    return markedForRemoval;
+  }
+
+  public void setMarkedForRemoval(boolean markedForRemoval)
+  {
+    this.markedForRemoval = markedForRemoval;
+  }
+
+  public void deleteNote(Note note)
+  {
+    notes.remove(note);
+  }
+
+  public void setSubmittedForRemoval(boolean submittedForRemoval)
+  {
+    this.submittedForRemoval = submittedForRemoval;
+  }
+
+  public boolean isSubmittedForRemoval()
+  {
+    return submittedForRemoval;
+  }
+
+  public Collection<MeasurementStream> getMeasurementStreams()
+  {
+    return streams.values();
+  }
+
+  public MeasurementStream getStream(String name)
+  {
+    return streams.get(name);
+  }
+
+    public boolean hasStream(String sensorName) {
+        return streams.containsKey(sensorName);
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void updateHeader(Session session) {
-        this.title = session.getTitle();
-        this.tags = session.getTags();
-        this.description = session.getDescription();
-    }
-
-    public List<Note> getNotes() {
-        return notes;
-    }
-
-    public void add(Note note) {
-        notes.add(note);
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public int getCalibration() {
-        return calibration;
-    }
-
-    public void setCalibration(int calibration) {
-        this.calibration = calibration;
-    }
-
-    public void setContribute(boolean contribute) {
-        this.contribute = contribute;
-    }
-
-    public boolean getContribute() {
-        return contribute;
-    }
-
-    public String getOSVersion() {
-        return osVersion;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public String getInstrument() {
-        return instrument;
-    }
-
-    public String getPhoneModel() {
-        return phoneModel;
-    }
-
-    public void setOsVersion(String osVersion) {
-        this.osVersion = osVersion;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
-    }
-
-    public void setPhoneModel(String phoneModel) {
-        this.phoneModel = phoneModel;
-    }
-
-    public int getOffset60DB() {
-        return offset60DB;
-    }
-
-    public void setOffset60DB(int offset60DB) {
-        this.offset60DB = offset60DB;
-    }
-
-    public boolean isMarkedForRemoval() {
-        return markedForRemoval;
-    }
-
-    public void setMarkedForRemoval(boolean markedForRemoval) {
-        this.markedForRemoval = markedForRemoval;
-    }
-
-    public void deleteNote(Note note) {
-        notes.remove(note);
-    }
-
-    public void setSubmittedForRemoval(boolean submittedForRemoval) {
-        this.submittedForRemoval = submittedForRemoval;
-    }
-
-    public boolean isSubmittedForRemoval() {
-        return submittedForRemoval;
+    public boolean isEmpty() {
+        return all(streams.values(), new Predicate<MeasurementStream>() {
+            @Override
+            public boolean apply(@Nullable MeasurementStream input) {
+                return input.isEmpty();
+            }
+        });
     }
 }

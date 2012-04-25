@@ -72,12 +72,14 @@
               android:textColor="@android:color/white"
               android:layout_alignTop="@id/noise_graph"
               android:id="@+id/graph_top_db"
+              android:layout_marginLeft="2dp"
             />
 
     <TextView style="@style/Wrap"
               android:layout_alignBottom="@id/noise_graph"
               android:textColor="@android:color/white"
               android:id="@+id/graph_bottom_db"
+              android:layout_marginLeft="2dp"
             />
 
     <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
@@ -110,8 +112,8 @@
                      android:layout_alignParentRight="true"
                      android:layout_centerVertical="true"
                      android:layout_marginRight="5dp"
-                     android:background="@drawable/right_heat_map"
-                     android:id="@+id/heat_map_button"
+                     android:background="@drawable/right_sensor"
+                     android:id="@+id/streams_button"
                 />
 
         <include layout="@layout/context_buttons"/>

@@ -19,24 +19,20 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.repository.ProgressListener;
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
-import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.repository.SessionRepository;
 import roboguice.inject.InjectView;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/30/11
- * Time: 12:40 PM
- */
-public class ContributeActivity extends DialogActivity implements View.OnClickListener {
+public class ContributeActivity extends DialogActivity implements View.OnClickListener
+{
     @Inject SessionManager sessionManager;
 
     @InjectView(R.id.yes) Button yes;
@@ -71,7 +67,8 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
         new SaveSessionTask(this, ProgressDialog.STYLE_HORIZONTAL).execute();
     }
 
-    private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements SessionRepository.ProgressListener {
+    private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements ProgressListener
+    {
         public SaveSessionTask(ActivityWithProgress context, int styleHorizontal) {
             super(context, styleHorizontal);
         }

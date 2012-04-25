@@ -75,4 +75,7 @@
                                            android:key="show_route"
                                            android:title="@string/show_route"
             />
+    <android.preference.Preference android:title="@string/external_sensor"
+                                   android:key="external_sensor"
+            />
 </PreferenceScreen>
