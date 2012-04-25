@@ -159,7 +159,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
             int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
             int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            return averagesDriver.index(northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+            return averagesDriver.index(sensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
         }
 
