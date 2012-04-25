@@ -2,17 +2,17 @@
   Each sensor reading should be written as one line to the serial output. Lines should end
   with '\n' and should have the following format:
 
-  <Measurement value>;<Sensor package name>;<Sensor name>;<Type of measurement>;<Short type of measurement>;<Unit name>;<Unit symbol/abbreviation>;<T1>;<T2>;<T3>;<T4>;<T5>
+  <sensor:package=>;<sensor:model=>;<sensor:capability=>;<sensor:capability_shorthand=>;<sensor:units=>;<sensor:units_shorthand>;<HLU:low=>;<HLU:green=>;<HLU:yellow=>;<HLU:orange=>;<HLU:red=>;<sensor:value=>
 
   The Sensor name should be different for each sensor.
 
-  T1..T5 are integer thresholds which guide how values should be displayed -
-    - lower than T1 - extremely low / won't be displayed
-    - between T1 and T2 - low / green
-    - between T2 and T3 - medium / yellow
-    - between T3 and T4 - high / orange
-    - between T4 and T5 - very high / red
-    - higher than T5 - extremely high / won't be displayed
+  HLU:low..HLU:red are integer thresholds which guide how values should be displayed -
+    - lower than HLU:low - extremely low / won't be displayed
+    - between HLU:low and HLU:green - low / green
+    - between HLU:green and HLU:yellow - medium / yellow
+    - between HLU:yellow and HLU:orange - high / orange
+    - between HLU:orange and HLU:red - very high / red
+    - higher than HLU:red - extremely high / won't be displayed
 */
 
 #include <MeetAndroid.h>
