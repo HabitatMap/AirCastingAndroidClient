@@ -13,3 +13,4 @@ R.java
 local.properties
 proguard_logs
 *.apk
+gen
