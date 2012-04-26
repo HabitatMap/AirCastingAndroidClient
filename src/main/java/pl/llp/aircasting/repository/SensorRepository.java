@@ -14,10 +14,11 @@ import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.repository.DBHelper.getInt;
 import static pl.llp.aircasting.repository.DBHelper.getString;
 
-public class SensorRepository implements DBConstants {
+public class SensorRepository implements DBConstants
+{
   public static final String[] SENSOR_FIELDS = new String[]
       {
-          STREAM_SENSOR_NAME, STREAM_MEASUREMENT_TYPE, STREAM_SHORT_TYPE,
+          STREAM_SENSOR_NAME, STREAM_SENSOR_PACKAGE_NAME, STREAM_MEASUREMENT_TYPE, STREAM_SHORT_TYPE,
           STREAM_MEASUREMENT_UNIT, STREAM_MEASUREMENT_SYMBOL, STREAM_THRESHOLD_VERY_LOW, STREAM_THRESHOLD_LOW,
           STREAM_THRESHOLD_MEDIUM, STREAM_THRESHOLD_HIGH, STREAM_THRESHOLD_VERY_HIGH
       };

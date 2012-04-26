@@ -19,6 +19,7 @@ public class MeasurementToStreamMigrator
       "INSERT INTO " + STREAM_TABLE_NAME + "(" +
           STREAM_SESSION_ID + ", " +
           STREAM_SENSOR_NAME + ", " +
+          STREAM_SENSOR_PACKAGE_NAME + ", " +
           STREAM_MEASUREMENT_TYPE + ", " +
           STREAM_MEASUREMENT_UNIT + ", " +
           STREAM_MEASUREMENT_SYMBOL + ", " +
@@ -29,7 +30,7 @@ public class MeasurementToStreamMigrator
           STREAM_THRESHOLD_MEDIUM + ", " +
           STREAM_THRESHOLD_HIGH + ", " +
           STREAM_THRESHOLD_VERY_HIGH +
-          ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+          ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   void migrate(SQLiteDatabase db)
     {
@@ -78,11 +79,12 @@ public class MeasurementToStreamMigrator
 
     ps.bindLong(1, stream.getSessionId());
     ps.bindString(2, SimpleAudioReader.SENSOR_NAME);
-    ps.bindString(3, SimpleAudioReader.MEASUREMENT_TYPE);
-    ps.bindString(4, SimpleAudioReader.UNIT);
-    ps.bindString(5, SimpleAudioReader.SYMBOL);
-    ps.bindDouble(6, stream.getAvg());
-    ps.bindDouble(7, stream.getPeak());
+    ps.bindString(3, SimpleAudioReader.SENSOR_PACKAGE_NAME);
+    ps.bindString(4, SimpleAudioReader.MEASUREMENT_TYPE);
+    ps.bindString(5, SimpleAudioReader.UNIT);
+    ps.bindString(6, SimpleAudioReader.SYMBOL);
+    ps.bindDouble(7, stream.getAvg());
+    ps.bindDouble(8, stream.getPeak());
 
     long key = ps.executeInsert();
     return key;

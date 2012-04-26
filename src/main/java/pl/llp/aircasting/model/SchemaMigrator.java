@@ -149,6 +149,7 @@ public class SchemaMigrator
     if(oldVersion < 27 && newVersion >= 27)
     {
       addColumn(db, STREAM_TABLE_NAME, STREAM_SENSOR_PACKAGE_NAME, "text");
+      db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SENSOR_PACKAGE_NAME + " = 'builtin' " );
     }
   }
 
