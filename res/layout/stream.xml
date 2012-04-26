@@ -7,11 +7,13 @@
 
     <TextView style="@style/Wrap"
               android:id="@+id/title"
-              android:text="Title"
               android:textStyle="bold"
               android:textColor="@android:color/white"
               android:layout_alignParentTop="true"
-              android:layout_centerHorizontal="true"
+              android:layout_toRightOf="@+id/record_stream"
+              android:layout_toLeftOf="@+id/view_stream"
+              android:gravity="center"
+              android:lines="2"
             />
 
     <include layout="@layout/gauge_faces"
