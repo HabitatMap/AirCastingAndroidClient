@@ -50,13 +50,13 @@ void loop()
   //Serial.print("% ");
   //Display of temperature in K, C, and F
   Serial.print(kelv);
-  Serial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;277;300;400;500;600");
+  Serial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;255;270;283;297;310");
   Serial.print("\n");
   Serial.print(cel);
-  Serial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;0;10;15;20;25");
+  Serial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;-20;-5;10;25;40");
   Serial.print("\n");
   Serial.print(fah);
-  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;100;200;300;400;500");
+  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100");
   Serial.print("\n");
 }
 
