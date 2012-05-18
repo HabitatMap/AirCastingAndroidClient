@@ -70,7 +70,7 @@ void loop()
   Serial.print("\n");
 }
 
-void GetNo2(){
+void GetNO2(){
   val3 = analogRead(A3);
   NO2 = map(val3, 1023, 0, 0, 100);
 }
