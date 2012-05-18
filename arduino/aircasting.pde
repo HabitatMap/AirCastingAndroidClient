@@ -45,6 +45,7 @@ void loop()
   GetHumi();
   GetTemp();
   GetCO();
+  GetNO2();
   //Display of humidity
   Serial.print(humi);
   Serial.print(";CityTech56789;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
