@@ -17,10 +17,16 @@
 
 #include <MeetAndroid.h>
 
-float val, val0, val1 ,val2, humi, CO, kelv, cel,
-fah, maxv;
-int circ = 5, heat = 6;
+float val, val0, val1 ,val2, val3, maxv, CO, NO2;
+int humi, kelv, cels, fahr, circ = 5, heat = 6;
+
 MeetAndroid meetAndroid;
+
+float map(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 
 void setup()
 {
@@ -56,8 +62,17 @@ void loop()
   Serial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;0;10;15;20;25");
   Serial.print("\n");
   Serial.print(fah);
-  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;100;200;300;400;500");
+  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100");
   Serial.print("\n");
+  
+  Serial.print(NO2);
+  Serial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2,parts per million;ppm;0;25;50;75;100");
+  Serial.print("\n");
+}
+
+void GetNo2(){
+  val3 = analogRead(A3);
+  NO2 = map(val3, 1023, 0, 0, 100);
 }
 
 void GetTemp()
@@ -79,25 +94,6 @@ void GetCO()
   delay(3);
   val1 = analogRead(A1);
   CO = map(val1, 0 , 1023, 0, 100);
-  if(CO < 20 && CO >= 0)
-  {
-    digitalWrite(9, HIGH);
-    digitalWrite(10, LOW);
-    digitalWrite(11, LOW);
-  }
-  if(CO < 30 && CO >= 20)
-  {
-    digitalWrite(9, LOW);
-    digitalWrite(10, HIGH);
-    digitalWrite(11, LOW);
-  }
-  if(CO >= 30)
-  {
-    digitalWrite(9, LOW);
-    digitalWrite(10, LOW);
-    digitalWrite(11, HIGH);
-  }
-  delay(2);
 }
 
 void GetHumi()
