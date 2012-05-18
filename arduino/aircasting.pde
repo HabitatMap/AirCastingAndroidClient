@@ -18,7 +18,7 @@
 #include <MeetAndroid.h>
 
 float val, val0, val1 ,val2, val3, maxv, CO, NO2;
-int humi, kelv, cels, fahr, circ = 5, heat = 6;
+int humi, kelv, cel, fah, circ = 5, heat = 6;
 
 MeetAndroid meetAndroid;
 
