@@ -66,7 +66,7 @@ void loop()
   Serial.print("\n");
 
   Serial.print(NO2);
-  Serial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2,parts per million;ppm;0;25;50;75;100");
+  Serial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2;parts per million;ppm;0;25;50;75;100");
   Serial.print("\n");
 }
 
