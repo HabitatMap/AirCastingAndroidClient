@@ -7,6 +7,7 @@ out
 *.iml
 .idea
 tmp
+classes
 
 # android
 R.java
