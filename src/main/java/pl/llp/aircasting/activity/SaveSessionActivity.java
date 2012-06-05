@@ -19,81 +19,71 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.MetadataHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.SessionManager;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.inject.InjectView;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/6/11
- * Time: 12:49 PM
- */
-public class SaveSessionActivity extends DialogActivity implements View.OnClickListener {
-    @InjectView(R.id.save_button) Button saveButton;
-    @InjectView(R.id.discard_button) Button discardButton;
+public class SaveSessionActivity extends DialogActivity implements View.OnClickListener
+{
+  @InjectView(R.id.save_button) Button saveButton;
+  @InjectView(R.id.discard_button) Button discardButton;
 
-    @InjectView(R.id.session_title) EditText sessionTitle;
-    @InjectView(R.id.session_tags) EditText sessionTags;
-    @InjectView(R.id.session_description) EditText sessionDescription;
+  @InjectView(R.id.session_title) EditText sessionTitle;
+  @InjectView(R.id.session_tags) EditText sessionTags;
+  @InjectView(R.id.session_description) EditText sessionDescription;
 
-    @Inject SessionManager sessionManager;
-    @Inject SettingsHelper settingsHelper;
-    @Inject MetadataHelper metadataHelper;
+  @Inject SessionManager sessionManager;
+  @Inject SettingsHelper settingsHelper;
+  @Inject MetadataHelper metadataHelper;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        sessionManager.pauseSession();
+  @Override
+  protected void onCreate(Bundle savedInstanceState)
+  {
+    super.onCreate(savedInstanceState);
+    sessionManager.pauseSession();
 
-        setContentView(R.layout.session_details);
+    setContentView(R.layout.session_details);
 
-        saveButton.setOnClickListener(this);
-        discardButton.setOnClickListener(this);
+    saveButton.setOnClickListener(this);
+    discardButton.setOnClickListener(this);
+  }
 
-        populateTags();
+  @Override
+  public void onBackPressed()
+  {
+    sessionManager.continueSession();
+    finish();
+  }
+
+  @Override
+  public void onClick(View view)
+  {
+    switch (view.getId())
+    {
+      case R.id.save_button:
+        fillSessionDetails();
+        startActivity(new Intent(this, ContributeActivity.class));
+        break;
+      case R.id.discard_button:
+        sessionManager.discardSession();
+        break;
     }
+    finish();
+  }
 
-    @Override
-    public void onBackPressed() {
-        sessionManager.continueSession();
-        finish();
-    }
-
-    private void populateTags() {
-        sessionTags.setText(
-                metadataHelper.getDataType()
-                        + " " + metadataHelper.getInstrument()
-                        + " " + metadataHelper.getOSVersion()
-                        + " " + metadataHelper.getPhoneModel()
-        );
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.save_button:
-                fillSessionDetails();
-                startActivity(new Intent(this, ContributeActivity.class));
-                break;
-            case R.id.discard_button:
-                sessionManager.discardSession();
-                break;
-        }
-        finish();
-    }
-
-    private void fillSessionDetails() {
-        sessionManager.setTitle(sessionTitle.getText().toString());
-        sessionManager.setTags(sessionTags.getText().toString());
-        sessionManager.setDescription(sessionDescription.getText().toString());
-    }
+  private void fillSessionDetails()
+  {
+    sessionManager.setTitle(sessionTitle.getText().toString());
+    sessionManager.setTags(sessionTags.getText().toString());
+    sessionManager.setDescription(sessionDescription.getText().toString());
+  }
 }
