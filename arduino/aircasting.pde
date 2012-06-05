@@ -1,3 +1,4 @@
+
 /*
   Each sensor reading should be written as one line to the serial output. Lines should end
   with '\n' and should have the following format:
@@ -15,91 +16,59 @@
     - higher than T5 - extremely high / won't be displayed
 */
 
-#include <MeetAndroid.h>
+#include <SoftwareSerial.h> //Header for software serial communication
+SoftwareSerial mySerial(2, 3); //Assign 2 as Rx and 3 as Tx
 
-float val, val0, val1 ,val2, humi, CO, kelv, cel,
-fah, maxv;
-int circ = 5, heat = 6;
-MeetAndroid meetAndroid;
+float val, val0, val1, val2, val3, maxv, CO, NO2; //Decimal value variables
+int humi, kelv, cel, fah, circ = 5, heat = 6; //Integer value variables
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(115200); //Serial communication for Arduino Serial Monitor
+  mySerial.begin(115200); //Serial communcation for Aircasting Application
   pinMode(circ, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
+  pinMode(heat, OUTPUT);
 }
 
-void loop()
+//Changes map function from interger values to decimal values
+float map(float x, float in_min, float in_max, float out_min, float out_max)
 {
-  meetAndroid.receive();
-
-  //call up the calculation functions
-  GetHumi();
-  GetTemp();
-  GetCO();
-  //Display of humidity
-  Serial.print(humi);
-  Serial.print(";CityTech56789;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
-  Serial.print("\n");
-  //Display of CO gas sensor
-  Serial.print(CO);
-  Serial.print(";CityTech56789;TGS2442;CO Gas;CO;parts per million;ppm;0;10;20;30;40");
-  Serial.print("\n");
-  //Serial.print("% ");
-  //Display of temperature in K, C, and F
-  Serial.print(kelv);
-  Serial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;277;300;400;500;600");
-  Serial.print("\n");
-  Serial.print(cel);
-  Serial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;0;10;15;20;25");
-  Serial.print("\n");
-  Serial.print(fah);
-  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;100;200;300;400;500");
-  Serial.print("\n");
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+//Get NO2 gas function
+void GetNO2(){
+  val3 = analogRead(A3);
+  NO2 = map(val3, 1023, 0, 0, 100);
+}
+
+//Get temperature in Kelvins, Celsius and Fahrenhiet function
 void GetTemp()
 {
   val2 = analogRead(A2);
-  kelv = val2 * 0.48875855;
-  cel = kelv - 273.15;
-  fah = (kelv * 1.8) - 459.67;
+  val2 = (val2 * 500)/1023;
+  kelv = val2;
+  cel = val2 - 273.15;
+  fah = ((val2 * 9)/5.0) - 459.67;
 }
 
+//Get CO gas function
 void GetCO()
 {
+  digitalWrite(circ, HIGH);
+  delay(3);
+  val1 = analogRead(A1);
+  CO = map(val1, 0 , 1023, 0, 100);
+  delay(2);
   digitalWrite(circ, LOW);
   analogWrite(heat, 245);
   delay(14);
   analogWrite(heat, 0);
   delay(981);
-  digitalWrite(circ, HIGH);
-  delay(3);
-  val1 = analogRead(A1);
-  CO = map(val1, 0 , 1023, 0, 100);
-  if(CO < 20 && CO >= 0)
-  {
-    digitalWrite(9, HIGH);
-    digitalWrite(10, LOW);
-    digitalWrite(11, LOW);
-  }
-  if(CO < 30 && CO >= 20)
-  {
-    digitalWrite(9, LOW);
-    digitalWrite(10, HIGH);
-    digitalWrite(11, LOW);
-  }
-  if(CO >= 30)
-  {
-    digitalWrite(9, LOW);
-    digitalWrite(10, LOW);
-    digitalWrite(11, HIGH);
-  }
-  delay(2);
+  
 }
 
+//Get humidity function
 void GetHumi()
 {
   val0 = analogRead(A0);
@@ -107,4 +76,58 @@ void GetHumi()
   humi = ((((val0/1023)*5)-0.8)/maxv)*100;
 }
 
+void loop()
+{
+  //call up the calculation functions
+  GetHumi();
+  GetTemp();
+  GetCO();
+  GetNO2();
+  
+  //Display of humidity
+ 
+  mySerial.print(humi);
+  mySerial.print(";CityTech56789;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
+  mySerial.print("\n");
+  //Display of CO gas sensor
+  mySerial.print(CO);
+  mySerial.print(";CityTech56789;TGS2442;CO Gas;CO;parts per million;ppm;0;25;50;75;100");
+  mySerial.print("\n");
+  //Serial.print("% ");
+  //Display of temperature in K, C, and F
+  mySerial.print(kelv);
+  mySerial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;273;300;400;500;600");
+  mySerial.print("\n");
+  mySerial.print(cel);
+  mySerial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;0;10;15;20;25");
+  mySerial.print("\n");
+  mySerial.print(fah);
+  mySerial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100");
+  mySerial.print("\n");
+  
+  mySerial.print(NO2);
+  mySerial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2;parts per million;ppm;0;25;50;75;100");
+  mySerial.print("\n");
 
+  //Display values for Arduino serial monitor 
+  Serial.print("Temperature: ");
+  Serial.print(kelv);
+  Serial.print("K ");
+  Serial.print(cel);
+  Serial.print("C ");
+  Serial.print(fah);
+  Serial.print("F ");
+  
+  Serial.print("Humidity: ");
+  Serial.print(humi);
+  Serial.print("% ");
+  
+  Serial.print("CO Gas: ");
+  Serial.print(CO);
+  Serial.print("% ");
+  
+  Serial.print("NO2 Gas: ");
+  Serial.print(NO2);
+  Serial.println("%");
+  
+}
