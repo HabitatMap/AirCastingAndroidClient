@@ -15,12 +15,12 @@
     - higher than T5 - extremely high / won't be displayed
 */
 
-#include <MeetAndroid.h>
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3);
 
 float maxv, CO, NO2;
 int humi, kelv, cel, fah, circ = 5, heat = 6;
 
-MeetAndroid meetAndroid;
 
 float map(float x, float in_min, float in_max, float out_min, float out_max)
 {
@@ -30,44 +30,61 @@ float map(float x, float in_min, float in_max, float out_min, float out_max)
 void setup()
 {
   Serial.begin(115200);
+  mySerial.begin(115200);
   pinMode(circ, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
+  pinMode(heat, OUTPUT);
+
 }
 
 void loop()
 {
-  meetAndroid.receive();
-
   //call up the calculation functions
   GetHumi();
   GetTemp();
   GetCO();
   GetNO2();
-  //Display of humidity
-  Serial.print(humi);
-  Serial.print(";CityTech56789;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
-  Serial.print("\n");
-  //Display of CO gas sensor
-  Serial.print(CO);
-  Serial.print(";CityTech56789;TGS2442;CO Gas;CO;parts per million;ppm;0;10;20;30;40");
-  Serial.print("\n");
-  //Serial.print("% ");
-  //Display of temperature in K, C, and F
-  Serial.print(kelv);
-  Serial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;255;270;283;297;310");
-  Serial.print("\n");
-  Serial.print(cel);
-  Serial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;-20;-5;10;25;40");
-  Serial.print("\n");
-  Serial.print(fah);
-  Serial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100");
-  Serial.print("\n");
 
+  //Display of humidity
+  mySerial.print(humi);
+  mySerial.print(";CityTech56789;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
+  mySerial.print("\n");
+  Serial.print("Humidity: ");
+  Serial.print(humi);
+  Serial.print("% ");
+
+  //Display of CO gas sensor
+  mySerial.print(CO);
+  mySerial.print(";CityTech56789;TGS2442;CO Gas;CO;parts per million;ppm;0;10;20;30;40");
+  mySerial.print("\n");
+  Serial.print("CO Gas: ");
+  Serial.print(CO);
+  Serial.print("% ");
+
+  //Display of temperature in K, C, and F
+  mySerial.print(kelv);
+  mySerial.print(";CityTech56789;LM335A-K;Temperature;K;kelvin;K;255;270;283;297;310");
+  mySerial.print("\n");
+  mySerial.print(cel);
+  mySerial.print(";CityTech56789;LM335A-C;Temperature;C;degrees Celsius;C;-20;-5;10;25;40");
+  mySerial.print("\n");
+  mySerial.print(fah);
+  mySerial.print(";CityTech56789;LM335A-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100");
+  mySerial.print("\n");
+
+  Serial.print("Temperature: ");
+  Serial.print(kelv);
+  Serial.print("K ");
+  Serial.print(cel);
+  Serial.print("C ");
+  Serial.print(fah);
+  Serial.print("F ");
+
+  mySerial.print(NO2);
+  mySerial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2;parts per million;ppm;0;25;50;75;100");
+  mySerial.print("\n");
+  Serial.print("NO2 Gas: ");
   Serial.print(NO2);
-  Serial.print(";CityTech56789;MiCS-2710;N02 Gas;NO2;parts per million;ppm;0;25;50;75;100");
-  Serial.print("\n");
+  Serial.println("%");
 }
 
 void GetNO2(){
@@ -102,5 +119,3 @@ void GetHumi()
   float maxv = (3.27-(0.006706*cel));
   humi = ((((val0/1023)*5)-0.8)/maxv)*100;
 }
-
-
