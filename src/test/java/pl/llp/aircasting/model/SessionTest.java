@@ -19,12 +19,13 @@
  */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
 
 import java.util.Date;
 
@@ -79,8 +80,8 @@ public class SessionTest {
         when(stream1.isEmpty()).thenReturn(true);
         MeasurementStream stream2 = mock(MeasurementStream.class);
         when(stream2.isEmpty()).thenReturn(true);
-        session.streams.put("s1", stream1);
-        session.streams.put("s2", stream2);
+        session.add(stream1);
+        session.add(stream2);
         
         assertThat(session.isEmpty(), equalTo(true));
     }
@@ -91,8 +92,8 @@ public class SessionTest {
         when(stream1.isEmpty()).thenReturn(false);
         MeasurementStream stream2 = mock(MeasurementStream.class);
         when(stream2.isEmpty()).thenReturn(true);
-        session.streams.put("s1", stream1);
-        session.streams.put("s2", stream2);
+        session.add(stream1);
+        session.add(stream2);
 
         assertThat(session.isEmpty(), equalTo(false));
     }

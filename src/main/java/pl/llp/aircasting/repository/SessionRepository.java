@@ -29,6 +29,7 @@ import pl.llp.aircasting.model.Session;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import com.google.inject.Inject;
 
 import java.util.Collection;
@@ -42,7 +43,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.*;
 
-public class SessionRepository {
+public class SessionRepository
+{
   private static final String SESSIONS_BY_SENSOR_QUERY =
       "SELECT " + SESSION_TABLE_NAME + ".*" +
           " FROM " + SESSION_TABLE_NAME +
@@ -51,6 +53,8 @@ public class SessionRepository {
           " WHERE " + STREAM_SENSOR_NAME + " = ?" +
           " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
           " ORDER BY " + SESSION_START + " DESC";
+
+  private static final String TAG = SessionRepository.class.getSimpleName();
 
   @Inject
   AirCastingDB dbAccessor;
@@ -61,17 +65,20 @@ public class SessionRepository {
   StreamRepository streams;
 
   @Inject
-  public void init() {
+  public void init()
+  {
     db = dbAccessor.getWritableDatabase();
     notes = new NoteRepository(db);
     streams = new StreamRepository(db);
   }
 
-  public void close() {
+  public void close()
+  {
     db.close();
   }
 
-  public Session save(Session session) {
+  public Session save(Session session)
+  {
     save(session, new NullProgressListener());
     return session;
   }
@@ -84,35 +91,46 @@ public class SessionRepository {
     setupProgressListener(session, progressListener);
 
     db.beginTransaction();
-    ContentValues values = new ContentValues();
+    try
+    {
+      ContentValues values = new ContentValues();
 
-    prepareHeader(session, values);
-    values.put(SESSION_START, session.getStart().getTime());
-    values.put(SESSION_END, session.getEnd().getTime());
-    values.put(SESSION_UUID, session.getUUID().toString());
+      prepareHeader(session, values);
 
-    values.put(SESSION_CALIBRATION, session.getCalibration());
-    values.put(SESSION_CONTRIBUTE, session.getContribute());
-    values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-    values.put(SESSION_INSTRUMENT, session.getInstrument());
-    values.put(SESSION_DATA_TYPE, session.getDataType());
-    values.put(SESSION_OS_VERSION, session.getOSVersion());
-    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
-    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
-    values.put(SESSION_CALIBRATED, true);
+      values.put(SESSION_START, session.getStart().getTime());
+      values.put(SESSION_END, session.getEnd().getTime());
+      values.put(SESSION_UUID, session.getUUID().toString());
 
-    long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
-    session.setId(sessionKey);
+      values.put(SESSION_CALIBRATION, session.getCalibration());
+      values.put(SESSION_CONTRIBUTE, session.getContribute());
+      values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
+      values.put(SESSION_INSTRUMENT, session.getInstrument());
+      values.put(SESSION_DATA_TYPE, session.getDataType());
+      values.put(SESSION_OS_VERSION, session.getOSVersion());
+      values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
+      values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
+      values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
+      values.put(SESSION_CALIBRATED, true);
 
-    Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
+      long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
+      session.setId(sessionKey);
 
-    streams.saveAll(streamsToSave, sessionKey);
+      Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
 
-    notes.save(session.getNotes(), sessionKey);
+      streams.saveAll(streamsToSave, sessionKey);
 
-    db.setTransactionSuccessful();
-    db.endTransaction();
+      notes.save(session.getNotes(), sessionKey);
+
+      db.setTransactionSuccessful();
+    }
+    catch (Exception e)
+    {
+      Log.e(TAG, "Error saving session", e);
+    }
+    finally
+    {
+      db.endTransaction();
+    }
   }
 
   private void setupProgressListener(Session session, ProgressListener progressListener) {
@@ -261,15 +279,25 @@ public class SessionRepository {
     delete(condition);
   }
 
-  private void delete(Long id) {
+  private void delete(Long id)
+  {
     db.beginTransaction();
+    try
+    {
+      db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
+      db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
+      db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
 
-    db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
-    db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
-    db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
-
-    db.setTransactionSuccessful();
-    db.endTransaction();
+      db.setTransactionSuccessful();
+    }
+    catch(Exception e)
+    {
+      Log.e(TAG, "Error deleting session", e);
+    }
+    finally
+    {
+      db.endTransaction();
+    }
   }
 
   public Session loadFully(UUID uuid)
@@ -307,11 +335,20 @@ public class SessionRepository {
     prepareHeader(session, values);
 
     db.beginTransaction();
+    try
+    {
+      notes.save(session.getNotes(), session.getId());
+      db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
 
-    notes.save(session.getNotes(), session.getId());
-    db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
-
-    db.setTransactionSuccessful();
-    db.endTransaction();
+      db.setTransactionSuccessful();
+    }
+    catch (Exception e)
+    {
+      Log.e(TAG, "Error updating session", e);
+    }
+    finally
+    {
+      db.endTransaction();
+    }
   }
 }

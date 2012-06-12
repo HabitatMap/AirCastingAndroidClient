@@ -40,9 +40,11 @@ public class Session implements Serializable
 {
   @Expose private UUID uuid = UUID.randomUUID();
 
-  /** @deprecated will be removed*/
+  /** @deprecated will be removed */
   transient List<Measurement> measurements = newArrayList();
+
   @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
+
   @Expose private List<Note> notes = newArrayList();
 
   @Expose private String title;
@@ -275,12 +277,12 @@ public class Session implements Serializable
     return streams.values();
   }
 
-  public MeasurementStream getStream(String name)
+  public MeasurementStream getStream(String sensorName)
   {
-    return streams.get(name);
+    return streams.get(sensorName);
   }
 
-    public boolean hasStream(String sensorName) {
+  public boolean hasStream(String sensorName) {
         return streams.containsKey(sensorName);
     }
 
