@@ -36,6 +36,6 @@
             />
     <Button style="@style/DialogLastButton"
             android:text="@string/delete"
-            android:id="@+id/delete"
+            android:id="@+id/delete_session"
             />
 </LinearLayout>

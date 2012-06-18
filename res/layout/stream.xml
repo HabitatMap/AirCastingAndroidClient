@@ -44,9 +44,10 @@
                  android:layout_alignParentTop="true"
                  android:layout_alignParentLeft="true"
                  android:id="@+id/record_stream"
-            />
+        />
+                 <!--android:visibility="invisible"-->
     <ImageButton style="@style/Wrap"
-                 android:background="@drawable/view_inactive"
+                 android:background="@drawable/viewing_inactive"
                  android:layout_margin="2dp"
                  android:layout_alignParentTop="true"
                  android:layout_alignParentRight="true"
