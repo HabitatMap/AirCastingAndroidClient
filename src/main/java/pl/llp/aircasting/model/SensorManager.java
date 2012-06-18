@@ -1,13 +1,14 @@
 package pl.llp.aircasting.model;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,16 @@ public class SensorManager {
 
       visibleSensor = sensor;
     }
+  }
+
+  public void deleteStream(Sensor sensor)
+  {
+    sessionManager.deleteStream(sensor);
+  }
+
+  public boolean hasRunningSession()
+  {
+    return sessionManager.isSessionStarted();
   }
 
   private static class ToggleableSensor extends Sensor {

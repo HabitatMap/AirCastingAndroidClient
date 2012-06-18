@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 27;
+  int DB_VERSION = 28;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -77,6 +77,8 @@ public interface DBConstants
   String STREAM_THRESHOLD_MEDIUM = "threshold_mid";
   String STREAM_THRESHOLD_HIGH = "threshold_high";
   String STREAM_THRESHOLD_VERY_HIGH = "threshold_very_high";
+  String STREAM_MARKED_FOR_REMOVAL = "marked_for_removal";
+  String STREAM_SUBMITTED_FOR_REMOVAL = "submitted_for_removal";
 
   String NOTE_TABLE_NAME = "Notes";
   String NOTE_SESSION_ID = "SessionID";

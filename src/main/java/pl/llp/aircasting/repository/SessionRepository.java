@@ -314,4 +314,9 @@ public class SessionRepository {
     db.setTransactionSuccessful();
     db.endTransaction();
   }
+
+  public void deleteStream(Long id, MeasurementStream stream)
+  {
+    throw new RuntimeException("Not implemented yet");
+  }
 }
