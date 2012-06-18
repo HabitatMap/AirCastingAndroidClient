@@ -343,10 +343,11 @@ public class SessionManager {
         }
     }
 
-  public void deleteStream(Sensor sensor)
+  public void deleteSensorStream(Sensor sensor)
   {
     String sensorName = sensor.getSensorName();
     MeasurementStream stream = getMeasurementStream(sensorName);
     sessionRepository.deleteStream(session.getId(), stream);
+    session.removeStream(stream);
   }
 }

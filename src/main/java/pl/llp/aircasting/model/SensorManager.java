@@ -102,14 +102,15 @@ public class SensorManager {
     }
   }
 
-  public void deleteStream(Sensor sensor)
-  {
-    sessionManager.deleteStream(sensor);
-  }
-
   public boolean hasRunningSession()
   {
     return sessionManager.isSessionStarted();
+  }
+
+  public void deleteSensorFromCurrentSession(Sensor sensor)
+  {
+    sensors.remove(sensor.getSensorName());
+    sessionManager.deleteSensorStream(sensor);
   }
 
   private static class ToggleableSensor extends Sensor {

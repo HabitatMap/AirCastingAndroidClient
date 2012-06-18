@@ -19,12 +19,6 @@
  */
 package pl.llp.aircasting.service;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import com.google.common.base.Predicate;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.SessionDriver;
@@ -32,15 +26,24 @@ import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import com.google.common.base.Predicate;
+import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.service.RoboIntentService;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import static com.google.common.collect.Iterables.find;
@@ -86,27 +89,43 @@ public class SyncService extends RoboIntentService {
         }
     }
 
-    private void sync() {
+    private void sync()
+    {
         Iterable<Session> sessions = prepareSessions();
 
         HttpResult<SyncResponse> result = syncDriver.sync(sessions);
         SyncResponse syncResponse = result.getContent();
 
-        if (syncResponse != null) {
+        if (syncResponse != null)
+        {
             sessionRepository.deleteSubmitted();
+            sessionRepository.streams().deleteSubmitted();
             uploadSessions(syncResponse.getUpload());
 
             downloadSessions(syncResponse.getDownload());
         }
     }
 
-    private Iterable<Session> prepareSessions() {
+    private Iterable<Session> prepareSessions()
+    {
         Iterable<Session> sessions = sessionRepository.all();
 
         for (Session session : sessions) {
             if (session.isMarkedForRemoval()) {
                 session.setSubmittedForRemoval(true);
                 sessionRepository.update(session);
+            }
+          else
+            {
+              Collection<MeasurementStream> streams = session.getMeasurementStreams();
+              for (MeasurementStream stream : streams)
+              {
+                if(stream.isMarkedForRemoval())
+                {
+                  stream.setSubmittedForRemoval(true);
+                  sessionRepository.streams().update(stream);
+                }
+              }
             }
         }
 
@@ -156,7 +175,8 @@ public class SyncService extends RoboIntentService {
         sessionRepository.update(session);
     }
 
-    private void downloadSessions(long[] ids) {
+    private void downloadSessions(long[] ids)
+    {
         for (long id : ids) {
             HttpResult<Session> result = sessionDriver.show(id);
 

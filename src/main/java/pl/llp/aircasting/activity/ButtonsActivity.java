@@ -1,5 +1,14 @@
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.event.ui.TapEvent;
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
+
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
@@ -17,14 +26,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
-import pl.llp.aircasting.event.ui.TapEvent;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

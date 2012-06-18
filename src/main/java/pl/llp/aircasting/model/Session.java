@@ -292,4 +292,9 @@ public class Session implements Serializable
             }
         });
     }
+
+  public void removeStream(MeasurementStream stream)
+  {
+    streams.remove(stream.getSensorName());
+  }
 }

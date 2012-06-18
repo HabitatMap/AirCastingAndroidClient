@@ -51,6 +51,10 @@ public class MeasurementStream implements Serializable
 
   private transient boolean avgDirty = true;
 
+  @Expose @SerializedName("deleted") private boolean markedForRemoval;
+
+  private transient boolean submittedForRemoval;
+
   public MeasurementStream() {
   }
 
@@ -271,5 +275,25 @@ public class MeasurementStream implements Serializable
   public String getPackageName()
   {
     return packageName;
+  }
+
+  public boolean isMarkedForRemoval()
+  {
+    return markedForRemoval;
+  }
+
+  public void setMarkedForRemoval(boolean markedForRemoval)
+  {
+    this.markedForRemoval = markedForRemoval;
+  }
+
+  public boolean isSubmittedForRemoval()
+  {
+    return submittedForRemoval;
+  }
+
+  public void setSubmittedForRemoval(boolean submittedForRemoval)
+  {
+    this.submittedForRemoval = submittedForRemoval;
   }
 }

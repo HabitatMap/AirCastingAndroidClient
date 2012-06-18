@@ -5,7 +5,10 @@ import pl.llp.aircasting.model.MeasurementStream;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -14,17 +17,20 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.DBConstants.*;
-import static pl.llp.aircasting.repository.DBHelper.getDouble;
-import static pl.llp.aircasting.repository.DBHelper.getInt;
-import static pl.llp.aircasting.repository.DBHelper.getLong;
-import static pl.llp.aircasting.repository.DBHelper.getString;
+import static pl.llp.aircasting.repository.DBHelper.*;
 
-public class StreamRepository {
+public class StreamRepository
+{
+  @Language("SQL")
+  private static final String STREAM_IS_SUBMITTED_FOR_DELETE = STREAM_SUBMITTED_FOR_REMOVAL + " = 1 ";
+
+  private static final String TAG = StreamRepository.class.getSimpleName();
+
   private SQLiteDatabase db;
-
   MeasurementRepository measurements;
 
-  public StreamRepository(SQLiteDatabase db) {
+  public StreamRepository(SQLiteDatabase db)
+  {
     this.db = db;
     measurements = new MeasurementRepository(db, new NullProgressListener());
   }
@@ -34,10 +40,12 @@ public class StreamRepository {
     List<MeasurementStream> result = newArrayList();
 
     Cursor c = db.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
-                               " WHERE " + STREAM_SESSION_ID + " = " + sessionId, null);
+                               " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "" +
+                               " AND " + STREAM_MARKED_FOR_REMOVAL + " = 0" , null);
 
     c.moveToFirst();
-    while (!c.isAfterLast()) {
+    while (!c.isAfterLast())
+    {
       String sensor = getString(c, STREAM_SENSOR_NAME);
       String packageName = getString(c, STREAM_SENSOR_PACKAGE_NAME);
       String symbol = getString(c, STREAM_MEASUREMENT_SYMBOL);
@@ -63,11 +71,14 @@ public class StreamRepository {
       double avg = getDouble(c, STREAM_AVG);
       double peak = getDouble(c, STREAM_PEAK);
       long id = getLong(c, STREAM_ID);
+      boolean markedForRemoval = getBool(c, STREAM_MARKED_FOR_REMOVAL);
 
       stream.setAvg(avg);
       stream.setPeak(peak);
       stream.setId(id);
       stream.setSessionId(sessionId);
+
+      stream.setMarkedForRemoval(markedForRemoval);
       result.add(stream);
 
       c.moveToNext();
@@ -76,10 +87,20 @@ public class StreamRepository {
     return result;
   }
 
-  private long saveOne(MeasurementStream stream, long sessionId) {
-    ContentValues values = new ContentValues();
+  private long saveOne(MeasurementStream stream, long sessionId)
+  {
+    ContentValues values = values(stream);
 
     values.put(STREAM_SESSION_ID, sessionId);
+    long streamId = db.insertOrThrow(STREAM_TABLE_NAME, null, values);
+    stream.setId(streamId);
+
+    return streamId;
+  }
+
+  private ContentValues values(MeasurementStream stream)
+  {
+    ContentValues values = new ContentValues();
     values.put(STREAM_SENSOR_PACKAGE_NAME, stream.getPackageName());
     values.put(STREAM_SENSOR_NAME, stream.getSensorName());
     values.put(STREAM_MEASUREMENT_SYMBOL, stream.getSymbol());
@@ -93,15 +114,15 @@ public class StreamRepository {
     values.put(STREAM_THRESHOLD_MEDIUM, stream.getThresholdMedium());
     values.put(STREAM_THRESHOLD_HIGH, stream.getThresholdHigh());
     values.put(STREAM_THRESHOLD_VERY_HIGH, stream.getThresholdVeryHigh());
-
-    long streamId = db.insertOrThrow(STREAM_TABLE_NAME, null, values);
-    stream.setId(streamId);
-
-    return streamId;
+    values.put(STREAM_MARKED_FOR_REMOVAL, stream.isMarkedForRemoval());
+    values.put(STREAM_SUBMITTED_FOR_REMOVAL, stream.isSubmittedForRemoval());
+    return values;
   }
 
-  public void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId) {
-    for (MeasurementStream oneToSave : streamsToSave) {
+  public void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId)
+  {
+    for (MeasurementStream oneToSave : streamsToSave)
+    {
       oneToSave.setSessionId(sessionId);
       long streamId = saveOne(oneToSave, sessionId);
 
@@ -110,7 +131,72 @@ public class StreamRepository {
     }
   }
 
-  public void save(MeasurementStream stream, long sessionId) {
+  public void save(MeasurementStream stream, long sessionId)
+  {
     saveAll(Collections.singletonList(stream), sessionId);
+  }
+
+  public void markForRemoval(MeasurementStream stream, long sessionId)
+  {
+    try
+    {
+      ContentValues values = new ContentValues();
+      values.put(STREAM_MARKED_FOR_REMOVAL, true);
+  
+      db.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
+    }
+    catch (SQLException e)
+    {
+      Log.e(TAG, "Unable to mark stream [" + stream.getId() + "] from session [" + sessionId + "] to be deleted", e);
+    }
+  }
+
+  public void update(MeasurementStream stream)
+  {
+    ContentValues values = values(stream);
+    values.put(STREAM_SESSION_ID, stream.getSessionId());
+
+    try
+    {
+      db.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
+    }
+    catch(SQLException e)
+    {
+      Log.e(TAG, "Error updating stream [" + stream.getId() + "]", e);
+    }
+  }
+
+  void deleteMeasurements(long streamId)
+  {
+    try
+    {
+      measurements.deleteAllFrom(streamId);
+    }
+    catch (SQLException e)
+    {
+      Log.e(TAG, "Error deleting measurements from stream [" + streamId + "]", e);
+    }
+  }
+
+  public void deleteSubmitted()
+  {
+    try
+    {
+      Cursor cursor = db.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
+      cursor.moveToFirst();
+      while(!cursor.isAfterLast())
+      {
+        Long streamId = getLong(cursor, STREAM_ID);
+        deleteMeasurements(streamId);
+        cursor.moveToNext();
+      }
+      cursor.close();
+
+      db.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
+    }
+    catch (SQLException e)
+    {
+      Log.e(TAG, "Error deleting streams submitted to be deleted", e);
+    }
   }
 }

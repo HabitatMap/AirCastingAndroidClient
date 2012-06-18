@@ -10,6 +10,8 @@ import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
@@ -26,7 +28,8 @@ import javax.annotation.Nullable;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
 
-public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
+public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
+{
     public static final String TITLE = "title";
     public static final String VERY_LOW = "veryLow";
     public static final String LOW = "low";
@@ -117,8 +120,15 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
   {
     View recordButton = view.findViewById(R.id.record_stream);
     View deleteButton = view.findViewById(R.id.delete_stream);
+    View viewButton = view.findViewById(R.id.view_stream);
+
     recordButton.setTag(sensor);
+    viewButton.setTag(sensor);
+    deleteButton.setTag(sensor);
+    deleteButton.setOnClickListener(this);
+    viewButton.setOnClickListener(this);
     recordButton.setOnClickListener(this);
+
     if (sensor.isEnabled())
     {
       recordButton.setBackgroundResource(R.drawable.rec_active);
@@ -127,8 +137,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     {
       recordButton.setBackgroundResource(R.drawable.rec_inactive);
     }
-    deleteButton.setTag(sensor);
-    deleteButton.setOnClickListener(this);
 
     if (sensorManager.hasRunningSession())
     {
@@ -141,17 +149,15 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       recordButton.setVisibility(View.INVISIBLE);
     }
 
-    View viewButton = view.findViewById(R.id.view_stream);
-    viewButton.setTag(sensor);
-    viewButton.setOnClickListener(this);
     if (sensorManager.getVisibleSensor().equals(sensor))
     {
-      viewButton.setBackgroundResource(R.drawable.view_active);
+      viewButton.setBackgroundResource(R.drawable.viewing_active);
     }
     else
     {
-      viewButton.setBackgroundResource(R.drawable.view_inactive);
+      viewButton.setBackgroundResource(R.drawable.viewing_inactive);
     }
+
     View topBar = view.findViewById(R.id.top_bar);
     topBar.setTag(sensor);
     topBar.setOnClickListener(this);
@@ -160,7 +166,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
   private void update() {
         data.clear();
 
-        for (Sensor sensor : sensorManager.getSensors()) {
+    List<Sensor> sensors = sensorManager.getSensors();
+    for (Sensor sensor : sensors) {
             Map<String, Object> map = prepareItem(sensor);
 
             map.put(TITLE, sensor.toString());
@@ -185,10 +192,11 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     }
 
   @Override
-  public void onClick(View view) {
+  public void onClick(View view)
+  {
     Sensor sensor = (Sensor) view.getTag();
-
-    switch (view.getId()) {
+    switch (view.getId())
+    {
       case R.id.view_stream:
         eventBus.post(new ViewStreamEvent(sensor));
         break;
@@ -196,7 +204,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         sensorManager.toggleSensor(sensor);
         break;
       case R.id.delete_stream:
-        sensorManager.deleteStream(sensor);
+        confirm(context, sensor);
         break;
       case R.id.top_bar:
         Intents.thresholdsEditor(context, sensor);
@@ -205,5 +213,30 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     context.suppressNextTap();
     notifyDataSetChanged();
+  }
+
+  private void confirm(ButtonsActivity context, final Sensor sensor)
+  {
+    AlertDialog.Builder b = new AlertDialog.Builder(context);
+    b.setMessage("Are you sure?").
+    setCancelable(true).
+    setPositiveButton("Yes", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        sensorManager.deleteSensorFromCurrentSession(sensor);
+        update();
+      }
+    }).setNegativeButton("No", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        // be like me - do nothing!
+      }
+    });
+    AlertDialog dialog = b.create();
+    dialog.show();
   }
 }

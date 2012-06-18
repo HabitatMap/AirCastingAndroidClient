@@ -19,10 +19,17 @@
 */
 package pl.llp.aircasting.util.http;
 
+import pl.llp.aircasting.helper.SettingsHelper;
+
 import android.util.Log;
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import org.apache.http.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
@@ -38,9 +45,13 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
-import pl.llp.aircasting.helper.SettingsHelper;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -226,7 +237,15 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest {
             content = response.getEntity().getContent();
             reader = new InputStreamReader(content);
 
-            T output = gson.fromJson(reader, target);
+      List<String> strings = CharStreams.readLines(reader);
+      StringBuffer buffer = new StringBuffer();
+      for (String string : strings)
+      {
+        buffer.append(string).append("\n");
+      }
+
+      String fullJson = buffer.toString();
+      T output = gson.fromJson(new StringReader(fullJson), target);
             result.setContent(output);
             result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
         } catch (Exception e) {

@@ -240,7 +240,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       case R.id.view:
         viewSession(sessionId);
         break;
-      case R.id.delete:
+      case R.id.delete_session :
         deleteSession(sessionId);
         break;
       case R.id.edit:

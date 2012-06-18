@@ -47,7 +47,8 @@ public class SchemaMigrator
           STREAM_THRESHOLD_HIGH + " INTEGER, \n " +
           STREAM_THRESHOLD_VERY_HIGH + " INTEGER,\n " +
           STREAM_MARKED_FOR_REMOVAL + " BOOLEAN, \n " +
-          STREAM_SUBMITTED_FOR_REMOVAL + " BOOLEAN \n )";
+          STREAM_SUBMITTED_FOR_REMOVAL + " BOOLEAN " +
+          ")";
 
   @Language("SQL")
   private static final String CREATE_SESSION_TABLE = "create table " + SESSION_TABLE_NAME + " (" +
@@ -80,6 +81,17 @@ public class SchemaMigrator
       ", " + MEASUREMENT_TIME + " integer" +
       ", " + MEASUREMENT_STREAM_ID + " integer" +
       ", " + MEASUREMENT_SESSION_ID + " integer" +
+      ")";
+
+  @Language("SQL")
+  private static final String CREATE_NOTES_TABLE = "create table " + NOTE_TABLE_NAME + "(" +
+      NOTE_SESSION_ID + " integer " +
+      ", " + NOTE_LATITUDE + " real " +
+      ", " + NOTE_LONGITUDE + " real " +
+      ", " + NOTE_TEXT + " text " +
+      ", " + NOTE_DATE + " integer " +
+      ", " + NOTE_PHOTO + " text" +
+      ", " + NOTE_NUMBER + " integer" +
       ")";
 
   @Language("SQL")
