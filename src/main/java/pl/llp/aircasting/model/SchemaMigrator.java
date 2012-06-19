@@ -45,75 +45,81 @@ public class SchemaMigrator
           STREAM_THRESHOLD_LOW + " INTEGER, \n " +
           STREAM_THRESHOLD_MEDIUM + " INTEGER, \n " +
           STREAM_THRESHOLD_HIGH + " INTEGER, \n " +
-          STREAM_THRESHOLD_VERY_HIGH + " INTEGER " +
+          STREAM_THRESHOLD_VERY_HIGH + " INTEGER,\n " +
+          STREAM_MARKED_FOR_REMOVAL + " BOOLEAN, \n " +
+          STREAM_SUBMITTED_FOR_REMOVAL + " BOOLEAN " +
           ")";
+
+  @Language("SQL")
+  private static final String CREATE_SESSION_TABLE = "create table " + SESSION_TABLE_NAME + " (" +
+      SESSION_ID + " integer primary key" +
+      ", " + SESSION_TITLE + " text" +
+      ", " + SESSION_DESCRIPTION + " text" +
+      ", " + SESSION_TAGS + " text" +
+      ", " + SESSION_START + " integer" +
+      ", " + SESSION_END + " integer" +
+      ", " + SESSION_UUID + " text" +
+      ", " + SESSION_LOCATION + " text" +
+      ", " + SESSION_CALIBRATION + " integer" +
+      ", " + SESSION_CONTRIBUTE + " boolean" +
+      ", " + SESSION_PHONE_MODEL + " text" +
+      ", " + SESSION_INSTRUMENT + " text" +
+      ", " + SESSION_DATA_TYPE + " text" +
+      ", " + SESSION_OS_VERSION + " text" +
+      ", " + SESSION_OFFSET_60_DB + " integer" +
+      ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
+      ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
+      ", " + SESSION_CALIBRATED + " boolean" +
+      ")";
+
+  @Language("SQL")
+  private static final String CREATE_MEASUREMENT_TABLE = "create table " + MEASUREMENT_TABLE_NAME +
+      " (" + MEASUREMENT_ID + " integer primary key" +
+      ", " + MEASUREMENT_LATITUDE + " real" +
+      ", " + MEASUREMENT_LONGITUDE + " real" +
+      ", " + MEASUREMENT_VALUE + " real" +
+      ", " + MEASUREMENT_TIME + " integer" +
+      ", " + MEASUREMENT_STREAM_ID + " integer" +
+      ", " + MEASUREMENT_SESSION_ID + " integer" +
+      ")";
+
+  @Language("SQL")
+  private static final String CREATE_NOTES_TABLE = "create table " + NOTE_TABLE_NAME + "(" +
+      NOTE_SESSION_ID + " integer " +
+      ", " + NOTE_LATITUDE + " real " +
+      ", " + NOTE_LONGITUDE + " real " +
+      ", " + NOTE_TEXT + " text " +
+      ", " + NOTE_DATE + " integer " +
+      ", " + NOTE_PHOTO + " text" +
+      ", " + NOTE_NUMBER + " integer" +
+      ")";
+
+  @Language("SQL")
+  private static final String CREATE_NOTE_TABLE = "create table " + NOTE_TABLE_NAME + "(" +
+      NOTE_SESSION_ID + " integer " +
+      ", " + NOTE_LATITUDE + " real " +
+      ", " + NOTE_LONGITUDE + " real " +
+      ", " + NOTE_TEXT + " text " +
+      ", " + NOTE_DATE + " integer " +
+      ", " + NOTE_PHOTO + " text" +
+      ", " + NOTE_NUMBER + " integer" +
+      ")";
 
   MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
 
   public void create(SQLiteDatabase db)
   {
-    createSessionsTable(db);
-    createMeasurementsTable(db);
-    createStreamTable(db);
-    createNotesTable(db);
-  }
-
-  private void createSessionsTable(SQLiteDatabase db) {
-    db.execSQL("create table " + SESSION_TABLE_NAME + " (" +
-                   SESSION_ID + " integer primary key" +
-                   ", " + SESSION_TITLE + " text" +
-                   ", " + SESSION_DESCRIPTION + " text" +
-                   ", " + SESSION_TAGS + " text" +
-                   ", " + SESSION_START + " integer" +
-                   ", " + SESSION_END + " integer" +
-                   ", " + SESSION_UUID + " text" +
-                   ", " + SESSION_LOCATION + " text" +
-                   ", " + SESSION_CALIBRATION + " integer" +
-                   ", " + SESSION_CONTRIBUTE + " boolean" +
-                   ", " + SESSION_PHONE_MODEL + " text" +
-                   ", " + SESSION_INSTRUMENT + " text" +
-                   ", " + SESSION_DATA_TYPE + " text" +
-                   ", " + SESSION_OS_VERSION + " text" +
-                   ", " + SESSION_OFFSET_60_DB + " integer" +
-                   ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
-                   ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
-                   ", " + SESSION_CALIBRATED + " boolean" +
-                   ")"
-              );
-  }
-
-  private void createMeasurementsTable(SQLiteDatabase db) {
-    db.execSQL("create table " + MEASUREMENT_TABLE_NAME +
-                   " (" + MEASUREMENT_ID + " integer primary key" +
-                   ", " + MEASUREMENT_LATITUDE + " real" +
-                   ", " + MEASUREMENT_LONGITUDE + " real" +
-                   ", " + MEASUREMENT_VALUE + " real" +
-                   ", " + MEASUREMENT_TIME + " integer" +
-                   ", " + MEASUREMENT_STREAM_ID + " integer" +
-                   ", " + MEASUREMENT_SESSION_ID + " integer" +
-                   ")"
-              );
-  }
-
-  private void createNotesTable(SQLiteDatabase db) {
-    db.execSQL("create table " + NOTE_TABLE_NAME + "(" +
-                   NOTE_SESSION_ID + " integer " +
-                   ", " + NOTE_LATITUDE + " real " +
-                   ", " + NOTE_LONGITUDE + " real " +
-                   ", " + NOTE_TEXT + " text " +
-                   ", " + NOTE_DATE + " integer " +
-                   ", " + NOTE_PHOTO + " text" +
-                   ", " + NOTE_NUMBER + " integer" +
-                   ")"
-              );
+    db.execSQL(CREATE_SESSION_TABLE);
+    db.execSQL(CREATE_MEASUREMENT_TABLE);
+    db.execSQL(CREATE_STREAMS_TABLE);
+    db.execSQL(CREATE_NOTE_TABLE);
   }
 
   private void createStreamTable(SQLiteDatabase db) {
     db.execSQL(CREATE_STREAMS_TABLE);
   }
 
-  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) {
-    if (oldVersion < 19 && newVersion >= 19) {
+  public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) { if (oldVersion < 19 && newVersion >= 19) {
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
     }
 
@@ -150,6 +156,12 @@ public class SchemaMigrator
     {
       addColumn(db, STREAM_TABLE_NAME, STREAM_SENSOR_PACKAGE_NAME, "text");
       db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SENSOR_PACKAGE_NAME + " = 'builtin' " );
+    }
+
+    if(oldVersion < 28 && newVersion >= 28)
+    {
+      addColumn(db, STREAM_TABLE_NAME, STREAM_MARKED_FOR_REMOVAL, "boolean");
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SUBMITTED_FOR_REMOVAL, "boolean");
     }
   }
 

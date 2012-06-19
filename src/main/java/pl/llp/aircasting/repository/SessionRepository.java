@@ -28,9 +28,11 @@ import pl.llp.aircasting.model.Session;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.google.inject.Inject;
+import org.intellij.lang.annotations.Language;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,6 +47,9 @@ import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class SessionRepository
 {
+  public static final String TAG = SessionRepository.class.getSimpleName();
+
+  @Language("SQL")
   private static final String SESSIONS_BY_SENSOR_QUERY =
       "SELECT " + SESSION_TABLE_NAME + ".*" +
           " FROM " + SESSION_TABLE_NAME +
@@ -53,8 +58,6 @@ public class SessionRepository
           " WHERE " + STREAM_SENSOR_NAME + " = ?" +
           " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
           " ORDER BY " + SESSION_START + " DESC";
-
-  private static final String TAG = SessionRepository.class.getSimpleName();
 
   @Inject
   AirCastingDB dbAccessor;
@@ -83,20 +86,18 @@ public class SessionRepository
     return session;
   }
 
-  public void deleteNote(Session session, Note note) {
+  public void deleteNote(Session session, Note note)
+  {
     notes.delete(session, note);
   }
 
   public void save(Session session, ProgressListener progressListener) {
     setupProgressListener(session, progressListener);
 
-    db.beginTransaction();
-    try
-    {
+
       ContentValues values = new ContentValues();
 
       prepareHeader(session, values);
-
       values.put(SESSION_START, session.getStart().getTime());
       values.put(SESSION_END, session.getEnd().getTime());
       values.put(SESSION_UUID, session.getUUID().toString());
@@ -120,17 +121,6 @@ public class SessionRepository
       streams.saveAll(streamsToSave, sessionKey);
 
       notes.save(session.getNotes(), sessionKey);
-
-      db.setTransactionSuccessful();
-    }
-    catch (Exception e)
-    {
-      Log.e(TAG, "Error saving session", e);
-    }
-    finally
-    {
-      db.endTransaction();
-    }
   }
 
   private void setupProgressListener(Session session, ProgressListener progressListener) {
@@ -139,7 +129,7 @@ public class SessionRepository
     }
 
     int size = 0;
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     for (MeasurementStream stream : streams) {
       size += stream.getMeasurements().size();
     }
@@ -185,7 +175,7 @@ public class SessionRepository
 
   private Session loadStreams(Session session)
   {
-    List<MeasurementStream> streams = new StreamRepository(db).findAllForSession(session.getId());
+    List<MeasurementStream> streams = streams().findAllForSession(session.getId());
     for (MeasurementStream stream : streams)
     {
       session.add(stream);
@@ -255,7 +245,8 @@ public class SessionRepository
     }
   }
 
-  public void deleteSubmitted() {
+  public void deleteSubmitted()
+  {
     String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
     delete(condition);
   }
@@ -279,31 +270,25 @@ public class SessionRepository
     delete(condition);
   }
 
-  private void delete(Long id)
+  private void delete(Long sessionId)
   {
-    db.beginTransaction();
     try
     {
-      db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + id, null);
-      db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + id, null);
-      db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + id, null);
-
-      db.setTransactionSuccessful();
+      db.delete(SESSION_TABLE_NAME, SESSION_ID + " = " + sessionId, null);
+      db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_SESSION_ID + " = " + sessionId, null);
+      db.delete(STREAM_TABLE_NAME, STREAM_SESSION_ID + " = " + sessionId, null);
+      db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId, null);
     }
-    catch(Exception e)
+    catch (SQLException e)
     {
-      Log.e(TAG, "Error deleting session", e);
-    }
-    finally
-    {
-      db.endTransaction();
+      Log.e(TAG, "Error deleting session [ " + sessionId + " ]", e);
     }
   }
 
   public Session loadFully(UUID uuid)
   {
     Session session = loadShallow(uuid);
-    return fill(session, null);
+    return fill(session, new NullProgressListener());
   }
 
   public Session loadFully(long id, ProgressListener progressListener)
@@ -314,7 +299,7 @@ public class SessionRepository
 
   private Session fill(Session session, ProgressListener progressListener)
   {
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     MeasurementRepository r = new MeasurementRepository(db, progressListener);
     Map<Long, List<Measurement>> load = r.load(session);
 
@@ -334,21 +319,25 @@ public class SessionRepository
     ContentValues values = new ContentValues();
     prepareHeader(session, values);
 
-    db.beginTransaction();
     try
     {
       notes.save(session.getNotes(), session.getId());
-      db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
 
-      db.setTransactionSuccessful();
+      db.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
     }
-    catch (Exception e)
+    catch (SQLException e)
     {
-      Log.e(TAG, "Error updating session", e);
+      Log.e(TAG, "Error updating session [ " + session.getId() + " ]", e);
     }
-    finally
-    {
-      db.endTransaction();
-    }
+  }
+
+  public void deleteStream(Long sessionId, MeasurementStream stream)
+  {
+    streams.markForRemoval(stream, sessionId);
+  }
+
+  public StreamRepository streams()
+  {
+    return streams;
   }
 }

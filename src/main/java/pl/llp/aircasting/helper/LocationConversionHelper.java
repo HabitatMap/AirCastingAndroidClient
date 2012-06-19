@@ -80,7 +80,7 @@ public class LocationConversionHelper {
 
     private static Iterable<Measurement> allMeasurements(Session session) {
         Iterable<Iterable<Measurement>> measurements =
-                transform(session.getMeasurementStreams(), new Function<MeasurementStream, Iterable<Measurement>>() {
+                transform(session.getActiveMeasurementStreams(), new Function<MeasurementStream, Iterable<Measurement>>() {
                     @Override
                     public Iterable<Measurement> apply(MeasurementStream input) {
                         return input.getMeasurements();

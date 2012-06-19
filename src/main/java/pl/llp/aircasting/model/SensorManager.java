@@ -1,13 +1,14 @@
 package pl.llp.aircasting.model;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,10 @@ public class SensorManager {
   private Set<Sensor> disabled = newHashSet();
 
   @Subscribe
-  public void onEvent(SensorEvent event) {
-    if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName())) {
+  public void onEvent(SensorEvent event)
+  {
+    if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName()))
+    {
       ToggleableSensor sensor = new ToggleableSensor(event);
       if (disabled.contains(sensor)) {
         sensor.toggle();
@@ -92,13 +95,28 @@ public class SensorManager {
 
     sensors = newHashMap();
 
-    for (MeasurementStream stream : sessionManager.getMeasurementStreams()) {
+    for (MeasurementStream stream : sessionManager.getMeasurementStreams())
+    {
+      if(stream.isMarkedForRemoval())
+        continue;
+
       ToggleableSensor sensor = new ToggleableSensor(stream);
       String name = sensor.getSensorName();
       sensors.put(name, sensor);
 
       visibleSensor = sensor;
     }
+  }
+
+  public boolean hasRunningSession()
+  {
+    return sessionManager.isSessionStarted();
+  }
+
+  public void deleteSensorFromCurrentSession(Sensor sensor)
+  {
+    sensors.remove(sensor.getSensorName());
+    sessionManager.deleteSensorStream(sensor);
   }
 
   private static class ToggleableSensor extends Sensor {

@@ -19,10 +19,11 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import pl.llp.aircasting.R;
 import roboguice.inject.InjectView;
 
 /**
@@ -35,7 +36,7 @@ public class OpenSessionActivity extends DialogActivity implements View.OnClickL
     @InjectView(R.id.view) Button view;
     @InjectView(R.id.share) Button share;
     @InjectView(R.id.edit) Button edit;
-    @InjectView(R.id.delete) Button delete;
+    @InjectView(R.id.delete_session) Button delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

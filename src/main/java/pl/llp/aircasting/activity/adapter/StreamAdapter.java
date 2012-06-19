@@ -1,10 +1,5 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SimpleAdapter;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
@@ -15,16 +10,26 @@ import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 
-import javax.annotation.Nullable;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SimpleAdapter;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
 
-public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
+public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
+{
     public static final String TITLE = "title";
     public static final String VERY_LOW = "veryLow";
     public static final String LOW = "low";
@@ -111,34 +116,58 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         return view;
     }
 
-    private void initializeButtons(View view, Sensor sensor) {
-        View recordButton = view.findViewById(R.id.record_stream);
-        recordButton.setTag(sensor);
-        recordButton.setOnClickListener(this);
-        if (sensor.isEnabled()) {
-            recordButton.setBackgroundResource(R.drawable.rec_active);
-        } else {
-            recordButton.setBackgroundResource(R.drawable.rec_inactive);
-        }
+  private void initializeButtons(View view, Sensor sensor)
+  {
+    View recordButton = view.findViewById(R.id.record_stream);
+    View deleteButton = view.findViewById(R.id.delete_stream);
+    View viewButton = view.findViewById(R.id.view_stream);
 
-        View viewButton = view.findViewById(R.id.view_stream);
-        viewButton.setTag(sensor);
-        viewButton.setOnClickListener(this);
-        if (sensorManager.getVisibleSensor().equals(sensor)) {
-            viewButton.setBackgroundResource(R.drawable.view_active);
-        } else {
-            viewButton.setBackgroundResource(R.drawable.view_inactive);
-        }
+    recordButton.setTag(sensor);
+    viewButton.setTag(sensor);
+    deleteButton.setTag(sensor);
+    deleteButton.setOnClickListener(this);
+    viewButton.setOnClickListener(this);
+    recordButton.setOnClickListener(this);
 
-        View topBar = view.findViewById(R.id.top_bar);
-        topBar.setTag(sensor);
-        topBar.setOnClickListener(this);
+    if (sensor.isEnabled())
+    {
+      recordButton.setBackgroundResource(R.drawable.rec_active);
+    }
+    else
+    {
+      recordButton.setBackgroundResource(R.drawable.rec_inactive);
     }
 
-    private void update() {
+    if (sensorManager.hasRunningSession())
+    {
+      deleteButton.setVisibility(View.INVISIBLE);
+      recordButton.setVisibility(View.VISIBLE);
+    }
+    else
+    {
+      deleteButton.setVisibility(View.VISIBLE);
+      recordButton.setVisibility(View.INVISIBLE);
+    }
+
+    if (sensorManager.getVisibleSensor().equals(sensor))
+    {
+      viewButton.setBackgroundResource(R.drawable.viewing_active);
+    }
+    else
+    {
+      viewButton.setBackgroundResource(R.drawable.viewing_inactive);
+    }
+
+    View topBar = view.findViewById(R.id.top_bar);
+    topBar.setTag(sensor);
+    topBar.setOnClickListener(this);
+  }
+
+  private void update() {
         data.clear();
 
-        for (Sensor sensor : sensorManager.getSensors()) {
+    List<Sensor> sensors = sensorManager.getSensors();
+    for (Sensor sensor : sensors) {
             Map<String, Object> map = prepareItem(sensor);
 
             map.put(TITLE, sensor.toString());
@@ -162,23 +191,53 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         return sensors.get(name);
     }
 
-    @Override
-    public void onClick(View view) {
-        Sensor sensor = (Sensor) view.getTag();
-
-        switch (view.getId()) {
-            case R.id.view_stream:
-                eventBus.post(new ViewStreamEvent(sensor));
-                break;
-            case R.id.record_stream:
-                sensorManager.toggleSensor(sensor);
-                break;
-            case R.id.top_bar:
-                Intents.thresholdsEditor(context, sensor);
-                break;
-        }
-
-        context.suppressNextTap();
-        notifyDataSetChanged();
+  @Override
+  public void onClick(View view)
+  {
+    Sensor sensor = (Sensor) view.getTag();
+    switch (view.getId())
+    {
+      case R.id.view_stream:
+        eventBus.post(new ViewStreamEvent(sensor));
+        break;
+      case R.id.record_stream:
+        sensorManager.toggleSensor(sensor);
+        break;
+      case R.id.delete_stream:
+        confirm(context, sensor);
+        break;
+      case R.id.top_bar:
+        Intents.thresholdsEditor(context, sensor);
+        break;
     }
+
+    context.suppressNextTap();
+    notifyDataSetChanged();
+  }
+
+  private void confirm(final ButtonsActivity context, final Sensor sensor)
+  {
+    AlertDialog.Builder b = new AlertDialog.Builder(context);
+    b.setMessage("Are you sure?").
+    setCancelable(true).
+    setPositiveButton("Yes", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        sensorManager.deleteSensorFromCurrentSession(sensor);
+        update();
+        Intents.triggerSync(context);
+      }
+    }).setNegativeButton("No", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        // be like me - do nothing!
+      }
+    });
+    AlertDialog dialog = b.create();
+    dialog.show();
+  }
 }

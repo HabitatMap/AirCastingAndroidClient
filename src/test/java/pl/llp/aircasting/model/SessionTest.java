@@ -68,13 +68,6 @@ public class SessionTest {
     }
 
     @Test
-    public void shouldAlwaysHaveMeasurements() {
-        session.measurements = null;
-
-        assertThat(session.getMeasurements(), not(equalTo(null)));
-    }
-
-    @Test
     public void should_be_empty_if_all_streams_are_empty() {
         MeasurementStream stream1 = mock(MeasurementStream.class);
         when(stream1.isEmpty()).thenReturn(true);

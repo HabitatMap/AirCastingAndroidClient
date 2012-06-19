@@ -19,13 +19,6 @@
  */
 package pl.llp.aircasting.model;
 
-import android.app.Application;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
@@ -39,6 +32,14 @@ import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
+
+import android.app.Application;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Collection;
 import java.util.Date;
@@ -231,7 +232,7 @@ public class SessionManager {
     }
 
     public Collection<MeasurementStream> getMeasurementStreams() {
-        return session.getMeasurementStreams();
+        return newArrayList(session.getActiveMeasurementStreams());
     }
 
     public MeasurementStream getMeasurementStream(String sensorName) {
@@ -307,10 +308,6 @@ public class SessionManager {
         return sessionStarted;
     }
 
-    public synchronized List<Measurement> getSoundMeasurements() {
-        return newArrayList(session.getMeasurements());
-    }
-
     public double getAvg(Sensor sensor) {
         String sensorName = sensor.getSensorName();
 
@@ -341,4 +338,12 @@ public class SessionManager {
             return newArrayList();
         }
     }
+
+  public void deleteSensorStream(Sensor sensor)
+  {
+    String sensorName = sensor.getSensorName();
+    MeasurementStream stream = getMeasurementStream(sensorName);
+    sessionRepository.deleteStream(session.getId(), stream);
+    session.removeStream(stream);
+  }
 }

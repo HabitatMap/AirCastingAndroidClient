@@ -295,7 +295,6 @@ public class SessionManagerTest {
         verify(sessionManager.audioReader, never()).stop();
         verify(sessionManager.locationHelper).stop();
         verify(sessionManager.sessionRepository).save(Mockito.any(Session.class), eq(listener));
-        assertThat(sessionManager.getSoundMeasurements().isEmpty(), equalTo(true));
         assertThat(sessionManager.isSessionStarted(), equalTo(false));
     }
 

@@ -19,6 +19,14 @@
  */
 package pl.llp.aircasting.activity.adapter;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.FormatHelper;
+import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.repository.SessionRepository;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -31,13 +39,6 @@ import android.widget.TextView;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Ordering;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.FormatHelper;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.SessionRepository;
 
 import javax.annotation.Nullable;
 
@@ -72,7 +73,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
     if (sensor == null) {
       dataTypes.setVisibility(View.VISIBLE);
 
-      Iterable<String> types = transform(session.getMeasurementStreams(), new Function<MeasurementStream, String>() {
+      Iterable<String> types = transform(session.getActiveMeasurementStreams(), new Function<MeasurementStream, String>() {
         @Override
         public String apply(MeasurementStream input) {
           return input.getShortType();

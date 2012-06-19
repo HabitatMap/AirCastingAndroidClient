@@ -240,7 +240,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       case R.id.view:
         viewSession(sessionId);
         break;
-      case R.id.delete:
+      case R.id.delete_session :
         deleteSession(sessionId);
         break;
       case R.id.edit:
@@ -309,13 +309,19 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }.execute(id);
   }
 
-  private void selectSensor() {
-    if (selectedSensor != null) {
+  private void selectSensor()
+  {
+    if (selectedSensor != null)
+    {
       ViewStreamEvent event = new ViewStreamEvent(selectedSensor);
       eventBus.post(event);
-    } else if (sessionManager.getMeasurementStreams().size() > 1) {
+    }
+    else if (sessionManager.getMeasurementStreams().size() > 1)
+    {
       showDialog(SelectSensorHelper.DIALOG_ID);
-    } else {
+    }
+    else
+    {
       startSessionView();
     }
   }

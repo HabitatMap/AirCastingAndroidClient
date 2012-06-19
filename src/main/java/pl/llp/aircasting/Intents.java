@@ -19,6 +19,16 @@
  */
 package pl.llp.aircasting;
 
+import pl.llp.aircasting.activity.EditSessionActivity;
+import pl.llp.aircasting.activity.MakeANoteActivity;
+import pl.llp.aircasting.activity.ShareSessionActivity;
+import pl.llp.aircasting.activity.StreamsActivity;
+import pl.llp.aircasting.activity.ThresholdsActivity;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.service.SensorService;
+import pl.llp.aircasting.service.SyncService;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -26,11 +36,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import pl.llp.aircasting.activity.*;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.service.SensorService;
-import pl.llp.aircasting.service.SyncService;
 
 import java.io.File;
 import java.io.IOException;

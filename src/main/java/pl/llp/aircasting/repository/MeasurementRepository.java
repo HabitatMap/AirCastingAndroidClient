@@ -4,8 +4,10 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 import org.intellij.lang.annotations.Language;
 
 import java.util.ArrayList;
@@ -14,10 +16,14 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.model.DBConstants.*;
-import static pl.llp.aircasting.repository.DBHelper.*;
+import static pl.llp.aircasting.repository.DBHelper.getDate;
+import static pl.llp.aircasting.repository.DBHelper.getDouble;
+import static pl.llp.aircasting.repository.DBHelper.getLong;
 
 class MeasurementRepository
 {
+  public static final String TAG = MeasurementRepository.class.getSimpleName();
+
   private SQLiteDatabase db;
   private ProgressListener progress = new NullProgressListener();
 
@@ -103,5 +109,17 @@ class MeasurementRepository
     }
 
     st.close();
+  }
+
+  public void deleteAllFrom(Long streamId)
+  {
+    try
+    {
+      db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID + " = " + streamId, null);
+    }
+    catch (SQLException e)
+    {
+      Log.e(TAG, "Error removing measurements from stream [" + streamId + "]", e);
+    }
   }
 }

@@ -33,7 +33,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.String.valueOf;
@@ -69,7 +68,7 @@ public class CSVHelper
       csvWriter.write("Value");
       csvWriter.endRecord();
 
-      Collection<MeasurementStream> streams = session.getMeasurementStreams();
+      Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
       for (MeasurementStream stream : streams)
       {
         for (Measurement measurement : stream.getMeasurements())

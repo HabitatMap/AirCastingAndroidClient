@@ -19,15 +19,20 @@
  */
 package pl.llp.aircasting.view.presenter;
 
-import com.google.inject.Inject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.SessionManager;
+
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,7 +134,6 @@ public class MeasurementPresenterTest {
         triggerMeasurement(measurement1);
         List<Measurement> result = presenter.getTimelineView();
 
-        verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
         assertThat(result, hasItem(equalTo(measurements.get(3))));
         assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
@@ -179,7 +183,6 @@ public class MeasurementPresenterTest {
         triggerMeasurement(measurement1);
         List<Measurement> result = presenter.getFullView();
 
-        verify(presenter.sessionManager, never()).getSoundMeasurements();
         assertThat(result, hasItem(equalTo(measurement1)));
     }
 
