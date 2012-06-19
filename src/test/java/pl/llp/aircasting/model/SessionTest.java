@@ -82,9 +82,11 @@ public class SessionTest {
     @Test
     public void should_not_be_empty_if_any_of_the_streams_are_not() {
         MeasurementStream stream1 = mock(MeasurementStream.class);
+        when(stream1.getSensorName()).thenReturn("s1");
         when(stream1.isEmpty()).thenReturn(false);
         MeasurementStream stream2 = mock(MeasurementStream.class);
         when(stream2.isEmpty()).thenReturn(true);
+        when(stream1.getSensorName()).thenReturn("s2");
         session.add(stream1);
         session.add(stream2);
 
