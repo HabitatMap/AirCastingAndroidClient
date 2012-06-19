@@ -40,8 +40,7 @@ public class StreamRepository
     List<MeasurementStream> result = newArrayList();
 
     Cursor c = db.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
-                               " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "" +
-                               " AND " + STREAM_MARKED_FOR_REMOVAL + " = 0" , null);
+                               " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "", null);
 
     c.moveToFirst();
     while (!c.isAfterLast())

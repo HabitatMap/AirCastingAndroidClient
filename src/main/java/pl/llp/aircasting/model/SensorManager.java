@@ -34,8 +34,10 @@ public class SensorManager {
   private Set<Sensor> disabled = newHashSet();
 
   @Subscribe
-  public void onEvent(SensorEvent event) {
-    if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName())) {
+  public void onEvent(SensorEvent event)
+  {
+    if (!sessionManager.isSessionSaved() && !sensors.containsKey(event.getSensorName()))
+    {
       ToggleableSensor sensor = new ToggleableSensor(event);
       if (disabled.contains(sensor)) {
         sensor.toggle();
@@ -93,7 +95,11 @@ public class SensorManager {
 
     sensors = newHashMap();
 
-    for (MeasurementStream stream : sessionManager.getMeasurementStreams()) {
+    for (MeasurementStream stream : sessionManager.getMeasurementStreams())
+    {
+      if(stream.isMarkedForRemoval())
+        continue;
+
       ToggleableSensor sensor = new ToggleableSensor(stream);
       String name = sensor.getSensorName();
       sensors.put(name, sensor);

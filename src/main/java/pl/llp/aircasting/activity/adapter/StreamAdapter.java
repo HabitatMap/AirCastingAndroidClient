@@ -215,7 +215,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     notifyDataSetChanged();
   }
 
-  private void confirm(ButtonsActivity context, final Sensor sensor)
+  private void confirm(final ButtonsActivity context, final Sensor sensor)
   {
     AlertDialog.Builder b = new AlertDialog.Builder(context);
     b.setMessage("Are you sure?").
@@ -227,6 +227,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       {
         sensorManager.deleteSensorFromCurrentSession(sensor);
         update();
+        Intents.triggerSync(context);
       }
     }).setNegativeButton("No", new DialogInterface.OnClickListener()
     {

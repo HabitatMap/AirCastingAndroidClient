@@ -232,7 +232,7 @@ public class SessionManager {
     }
 
     public Collection<MeasurementStream> getMeasurementStreams() {
-        return session.getMeasurementStreams();
+        return newArrayList(session.getActiveMeasurementStreams());
     }
 
     public MeasurementStream getMeasurementStream(String sensorName) {
@@ -306,10 +306,6 @@ public class SessionManager {
 
     public boolean isSessionStarted() {
         return sessionStarted;
-    }
-
-    public synchronized List<Measurement> getSoundMeasurements() {
-        return newArrayList(session.getMeasurements());
     }
 
     public double getAvg(Sensor sensor) {

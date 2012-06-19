@@ -33,6 +33,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import static com.google.common.collect.Iterables.all;
+import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -40,8 +41,6 @@ public class Session implements Serializable
 {
   @Expose private UUID uuid = UUID.randomUUID();
 
-  /** @deprecated will be removed*/
-  transient List<Measurement> measurements = newArrayList();
   @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
   @Expose private List<Note> notes = newArrayList();
 
@@ -68,14 +67,6 @@ public class Session implements Serializable
   {
     streams.put(stream.getSensorName(), stream);
   }
-
-  /** @deprecated will be removed*/
-    public List<Measurement> getMeasurements() {
-        if (measurements == null) {
-            measurements = newArrayList();
-        }
-        return measurements;
-    }
 
   public void setTitle(String text) {
         title = text;
@@ -296,5 +287,17 @@ public class Session implements Serializable
   public void removeStream(MeasurementStream stream)
   {
     streams.remove(stream.getSensorName());
+  }
+
+  public Iterable<MeasurementStream> getActiveMeasurementStreams()
+  {
+    return filter(getMeasurementStreams(), new Predicate<MeasurementStream>()
+    {
+      @Override
+      public boolean apply(@Nullable MeasurementStream input)
+      {
+        return input != null && !input.isMarkedForRemoval();
+      }
+    });
   }
 }

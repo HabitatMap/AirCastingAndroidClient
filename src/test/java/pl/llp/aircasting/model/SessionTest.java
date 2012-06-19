@@ -19,12 +19,13 @@
  */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
 
 import java.util.Date;
 
@@ -64,13 +65,6 @@ public class SessionTest {
     public void shouldHaveUUID() {
         assertThat(session.getUUID(), not(equalTo(null)));
         assertThat(session.getUUID(), not(equalTo(new Session().getUUID())));
-    }
-
-    @Test
-    public void shouldAlwaysHaveMeasurements() {
-        session.measurements = null;
-
-        assertThat(session.getMeasurements(), not(equalTo(null)));
     }
 
     @Test

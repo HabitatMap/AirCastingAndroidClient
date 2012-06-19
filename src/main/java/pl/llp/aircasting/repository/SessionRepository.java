@@ -129,7 +129,7 @@ public class SessionRepository
     }
 
     int size = 0;
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     for (MeasurementStream stream : streams) {
       size += stream.getMeasurements().size();
     }
@@ -299,7 +299,7 @@ public class SessionRepository
 
   private Session fill(Session session, ProgressListener progressListener)
   {
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     MeasurementRepository r = new MeasurementRepository(db, progressListener);
     Map<Long, List<Measurement>> load = r.load(session);
 
