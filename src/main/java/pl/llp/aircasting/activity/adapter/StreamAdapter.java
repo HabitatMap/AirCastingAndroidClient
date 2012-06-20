@@ -131,11 +131,11 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     if (sensor.isEnabled())
     {
-      recordButton.setBackgroundResource(R.drawable.rec_active);
+      recordButton.setBackgroundResource(R.drawable.recording_active);
     }
     else
     {
-      recordButton.setBackgroundResource(R.drawable.rec_inactive);
+      recordButton.setBackgroundResource(R.drawable.recording_inactive);
     }
 
     if (sensorManager.hasRunningSession())
