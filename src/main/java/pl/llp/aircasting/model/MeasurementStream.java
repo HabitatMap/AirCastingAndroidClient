@@ -9,13 +9,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MeasurementStream implements Serializable
 {
   @Expose @SerializedName("measurements")
-  private transient List<Measurement> measurements = newArrayList();
+  private transient List<Measurement> measurements = new CopyOnWriteArrayList<Measurement>();
 
   private long id;
 
