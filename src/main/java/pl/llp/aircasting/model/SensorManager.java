@@ -119,6 +119,11 @@ public class SensorManager {
     sessionManager.deleteSensorStream(sensor);
   }
 
+  public boolean hasBackingSession()
+  {
+    return sessionManager.isSessionSaved();
+  }
+
   private static class ToggleableSensor extends Sensor {
     public ToggleableSensor(SensorEvent event) {
       super(event);

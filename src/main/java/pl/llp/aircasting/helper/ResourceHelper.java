@@ -19,13 +19,14 @@
  */
 package pl.llp.aircasting.helper;
 
-import android.graphics.drawable.Drawable;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
+
+import android.graphics.drawable.Drawable;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import roboguice.inject.InjectResource;
 
 /**
@@ -55,6 +56,8 @@ public class ResourceHelper {
     @InjectResource(R.drawable.round_bottom_orange_big) Drawable bigOrangeGauge;
     @InjectResource(R.drawable.round_bottom_red) Drawable smallRedGauge;
     @InjectResource(R.drawable.round_bottom_red_big) Drawable bigRedGauge;
+    @InjectResource(R.drawable.round_bottom_grey) Drawable smallGreyGauge;
+    @InjectResource(R.drawable.round_bottom_grey_big) Drawable bigGreyGauge;
 
     @InjectResource(R.color.green) int green;
     @InjectResource(R.color.orange) int orange;
@@ -89,6 +92,11 @@ public class ResourceHelper {
                 return size == MarkerSize.SMALL ? smallRedGauge : bigRedGauge;
         }
     }
+
+  public Drawable getDisabledGauge(MarkerSize size)
+  {
+     return size == MarkerSize.SMALL ? smallGreyGauge : bigGreyGauge;
+  }
 
     public int getGraphColor(MeasurementLevel measurementLevel) {
         switch (measurementLevel) {

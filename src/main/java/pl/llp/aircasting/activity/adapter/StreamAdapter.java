@@ -140,13 +140,18 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     if (sensorManager.hasRunningSession())
     {
-      deleteButton.setVisibility(View.INVISIBLE);
+      deleteButton.setVisibility(View.GONE);
       recordButton.setVisibility(View.VISIBLE);
+    }
+    else if(sensorManager.hasBackingSession())
+    {
+      deleteButton.setVisibility(View.VISIBLE);
+      recordButton.setVisibility(View.GONE);
     }
     else
     {
-      deleteButton.setVisibility(View.VISIBLE);
-      recordButton.setVisibility(View.INVISIBLE);
+      deleteButton.setVisibility(View.GONE);
+      recordButton.setVisibility(View.GONE);
     }
 
     if (sensorManager.getVisibleSensor().equals(sensor))

@@ -290,15 +290,15 @@ public class Session implements Serializable
     streams.remove(stream.getSensorName());
   }
 
-  public Iterable<MeasurementStream> getActiveMeasurementStreams()
+  public List<MeasurementStream> getActiveMeasurementStreams()
   {
-    return filter(getMeasurementStreams(), new Predicate<MeasurementStream>()
+    return newArrayList(filter(getMeasurementStreams(), new Predicate<MeasurementStream>()
     {
       @Override
       public boolean apply(@Nullable MeasurementStream input)
       {
         return input != null && !input.isMarkedForRemoval();
       }
-    });
+    }));
   }
 }

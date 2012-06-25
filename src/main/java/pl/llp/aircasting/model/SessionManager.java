@@ -341,9 +341,16 @@ public class SessionManager {
 
   public void deleteSensorStream(Sensor sensor)
   {
-    String sensorName = sensor.getSensorName();
-    MeasurementStream stream = getMeasurementStream(sensorName);
-    sessionRepository.deleteStream(session.getId(), stream);
-    session.removeStream(stream);
+    if(session.getActiveMeasurementStreams().size() > 1)
+    {
+      String sensorName = sensor.getSensorName();
+      MeasurementStream stream = getMeasurementStream(sensorName);
+      sessionRepository.deleteStream(session, stream);
+      session.removeStream(stream);
+    }
+    else
+    {
+      sessionRepository.markSessionForRemoval(session.getId());
+    }
   }
 }

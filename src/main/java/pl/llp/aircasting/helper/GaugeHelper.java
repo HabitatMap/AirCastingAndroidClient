@@ -1,14 +1,15 @@
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.MarkerSize;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SessionManager;
+
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.MarkerSize;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.inject.InjectResource;
 
 import static java.lang.String.valueOf;
@@ -36,11 +37,9 @@ public class GaugeHelper {
         int avg = (int) sessionManager.getAvg(sensor);
         int peak = (int) sessionManager.getPeak(sensor);
 
-        updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
         updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
         updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
 
-        updateLabel(sensor, view.findViewById(R.id.now_label), nowLabel);
         updateLabel(sensor, view.findViewById(R.id.avg_label), avgLabel);
         updateLabel(sensor, view.findViewById(R.id.peak_label), peakLabel);
     }
@@ -58,18 +57,29 @@ public class GaugeHelper {
         peakContainer.setVisibility(visibility);
     }
 
-    private void updateLabel(Sensor sensor, View view, String label) {
-        TextView textView = (TextView) view;
+  private void updateLabel(Sensor sensor, View view, String label)
+  {
+    TextView textView = (TextView) view;
 
-        String formatted = String.format(label, sensor.getShortType());
-        textView.setText(formatted);
-    }
+    String formatted = String.format(label, sensor.getShortType());
+    textView.setText(formatted);
+  }
 
-    private void updateGauge(View view, Sensor sensor, MarkerSize size, int value) {
-        TextView textView = (TextView) view;
+  private void updateGauge(View view, Sensor sensor, MarkerSize size, int value)
+  {
+    TextView textView = (TextView) view;
 
-        textView.setText(valueOf(value));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-        textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
-    }
+    textView.setText(valueOf(value));
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
+    textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
+  }
+
+  private void displayInactiveGauge(View view, MarkerSize size)
+  {
+    TextView textView = (TextView) view;
+
+    textView.setText("--");
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, ResourceHelper.SMALL_GAUGE_SMALL_TEXT);
+    textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+  }
 }

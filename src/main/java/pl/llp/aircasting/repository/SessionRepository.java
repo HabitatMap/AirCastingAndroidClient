@@ -331,9 +331,9 @@ public class SessionRepository
     }
   }
 
-  public void deleteStream(Long sessionId, MeasurementStream stream)
+  public void deleteStream(Session session, MeasurementStream stream)
   {
-    streams.markForRemoval(stream, sessionId);
+    streams.markForRemoval(stream, session.getId());
   }
 
   public StreamRepository streams()
