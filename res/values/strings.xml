@@ -176,7 +176,7 @@
     <string name="sync_only_wifi">Sync only through Wi-Fi</string>
     <string name="aircasting_is_recording">AirCasting is recording a session</string>
     <string name="show_route">Show route trace</string>
-    <string name="external_sensor">External sensor</string>
+    <string name="external_sensor">External sensors</string>
     <string name="bluetooth_not_supported">Your phone does not support bluetooth.</string>
     <string name="measurement_streams">Measurement streams</string>
     
@@ -186,4 +186,10 @@
 
     <string name="select_sensor">Select a sensor</string>
     <string name="all">All</string>
+  <string name="delete_button_description">Delete stream button</string>
+  <string name="record_button_description">Record stream button</string>
+  <string name="view_button_description">View stream button</string>
+  <string name="Name">Name</string>
+  <string name="Address">Address</string>
+  <string name="disconnect_sensor">Disconnect?</string>
 </resources>

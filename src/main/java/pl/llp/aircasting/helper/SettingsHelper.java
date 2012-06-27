@@ -19,10 +19,11 @@
  */
 package pl.llp.aircasting.helper;
 
-import android.content.SharedPreferences;
-import com.google.inject.Inject;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
+
+import android.content.SharedPreferences;
+import com.google.inject.Inject;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,6 +61,7 @@ public class SettingsHelper {
     public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
     public static final String SHOW_ROUTE = "show_route";
     public static final String SENSOR_ADDRESS = "sensor_address";
+    public static final String SENSOR_NAME = "sensor_name";
 
     @Inject SharedPreferences preferences;
 
@@ -243,7 +245,16 @@ public class SettingsHelper {
         writeString(SENSOR_ADDRESS, address);
     }
 
+    public void setSensorName(String name) {
+          writeString(SENSOR_NAME, name);
+    }
+
     public String getSensorAddress() {
         return preferences.getString(SENSOR_ADDRESS, null);
     }
+
+  public String geSensorName()
+  {
+    return preferences.getString(SENSOR_NAME, null);
+  }
 }

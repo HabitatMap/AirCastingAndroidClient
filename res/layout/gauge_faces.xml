@@ -2,7 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/Wrap"
-              android:gravity="center"
+              android:gravity="top"
               android:layout_below="@+id/top_bar"
               android:id="@+id/gauge_container"
               android:layout_centerHorizontal="true"
@@ -13,10 +13,12 @@
         <TextView style="@style/GaugeLabel"
                   android:text="@string/db_avg"
                   android:id="@+id/avg_label"
+                  android:layout_marginTop="2dp"
                 />
         <TextView style="@style/Gauge"
                   android:textSize="35sp"
                   android:id="@+id/avg_gauge"
+
                 />
     </LinearLayout>
     <LinearLayout style="@style/GaugeContainer"
@@ -39,6 +41,7 @@
         <TextView style="@style/GaugeLabel"
                   android:text="@string/peak_gauge"
                   android:id="@+id/peak_label"
+                  android:layout_marginTop="2dp"
                 />
         <TextView style="@style/Gauge"
                   android:textSize="35sp"

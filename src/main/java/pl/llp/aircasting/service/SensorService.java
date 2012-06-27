@@ -19,11 +19,12 @@
 */
 package pl.llp.aircasting.service;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.model.SessionManager;
+
 import android.content.Intent;
 import android.os.IBinder;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.service.RoboService;
 
 /**
@@ -61,4 +62,6 @@ public class SensorService extends RoboService {
 
         return START_STICKY;
     }
+
+
 }

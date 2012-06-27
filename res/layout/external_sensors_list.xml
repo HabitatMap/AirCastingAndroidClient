@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+    >
+
+  <TextView android:text="Connected"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/connected_sensor_label"
+            android:textSize="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+      />
+
+  <ListView android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/connected_sensor_list"
+      />
+
+  <TextView android:text="Available"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/external_sensor_label"
+            android:textSize="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+      />
+
+  <ListView android:layout_height="300dp"
+            android:layout_width="fill_parent"
+            android:id="@+id/external_sensor_list"
+      />
+
+</LinearLayout>
