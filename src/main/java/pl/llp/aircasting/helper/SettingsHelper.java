@@ -25,13 +25,8 @@ import pl.llp.aircasting.model.Sensor;
 import android.content.SharedPreferences;
 import com.google.inject.Inject;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/10/11
- * Time: 12:59 PM
- */
-public class SettingsHelper {
+public class SettingsHelper
+{
     public static final String AUTH_TOKEN = "auth_token";
     public static final String USER_LOGIN = "user_login";
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
@@ -257,4 +252,14 @@ public class SettingsHelper {
   {
     return preferences.getString(SENSOR_NAME, null);
   }
+
+  public void setBackendAddress(String backendAddress)
+  {
+    writeString(BACKEND, backendAddress);
+  }
+
+  public void setBackendPort(String backendAddress)
+    {
+      writeString(BACKEND_PORT, backendAddress);
+    }
 }

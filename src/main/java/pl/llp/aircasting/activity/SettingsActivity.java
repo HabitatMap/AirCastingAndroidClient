@@ -19,6 +19,13 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
+import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.SensorManager;
+
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,26 +36,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.activity.menu.MainMenu;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SensorManager;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/10/11
- * Time: 12:45 PM
- */
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACCOUNT_KEY = "account";
     public static final String COLOR_SCALE_KEY = "color_scale";
     public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
     public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
+    public static final String BACKEND_SETTINGS_KEY = "backend_settings";
+
 
     @Inject Application context;
 
@@ -96,6 +93,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         } else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY)) {
             Intents.startStreamsActivity(this);
             return true;
+        } else if (preference.getKey().equals(BACKEND_SETTINGS_KEY)) {
+          startActivity(new Intent(this, BackendSettingsActivity.class));
+          return true;
         } else {
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }

@@ -58,14 +58,9 @@
                                            android:title="@string/keep_screen_on"
             />
 
-    <android.preference.EditTextPreference android:defaultValue="aircasting.org"
-                                           android:key="backend"
-                                           android:title="Backend address"
-            />
-    <android.preference.EditTextPreference android:defaultValue="80"
-                                           android:numeric="integer"
-                                           android:key="backend_port"
-                                           android:title="@string/backend_port"
+    <android.preference.Preference android:key="backend_settings"
+                                   android:title="@string/backend_settings"
+                                   android:summary="@string/backend_settings_summary"
             />
     <android.preference.CheckBoxPreference android:defaultValue="false"
                                            android:key="sync_only_wifi"

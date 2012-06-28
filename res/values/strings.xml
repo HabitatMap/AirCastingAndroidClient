@@ -56,7 +56,6 @@
 
     <string name="profile">Profile</string>
     <string name="average_threshold">Average sounds (dB)</string>
-    <string name="backend_port">Backend port</string>
     <string name="color_scale">Heat legend units</string>
     <string name="edit_session">Edit session</string>
     <string name="heat_map_density">Crowd Map resolution</string>
@@ -192,4 +191,9 @@
   <string name="Name">Name</string>
   <string name="Address">Address</string>
   <string name="disconnect_sensor">Disconnect?</string>
+
+  <string name="backend_address">Backend address</string>
+  <string name="backend_port">Backend port</string>
+  <string name="backend_settings">Backend settings</string>
+  <string name="backend_settings_summary">Set backend address and port</string>
 </resources>
