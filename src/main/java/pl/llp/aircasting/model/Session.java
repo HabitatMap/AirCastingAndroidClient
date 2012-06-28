@@ -58,8 +58,8 @@ public class Session implements Serializable
   @Expose private String location;
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-  @Expose @SerializedName("start_time") private Date end;
-  @Expose @SerializedName("end_time") private Date start;
+  @Expose @SerializedName("start_time") private Date start;
+  @Expose @SerializedName("end_time") private Date end;
 
   private Long id = null;
   private boolean submittedForRemoval = false;
