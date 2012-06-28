@@ -1,9 +1,8 @@
-package pl.llp.aircasting.activity;
+package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.SensorAdapter;
-import pl.llp.aircasting.activity.adapter.SensorAdapterFactory;
+import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import android.app.AlertDialog;
@@ -71,7 +70,7 @@ public class ExternalSensorActivity extends DialogActivity
         connectedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
           @Override
-          public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+          public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
           {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setMessage(R.string.disconnect_sensor).
@@ -83,6 +82,7 @@ public class ExternalSensorActivity extends DialogActivity
                   {
                     settingsHelper.setSensorName(null);
                     settingsHelper.setSensorAddress(null);
+                    connectedSensorAdapter.remove(position);
 
                     Intents.restartSensors(context);
                   }
@@ -121,7 +121,7 @@ public class ExternalSensorActivity extends DialogActivity
         }
     }
 
-  private void showPreviouslyConnectedSensor()
+  void showPreviouslyConnectedSensor()
   {
     String sensorAddress = settingsHelper.getSensorAddress();
     String sensorName  = settingsHelper .geSensorName();
@@ -164,6 +164,10 @@ public class ExternalSensorActivity extends DialogActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            if(connectedSensorAdapter.knows(device.getAddress()))
+            {
+              return;
+            }
             availableSensorAdapter.deviceFound(device);
         }
     }

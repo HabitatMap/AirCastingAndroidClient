@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SensorManager;

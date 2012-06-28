@@ -1,4 +1,4 @@
-package pl.llp.aircasting.activity.adapter;
+package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.R;
 
@@ -19,8 +19,8 @@ public class SensorAdapter extends SimpleAdapter
   public static final String[] KEYS = new String[]{ADDRESS, NAME};
   public static final int[] FIELDS = new int[]{R.id.address, R.id.name};
 
-  private List<Map<String, String>> data;
-  private Map<String, BluetoothDevice> devices = newHashMap();
+  List<Map<String, String>> data;
+  Map<String, BluetoothDevice> devices = newHashMap();
 
   SensorAdapter(Context context, List<Map<String, String>> data)
   {
@@ -64,5 +64,20 @@ public class SensorAdapter extends SimpleAdapter
   public String getName(int position)
   {
     return data.get(position).get(NAME);
+  }
+
+  public boolean knows(String address)
+  {
+    for (Map<String, String> keyValues : data)
+    {
+      if(address.equalsIgnoreCase(keyValues.get(ADDRESS)))
+        return true;
+    }
+    return false;
+  }
+
+  public Map<String, String> remove(int position)
+  {
+    return data.remove(position);
   }
 }

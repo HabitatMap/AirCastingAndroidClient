@@ -1,4 +1,4 @@
-package pl.llp.aircasting.activity.adapter;
+package pl.llp.aircasting.activity.extsens;
 
 import android.app.Activity;
 import com.google.common.collect.Lists;
