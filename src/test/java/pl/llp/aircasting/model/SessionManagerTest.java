@@ -20,6 +20,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.New;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
@@ -89,7 +90,8 @@ public class SessionManagerTest {
     }
 
     private void triggerMeasurement(String name, double value) {
-        lastEvent = new SensorEvent("CERN", name, "Higgs boson", "HB", "number", "#", 1, 2, 3, 4, 5, value);
+
+        lastEvent = New.sensorEvent(name, value);
         sessionManager.onEvent(lastEvent);
     }
 
@@ -426,4 +428,18 @@ public class SessionManagerTest {
 
         verify(sessionManager.externalSensor).start();
     }
+
+  @Test
+  public void should_not_crashOnDeletedSensor() throws Exception
+  {
+      // given
+      SensorEvent event = new SensorEvent("CERN", "LHC", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
+      sessionManager.onEvent(event);
+
+      // when
+      sessionManager.deleteSensorStream(event.getSensorName());
+
+      // then (shouldn't crash)
+      sessionManager.onEvent(event);
+  }
 }

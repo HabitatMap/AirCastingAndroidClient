@@ -95,6 +95,10 @@ public class Session implements Serializable
 
   public Date getEnd()
   {
+    if(end == null)
+    {
+      end = new Date();
+    }
     return end;
   }
 
@@ -287,7 +291,8 @@ public class Session implements Serializable
 
   public void removeStream(MeasurementStream stream)
   {
-    streams.remove(stream.getSensorName());
+    String sensorName = stream.getSensorName();
+    streams.remove(sensorName);
   }
 
   public List<MeasurementStream> getActiveMeasurementStreams()

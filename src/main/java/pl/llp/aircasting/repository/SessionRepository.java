@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -91,36 +92,39 @@ public class SessionRepository
     notes.delete(session, note);
   }
 
-  public void save(Session session, ProgressListener progressListener) {
+  public void save(Session session, ProgressListener progressListener)
+  {
     setupProgressListener(session, progressListener);
 
+    ContentValues values = new ContentValues();
 
-      ContentValues values = new ContentValues();
+    Date start = session.getStart();
+    Date end = session.getEnd();
 
-      prepareHeader(session, values);
-      values.put(SESSION_START, session.getStart().getTime());
-      values.put(SESSION_END, session.getEnd().getTime());
-      values.put(SESSION_UUID, session.getUUID().toString());
+    prepareHeader(session, values);
 
-      values.put(SESSION_CALIBRATION, session.getCalibration());
-      values.put(SESSION_CONTRIBUTE, session.getContribute());
-      values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-      values.put(SESSION_INSTRUMENT, session.getInstrument());
-      values.put(SESSION_DATA_TYPE, session.getDataType());
-      values.put(SESSION_OS_VERSION, session.getOSVersion());
-      values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-      values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
-      values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
-      values.put(SESSION_CALIBRATED, true);
+    values.put(SESSION_START, start.getTime());
+    values.put(SESSION_END, end.getTime());
+    values.put(SESSION_UUID, session.getUUID().toString());
+    values.put(SESSION_CALIBRATION, session.getCalibration());
+    values.put(SESSION_CONTRIBUTE, session.getContribute());
+    values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
+    values.put(SESSION_INSTRUMENT, session.getInstrument());
+    values.put(SESSION_DATA_TYPE, session.getDataType());
+    values.put(SESSION_OS_VERSION, session.getOSVersion());
+    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
+    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
+    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
+    values.put(SESSION_CALIBRATED, true);
 
-      long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
-      session.setId(sessionKey);
+    long sessionKey = db.insertOrThrow(SESSION_TABLE_NAME, null, values);
+    session.setId(sessionKey);
 
-      Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
+    Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
 
-      streams.saveAll(streamsToSave, sessionKey);
+    streams.saveAll(streamsToSave, sessionKey);
 
-      notes.save(session.getNotes(), sessionKey);
+    notes.save(session.getNotes(), sessionKey);
   }
 
   private void setupProgressListener(Session session, ProgressListener progressListener) {

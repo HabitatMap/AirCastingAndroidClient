@@ -36,6 +36,7 @@ import pl.llp.aircasting.sensor.external.ExternalSensor;
 import android.app.Application;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -51,33 +52,36 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
-public class SessionManager {
-    @Inject SimpleAudioReader audioReader;
-    @Inject ExternalSensor externalSensor;
-    @Inject EventBus eventBus;
+public class SessionManager
+{
+  private static final String TAG = SessionManager.class.getSimpleName();
 
-    @Inject SessionRepository sessionRepository;
+  @Inject SimpleAudioReader audioReader;
+  @Inject ExternalSensor externalSensor;
+  @Inject EventBus eventBus;
 
-    @Inject SettingsHelper settingsHelper;
-    @Inject LocationHelper locationHelper;
-    @Inject MetadataHelper metadataHelper;
-    @Inject NotificationHelper notificationHelper;
+  @Inject SessionRepository sessionRepository;
 
-    @Inject Application applicationContext;
-    @Inject TelephonyManager telephonyManager;
-    @Inject SensorManager sensorManager;
+  @Inject SettingsHelper settingsHelper;
+  @Inject LocationHelper locationHelper;
+  @Inject MetadataHelper metadataHelper;
+  @Inject NotificationHelper notificationHelper;
 
-    @NotNull Session session = new Session();
+  @Inject Application applicationContext;
+  @Inject TelephonyManager telephonyManager;
+  @Inject SensorManager sensorManager;
 
-    private Map<String, Double> recentMeasurements = newHashMap();
+  @NotNull Session session = new Session();
 
-    boolean sessionStarted = false;
+  private Map<String, Double> recentMeasurements = newHashMap();
 
-    private boolean recording;
-    private boolean paused;
-    private int noteNumber = 0;
+  boolean sessionStarted = false;
 
-    @Inject
+  private boolean recording;
+  private boolean paused;
+  private int noteNumber = 0;
+
+  @Inject
     public void init() {
         telephonyManager.listen(new PhoneStateListener() {
             @Override
@@ -177,29 +181,36 @@ public class SessionManager {
         session.setContribute(value);
     }
 
-    @Subscribe
-    public synchronized void onEvent(SensorEvent event) {
-        double value = event.getValue();
-        String sensorName = event.getSensorName();
-        Sensor sensor = sensorManager.getSensor(sensorName);
+  @Subscribe
+  public synchronized void onEvent(SensorEvent event)
+  {
+    double value = event.getValue();
+    String sensorName = event.getSensorName();
+    Sensor sensor = sensorManager.getSensor(sensorName);
+//    if (sensor == null)
+//    {
+//      return;
+//    }
 
-        recentMeasurements.put(sensorName, value);
+    recentMeasurements.put(sensorName, value);
 
-        if (locationHelper.getLastLocation() != null && sensor.isEnabled()) {
-            double latitude = locationHelper.getLastLocation().getLatitude();
-            double longitude = locationHelper.getLastLocation().getLongitude();
+    if (locationHelper.getLastLocation() != null && sensor.isEnabled())
+    {
+      double latitude = locationHelper.getLastLocation().getLatitude();
+      double longitude = locationHelper.getLastLocation().getLongitude();
 
-            Measurement measurement = new Measurement(latitude, longitude, value);
-            if (sessionStarted) {
-                MeasurementStream stream = prepareStream(event);
-                stream.add(measurement);
-            }
+      Measurement measurement = new Measurement(latitude, longitude, value);
+      if (sessionStarted)
+      {
+        MeasurementStream stream = prepareStream(event);
+        stream.add(measurement);
+      }
 
-            eventBus.post(new MeasurementEvent(measurement, sensor));
-        }
+      eventBus.post(new MeasurementEvent(measurement, sensor));
     }
+  }
 
-    private MeasurementStream prepareStream(SensorEvent event) {
+  private MeasurementStream prepareStream(SensorEvent event) {
         String sensorName = event.getSensorName();
 
         if (!session.hasStream(sensorName)) {
@@ -350,7 +361,17 @@ public class SessionManager {
   public void deleteSensorStream(Sensor sensor)
   {
     String sensorName = sensor.getSensorName();
+    deleteSensorStream(sensorName);
+  }
+
+  void deleteSensorStream(String sensorName)
+  {
     MeasurementStream stream = getMeasurementStream(sensorName);
+    if(stream == null)
+    {
+      Log.w(TAG, "No stream for sensor [" + sensorName + "]");
+      return;
+    }
     sessionRepository.deleteStream(session, stream);
     session.removeStream(stream);
   }
