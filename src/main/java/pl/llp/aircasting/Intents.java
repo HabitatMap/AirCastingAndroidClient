@@ -21,6 +21,7 @@ package pl.llp.aircasting;
 
 import pl.llp.aircasting.activity.EditSessionActivity;
 import pl.llp.aircasting.activity.MakeANoteActivity;
+import pl.llp.aircasting.activity.SessionsActivity;
 import pl.llp.aircasting.activity.ShareSessionActivity;
 import pl.llp.aircasting.activity.StreamsActivity;
 import pl.llp.aircasting.activity.ThresholdsActivity;
@@ -232,5 +233,10 @@ public final class Intents {
         intent.putExtra(EXTRA_SENSOR, sensor);
         activity.startActivity(intent);
     }
+
+  public static void sessions(Activity activity, Context context)
+  {
+    activity.startActivity(new Intent(context, SessionsActivity.class));
+  }
 }
 

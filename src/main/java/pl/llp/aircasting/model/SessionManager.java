@@ -40,6 +40,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class SessionManager {
     @Inject TelephonyManager telephonyManager;
     @Inject SensorManager sensorManager;
 
-    Session session = new Session();
+    @NotNull Session session = new Session();
 
     private Map<String, Double> recentMeasurements = newHashMap();
 
@@ -92,6 +93,7 @@ public class SessionManager {
         eventBus.register(this);
     }
 
+    @NotNull
     public Session getSession() {
         return session;
     }
@@ -101,7 +103,7 @@ public class SessionManager {
         setSession(newSession);
     }
 
-    private void setSession(Session session) {
+    private void setSession(@NotNull Session session) {
         this.session = session;
         notifyNewSession();
     }
@@ -296,6 +298,12 @@ public class SessionManager {
         session.setEnd(new Date());
     }
 
+    public void deleteSession()
+    {
+      sessionRepository.markSessionForRemoval(session.getId());
+      discardSession();
+    }
+
     private void cleanup() {
         locationHelper.stop();
         sessionStarted = false;
@@ -341,16 +349,9 @@ public class SessionManager {
 
   public void deleteSensorStream(Sensor sensor)
   {
-    if(session.getActiveMeasurementStreams().size() > 1)
-    {
-      String sensorName = sensor.getSensorName();
-      MeasurementStream stream = getMeasurementStream(sensorName);
-      sessionRepository.deleteStream(session, stream);
-      session.removeStream(stream);
-    }
-    else
-    {
-      sessionRepository.markSessionForRemoval(session.getId());
-    }
+    String sensorName = sensor.getSensorName();
+    MeasurementStream stream = getMeasurementStream(sensorName);
+    sessionRepository.deleteStream(session, stream);
+    session.removeStream(stream);
   }
 }

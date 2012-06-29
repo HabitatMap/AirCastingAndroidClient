@@ -9,6 +9,7 @@ import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.SessionManager;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -54,18 +55,20 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     };
     public static final String SENSOR = "sensor";
 
-    SensorManager sensorManager;
-    TopBarHelper topBarHelper;
-    GaugeHelper gaugeHelper;
-    ButtonsActivity context;
-    EventBus eventBus;
+  SessionManager sessionManager;
+  SensorManager sensorManager;
 
-    private List<Map<String, Object>> data;
-    private Map<String, Map<String, Object>> sensors = newHashMap();
+  TopBarHelper topBarHelper;
+  GaugeHelper gaugeHelper;
+  ButtonsActivity context;
+  EventBus eventBus;
+
+  private List<Map<String, Object>> data;
+  private Map<String, Map<String, Object>> sensors = newHashMap();
 
 
     public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                         GaugeHelper gaugeHelper, TopBarHelper topBarHelper, SensorManager sensorManager) {
+                         GaugeHelper gaugeHelper, TopBarHelper topBarHelper, SensorManager sensorManager, SessionManager sessionManager) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
@@ -73,6 +76,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         this.gaugeHelper = gaugeHelper;
         this.topBarHelper = topBarHelper;
         this.sensorManager = sensorManager;
+        this.sessionManager = sessionManager;
     }
 
     /**
@@ -209,7 +213,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         sensorManager.toggleSensor(sensor);
         break;
       case R.id.delete_stream:
-        confirm(context, sensor);
+        deleteStream(context, sensor);
         break;
       case R.id.top_bar:
         Intents.thresholdsEditor(context, sensor);
@@ -220,10 +224,50 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     notifyDataSetChanged();
   }
 
-  private void confirm(final ButtonsActivity context, final Sensor sensor)
+  private void deleteStream(ButtonsActivity context, Sensor sensor)
+  {
+    if(sessionManager.getSession().getActiveMeasurementStreams().size() > 1)
+    {
+      confirmDeletingStream(context, sensor);
+    }
+    else
+    {
+      confirmDeletingSession(context);
+    }
+
+  }
+
+  private void confirmDeletingSession(final ButtonsActivity context)
   {
     AlertDialog.Builder b = new AlertDialog.Builder(context);
-    b.setMessage("Are you sure?").
+    b.setMessage("This is the only stream, delete session?").
+    setCancelable(true).
+    setPositiveButton("Yes", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        sessionManager.deleteSession();
+        Intents.triggerSync(context);
+        Intents.sessions(context, context);
+      }
+    }).setNegativeButton("No", new DialogInterface.OnClickListener()
+    {
+      @Override
+      public void onClick(DialogInterface dialog, int which)
+      {
+        // be like me - do nothing!
+      }
+    });
+    AlertDialog dialog = b.create();
+    dialog.show();
+
+  }
+
+  private void confirmDeletingStream(final ButtonsActivity context, final Sensor sensor)
+  {
+    AlertDialog.Builder b = new AlertDialog.Builder(context);
+    b.setMessage("Delete stream?").
     setCancelable(true).
     setPositiveButton("Yes", new DialogInterface.OnClickListener()
     {
