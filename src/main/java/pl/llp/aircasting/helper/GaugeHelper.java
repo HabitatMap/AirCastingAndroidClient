@@ -40,7 +40,7 @@ public class GaugeHelper
     updateLabel(sensor, view.findViewById(R.id.now_label), nowLabel);
 
     boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
-    if (hasStats)
+    if (hasStats && sensor.isEnabled())
     {
       int avg = (int) sessionManager.getAvg(sensor);
       int peak = (int) sessionManager.getPeak(sensor);
