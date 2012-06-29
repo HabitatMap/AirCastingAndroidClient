@@ -5,15 +5,16 @@
                 android:background="@android:drawable/dialog_frame"
        >
 
-    <TextView style="@style/Wrap"
+    <TextView
               android:id="@+id/title"
               android:textStyle="bold"
               android:textColor="@android:color/white"
               android:layout_alignParentTop="true"
-              android:layout_toRightOf="@+id/record_stream"
-              android:layout_toLeftOf="@+id/view_stream"
               android:gravity="center"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
               android:lines="2"
+              android:text="Sample but very long text"
             />
 
     <include layout="@layout/gauge_faces"
