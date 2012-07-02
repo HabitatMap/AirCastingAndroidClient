@@ -20,6 +20,7 @@
 package pl.llp.aircasting.util.http;
 
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.util.Constants;
 
 import android.util.Log;
 import com.google.common.io.CharStreams;
@@ -61,9 +62,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.net.URLEncoder.encode;
 
-public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest {
-    private static final String TAG = HttpBuilder.class.getSimpleName();
-
+public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
+{
     @Inject static Gson gson;
     @Inject static SettingsHelper settingsHelper;
 
@@ -190,7 +190,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest {
 
             return doRequest(get, target);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Couldn't create path", e);
+            Log.e(Constants.TAG, "Couldn't create path", e);
             return error();
         }
     }
@@ -206,10 +206,10 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest {
 
             return doRequest(post, target);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Couldn't process parameters", e);
+            Log.e(Constants.TAG, "Couldn't process parameters", e);
             return error();
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Couldn't create path", e);
+            Log.e(Constants.TAG, "Couldn't create path", e);
             return error();
         }
     }
@@ -249,7 +249,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest {
             result.setContent(output);
             result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
         } catch (Exception e) {
-            Log.e(TAG, "Http request failed", e);
+            Log.e(Constants.TAG, "Http request failed", e);
             result.setStatus(Status.ERROR);
 
             return result;

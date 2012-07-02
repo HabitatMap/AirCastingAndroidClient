@@ -19,12 +19,13 @@
  */
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.model.Note;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.model.Note;
 
 import java.io.File;
 
@@ -35,10 +36,9 @@ import java.io.File;
  * Time: 4:22 PM
  */
 @Singleton
-public class PhotoHelper {
-    private static final String TAG = PhotoHelper.class.getSimpleName();
-
-    @Inject Context context;
+public class PhotoHelper
+{
+  @Inject Context context;
 
     @Inject
     public void init() {

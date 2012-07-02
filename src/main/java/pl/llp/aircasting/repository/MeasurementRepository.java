@@ -2,6 +2,7 @@ package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.util.Constants;
 
 import android.database.Cursor;
 import android.database.SQLException;
@@ -22,8 +23,6 @@ import static pl.llp.aircasting.repository.DBHelper.getLong;
 
 class MeasurementRepository
 {
-  public static final String TAG = MeasurementRepository.class.getSimpleName();
-
   private SQLiteDatabase db;
   private ProgressListener progress = new NullProgressListener();
 
@@ -119,7 +118,7 @@ class MeasurementRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Error removing measurements from stream [" + streamId + "]", e);
+      Log.e(Constants.TAG, "Error removing measurements from stream [" + streamId + "]", e);
     }
   }
 }

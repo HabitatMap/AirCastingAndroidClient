@@ -19,6 +19,15 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.CalibrationHelper;
+import pl.llp.aircasting.helper.FormatHelper;
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.PhotoHelper;
+import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.util.Constants;
+
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,28 +38,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.CalibrationHelper;
-import pl.llp.aircasting.helper.FormatHelper;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.PhotoHelper;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.IOException;
 import java.util.Date;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/20/11
- * Time: 12:50 PM
- */
-public class MakeANoteActivity extends DialogActivity implements View.OnClickListener {
-    private static final String TAG = MakeANoteActivity.class.getSimpleName();
-
+public class MakeANoteActivity extends DialogActivity implements View.OnClickListener
+{
     public static final String PHOTO_PATH = "picture_path";
     public static final String PHOTO_ATTACHED = "photo_attached";
 
@@ -135,7 +130,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
             photoPath = Intents.takePhoto(this);
         } catch (IOException e) {
             Toast.makeText(context, R.string.storage_error, Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Error while attaching a photo", e);
+            Log.e(Constants.TAG, "Error while attaching a photo", e);
         }
     }
 

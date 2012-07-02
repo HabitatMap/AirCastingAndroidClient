@@ -1,6 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -24,7 +25,6 @@ import static com.google.common.io.Closeables.closeQuietly;
  */
 class ReaderWorker
 {
-  public static final String TAG = ReaderWorker.class.getSimpleName();
   public static final int THREE_SECONDS = 3000;
 
   BluetoothAdapter adapter;
@@ -62,7 +62,7 @@ class ReaderWorker
           }
           catch (InterruptedException e)
           {
-            Log.e(TAG, "Failed to establish bluetooth connection", e);
+            Log.e(Constants.TAG, "Failed to establish bluetooth connection", e);
             return;
           }
         }
@@ -84,7 +84,7 @@ class ReaderWorker
     }
     catch (IOException e)
     {
-      Log.w(TAG, "Bluetooth communication failure - mostly likely end of stream", e);
+      Log.w(Constants.TAG, "Bluetooth communication failure - mostly likely end of stream", e);
     }
     finally
     {
@@ -122,7 +122,7 @@ class ReaderWorker
     }
     catch (ParseException e)
     {
-      Log.e(TAG, "External sensor error", e);
+      Log.e(Constants.TAG, "External sensor error", e);
     }
   }
 

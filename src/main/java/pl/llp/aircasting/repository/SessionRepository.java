@@ -25,6 +25,7 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -48,8 +49,6 @@ import static pl.llp.aircasting.repository.DBHelper.*;
 
 public class SessionRepository
 {
-  public static final String TAG = SessionRepository.class.getSimpleName();
-
   @Language("SQL")
   private static final String SESSIONS_BY_SENSOR_QUERY =
       "SELECT " + SESSION_TABLE_NAME + ".*" +
@@ -285,7 +284,7 @@ public class SessionRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Error deleting session [ " + sessionId + " ]", e);
+      Log.e(Constants.TAG, "Error deleting session [ " + sessionId + " ]", e);
     }
   }
 
@@ -331,7 +330,7 @@ public class SessionRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Error updating session [ " + session.getId() + " ]", e);
+      Log.e(Constants.TAG, "Error updating session [ " + session.getId() + " ]", e);
     }
   }
 

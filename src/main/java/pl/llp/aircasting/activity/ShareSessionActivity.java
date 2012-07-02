@@ -19,14 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.app.Application;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
@@ -37,20 +29,23 @@ import pl.llp.aircasting.helper.ShareHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.util.Constants;
+
+import android.app.Application;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 12/5/11
- * Time: 12:43 PM
- */
-public class ShareSessionActivity extends DialogActivity implements View.OnClickListener {
-    private static final String TAG = ShareSessionActivity.class.getSimpleName();
-
+public class ShareSessionActivity extends DialogActivity implements View.OnClickListener
+{
     @InjectView(R.id.share_file) Button shareFile;
     @InjectView(R.id.share_link) Button shareLink;
 
@@ -131,7 +126,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
                 try {
                     return csvHelper.prepareCSV(ShareSessionActivity.this, session);
                 } catch (IOException e) {
-                    Log.e(TAG, "Error while creating session CSV", e);
+                    Log.e(Constants.TAG, "Error while creating session CSV", e);
                     return null;
                 }
             }

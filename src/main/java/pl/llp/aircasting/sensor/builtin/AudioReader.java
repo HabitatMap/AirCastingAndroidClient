@@ -19,6 +19,8 @@
 
 package pl.llp.aircasting.sensor.builtin;
 
+import pl.llp.aircasting.util.Constants;
+
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -268,7 +270,7 @@ public class AudioReader {
     // ******************************************************************** //
 
     // Debugging tag.
-    private static final String TAG = "AudioReader";
+    private static final String TAG = Constants.TAG + "/AudioReader";
 
     // ******************************************************************** //
     // Private Data.

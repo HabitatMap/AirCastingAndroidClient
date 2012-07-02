@@ -2,6 +2,7 @@ package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,8 +24,6 @@ public class StreamRepository
 {
   @Language("SQL")
   private static final String STREAM_IS_SUBMITTED_FOR_DELETE = STREAM_SUBMITTED_FOR_REMOVAL + " = 1 ";
-
-  private static final String TAG = StreamRepository.class.getSimpleName();
 
   private SQLiteDatabase db;
   MeasurementRepository measurements;
@@ -146,7 +145,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Unable to mark stream [" + stream.getId() + "] from session [" + sessionId + "] to be deleted", e);
+      Log.e(Constants.TAG, "Unable to mark stream [" + stream.getId() + "] from session [" + sessionId + "] to be deleted", e);
     }
   }
 
@@ -161,7 +160,7 @@ public class StreamRepository
     }
     catch(SQLException e)
     {
-      Log.e(TAG, "Error updating stream [" + stream.getId() + "]", e);
+      Log.e(Constants.TAG, "Error updating stream [" + stream.getId() + "]", e);
     }
   }
 
@@ -173,7 +172,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Error deleting measurements from stream [" + streamId + "]", e);
+      Log.e(Constants.TAG, "Error deleting measurements from stream [" + streamId + "]", e);
     }
   }
 
@@ -195,7 +194,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(TAG, "Error deleting streams submitted to be deleted", e);
+      Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
     }
   }
 }

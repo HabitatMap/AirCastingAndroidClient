@@ -13,8 +13,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 @Singleton
-public class ExternalSensor {
-  private static final String TAG = ExternalSensor.class.getSimpleName();
+public class ExternalSensor
+{
   public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   @Inject EventBus eventBus;

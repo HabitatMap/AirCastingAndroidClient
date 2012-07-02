@@ -19,6 +19,11 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
+import pl.llp.aircasting.util.Constants;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -26,15 +31,16 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
-import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
@@ -45,15 +51,8 @@ import java.util.Map;
 
 import static pl.llp.aircasting.helper.TextViewHelper.stripUnderlines;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/30/11
- * Time: 3:02 PM
- */
-public class AboutActivity extends RoboActivity {
-    private static final String TAG = AboutActivity.class.getSimpleName();
-
+public class AboutActivity extends RoboActivity
+{
     public static final String HEADING = "heading";
 
     @Inject MainMenu mainMenu;
@@ -172,7 +171,7 @@ public class AboutActivity extends RoboActivity {
 
             return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Error while fetching app version", e);
+            Log.e(Constants.TAG, "Error while fetching app version", e);
             return "?";
         }
     }

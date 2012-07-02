@@ -32,6 +32,7 @@ import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensor;
+import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
 import android.telephony.PhoneStateListener;
@@ -54,8 +55,6 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class SessionManager
 {
-  private static final String TAG = SessionManager.class.getSimpleName();
-
   @Inject SimpleAudioReader audioReader;
   @Inject ExternalSensor externalSensor;
   @Inject EventBus eventBus;
@@ -369,7 +368,7 @@ public class SessionManager
     MeasurementStream stream = getMeasurementStream(sensorName);
     if(stream == null)
     {
-      Log.w(TAG, "No stream for sensor [" + sensorName + "]");
+      Log.w(Constants.TAG, "No stream for sensor [" + sensorName + "]");
       return;
     }
     sessionRepository.deleteStream(session, stream);
