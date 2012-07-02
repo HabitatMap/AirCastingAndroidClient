@@ -34,6 +34,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class SessionRepository
     db.close();
   }
 
-  public Session save(Session session)
+  public Session save(@NotNull Session session)
   {
     save(session, new NullProgressListener());
     return session;
@@ -91,7 +92,7 @@ public class SessionRepository
     notes.delete(session, note);
   }
 
-  public void save(Session session, ProgressListener progressListener)
+  public void save(@NotNull Session session, ProgressListener progressListener)
   {
     setupProgressListener(session, progressListener);
 

@@ -30,6 +30,7 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.SyncState;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
@@ -38,6 +39,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
@@ -181,7 +183,15 @@ public class SyncService extends RoboIntentService {
             HttpResult<Session> result = sessionDriver.show(id);
 
             if (result.getStatus() == Status.SUCCESS) {
-                sessionRepository.save(result.getContent());
+              Session session = result.getContent();
+              if (session == null)
+              {
+                Log.w(Constants.TAG, "Session [" + id + "] couldn't ");
+              }
+              else
+              {
+                sessionRepository.save(session);
+              }
             }
 
             Intents.notifySyncUpdate(context);
