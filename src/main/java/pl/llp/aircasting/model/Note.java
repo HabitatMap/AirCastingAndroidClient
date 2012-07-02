@@ -22,17 +22,13 @@ package pl.llp.aircasting.model;
 import android.location.Location;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/20/11
- * Time: 1:19 PM
- */
-public class Note implements Serializable {
+public class Note implements Serializable
+{
     @Expose private Date date;
     @Expose private String text;
     @Expose private double latitude;
@@ -43,16 +39,32 @@ public class Note implements Serializable {
     public Note() {
     }
 
-    public Note(Date date, String text, Location location, String picturePath, int number) {
-        this.date = date;
-        this.text = text;
-        this.photoPath = picturePath;
-        this.latitude = location.getLatitude();
-        this.longitude = location.getLongitude();
-        this.number = number;
+  public Note(Date date, String text, @Nullable Location location, String picturePath)
+  {
+    this.date = date;
+    this.text = text;
+    this.photoPath = picturePath;
+    if (location != null)
+    {
+      this.latitude = location.getLatitude();
+      this.longitude = location.getLongitude();
     }
+  }
 
-    @Override
+  public Note(Date date, String text, @Nullable Location location, String picturePath, int number)
+  {
+    this.date = date;
+    this.text = text;
+    this.photoPath = picturePath;
+    if (location != null)
+    {
+      this.latitude = location.getLatitude();
+      this.longitude = location.getLongitude();
+    }
+    this.number = number;
+  }
+
+  @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

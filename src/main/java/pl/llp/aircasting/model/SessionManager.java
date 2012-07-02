@@ -121,7 +121,7 @@ public class SessionManager
     }
 
     public Note makeANote(Date date, String text, String picturePath) {
-        Note note = new Note(date, text, locationHelper.getLastLocation(), picturePath, noteNumber++);
+        Note note = new Note(date, text, locationHelper.getLastLocation(), picturePath);
         session.add(note);
 
         notifyNote(note);

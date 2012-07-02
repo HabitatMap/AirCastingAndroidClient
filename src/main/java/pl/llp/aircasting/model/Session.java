@@ -144,6 +144,7 @@ public class Session implements Serializable
   public void add(Note note)
   {
     notes.add(note);
+    note.setNumber(notes.size());
   }
 
   public void addAll(Collection<Note> notesToAdd)
