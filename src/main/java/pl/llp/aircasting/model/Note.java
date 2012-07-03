@@ -73,7 +73,6 @@ public class Note implements Serializable
 
         if (Double.compare(note.latitude, latitude) != 0) return false;
         if (Double.compare(note.longitude, longitude) != 0) return false;
-        if (number != note.number) return false;
         if (date != null ? !date.equals(note.date) : note.date != null) return false;
         if (photoPath != null ? !photoPath.equals(note.photoPath) : note.photoPath != null) return false;
         if (text != null ? !text.equals(note.text) : note.text != null) return false;
@@ -92,7 +91,6 @@ public class Note implements Serializable
         temp = longitude != +0.0d ? Double.doubleToLongBits(longitude) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (photoPath != null ? photoPath.hashCode() : 0);
-        result = 31 * result + number;
         return result;
     }
 

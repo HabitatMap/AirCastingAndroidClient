@@ -38,6 +38,7 @@ import android.app.Application;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -101,14 +102,18 @@ public class SessionManager
         return session;
     }
 
-    public void loadSession(long id, ProgressListener listener) {
-        Session newSession = sessionRepository.loadFully(id, listener);
-        setSession(newSession);
+    public void loadSession(long id, @NotNull ProgressListener listener)
+    {
+      Preconditions.checkNotNull(listener);
+      Session newSession = sessionRepository.loadFully(id, listener);
+      setSession(newSession);
     }
 
-    private void setSession(@NotNull Session session) {
-        this.session = session;
-        notifyNewSession();
+    private void setSession(@NotNull Session session)
+    {
+      Preconditions.checkNotNull(session);
+      this.session = session;
+      notifyNewSession();
     }
 
     public boolean isSessionSaved() {

@@ -62,6 +62,7 @@ public class SessionManagerTest {
     Sensor sensor;
 
     SensorEvent lastEvent;
+    ProgressListener progressListener;
 
     private void mockSensors() {
         sessionManager.locationHelper = mock(LocationHelper.class);
@@ -79,15 +80,17 @@ public class SessionManagerTest {
         when(sessionManager.sensorManager.getSensor(Mockito.any(String.class))).thenReturn(sensor);
     }
 
-    @Before
-    public void setup() {
-        location = new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(50);
-        location.setLongitude(20);
-        sessionManager.sessionRepository = mock(SessionRepository.class);
+  @Before
+  public void setUp() throws Exception
+  {
+    location = new Location(LocationManager.GPS_PROVIDER);
+    location.setLatitude(50);
+    location.setLongitude(20);
+    sessionManager.sessionRepository = mock(SessionRepository.class);
 
-        mockSensors();
-    }
+    mockSensors();
+    progressListener = mock(ProgressListener.class);
+  }
 
     private void triggerMeasurement(String name, double value) {
 
@@ -308,8 +311,9 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldNotifyListenersOnSessionLoad() {
-        sessionManager.loadSession(0, null);
+    public void shouldNotifyListenersOnSessionLoad()
+    {
+        sessionManager.loadSession(0, progressListener);
 
         verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
     }

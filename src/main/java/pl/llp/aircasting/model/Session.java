@@ -251,6 +251,11 @@ public class Session implements Serializable
   public void deleteNote(Note note)
   {
     notes.remove(note);
+    for (int i = 0; i < notes.size(); i++)
+    {
+      Note note1 = notes.get(i);
+      note1.setNumber(i);
+    }
   }
 
   public void setSubmittedForRemoval(boolean submittedForRemoval)

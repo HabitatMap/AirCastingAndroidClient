@@ -19,6 +19,10 @@
 */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
+import pl.llp.aircasting.helper.LocationHelper;
+
 import android.location.Location;
 import android.location.LocationManager;
 import com.google.common.eventbus.EventBus;
@@ -27,16 +31,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.session.NoteCreatedEvent;
-import pl.llp.aircasting.helper.LocationHelper;
 
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,7 +68,7 @@ public class SessionManagerMakeANoteTest {
 
     @Test
     public void shouldStoreNotes() {
-        Note expected = new Note(date, "Note text", location, "some file", 0);
+        Note expected = new Note(date, "Note text", location, "some file");
 
         sessionManager.makeANote(date, "Note text", "some file");
 
