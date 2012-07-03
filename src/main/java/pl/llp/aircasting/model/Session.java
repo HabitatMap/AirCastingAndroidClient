@@ -259,7 +259,7 @@ public class Session implements Serializable
     for (int i = 0; i < notes.size(); i++)
     {
       Note note1 = notes.get(i);
-      note1.setNumber(i);
+      note1.setNumber(i + 1);
     }
   }
 

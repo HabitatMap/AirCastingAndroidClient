@@ -110,7 +110,7 @@ public class MeasurementStreamTest
         stream.add(new Measurement(0.5, 1, 5));
 
         // then
-        assertEquals(2, stream.getAvg(), 0.1);
+        assertEquals(3.0, stream.getAvg(), 0.1);
     }
 
   @Test
