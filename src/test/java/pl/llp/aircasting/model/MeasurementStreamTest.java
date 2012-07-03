@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.New;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
 import org.junit.Before;
@@ -10,13 +11,14 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 
 @RunWith(InjectedTestRunner.class)
-public class MeasurementStreamTest {
+public class MeasurementStreamTest
+{
     private SensorEvent event;
     private MeasurementStream stream;
 
@@ -110,4 +112,20 @@ public class MeasurementStreamTest {
         // then
         assertEquals(2, stream.getAvg(), 0.1);
     }
+
+  @Test
+  public void should_calculateAverage() throws Exception
+  {
+    stream = new MeasurementStream();
+      // given
+      stream.add(New.measurement(0));
+      stream.add(New.measurement(2));
+      assertEquals(1.0, stream.getAvg());
+
+      // when
+      stream.add(New.measurement(4));
+
+      // then
+    assertEquals(2.0, stream.getAvg());
+  }
 }

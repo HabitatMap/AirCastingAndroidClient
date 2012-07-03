@@ -20,6 +20,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.New;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import java.util.Date;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -92,4 +94,19 @@ public class SessionTest {
 
         assertThat(session.isEmpty(), equalTo(false));
     }
+
+  @Test
+  public void should_reorderNotesOnDelete() throws Exception
+  {
+    // given
+    Note n1 = New.note("n1");
+
+    // when
+    session.add(n1);
+
+    // then
+    assertEquals(2, n1.getNumber());
+    session.deleteNote(note);
+    assertEquals(1, n1.getNumber());
+  }
 }

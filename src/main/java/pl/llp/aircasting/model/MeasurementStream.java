@@ -4,6 +4,7 @@ import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SoundHelper;
 
+import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -36,7 +37,7 @@ public class MeasurementStream implements Serializable
 
   private Double avg;
 
-  private Double peak = Double.NEGATIVE_INFINITY;
+  private Double peak;
 
   @Expose @SerializedName("threshold_very_high") private int thresholdVeryHigh;
 
@@ -108,14 +109,17 @@ public class MeasurementStream implements Serializable
   }
 
   public void add(Measurement measurement) {
-    measurements.add(measurement);
-    avgDirty = true;
+    if(peak == null)
+      peak = Double.NEGATIVE_INFINITY;
 
+    measurements.add(measurement);
     double value = measurement.getValue();
     sum += value;
     if (value > peak) {
       peak = value;
     }
+    Optional<Double> average = Optional.fromNullable(avg);
+    avg = average.or(0.0) + (value - average.or(0.0))/(measurements.size());
   }
 
   public String getSensorName() {

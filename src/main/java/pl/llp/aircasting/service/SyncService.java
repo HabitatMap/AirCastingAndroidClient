@@ -51,12 +51,6 @@ import java.util.UUID;
 
 import static com.google.common.collect.Iterables.find;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/25/11
- * Time: 4:08 PM
- */
 public class SyncService extends RoboIntentService {
     @Inject ConnectivityManager connectivityManager;
     @Inject SessionRepository sessionRepository;
