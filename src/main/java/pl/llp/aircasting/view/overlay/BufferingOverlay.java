@@ -33,10 +33,12 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
+import roboguice.inject.InjectResource;
 
 public abstract class BufferingOverlay<UpdateData> extends Overlay
 {
   @Inject BitmapHolder bitmapHolder;
+  @InjectResource(R.color.transparent) int transparent;
 
   private Bitmap bitmap;
   private int bitmapIndex = 0;
@@ -85,7 +87,7 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay
 
     if (newBitmap != null)
     {
-      newBitmap.eraseColor(R.color.transparent);
+      newBitmap.eraseColor(transparent);
 
       canvas.setBitmap(newBitmap);
 
