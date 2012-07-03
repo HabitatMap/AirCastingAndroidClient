@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -112,11 +113,17 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
+      String text = noteText.getText().toString();
+      if (Strings.isNullOrEmpty(text))
+      {
+        Toast.makeText(this, "Please enter text", Toast.LENGTH_SHORT).show();
+        return;
+      }
+      switch (view.getId()) {
             case R.id.share:
-                Intents.share(this, shareWith, imAircasting, noteText.getText().toString());
+                Intents.share(this, shareWith, imAircasting, text);
             case R.id.save_button:
-                sessionManager.makeANote(date, noteText.getText().toString(), photoPath);
+                sessionManager.makeANote(date, text, photoPath);
                 finish();
                 break;
             case R.id.attach_photo:
