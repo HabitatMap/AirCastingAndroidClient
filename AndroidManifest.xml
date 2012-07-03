@@ -19,8 +19,8 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="27"
-          android:versionName="1.2.4-SNAPSHOT"
+          android:versionCode="28"
+          android:versionName="1.2.8-SNAPSHOT"
           package="pl.llp.aircasting">
 
   <uses-sdk android:minSdkVersion="7"
