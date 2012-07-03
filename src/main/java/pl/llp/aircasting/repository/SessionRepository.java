@@ -101,6 +101,11 @@ public class SessionRepository
     Date start = session.getStart();
     Date end = session.getEnd();
 
+    if(session.getStart() == null || session.getEnd() == null)
+    {
+      fixStartEndTimeFromMeasurements(session);
+    }
+
     prepareHeader(session, values);
 
     values.put(SESSION_START, start.getTime());
@@ -126,6 +131,37 @@ public class SessionRepository
 
     notes.save(session.getNotes(), sessionKey);
   }
+
+  private void fixStartEndTimeFromMeasurements(Session session)
+  {
+    Date start = session.getStart();
+    Date end = session.getEnd();
+
+    for (MeasurementStream stream : session.getMeasurementStreams())
+    {
+      for (Measurement m : stream.getMeasurements())
+      {
+        if(start == null)
+          start = m.getTime();
+        else
+          start = start.before(m.getTime()) ? start : m.getTime();
+
+        if(end == null)
+          end = m.getTime();
+        else
+          end = end.before(m.getTime()) ? end : m.getTime();
+      }
+    }
+
+    session.setStart(start);
+    session.setEnd(end);
+
+    if(start == null || end == null)
+    {
+      String message = "Session [" + session.getId() + "] has incorrect start/end date [" + start + "/" + end + "]";
+      throw new RepositoryException(message);
+    }
+}
 
   private void setupProgressListener(Session session, ProgressListener progressListener) {
     if (progressListener == null) {

@@ -58,7 +58,7 @@ public class Session implements Serializable
   @Expose private String location;
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
-  @Expose @SerializedName("start_time") private Date start;
+  @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
   private Long id = null;
@@ -95,10 +95,6 @@ public class Session implements Serializable
 
   public Date getEnd()
   {
-    if(end == null)
-    {
-      end = new Date();
-    }
     return end;
   }
 
