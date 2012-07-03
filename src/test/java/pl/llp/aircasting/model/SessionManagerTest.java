@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.util.Date;
@@ -313,9 +314,12 @@ public class SessionManagerTest {
     @Test
     public void shouldNotifyListenersOnSessionLoad()
     {
-        sessionManager.loadSession(0, progressListener);
+      sessionManager = spy(sessionManager);
+      doReturn(new Session()).when(sessionManager.sessionRepository).loadFully(anyLong(), Matchers.<ProgressListener>anyObject());
 
-        verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
+      sessionManager.loadSession(0, progressListener);
+
+      verify(sessionManager, atLeastOnce()).setSession(any(Session.class));
     }
 
     @Test

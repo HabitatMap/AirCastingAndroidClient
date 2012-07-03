@@ -109,14 +109,15 @@ public class SessionManager
       setSession(newSession);
     }
 
-    private void setSession(@NotNull Session session)
+    void setSession(@NotNull Session session)
     {
-      Preconditions.checkNotNull(session);
+      Preconditions.checkNotNull(session, "Cannot set null session");
       this.session = session;
       notifyNewSession();
     }
 
-    public boolean isSessionSaved() {
+    public boolean isSessionSaved()
+    {
         return session.isSaved();
     }
 
