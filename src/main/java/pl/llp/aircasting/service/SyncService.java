@@ -29,6 +29,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.repository.RepositoryException;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.SyncState;
@@ -190,7 +191,14 @@ public class SyncService extends RoboIntentService {
               }
               else
               {
-                sessionRepository.save(session);
+                try
+                {
+                  sessionRepository.save(session);
+                }
+                catch (RepositoryException e)
+                {
+                  Log.e(Constants.TAG, "Error saving session [" + id + "]", e);
+                }
               }
             }
 
