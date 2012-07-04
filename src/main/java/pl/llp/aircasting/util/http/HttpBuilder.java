@@ -23,6 +23,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.util.Constants;
 
 import android.util.Log;
+import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -224,43 +225,44 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
         return result;
     }
 
-    private <T> HttpResult<T> doRequest(HttpUriRequest request, Type target) {
-        DefaultHttpClient client = new DefaultHttpClient();
-        HttpResult<T> result = new HttpResult<T>();
-        Reader reader = null;
-        InputStream content = null;
+  private <T> HttpResult<T> doRequest(HttpUriRequest request, Type target)
+  {
+    DefaultHttpClient client = new DefaultHttpClient();
+    HttpResult<T> result = new HttpResult<T>();
+    Reader reader = null;
+    InputStream content = null;
 
-        try {
-            client.addRequestInterceptor(preemptiveAuth(), 0);
+    try
+    {
+      client.addRequestInterceptor(preemptiveAuth(), 0);
 
-            HttpResponse response = client.execute(request);
-            content = response.getEntity().getContent();
-            reader = new InputStreamReader(content);
+      HttpResponse response = client.execute(request);
+      content = response.getEntity().getContent();
+      reader = new InputStreamReader(content);
 
       List<String> strings = CharStreams.readLines(reader);
-      StringBuffer buffer = new StringBuffer();
-      for (String string : strings)
-      {
-        buffer.append(string).append("\n");
-      }
+      String fullJson = Joiner.on("\n").join(strings);
 
-      String fullJson = buffer.toString();
       T output = gson.fromJson(new StringReader(fullJson), target);
-            result.setContent(output);
-            result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "Http request failed", e);
-            result.setStatus(Status.ERROR);
-
-            return result;
-        } finally {
-            closeQuietly(content);
-            closeQuietly(reader);
-            client.getConnectionManager().shutdown();
-        }
+      result.setContent(output);
+      result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
+    }
+    catch (Exception e)
+    {
+      Log.e(Constants.TAG, "Http request failed", e);
+      result.setStatus(Status.ERROR);
 
       return result;
     }
+    finally
+    {
+      closeQuietly(content);
+      closeQuietly(reader);
+      client.getConnectionManager().shutdown();
+    }
+
+    return result;
+  }
 
   private HttpRequestInterceptor preemptiveAuth() {
         return new HttpRequestInterceptor() {
