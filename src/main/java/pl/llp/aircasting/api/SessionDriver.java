@@ -19,8 +19,6 @@
 */
 package pl.llp.aircasting.api;
 
-import com.google.gson.Gson;
-import com.google.inject.Inject;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
@@ -32,6 +30,9 @@ import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
 import pl.llp.aircasting.util.http.Uploadable;
+
+import com.google.gson.Gson;
+import com.google.inject.Inject;
 
 import java.io.IOException;
 
@@ -47,7 +48,7 @@ import static pl.llp.aircasting.util.http.HttpBuilder.http;
 public class SessionDriver {
     public static final String SESSION_KEY = "session";
     private static final String SESSIONS_PATH = "/api/sessions.json";
-    private static final String SESSION_PATH = "/api/user/sessions/";
+    private static final String USER_SESSION_PATH = "/api/user/sessions/";
     public static final String COMPRESSION = "compression";
 
     @Inject SessionRepository sessionRepository;
@@ -107,7 +108,7 @@ public class SessionDriver {
     public HttpResult<Session> show(long id) {
         return http()
                 .get()
-                .from(SESSION_PATH + id + ".json")
+                .from(USER_SESSION_PATH + id + ".json")
                 .into(Session.class);
     }
 }
