@@ -40,7 +40,7 @@ public class SettingsHelper
 
     public static final int DEFAULT_CALIBRATION = 100;
     public static final boolean DEFAULT_SATELLITE = false;
-    public static final String DEFAULT_BACKEND = "aircasting.herokuapp.com";
+    public static final String DEFAULT_BACKEND = "aircasting.org";
     public static final int DEFAULT_BACKEND_PORT = 80;
     public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
     public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
