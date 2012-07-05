@@ -5,13 +5,14 @@ import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 
 import static pl.llp.aircasting.repository.db.DBConstants.*;
 
-public class UncalibratedMeasurementCalibrator extends DBUser
+public class UncalibratedMeasurementCalibrator
 {
   @Language("SQL")
   public static final String FETCH_CALIBRATION = "SELECT "
@@ -26,34 +27,45 @@ public class UncalibratedMeasurementCalibrator extends DBUser
       MEASUREMENT_VALUE + " = ? WHERE " +
       MEASUREMENT_ID + " = ?";
 
+  @Inject AirCastingDB airCastingDB;
+
   @Inject CalibrationHelper calibrations;
 
-  public void calibrate(ProgressListener listener)
+  public void calibrate(final ProgressListener listener)
   {
     int workSize = sessionsToCalibrate();
     listener.onSizeCalculated(workSize);
-    int step = 0;
 
-    Cursor calibrations = db.rawQuery(FETCH_CALIBRATION, null);
-
-    calibrations.moveToFirst();
-
-    while(!calibrations.isAfterLast())
+    airCastingDB.executeDbTask(new DatabaseTask<Object>()
     {
-      long sessionId = calibrations.getLong(0);
-      int offset60DB = calibrations.getInt(1);
-      int calibration = calibrations.getInt(2);
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        int step = 0;
 
-      calibrateMeasurementsInSession(sessionId, offset60DB, calibration);
-      markSessionAsCalibrated(sessionId);
+        Cursor calibrations = writableDatabase.rawQuery(FETCH_CALIBRATION, null);
 
-      calibrations.moveToNext();
-      listener.onProgress(step++);
-    }
-    calibrations.close();
+        calibrations.moveToFirst();
+
+        while(!calibrations.isAfterLast())
+        {
+          long sessionId = calibrations.getLong(0);
+          int offset60DB = calibrations.getInt(1);
+          int calibration = calibrations.getInt(2);
+
+          calibrateMeasurementsInSession(writableDatabase, sessionId, offset60DB, calibration);
+          markSessionAsCalibrated(writableDatabase, sessionId);
+
+          calibrations.moveToNext();
+          listener.onProgress(step++);
+        }
+        calibrations.close();
+        return null;
+      }
+    });
   }
 
-  private void markSessionAsCalibrated(Long sessionId)
+  private void markSessionAsCalibrated(SQLiteDatabase db, Long sessionId)
   {
     @Language("SQL")
     String query = "UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_CALIBRATED + " = true " +
@@ -61,7 +73,7 @@ public class UncalibratedMeasurementCalibrator extends DBUser
     db.execSQL(query);
   }
 
-  private void calibrateMeasurementsInSession(long sessionId, int offset60DB, int calibration)
+  private void calibrateMeasurementsInSession(SQLiteDatabase db, long sessionId, int offset60DB, int calibration)
   {
     @Language("SQL")
     String q = "" +
@@ -118,14 +130,21 @@ public class UncalibratedMeasurementCalibrator extends DBUser
 
   public int sessionsToCalibrate()
   {
-    Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + SESSION_TABLE_NAME + " WHERE "
-                                    + SESSION_CALIBRATED + " = 0", null);
-    c.moveToFirst();
-    if(c.getCount() < 1)
+    return airCastingDB.executeDbTask(new DatabaseTask<Integer>()
     {
-      return 0;
-    }
+      @Override
+      public Integer execute(SQLiteDatabase readOnlyDatabase)
+      {
+        Cursor c = readOnlyDatabase.rawQuery("SELECT COUNT(*) FROM " + SESSION_TABLE_NAME + " WHERE "
+                                                 + SESSION_CALIBRATED + " = 0", null);
+        c.moveToFirst();
+        if(c.getCount() < 1)
+        {
+          return 0;
+        }
 
-    return c.getInt(0);
+        return c.getInt(0);
+      }
+    });
   }
 }

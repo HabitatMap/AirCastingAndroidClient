@@ -1,16 +1,15 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.repository.db.AirCastingDB;
 import pl.llp.aircasting.repository.NullProgressListener;
 import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.repository.db.AirCastingDB;
 import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,14 +33,8 @@ public class UncalibratedMeasurementCalibratorTest
   @Before
   public void setUp() throws Exception
   {
-    db = acdb.getWritableDatabase();
+    db = acdb.getDatabaseDuringTests();
     PROGRESS = new NullProgressListener();
-  }
-
-  @After
-  public void tearDown()
-  {
-    c.close();
   }
 
   @Test

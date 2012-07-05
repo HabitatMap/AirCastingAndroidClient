@@ -3,6 +3,7 @@ package pl.llp.aircasting.repository;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.repository.db.DatabaseTask;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -37,55 +38,62 @@ public class StreamRepository
   }
 
   @Internal
-  List<MeasurementStream> findAllForSession(@NotNull Long sessionId, SQLiteDatabase readableDatabase)
+  List<MeasurementStream> findAllForSession(@NotNull final Long sessionId)
   {
-    List<MeasurementStream> result = newArrayList();
-
-    Cursor c = readableDatabase.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
-                               " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "", null);
-
-    c.moveToFirst();
-    while (!c.isAfterLast())
+    return airCastingDB.executeDbTask(new DatabaseTask<List<MeasurementStream>>()
     {
-      String sensor = getString(c, STREAM_SENSOR_NAME);
-      String packageName = getString(c, STREAM_SENSOR_PACKAGE_NAME);
-      String symbol = getString(c, STREAM_MEASUREMENT_SYMBOL);
-      String unit = getString(c, STREAM_MEASUREMENT_UNIT);
-      String type = getString(c, STREAM_MEASUREMENT_TYPE);
-      String shortType = getString(c, STREAM_SHORT_TYPE);
+      @Override
+      public List<MeasurementStream> execute(SQLiteDatabase readOnlyDatabase)
+      {
+        List<MeasurementStream> result = newArrayList();
 
-      int thresholdVeryLow = getInt(c, STREAM_THRESHOLD_VERY_LOW);
-      int thresholdLow = getInt(c, STREAM_THRESHOLD_LOW);
-      int thresholdMedium = getInt(c, STREAM_THRESHOLD_MEDIUM);
-      int thresholdHigh = getInt(c, STREAM_THRESHOLD_HIGH);
-      int thresholdVeryHigh = getInt(c, STREAM_THRESHOLD_VERY_HIGH);
+        Cursor c = readOnlyDatabase.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
+                                                 " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "", null);
 
-      MeasurementStream stream;
+        c.moveToFirst();
+        while (!c.isAfterLast())
+        {
+          String sensor = getString(c, STREAM_SENSOR_NAME);
+          String packageName = getString(c, STREAM_SENSOR_PACKAGE_NAME);
+          String symbol = getString(c, STREAM_MEASUREMENT_SYMBOL);
+          String unit = getString(c, STREAM_MEASUREMENT_UNIT);
+          String type = getString(c, STREAM_MEASUREMENT_TYPE);
+          String shortType = getString(c, STREAM_SHORT_TYPE);
 
-      stream = new MeasurementStream(packageName, sensor, type, shortType, unit, symbol,
-                                     thresholdVeryLow,
-                                     thresholdLow,
-                                     thresholdMedium,
-                                     thresholdHigh,
-                                     thresholdVeryHigh);
+          int thresholdVeryLow = getInt(c, STREAM_THRESHOLD_VERY_LOW);
+          int thresholdLow = getInt(c, STREAM_THRESHOLD_LOW);
+          int thresholdMedium = getInt(c, STREAM_THRESHOLD_MEDIUM);
+          int thresholdHigh = getInt(c, STREAM_THRESHOLD_HIGH);
+          int thresholdVeryHigh = getInt(c, STREAM_THRESHOLD_VERY_HIGH);
 
-      double avg = getDouble(c, STREAM_AVG);
-      double peak = getDouble(c, STREAM_PEAK);
-      long id = getLong(c, STREAM_ID);
-      boolean markedForRemoval = getBool(c, STREAM_MARKED_FOR_REMOVAL);
+          MeasurementStream stream;
 
-      stream.setAvg(avg);
-      stream.setPeak(peak);
-      stream.setId(id);
-      stream.setSessionId(sessionId);
+          stream = new MeasurementStream(packageName, sensor, type, shortType, unit, symbol,
+                                         thresholdVeryLow,
+                                         thresholdLow,
+                                         thresholdMedium,
+                                         thresholdHigh,
+                                         thresholdVeryHigh);
 
-      stream.setMarkedForRemoval(markedForRemoval);
-      result.add(stream);
+          double avg = getDouble(c, STREAM_AVG);
+          double peak = getDouble(c, STREAM_PEAK);
+          long id = getLong(c, STREAM_ID);
+          boolean markedForRemoval = getBool(c, STREAM_MARKED_FOR_REMOVAL);
 
-      c.moveToNext();
-    }
+          stream.setAvg(avg);
+          stream.setPeak(peak);
+          stream.setId(id);
+          stream.setSessionId(sessionId);
 
-    return result;
+          stream.setMarkedForRemoval(markedForRemoval);
+          result.add(stream);
+
+          c.moveToNext();
+        }
+        c.close();
+        return result;
+      }
+    });
   }
 
   @Internal
@@ -151,24 +159,27 @@ public class StreamRepository
   }
 
   @API
-  public void update(MeasurementStream stream)
+  public void update(final MeasurementStream stream)
   {
-    ContentValues values = values(stream);
+    final ContentValues values = values(stream);
     values.put(STREAM_SESSION_ID, stream.getSessionId());
 
-    SQLiteDatabase writableDatabase = airCastingDB.getWritableDatabase();
-    try
+    airCastingDB.executeDbTask(new DatabaseTask<Object>()
     {
-      writableDatabase.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
-    }
-    catch(SQLException e)
-    {
-      Log.e(Constants.TAG, "Error updating stream [" + stream.getId() + "]", e);
-    }
-    finally
-    {
-      writableDatabase.close();
-    }
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        try
+        {
+          writableDatabase.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
+        }
+        catch(SQLException e)
+        {
+          Log.e(Constants.TAG, "Error updating stream [" + stream.getId() + "]", e);
+        }
+        return null;
+      }
+    });
   }
 
   @Internal
@@ -187,28 +198,31 @@ public class StreamRepository
   @API
   public void deleteSubmitted()
   {
-    SQLiteDatabase writableDatabase = airCastingDB.getWritableDatabase();
-    try
-    {
-      Cursor cursor = writableDatabase.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
-      cursor.moveToFirst();
-      while(!cursor.isAfterLast())
-      {
-        Long streamId = getLong(cursor, STREAM_ID);
-        deleteMeasurements(streamId, writableDatabase);
-        cursor.moveToNext();
-      }
-      cursor.close();
+   airCastingDB.executeDbTask(new DatabaseTask<Object>()
+   {
+     @Override
+     public Object execute(SQLiteDatabase writableDatabase)
+     {
+       try
+       {
+         Cursor cursor = writableDatabase.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
+         cursor.moveToFirst();
+         while(!cursor.isAfterLast())
+         {
+           Long streamId = getLong(cursor, STREAM_ID);
+           deleteMeasurements(streamId, writableDatabase);
+           cursor.moveToNext();
+         }
+         cursor.close();
 
-      writableDatabase.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
-    }
-    catch (SQLException e)
-    {
-      Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
-    }
-    finally
-    {
-      writableDatabase.close();
-    }
+         writableDatabase.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
+       }
+       catch (SQLException e)
+       {
+         Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
+       }
+       return null;
+     }
+   });
   }
 }

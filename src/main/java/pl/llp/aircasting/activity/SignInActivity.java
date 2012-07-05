@@ -19,6 +19,15 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.api.UsersDriver;
+import pl.llp.aircasting.api.data.UserInfo;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.service.SessionSyncer;
+import pl.llp.aircasting.util.http.HttpResult;
+
 import android.app.Application;
 import android.os.Bundle;
 import android.view.View;
@@ -26,16 +35,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
-import pl.llp.aircasting.api.data.UserInfo;
-import pl.llp.aircasting.api.UsersDriver;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.util.http.HttpResult;
 import roboguice.inject.InjectView;
 
-import static pl.llp.aircasting.util.http.Status.*;
+import static pl.llp.aircasting.util.http.Status.SUCCESS;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,6 +53,7 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
 
     @Inject UsersDriver userDriver;
     @Inject SettingsHelper settingsHelper;
+    @Inject SessionSyncer syncer;
 
     @Inject Application context;
 

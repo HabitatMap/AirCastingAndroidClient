@@ -3,6 +3,7 @@ package pl.llp.aircasting.repository;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.repository.db.DatabaseTask;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -12,11 +13,11 @@ import com.google.inject.Inject;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.getDate;
 import static pl.llp.aircasting.repository.DBHelper.getDouble;
 import static pl.llp.aircasting.repository.DBHelper.getInt;
 import static pl.llp.aircasting.repository.DBHelper.getString;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 
 public class NoteRepository
 {
@@ -45,30 +46,38 @@ public class NoteRepository
   }
 
   @API
-  List<Note> load(Session session) {
+  List<Note> load(final Session session)
+  {
+    return dbAccessor.executeDbTask(new DatabaseTask<List<Note>>()
+    {
+      @Override
+      public List<Note> execute(SQLiteDatabase readOnlyDatabase)
+      {
+        List<Note> result = newArrayList();
 
-    List<Note> result = newArrayList();
+        Cursor cursor = readOnlyDatabase.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(),
+                                               null, null, null, null);
+        cursor.moveToFirst();
 
-    SQLiteDatabase readableDatabase = dbAccessor.getReadableDatabase();
-    Cursor cursor = readableDatabase.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(), null, null, null, null);
-    cursor.moveToFirst();
+        while (!cursor.isAfterLast())
+        {
+          Note note = new Note();
 
-    while (!cursor.isAfterLast()) {
-      Note note = new Note();
+          note.setLatitude(getDouble(cursor, NOTE_LATITUDE));
+          note.setLongitude(getDouble(cursor, NOTE_LONGITUDE));
+          note.setDate(getDate(cursor, NOTE_DATE));
+          note.setText(getString(cursor, NOTE_TEXT));
+          note.setPhotoPath(getString(cursor, NOTE_PHOTO));
+          note.setNumber(getInt(cursor, NOTE_NUMBER));
 
-      note.setLatitude(getDouble(cursor, NOTE_LATITUDE));
-      note.setLongitude(getDouble(cursor, NOTE_LONGITUDE));
-      note.setDate(getDate(cursor, NOTE_DATE));
-      note.setText(getString(cursor, NOTE_TEXT));
-      note.setPhotoPath(getString(cursor, NOTE_PHOTO));
-      note.setNumber(getInt(cursor, NOTE_NUMBER));
+          result.add(note);
+          cursor.moveToNext();
+        }
 
-      result.add(note);
-      cursor.moveToNext();
-    }
-
-    cursor.close();
-    return result;
+        cursor.close();
+        return result;
+      }
+    });
   }
 
   @Internal

@@ -21,8 +21,8 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
-import pl.llp.aircasting.activity.adapter.SessionCursorAdapter;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
@@ -75,7 +75,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 {
   private static final int ALL_ID = 0;
 
-  @Inject SessionAdapterFactory sessionCursorAdapterFactory;
+  @Inject SessionAdapterFactory sessionAdapterFactory;
   @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
   @Inject SensorRepository sensorRepository;
@@ -107,10 +107,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   };
 
   private ArrayAdapter<SensorWrapper> sensorAdapter;
-  private SessionCursorAdapter sessionCursorAdapter;
+  private SessionAdapter sessionAdapter;
   private Sensor selectedSensor;
   private long sessionId;
-  pl.llp.aircasting.repository.CursorWrapper sessionCursor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +123,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   protected void onResume() {
     super.onResume();
+
+    calibrateOldRecords();
 
     refreshList();
     refreshTopBar();
@@ -145,23 +146,16 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
   }
 
-  private void refreshItems() {
-    if(sessionCursor != null && !sessionCursor.isClosed())
-    {
-      sessionCursor.close();
+  private void refreshItems()
+  {
+     List<Session> sessions = sessionRepository.notDeletedSessions(selectedSensor);
+
+    if (sessionAdapter == null) {
+      sessionAdapter = sessionAdapterFactory.getSessionAdapter(this);
+      setListAdapter(sessionAdapter);
     }
-    sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
 
-    calibrateOldRecords();
-
-    startManagingCursor(sessionCursor.getCursor());
-
-    if (sessionCursorAdapter == null) {
-      sessionCursorAdapter = sessionCursorAdapterFactory.getSessionAdapter(this, sessionCursor.getCursor());
-      setListAdapter(sessionCursorAdapter);
-    } else {
-      sessionCursorAdapter.changeCursor(sessionCursor.getCursor());
-    }
+    sessionAdapter.setSessions(sessions);
   }
 
   @Override
@@ -171,7 +165,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     unregisterReceiver(broadcastReceiver);
     unregisterReceiver(syncBroadcastReceiver);
     eventBus.unregister(this);
-    sessionCursor.close();
   }
 
   private void refreshList() {
@@ -205,13 +198,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     } else {
       syncSummary.setVisibility(View.GONE);
     }
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-
-    calibrator.close();
   }
 
   @Override

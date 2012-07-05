@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 /**
  * Created by ags on 05/07/12 at 15:07
  */
-public interface ReadOnlyDatabaseTask<T>
+public interface DatabaseTask<T>
 {
-  T execute(SQLiteDatabase readOnlyDatabase);
+  T execute(SQLiteDatabase writableDatabase);
 }

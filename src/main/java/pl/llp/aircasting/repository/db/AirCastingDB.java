@@ -3,11 +3,15 @@ package pl.llp.aircasting.repository.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Singleton;
 
 @Singleton
 public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
 {
+  private static volatile SQLiteDatabase db;
+
   public AirCastingDB(Context context)
   {
     super(context, DB_NAME, null, DB_VERSION);
@@ -28,20 +32,46 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
   @Override
   public synchronized SQLiteDatabase getWritableDatabase()
   {
-    return super.getWritableDatabase();
+    throw new RuntimeException("Don't use me!");
   }
 
   @Override
   public synchronized SQLiteDatabase getReadableDatabase()
   {
-    return super.getReadableDatabase();
+    throw new RuntimeException("Don't use me!");
   }
 
-  public <T> T executeReadOnlyDbTask(ReadOnlyDatabaseTask<T> task)
+  @VisibleForTesting
+  public SQLiteDatabase getDatabaseDuringTests()
   {
-    SQLiteDatabase database = getReadableDatabase();
-    T result = task.execute(database);
-    database.close();
+    return getDatabase();
+  }
+
+  private SQLiteDatabase getDatabase()
+  {
+    if(db == null || !db.isOpen())
+    {
+      db = super.getWritableDatabase();
+    }
+
+    if(db.isDbLockedByOtherThreads() || db.isDbLockedByCurrentThread())
+    {
+      Log.e("DATABASE!", "Database is locked");
+    }
+
+    return db;
+  }
+
+  public synchronized <T> T executeDbTask(DatabaseTask<T> task)
+  {
+    SQLiteDatabase database = getDatabase();
+
+    T result;
+
+    result = task.execute(database);
+
+    Log.e("DATABASE!", "Database is locked: " + database.isOpen());
+
     return result;
   }
 }

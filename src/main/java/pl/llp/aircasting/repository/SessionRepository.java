@@ -25,7 +25,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
+import pl.llp.aircasting.repository.db.DatabaseTask;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -46,6 +46,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.repository.db.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.*;
 
@@ -74,23 +75,25 @@ public class SessionRepository
   }
 
   @API
-  public void deleteNote(Session session, Note note)
+  public void deleteNote(final Session session, final Note note)
   {
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    try
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
     {
-      notes.delete(session, note, writableDatabase);
-    } finally {
-      writableDatabase.close();
-    }
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        notes.delete(session, note, writableDatabase);
+        return null;
+      }
+    });
   }
 
   @API
-  public void save(@NotNull Session session, ProgressListener progressListener)
+  public void save(@NotNull final Session session, ProgressListener progressListener)
   {
     setupProgressListener(session, progressListener);
 
-    ContentValues values = new ContentValues();
+    final ContentValues values = new ContentValues();
 
     Date start = session.getStart();
     Date end = session.getEnd();
@@ -116,21 +119,22 @@ public class SessionRepository
     values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
     values.put(SESSION_CALIBRATED, true);
 
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    try
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
     {
-      long sessionKey = writableDatabase.insertOrThrow(SESSION_TABLE_NAME, null, values);
-      session.setId(sessionKey);
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        long sessionKey = writableDatabase.insertOrThrow(SESSION_TABLE_NAME, null, values);
+        session.setId(sessionKey);
 
-      Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
+        Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
 
-      streams.saveAll(streamsToSave, sessionKey, writableDatabase);
-      notes.save(session.getNotes(), sessionKey, writableDatabase);
-    }
-    finally
-    {
-      writableDatabase.close();
-    }
+        streams.saveAll(streamsToSave, sessionKey, writableDatabase);
+        notes.save(session.getNotes(), sessionKey, writableDatabase);
+
+        return null;
+      }
+    });
   }
 
   private void fixStartEndTimeFromMeasurements(Session session)
@@ -216,20 +220,14 @@ public class SessionRepository
   }
 
   @Internal
-  private Session loadStreams(Session session)
+  private Session loadStreams(final Session session)
   {
-    SQLiteDatabase readableDatabase = dbAccessor.getReadableDatabase();
-    try
+    Long id = session.getId();
+    List<MeasurementStream> streams = streams().findAllForSession(id);
+
+    for (MeasurementStream stream : streams)
     {
-      List<MeasurementStream> streams = streams().findAllForSession(session.getId(), readableDatabase);
-      for (MeasurementStream stream : streams)
-      {
-        session.add(stream);
-      }
-    }
-    finally
-    {
-      readableDatabase.close();
+      session.add(stream);
     }
 
     return session;
@@ -238,8 +236,8 @@ public class SessionRepository
   @API
   public Session loadShallow(final long sessionID)
   {
-    return dbAccessor.executeReadOnlyDbTask(
-        new ReadOnlyDatabaseTask<Session>()
+    return dbAccessor.executeDbTask(
+        new DatabaseTask<Session>()
         {
           @Override
           public Session execute(SQLiteDatabase readOnlyDatabase)
@@ -269,7 +267,7 @@ public class SessionRepository
   @Internal
   private Session loadShallow(final UUID uuid)
   {
-    return dbAccessor.executeReadOnlyDbTask(new ReadOnlyDatabaseTask<Session>()
+    return dbAccessor.executeDbTask(new DatabaseTask<Session>()
     {
       @Override
       public Session execute(SQLiteDatabase readOnlyDatabase)
@@ -294,26 +292,26 @@ public class SessionRepository
   }
 
   @API
-  public void markSessionForRemoval(long id)
+  public void markSessionForRemoval(final long id)
   {
-    ContentValues values = new ContentValues();
+    final ContentValues values = new ContentValues();
     values.put(SESSION_MARKED_FOR_REMOVAL, true);
 
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    try
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
     {
-      writableDatabase.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
-    }
-    finally
-    {
-      writableDatabase.close();
-    }
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        writableDatabase.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
+        return null;
+      }
+    });
   }
 
   @API
   public Iterable<Session> all()
   {
-    return dbAccessor.executeReadOnlyDbTask(new ReadOnlyDatabaseTask<Iterable<Session>>()
+    return dbAccessor.executeDbTask(new DatabaseTask<Iterable<Session>>()
     {
       @Override
       public Iterable<Session> execute(SQLiteDatabase readOnlyDatabase)
@@ -335,25 +333,34 @@ public class SessionRepository
     });
   }
 
-  @API
-  public CursorWrapper notDeletedCursor(@Nullable Sensor sensor) {
-    SQLiteDatabase readableDatabase = dbAccessor.getReadableDatabase();
-    Cursor result = null;
-    if (sensor == null) {
-      result = readableDatabase.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
-    } else {
-      result = readableDatabase.rawQuery(SESSIONS_BY_SENSOR_QUERY, new String[]{sensor.getSensorName()});
+  @Internal
+  Cursor notDeletedCursor(@Nullable Sensor sensor, SQLiteDatabase readOnlyDatabase)
+  {
+    Cursor result;
+    if (sensor == null)
+    {
+      result = readOnlyDatabase.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
     }
-    return new CursorWrapper(result, readableDatabase);
+    else
+    {
+      result = readOnlyDatabase.rawQuery(SESSIONS_BY_SENSOR_QUERY, new String[]{sensor.getSensorName()});
+    }
+    return result;
   }
 
   @API
   public void deleteSubmitted()
   {
-    String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    delete(condition, writableDatabase);
-    writableDatabase.close();
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
+    {
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        String condition = SESSION_SUBMITTED_FOR_REMOVAL + " = 1";
+        delete(condition, writableDatabase);
+        return null;
+      }
+    });
   }
 
   @Internal
@@ -373,10 +380,16 @@ public class SessionRepository
 
   @API
   public void deleteUploaded() {
-    String condition = SESSION_LOCATION + " NOTNULL";
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    delete(condition, writableDatabase);
-    writableDatabase.close();
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
+    {
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        String condition = SESSION_LOCATION + " NOTNULL";
+        delete(condition, writableDatabase);
+        return null;
+      }
+    });
   }
 
   private void delete(Long sessionId, SQLiteDatabase writableDb)
@@ -408,66 +421,99 @@ public class SessionRepository
     return fill(session, progressListener);
   }
 
-  private Session fill(Session session, ProgressListener progressListener)
+  private Session fill(final Session session, ProgressListener progressListener)
   {
-    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
-    MeasurementRepository r = new MeasurementRepository(progressListener);
+    final Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
+    final MeasurementRepository r = new MeasurementRepository(progressListener);
 
-    SQLiteDatabase readableDatabase = dbAccessor.getReadableDatabase();
-    Map<Long, List<Measurement>> load = r.load(session, readableDatabase);
-
-    for (MeasurementStream stream : streams)
+    return dbAccessor.executeDbTask(new DatabaseTask<Session>()
     {
-      if(load.containsKey(stream.getId()))
+      @Override
+      public Session execute(SQLiteDatabase readOnlyDatabase)
       {
-        stream.setMeasurements(load.get(stream.getId()));
-        session.add(stream);
-      }
-    }
-    readableDatabase.close();
+        Map<Long, List<Measurement>> load = r.load(session, readOnlyDatabase);
 
-    return session;
+        for (MeasurementStream stream : streams)
+        {
+          if(load.containsKey(stream.getId()))
+          {
+            stream.setMeasurements(load.get(stream.getId()));
+            session.add(stream);
+          }
+        }
+
+        return session;
+      }
+    });
   }
 
   @API
-  public void update(Session session)
+  public void update(final Session session)
   {
-    ContentValues values = new ContentValues();
+    final ContentValues values = new ContentValues();
     prepareHeader(session, values);
 
-    SQLiteDatabase writableDb = dbAccessor.getWritableDatabase();
-    try
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
     {
-      notes.save(session.getNotes(), session.getId(), writableDb);
-      writableDb.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
-    }
-    catch (SQLException e)
-    {
-      Log.e(Constants.TAG, "Error updating session [ " + session.getId() + " ]", e);
-    }
-    finally {
-      writableDb.close();
-    }
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        try
+        {
+          notes.save(session.getNotes(), session.getId(), writableDatabase);
+          writableDatabase.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
+        }
+        catch (SQLException e)
+        {
+          Log.e(Constants.TAG, "Error updating session [ " + session.getId() + " ]", e);
+        }
+        return null;
+      }
+    });
   }
 
   @API
-  public void deleteStream(Session session, MeasurementStream stream)
+  public void deleteStream(final Session session, final MeasurementStream stream)
   {
-    SQLiteDatabase writableDatabase = dbAccessor.getWritableDatabase();
-    try
+    dbAccessor.executeDbTask(new DatabaseTask<Object>()
     {
-      streams.markForRemoval(stream, session.getId(), writableDatabase);
-    }
-    finally
-    {
-      writableDatabase.close();
-    }
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        streams.markForRemoval(stream, session.getId(), writableDatabase);
+        return null;
+      }
+    });
   }
 
   @API
   public StreamRepository streams()
   {
     return streams;
+  }
+
+  public List<Session> notDeletedSessions(final Sensor selectedSensor)
+  {
+    return dbAccessor.executeDbTask(new DatabaseTask<List<Session>>()
+    {
+      @Override
+      public List<Session> execute(SQLiteDatabase readOnlyDatabase)
+      {
+        List<Session> result = newArrayList();
+
+        Cursor cursor = notDeletedCursor(selectedSensor, readOnlyDatabase);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast())
+        {
+          Session session = loadShallow(cursor);
+          result.add(session);
+          cursor.moveToNext();
+        }
+        cursor.close();
+
+        return result;
+      }
+    });
   }
 }
 

@@ -21,13 +21,12 @@ public class StreamRepositoryTest
   AirCastingDB acdb;
 
   private SQLiteDatabase db;
-  StreamRepository streams;
+  @Inject StreamRepository streams;
 
   @Before
   public void setUp() throws Exception
   {
-    db = acdb.getWritableDatabase();
-    streams = new StreamRepository();
+    db = acdb.getDatabaseDuringTests();
   }
 
   @Test
@@ -37,7 +36,7 @@ public class StreamRepositoryTest
     db.execSQL("INSERT INTO streams(_id, sensor_name, stream_session_id) VALUES(0, 'robolectric is fun', 2)");
 
     // when
-    List<MeasurementStream> loaded = streams.findAllForSession(2L, db);
+    List<MeasurementStream> loaded = streams.findAllForSession(2L);
 
     // then
     assertEquals(1, loaded.size());
