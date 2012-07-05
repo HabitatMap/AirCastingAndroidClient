@@ -1,11 +1,12 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.repository.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
 
 public class DBUser
 {
-  @Inject AirCastingDB dbAccessor;
+  @Inject
+  AirCastingDB dbAccessor;
   protected SQLiteDatabase db;
 
   @Inject

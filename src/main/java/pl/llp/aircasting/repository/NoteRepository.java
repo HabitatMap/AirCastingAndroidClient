@@ -2,15 +2,17 @@ package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.repository.db.AirCastingDB;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import com.google.inject.Inject;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.getDate;
 import static pl.llp.aircasting.repository.DBHelper.getDouble;
 import static pl.llp.aircasting.repository.DBHelper.getInt;
@@ -18,15 +20,13 @@ import static pl.llp.aircasting.repository.DBHelper.getString;
 
 public class NoteRepository
 {
-  private SQLiteDatabase db;
+  @Inject
+  AirCastingDB dbAccessor;
 
-  public NoteRepository(SQLiteDatabase db)
+  @Internal
+  void save(Iterable<Note> notes, long sessionId, SQLiteDatabase writableDb)
   {
-    this.db = db;
-  }
-
-  void save(Iterable<Note> notes, long sessionId) {
-    db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId, null);
+    writableDb.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId, null);
 
     ContentValues values = new ContentValues();
 
@@ -40,15 +40,17 @@ public class NoteRepository
       values.put(NOTE_PHOTO, note.getPhotoPath());
       values.put(NOTE_NUMBER, note.getNumber());
 
-      db.insertOrThrow(NOTE_TABLE_NAME, null, values);
+      writableDb.insertOrThrow(NOTE_TABLE_NAME, null, values);
     }
   }
 
+  @API
   List<Note> load(Session session) {
 
     List<Note> result = newArrayList();
 
-    Cursor cursor = db.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(), null, null, null, null);
+    SQLiteDatabase readableDatabase = dbAccessor.getReadableDatabase();
+    Cursor cursor = readableDatabase.query(NOTE_TABLE_NAME, null, NOTE_SESSION_ID + " = " + session.getId(), null, null, null, null);
     cursor.moveToFirst();
 
     while (!cursor.isAfterLast()) {
@@ -69,9 +71,11 @@ public class NoteRepository
     return result;
   }
 
-  public void delete(Session session, Note note) {
-      db.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
-              " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
+  @Internal
+  void delete(Session session, Note note, SQLiteDatabase writableDb)
+  {
+    writableDb.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
+        " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
   }
 }
 

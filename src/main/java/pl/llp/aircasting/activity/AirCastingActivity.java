@@ -19,13 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.app.Dialog;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
@@ -34,10 +27,27 @@ import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.helper.*;
+import pl.llp.aircasting.helper.FormatHelper;
+import pl.llp.aircasting.helper.GaugeHelper;
+import pl.llp.aircasting.helper.PhotoHelper;
+import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.helper.SelectSensorHelper;
+import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
@@ -311,5 +321,5 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         }.execute();
     }
 
-    protected abstract void refreshNotes();
+  protected abstract void refreshNotes();
 }

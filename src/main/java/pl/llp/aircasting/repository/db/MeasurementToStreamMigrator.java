@@ -1,5 +1,6 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.repository.db;
 
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.Cursor;
@@ -7,11 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import org.intellij.lang.annotations.Language;
 
-import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 
-/**
- * Created by ags on 28/03/12 at 19:39
- */
 public class MeasurementToStreamMigrator
 {
   @Language("SQL")
@@ -41,25 +39,31 @@ public class MeasurementToStreamMigrator
       Cursor oldSessions  = db.rawQuery("SELECT " + SESSION_ID + ", " + SESSION_AVG + ", " + SESSION_PEAK
                                       + SESSION_START + ", " + SESSION_END, null);
 
-      db.beginTransaction();
-
-      oldSessions.moveToFirst();
-      while(!oldSessions.isAfterLast())
+      try
       {
-        int sessionId = oldSessions.getInt(0);
-        MeasurementStream s = readFrom(oldSessions);
+        db.beginTransaction();
 
-        long streamId = save(db, s);
-        insertStreamStmt.bindLong(1, streamId);
-        insertStreamStmt.bindLong(2, sessionId);
-        insertStreamStmt.execute();
+        oldSessions.moveToFirst();
+        while (!oldSessions.isAfterLast())
+        {
+          int sessionId = oldSessions.getInt(0);
+          MeasurementStream s = readFrom(oldSessions);
 
-        oldSessions.moveToNext();
+          long streamId = save(db, s);
+          insertStreamStmt.bindLong(1, streamId);
+          insertStreamStmt.bindLong(2, sessionId);
+          insertStreamStmt.execute();
+
+          oldSessions.moveToNext();
+        }
+        oldSessions.close();
+
+        db.setTransactionSuccessful();
       }
-      oldSessions.close();
-
-      db.setTransactionSuccessful();
-      db.endTransaction();
+      finally
+      {
+        db.endTransaction();
+      }
     }
 
   private MeasurementStream readFrom(Cursor c)

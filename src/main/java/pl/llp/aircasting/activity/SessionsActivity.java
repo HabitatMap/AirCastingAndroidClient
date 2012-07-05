@@ -21,8 +21,8 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
+import pl.llp.aircasting.activity.adapter.SessionCursorAdapter;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
@@ -34,10 +34,10 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.repository.SensorRepository;
 import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.util.SyncState;
 
 import android.app.Application;
@@ -46,7 +46,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,7 +75,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 {
   private static final int ALL_ID = 0;
 
-  @Inject SessionAdapterFactory sessionAdapterFactory;
+  @Inject SessionAdapterFactory sessionCursorAdapterFactory;
   @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
   @Inject SensorRepository sensorRepository;
@@ -108,10 +107,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   };
 
   private ArrayAdapter<SensorWrapper> sensorAdapter;
-  private SessionAdapter sessionAdapter;
+  private SessionCursorAdapter sessionCursorAdapter;
   private Sensor selectedSensor;
   private long sessionId;
-  Cursor sessionCursor;
+  pl.llp.aircasting.repository.CursorWrapper sessionCursor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -147,26 +146,21 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   }
 
   private void refreshItems() {
+    if(sessionCursor != null && !sessionCursor.isClosed())
+    {
+      sessionCursor.close();
+    }
     sessionCursor = sessionRepository.notDeletedCursor(selectedSensor);
 
     calibrateOldRecords();
 
-    startManagingCursor(sessionCursor);
+    startManagingCursor(sessionCursor.getCursor());
 
-    if (sessionAdapter == null) {
-      sessionAdapter = sessionAdapterFactory.getSessionAdapter(this, sessionCursor);
-      setListAdapter(sessionAdapter);
+    if (sessionCursorAdapter == null) {
+      sessionCursorAdapter = sessionCursorAdapterFactory.getSessionAdapter(this, sessionCursor.getCursor());
+      setListAdapter(sessionCursorAdapter);
     } else {
-      sessionAdapter.changeCursor(sessionCursor);
-    }
-  }
-
-  private void calibrateOldRecords()
-  {
-    if(calibrator.sessionsToCalibrate() > 0)
-    {
-      CalibrateSessionsTask task = new CalibrateSessionsTask(this, calibrator);
-      task.execute();
+      sessionCursorAdapter.changeCursor(sessionCursor.getCursor());
     }
   }
 
@@ -177,6 +171,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     unregisterReceiver(broadcastReceiver);
     unregisterReceiver(syncBroadcastReceiver);
     eventBus.unregister(this);
+    sessionCursor.close();
   }
 
   private void refreshList() {
@@ -217,8 +212,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     super.onDestroy();
 
     calibrator.close();
-    sessionRepository.close();
-    sensorRepository.close();
   }
 
   @Override
@@ -386,6 +379,15 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     @Override
     public String toString() {
       return name;
+    }
+  }
+
+  private void calibrateOldRecords()
+  {
+    if(calibrator.sessionsToCalibrate() > 0)
+    {
+      CalibrateSessionsTask task = new CalibrateSessionsTask(this, calibrator);
+      task.execute();
     }
   }
 }

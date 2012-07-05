@@ -1,8 +1,9 @@
 package pl.llp.aircasting.activity.task;
 
 import pl.llp.aircasting.activity.ActivityWithProgress;
-import pl.llp.aircasting.model.UncalibratedMeasurementCalibrator;
+import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.repository.ProgressListener;
+import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
 
 import android.app.ProgressDialog;
 

@@ -19,7 +19,7 @@
 */
 package pl.llp.aircasting.guice;
 
-import pl.llp.aircasting.model.AirCastingDB;
+import pl.llp.aircasting.repository.db.AirCastingDB;
 import pl.llp.aircasting.util.http.HttpBuilder;
 import pl.llp.aircasting.view.overlay.NoteOverlay;
 
@@ -29,14 +29,14 @@ import android.location.Geocoder;
 import android.telephony.TelephonyManager;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
+import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import roboguice.config.AbstractAndroidModule;
 import roboguice.inject.SharedPreferencesName;
 import roboguice.inject.SystemServiceProvider;
 
-public class AirCastingModule extends AbstractAndroidModule
+public class AirCastingModule extends AbstractModule
 {
   @Override
   protected void configure() {

@@ -79,7 +79,6 @@ public class SessionManager
 
   private boolean recording;
   private boolean paused;
-  private int noteNumber = 0;
 
   @Inject
     public void init() {
@@ -323,7 +322,6 @@ public class SessionManager
     private void cleanup() {
         locationHelper.stop();
         sessionStarted = false;
-        noteNumber = 0;
         setSession(new Session());
         notificationHelper.hideRecordingNotification();
     }

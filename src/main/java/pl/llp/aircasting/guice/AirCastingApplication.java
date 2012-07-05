@@ -27,12 +27,6 @@ import roboguice.application.RoboApplication;
 
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/27/11
- * Time: 10:39 AM
- */
 @ReportsCrashes(formKey = "dGFfWkhaNFY4eFZCRFJLS3NwUjdremc6MQ",
         mode = ReportingInteractionMode.SILENT)
 public class AirCastingApplication extends RoboApplication {

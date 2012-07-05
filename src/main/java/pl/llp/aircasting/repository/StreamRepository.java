@@ -2,6 +2,7 @@ package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.repository.db.AirCastingDB;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -9,36 +10,38 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.model.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.*;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 
 public class StreamRepository
 {
   @Language("SQL")
   private static final String STREAM_IS_SUBMITTED_FOR_DELETE = STREAM_SUBMITTED_FOR_REMOVAL + " = 1 ";
 
-  private SQLiteDatabase db;
+  @Inject
+  AirCastingDB airCastingDB;
+
   MeasurementRepository measurements;
 
-  public StreamRepository(SQLiteDatabase db)
+  public StreamRepository()
   {
-    this.db = db;
-    measurements = new MeasurementRepository(db, new NullProgressListener());
+    measurements = new MeasurementRepository(new NullProgressListener());
   }
 
-  List<MeasurementStream> findAllForSession(@NotNull Long sessionId)
+  @Internal
+  List<MeasurementStream> findAllForSession(@NotNull Long sessionId, SQLiteDatabase readableDatabase)
   {
     List<MeasurementStream> result = newArrayList();
 
-    Cursor c = db.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
+    Cursor c = readableDatabase.rawQuery("SELECT * FROM " + STREAM_TABLE_NAME +
                                " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "", null);
 
     c.moveToFirst();
@@ -85,12 +88,13 @@ public class StreamRepository
     return result;
   }
 
-  private long saveOne(MeasurementStream stream, long sessionId)
+  @Internal
+  private long saveOne(MeasurementStream stream, long sessionId, SQLiteDatabase writableDatabase)
   {
     ContentValues values = values(stream);
 
     values.put(STREAM_SESSION_ID, sessionId);
-    long streamId = db.insertOrThrow(STREAM_TABLE_NAME, null, values);
+    long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
     stream.setId(streamId);
 
     return streamId;
@@ -117,31 +121,28 @@ public class StreamRepository
     return values;
   }
 
-  public void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId)
+  @Internal
+  public void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId, SQLiteDatabase writableDatabase)
   {
     for (MeasurementStream oneToSave : streamsToSave)
     {
       oneToSave.setSessionId(sessionId);
-      long streamId = saveOne(oneToSave, sessionId);
+      long streamId = saveOne(oneToSave, sessionId, writableDatabase);
 
       List<Measurement> measurementsToSave = oneToSave.getMeasurements();
-      measurements.save(measurementsToSave, sessionId, streamId);
+      measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
     }
   }
 
-  public void save(MeasurementStream stream, long sessionId)
-  {
-    saveAll(Collections.singletonList(stream), sessionId);
-  }
-
-  public void markForRemoval(MeasurementStream stream, long sessionId)
+  @Internal
+  void markForRemoval(MeasurementStream stream, long sessionId, SQLiteDatabase writableDatabase)
   {
     try
     {
       ContentValues values = new ContentValues();
       values.put(STREAM_MARKED_FOR_REMOVAL, true);
   
-      db.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
+      writableDatabase.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
     }
     catch (SQLException e)
     {
@@ -149,26 +150,33 @@ public class StreamRepository
     }
   }
 
+  @API
   public void update(MeasurementStream stream)
   {
     ContentValues values = values(stream);
     values.put(STREAM_SESSION_ID, stream.getSessionId());
 
+    SQLiteDatabase writableDatabase = airCastingDB.getWritableDatabase();
     try
     {
-      db.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
+      writableDatabase.update(STREAM_TABLE_NAME, values, STREAM_ID + " = " + stream.getId(), null);
     }
     catch(SQLException e)
     {
       Log.e(Constants.TAG, "Error updating stream [" + stream.getId() + "]", e);
     }
+    finally
+    {
+      writableDatabase.close();
+    }
   }
 
-  void deleteMeasurements(long streamId)
+  @Internal
+  void deleteMeasurements(long streamId, SQLiteDatabase writableDatabase)
   {
     try
     {
-      measurements.deleteAllFrom(streamId);
+      measurements.deleteAllFrom(streamId, writableDatabase);
     }
     catch (SQLException e)
     {
@@ -176,25 +184,31 @@ public class StreamRepository
     }
   }
 
+  @API
   public void deleteSubmitted()
   {
+    SQLiteDatabase writableDatabase = airCastingDB.getWritableDatabase();
     try
     {
-      Cursor cursor = db.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
+      Cursor cursor = writableDatabase.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
       cursor.moveToFirst();
       while(!cursor.isAfterLast())
       {
         Long streamId = getLong(cursor, STREAM_ID);
-        deleteMeasurements(streamId);
+        deleteMeasurements(streamId, writableDatabase);
         cursor.moveToNext();
       }
       cursor.close();
 
-      db.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
+      writableDatabase.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
     }
     catch (SQLException e)
     {
       Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
+    }
+    finally
+    {
+      writableDatabase.close();
     }
   }
 }

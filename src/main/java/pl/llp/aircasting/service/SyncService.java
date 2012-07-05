@@ -51,7 +51,8 @@ import java.util.UUID;
 
 import static com.google.common.collect.Iterables.find;
 
-public class SyncService extends RoboIntentService {
+public class SyncService extends RoboIntentService
+{
     @Inject ConnectivityManager connectivityManager;
     @Inject SessionRepository sessionRepository;
     @Inject SyncDriver syncDriver;
@@ -64,11 +65,6 @@ public class SyncService extends RoboIntentService {
 
     public SyncService() {
         super(SyncService.class.getSimpleName());
-    }
-
-    @Override
-    public void onDestroy() {
-        sessionRepository.close();
     }
 
     @Override

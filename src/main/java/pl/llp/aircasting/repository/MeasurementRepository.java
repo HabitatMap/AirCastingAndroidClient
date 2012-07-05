@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.getDate;
 import static pl.llp.aircasting.repository.DBHelper.getDouble;
 import static pl.llp.aircasting.repository.DBHelper.getLong;
 
 class MeasurementRepository
 {
-  private SQLiteDatabase db;
   private ProgressListener progress = new NullProgressListener();
 
   @Language("SQL")
@@ -38,18 +37,18 @@ class MeasurementRepository
       " VALUES(?, ?, ?, ?, ?, ?)";
 
 
-  public MeasurementRepository(SQLiteDatabase db, ProgressListener progressListener)
+  public MeasurementRepository(ProgressListener progressListener)
   {
-    this.db = db;
     if(progressListener != null)
     {
       progress = progressListener;
     }
   }
 
-  Map<Long, List<Measurement>> load(Session session)
+  @Internal
+  Map<Long, List<Measurement>> load(Session session, SQLiteDatabase readableDatabase)
   {
-    Cursor measurements = db.rawQuery("" +
+    Cursor measurements = readableDatabase.rawQuery("" +
                     "SELECT * FROM " + MEASUREMENT_TABLE_NAME + " " +
                     "WHERE " + MEASUREMENT_SESSION_ID  +" = " + session.getId(), null);
 
@@ -75,6 +74,7 @@ class MeasurementRepository
       }
       measurements.moveToNext();
     }
+    measurements.close();
 
     return results;
   }
@@ -88,9 +88,10 @@ class MeasurementRepository
     return results.get(id);
   }
 
-  public void save(List<Measurement> measurementsToSave, long sessionId, long streamId)
+  @Internal
+  void save(List<Measurement> measurementsToSave, long sessionId, long streamId, SQLiteDatabase writableDatabase)
   {
-    SQLiteStatement st = db.compileStatement(INSERT_MEASUREMENTS);
+    SQLiteStatement st = writableDatabase.compileStatement(INSERT_MEASUREMENTS);
 
     for (Measurement measurement : measurementsToSave)
     {
@@ -110,11 +111,12 @@ class MeasurementRepository
     st.close();
   }
 
-  public void deleteAllFrom(Long streamId)
+  @Internal
+  void deleteAllFrom(Long streamId, SQLiteDatabase writableDatabase)
   {
     try
     {
-      db.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID + " = " + streamId, null);
+      writableDatabase.delete(MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID + " = " + streamId, null);
     }
     catch (SQLException e)
     {

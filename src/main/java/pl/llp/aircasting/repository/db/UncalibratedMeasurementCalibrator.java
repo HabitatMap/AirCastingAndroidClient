@@ -1,4 +1,4 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.repository.db;
 
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.repository.ProgressListener;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteStatement;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 
-import static pl.llp.aircasting.model.DBConstants.*;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 
 public class UncalibratedMeasurementCalibrator extends DBUser
 {
@@ -88,26 +88,32 @@ public class UncalibratedMeasurementCalibrator extends DBUser
 
     measurement.moveToFirst();
 
-    db.beginTransaction();
-
-    while(!measurement.isAfterLast())
+    try
     {
-      long id = measurement.getLong(0);
-      double value = measurement.getDouble(1);
+      db.beginTransaction();
 
-      double calibrated = calibrations.calibrate(value, calibration, offset60DB);
+      while (!measurement.isAfterLast())
+      {
+        long id = measurement.getLong(0);
+        double value = measurement.getDouble(1);
 
-      st.bindDouble(1, calibrated);
-      st.bindLong(2, id);
-      st.execute();
+        double calibrated = calibrations.calibrate(value, calibration, offset60DB);
 
-      measurement.moveToNext();
+        st.bindDouble(1, calibrated);
+        st.bindLong(2, id);
+        st.execute();
+
+        measurement.moveToNext();
+      }
+      measurement.close();
+      st.close();
+
+      db.setTransactionSuccessful();
     }
-    measurement.close();
-    st.close();
-
-    db.setTransactionSuccessful();
-    db.endTransaction();
+    finally
+    {
+      db.endTransaction();
+    }
   }
 
   public int sessionsToCalibrate()

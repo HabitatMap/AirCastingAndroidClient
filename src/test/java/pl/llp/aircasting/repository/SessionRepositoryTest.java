@@ -1,9 +1,9 @@
 package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.model.AirCastingDB;
 import pl.llp.aircasting.model.Any;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.repository.db.AirCastingDB;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;
@@ -12,16 +12,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
 @RunWith(InjectedTestRunner.class)
 public class SessionRepositoryTest
 {
-  @Inject AirCastingDB acdb;
+  @Inject
+  AirCastingDB acdb;
   @Inject SessionRepository sessions;
 
   private SQLiteDatabase db;
@@ -45,19 +42,5 @@ public class SessionRepositoryTest
 
     // then
     assertThat(session.getId(), IsNull.notNullValue());
-  }
-
-  @Test
-  public void test_shallow_load() throws Exception
-  {
-    db.execSQL("INSERT INTO SESSIONS(_id, uuid) VALUES(1, '" + UUID.randomUUID() + "')");
-
-    // when
-    sessions.save(session);
-    Session loaded = sessions.loadShallow(1);
-
-    // then
-    assertNotSame(loaded, session);
-    assertEquals(0, loaded.getStart().getTime());
   }
 }

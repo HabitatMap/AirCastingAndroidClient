@@ -1,8 +1,9 @@
 package pl.llp.aircasting.repository;
 
-import pl.llp.aircasting.model.AirCastingDB;
-import pl.llp.aircasting.model.DBConstants;
+import pl.llp.aircasting.repository.db.DBConstants;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,44 +25,47 @@ public class SensorRepository implements DBConstants
       };
 
   @Inject AirCastingDB airCastingDB;
-  private SQLiteDatabase db;
-
-  @Inject
-  public void init() {
-    db = airCastingDB.getWritableDatabase();
-  }
-
-  public void close() {
-    db.close();
-  }
 
   public List<Sensor> getAll() {
-    List<Sensor> result = newArrayList();
 
-    boolean distinct = true;
-    Cursor cursor = db.query(distinct, STREAM_TABLE_NAME, SENSOR_FIELDS, null, null, null, null, null, null);
+    return airCastingDB.executeReadOnlyDbTask(readSensorsTask());
+  }
 
-    cursor.moveToFirst();
-    while (!cursor.isAfterLast()) {
-      String name = getString(cursor, STREAM_SENSOR_NAME);
-      String packageName = getString(cursor, STREAM_SENSOR_PACKAGE_NAME);
-      String measurementType = getString(cursor, STREAM_MEASUREMENT_TYPE);
-      String shortType = getString(cursor, STREAM_SHORT_TYPE);
-      String unit = getString(cursor, STREAM_MEASUREMENT_UNIT);
-      String symbol = getString(cursor, STREAM_MEASUREMENT_SYMBOL);
-      int veryLow = getInt(cursor, STREAM_THRESHOLD_VERY_LOW);
-      int low = getInt(cursor, STREAM_THRESHOLD_LOW);
-      int mid = getInt(cursor, STREAM_THRESHOLD_MEDIUM);
-      int high = getInt(cursor, STREAM_THRESHOLD_HIGH);
-      int veryHigh = getInt(cursor, STREAM_THRESHOLD_VERY_HIGH);
+  private ReadOnlyDatabaseTask<List<Sensor>> readSensorsTask()
+  {
+    return new ReadOnlyDatabaseTask<List<Sensor>>()
+    {
+      @Override
+      public List<Sensor> execute(SQLiteDatabase database)
+      {
+        List<Sensor> result = newArrayList();
 
-      Sensor sensor = new Sensor(packageName, name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
-      result.add(sensor);
+        boolean distinct = true;
+        Cursor cursor = database.query(distinct, STREAM_TABLE_NAME, SENSOR_FIELDS, null, null, null, null, null, null);
 
-      cursor.moveToNext();
-    }
-    cursor.close();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+          String name = getString(cursor, STREAM_SENSOR_NAME);
+          String packageName = getString(cursor, STREAM_SENSOR_PACKAGE_NAME);
+          String measurementType = getString(cursor, STREAM_MEASUREMENT_TYPE);
+          String shortType = getString(cursor, STREAM_SHORT_TYPE);
+          String unit = getString(cursor, STREAM_MEASUREMENT_UNIT);
+          String symbol = getString(cursor, STREAM_MEASUREMENT_SYMBOL);
+          int veryLow = getInt(cursor, STREAM_THRESHOLD_VERY_LOW);
+          int low = getInt(cursor, STREAM_THRESHOLD_LOW);
+          int mid = getInt(cursor, STREAM_THRESHOLD_MEDIUM);
+          int high = getInt(cursor, STREAM_THRESHOLD_HIGH);
+          int veryHigh = getInt(cursor, STREAM_THRESHOLD_VERY_HIGH);
 
-    return result;
+          Sensor sensor = new Sensor(packageName, name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
+          result.add(sensor);
+
+          cursor.moveToNext();
+        }
+        cursor.close();
+
+        return result;
+      }
+    };
   }
 }

@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
 import static com.google.common.collect.Iterables.transform;
 import static java.lang.String.valueOf;
 
-public class SessionAdapter extends SimpleCursorAdapter {
+public class SessionCursorAdapter extends SimpleCursorAdapter {
   SessionRepository sessionRepository;
   ResourceHelper resourceHelper;
   Sensor sensor;
@@ -53,7 +53,7 @@ public class SessionAdapter extends SimpleCursorAdapter {
   private static final int[] backgrounds = new int[]{R.drawable.session_list_odd, R.drawable.session_list_even};
   private Context context;
 
-  public SessionAdapter(Context context, Cursor cursor) {
+  public SessionCursorAdapter(Context context, Cursor cursor) {
     super(context, R.layout.session_row, cursor, new String[]{}, new int[]{});
     this.context = context;
   }

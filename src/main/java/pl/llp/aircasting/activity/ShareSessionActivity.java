@@ -74,12 +74,6 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        sessionRepository.close();
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.share_link:
