@@ -19,15 +19,6 @@
  */
 package pl.llp.aircasting.view.presenter;
 
-import android.content.SharedPreferences;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
@@ -37,7 +28,24 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
-import java.util.*;
+import android.content.SharedPreferences;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.getLast;
@@ -46,12 +54,6 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Multimaps.index;
 import static java.util.Collections.sort;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/4/11
- * Time: 1:47 PM
- */
 @Singleton
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final long MILLIS_IN_SECOND = 1000;
@@ -78,11 +80,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private static final long MIN_ZOOM = 30000;
     private long zoom = MIN_ZOOM;
 
-    private LinkedList<Measurement> timelineView;
+    private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
     private List<Listener> listeners = newArrayList();
 
     @Subscribe
-    public void onEvent(MeasurementEvent event) {
+    public synchronized void onEvent(MeasurementEvent event) {
         if (sessionManager.isSessionSaved()) return;
         if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
@@ -134,9 +136,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         reset();
     }
 
-    private void reset() {
+    private synchronized void reset() {
         fullView = null;
-        timelineView = null;
+        timelineView.clear();
         anchor = 0;
 
         notifyListeners();
@@ -192,13 +194,13 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    void setZoom(long zoom) {
+    synchronized void setZoom(long zoom) {
         this.zoom = zoom;
-        timelineView = null;
+        timelineView.clear();
         notifyListeners();
     }
 
-    public List<Measurement> getTimelineView() {
+    public synchronized List<Measurement> getTimelineView() {
         if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted()) {
             prepareTimelineView();
             return timelineView;
@@ -207,35 +209,54 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    protected synchronized void prepareTimelineView() {
-        if (timelineView != null) return;
+    protected synchronized void prepareTimelineView()
+    {
+        if (!timelineView.isEmpty()) return;
 
         final List<Measurement> measurements = getFullView();
         int position = measurements.size() - 1 - (int) anchor;
-        final long last = measurements.isEmpty()
+        final long lastMeasurementTime = measurements.isEmpty()
                 ? 0 : measurements.get(position).getTime().getTime();
 
-        timelineView = newLinkedList(filter(measurements, new Predicate<Measurement>() {
-            @Override
-            public boolean apply(Measurement measurement) {
-                return measurement.getTime().getTime() <= last &&
-                        last - measurement.getTime().getTime() <= zoom;
-            }
-        }));
+
+        timelineView.clear();
+        timelineView.addAll(newArrayList(filter(measurements, fitsInTimeline(lastMeasurementTime))));
 
         measurementsSize = measurements.size();
     }
 
-    private void updateTimelineView() {
+  private Predicate<Measurement> fitsInTimeline(final long lastMeasurementTime)
+  {
+    return new Predicate<Measurement>()
+    {
+      @Override
+      public boolean apply(@Nullable Measurement measurement)
+      {
+        if(measurement == null)
+          return false;
+
+        return measurement.getTime().getTime() <= lastMeasurementTime &&
+            lastMeasurementTime - measurement.getTime().getTime() <= zoom;
+      }
+    };
+  }
+
+
+  private synchronized void updateTimelineView() {
         Measurement measurement = aggregator.getAverage();
 
         if (aggregator.isComposite()) {
-            if (!timelineView.isEmpty()) timelineView.removeLast();
+            if (!timelineView.isEmpty())
+            {
+              timelineView.remove(timelineView.size() - 1);
+            }
             timelineView.add(measurement);
-        } else {
+        }
+        else
+        {
             while (timelineView.size() > 0 &&
                     measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom) {
-                timelineView.removeFirst();
+                timelineView.remove(0);
             }
             measurementsSize += 1;
             timelineView.add(measurement);
@@ -254,7 +275,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         return zoom > MIN_ZOOM;
     }
 
-    public boolean canZoomOut() {
+    public synchronized boolean canZoomOut() {
         prepareTimelineView();
         return timelineView.size() < measurementsSize;
     }
@@ -265,7 +286,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    public void zoomOut() {
+    public synchronized void zoomOut() {
         if (canZoomOut()) {
             anchor -= timelineView.size();
             fixAnchor();
@@ -282,17 +303,17 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    public void scroll(double scrollAmount) {
+    public synchronized void scroll(double scrollAmount) {
         prepareTimelineView();
 
         anchor -= scrollAmount * timelineView.size();
         fixAnchor();
-        timelineView = null;
+        timelineView.clear();
 
         notifyListeners();
     }
 
-    private void fixAnchor() {
+    private synchronized void fixAnchor() {
         if (anchor > measurementsSize - timelineView.size()) {
             anchor = measurementsSize - timelineView.size();
         }
@@ -301,11 +322,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    public boolean canScrollRight() {
+    public synchronized boolean canScrollRight() {
         return anchor != 0;
     }
 
-    public boolean canScrollLeft() {
+    public synchronized boolean canScrollLeft() {
         prepareTimelineView();
         return anchor < measurementsSize - timelineView.size();
     }
