@@ -240,10 +240,14 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
       content = response.getEntity().getContent();
       reader = new InputStreamReader(content);
 
-      List<String> strings = CharStreams.readLines(reader);
-      String fullJson = Joiner.on("\n").join(strings);
+      if(Constants.isDevMode())
+      {
+        List<String> strings = CharStreams.readLines(reader);
+        String fullJson = Joiner.on("\n").join(strings);
+        reader = new StringReader(fullJson);
+      }
 
-      T output = gson.fromJson(new StringReader(fullJson), target);
+      T output = gson.fromJson(reader, target);
       result.setContent(output);
       result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
     }
