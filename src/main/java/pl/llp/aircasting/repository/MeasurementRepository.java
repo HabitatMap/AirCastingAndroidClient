@@ -4,10 +4,10 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.util.Constants;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import org.intellij.lang.annotations.Language;
 
@@ -91,19 +91,18 @@ class MeasurementRepository
   @Internal
   void save(List<Measurement> measurementsToSave, long sessionId, long streamId, SQLiteDatabase writableDatabase)
   {
-    SQLiteStatement st = writableDatabase.compileStatement(INSERT_MEASUREMENTS);
-
-    st.bindLong(1, streamId);
-    st.bindLong(2, sessionId);
+    ContentValues values = new ContentValues(6);
+    values.put(MEASUREMENT_SESSION_ID, sessionId);
+    values.put(MEASUREMENT_STREAM_ID, streamId);
 
     for (Measurement measurement : measurementsToSave)
     {
+      values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
+      values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
+      values.put(MEASUREMENT_VALUE, measurement.getValue());
+      values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
 
-      st.bindLong(3, measurement.getTime().getTime());
-      st.bindDouble(4, measurement.getLatitude());
-      st.bindDouble(5, measurement.getLongitude());
-      st.bindDouble(6, measurement.getValue());
-      st.executeInsert();
+      writableDatabase.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
     }
   }
 
