@@ -110,11 +110,13 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   private SessionAdapter sessionAdapter;
   private Sensor selectedSensor;
   private long sessionId;
+  private boolean calibrationAttempted;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    calibrateOldRecords();
     setContentView(R.layout.sessions);
 
     getListView().setOnItemLongClickListener(this);
@@ -123,8 +125,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   protected void onResume() {
     super.onResume();
-
-    calibrateOldRecords();
 
     refreshList();
     refreshTopBar();
@@ -202,13 +202,15 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
   @Override
   protected void onListItemClick(ListView listView, View view, int position, long id) {
-    viewSession(id);
+    Session s = sessionAdapter.getSession(position);
+    viewSession(s.getId());
   }
 
   @Override
   public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
     Intent intent = new Intent(this, OpenSessionActivity.class);
-    sessionId = id;
+    Session s = sessionAdapter.getSession(position);
+    sessionId = s.getId();
     startActivityForResult(intent, 0);
     return true;
   }
@@ -370,6 +372,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
   private void calibrateOldRecords()
   {
+    if(calibrationAttempted)
+      return;
+
+    calibrationAttempted = true;
     if(calibrator.sessionsToCalibrate() > 0)
     {
       CalibrateSessionsTask task = new CalibrateSessionsTask(this, calibrator);

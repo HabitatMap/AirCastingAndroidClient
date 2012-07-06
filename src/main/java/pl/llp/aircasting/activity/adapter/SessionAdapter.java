@@ -153,4 +153,9 @@ public class SessionAdapter extends ArrayAdapter
     }
     notifyDataSetChanged();
   }
+
+  public Session getSession(int position)
+  {
+    return sessions.get(position);
+  }
 }
