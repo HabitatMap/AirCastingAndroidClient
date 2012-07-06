@@ -113,9 +113,9 @@ public class SessionRepository
     values.put(SESSION_DATA_TYPE, session.getDataType());
     values.put(SESSION_OS_VERSION, session.getOSVersion());
     values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval());
-    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval());
-    values.put(SESSION_CALIBRATED, true);
+    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval() ? 1 : 0);
+    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval() ? 1 : 0);
+    values.put(SESSION_CALIBRATED, 1);
 
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
     {
@@ -133,6 +133,21 @@ public class SessionRepository
         return null;
       }
     });
+
+    dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Object>()
+    {
+      @Override
+      public Object execute(SQLiteDatabase readOnlyDatabase)
+      {
+        Cursor c;
+        c = readOnlyDatabase.rawQuery("select count(*) from " + MEASUREMENT_TABLE_NAME + " WHERE " + MEASUREMENT_SESSION_ID + "=" + session.getId(), null);
+        c.moveToFirst();
+        long aLong = c.getLong(0);
+        Log.d(Constants.TAG, "Actually written " + aLong);
+        c.close();
+        return null;
+      }
+    });
   }
 
   private void fixStartEndTimeFromMeasurements(Session session)
@@ -146,27 +161,36 @@ public class SessionRepository
       if(measurements.isEmpty())
         continue;
 
-      if(start == null)
+      Measurement first = measurements.get(0);
+      Measurement last = measurements.get(measurements.size());
+
+      if (start != null)
       {
-        Measurement first = measurements.get(0);
         start = start.before(first.getTime()) ? start : first.getTime();
       }
-
-      if(end == null)
+      else
       {
-        Measurement last = measurements.get(measurements.size());
+        start = first.getTime();
+      }
+
+      if (end != null)
+      {
         end = end.before(last.getTime()) ? last.getTime() : end;
       }
+      else
+      {
+        end = last.getTime();
+      }
     }
-
-    session.setStart(start);
-    session.setEnd(end);
 
     if(start == null || end == null)
     {
       String message = "Session [" + session.getId() + "] has incorrect start/end date [" + start + "/" + end + "]";
       throw new RepositoryException(message);
     }
+
+    session.setStart(new Date(start.getTime()));
+    session.setEnd(new Date(end.getTime()));
 }
 
   private void setupProgressListener(Session session, ProgressListener progressListener)
@@ -296,17 +320,19 @@ public class SessionRepository
   public void markSessionForRemoval(final long id)
   {
     final ContentValues values = new ContentValues();
-    values.put(SESSION_MARKED_FOR_REMOVAL, true);
+    values.put(SESSION_MARKED_FOR_REMOVAL, 1);
 
+    final String whereClause = SESSION_ID + " = " + id;
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Void>()
     {
       @Override
       public Void execute(SQLiteDatabase writableDatabase)
       {
-        writableDatabase.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + id, null);
+        writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
         return null;
       }
     });
+    logSessionDeletion(whereClause);
   }
 
   @API
@@ -318,10 +344,12 @@ public class SessionRepository
       public Iterable<Session> execute(SQLiteDatabase readOnlyDatabase)
       {
         List<Session> result = Lists.newArrayList();
-        Cursor cursor = readOnlyDatabase.query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
+        Cursor cursor = readOnlyDatabase
+            .query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
 
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        while (!cursor.isAfterLast())
+        {
           Session load = loadShallow(cursor);
           result.add(load);
           cursor.moveToNext();
@@ -370,7 +398,8 @@ public class SessionRepository
     Cursor cursor = writableDb.query(SESSION_TABLE_NAME, null, condition, null, null, null, null);
 
     cursor.moveToFirst();
-    while (!cursor.isAfterLast()) {
+    while (!cursor.isAfterLast())
+    {
       Long id = getLong(cursor, SESSION_ID);
       delete(id, writableDb);
 
@@ -387,7 +416,7 @@ public class SessionRepository
       @Override
       public Object execute(SQLiteDatabase writableDatabase)
       {
-        String condition = SESSION_LOCATION + " NOTNULL";
+        String condition = SESSION_LOCATION + " NOT NULL";
         delete(condition, writableDatabase);
         return null;
       }
@@ -437,7 +466,7 @@ public class SessionRepository
 
         for (MeasurementStream stream : streams)
         {
-          if(load.containsKey(stream.getId()))
+          if (load.containsKey(stream.getId()))
           {
             stream.setMeasurements(load.get(stream.getId()));
             session.add(stream);
@@ -455,6 +484,8 @@ public class SessionRepository
     final ContentValues values = new ContentValues();
     prepareHeader(session, values);
 
+    final String whereClause = SESSION_ID + " = " + session.getId();
+
     dbAccessor.executeWritableTask(new WritableDatabaseTask()
     {
       @Override
@@ -463,13 +494,35 @@ public class SessionRepository
         try
         {
           notes.save(session.getNotes(), session.getId(), writableDatabase);
-          writableDatabase.update(SESSION_TABLE_NAME, values, SESSION_ID + " = " + session.getId(), null);
+
+          writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
         }
         catch (SQLException e)
         {
           Log.e(Constants.TAG, "Error updating session [ " + session.getId() + " ]", e);
         }
         return null;
+      }
+    });
+
+    logSessionDeletion(whereClause);
+  }
+
+  private void logSessionDeletion(final String whereClause)
+  {
+    dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Object>()
+    {
+      @Override
+      public Object execute(SQLiteDatabase readOnlyDatabase)
+      {
+        Cursor c;
+        c = readOnlyDatabase.query(SESSION_TABLE_NAME, new String[]{SESSION_ID, SESSION_MARKED_FOR_REMOVAL, SESSION_SUBMITTED_FOR_REMOVAL}, whereClause, null, null, null, null);
+                c.moveToFirst();
+                String string = c.getString(0);
+                String string1 = c.getString(1);
+                String string2 = c.getString(2);
+        Log.d(Constants.TAG, "Session " + string + ", marked " + string1 + ", submitted " + string2);
+        return "";
       }
     });
   }
@@ -505,7 +558,7 @@ public class SessionRepository
 
         Cursor cursor = notDeletedCursor(selectedSensor, readOnlyDatabase);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast())
+        while (!cursor.isAfterLast())
         {
           Session session = loadShallow(cursor);
           result.add(session);
