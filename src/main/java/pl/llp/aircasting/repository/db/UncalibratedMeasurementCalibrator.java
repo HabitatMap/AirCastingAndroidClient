@@ -36,7 +36,7 @@ public class UncalibratedMeasurementCalibrator
     int workSize = sessionsToCalibrate();
     listener.onSizeCalculated(workSize);
 
-    airCastingDB.executeDbTask(new DatabaseTask<Object>()
+    airCastingDB.executeWritableTask(new WritableDatabaseTask<Object>()
     {
       @Override
       public Object execute(SQLiteDatabase writableDatabase)
@@ -130,7 +130,7 @@ public class UncalibratedMeasurementCalibrator
 
   public int sessionsToCalibrate()
   {
-    return airCastingDB.executeDbTask(new DatabaseTask<Integer>()
+    return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<Integer>()
     {
       @Override
       public Integer execute(SQLiteDatabase readOnlyDatabase)

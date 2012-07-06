@@ -3,7 +3,8 @@ package pl.llp.aircasting.repository;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.DatabaseTask;
+import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
+import pl.llp.aircasting.repository.db.WritableDatabaseTask;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -11,6 +12,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +42,7 @@ public class StreamRepository
   @Internal
   List<MeasurementStream> findAllForSession(@NotNull final Long sessionId)
   {
-    return airCastingDB.executeDbTask(new DatabaseTask<List<MeasurementStream>>()
+    return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<MeasurementStream>>()
     {
       @Override
       public List<MeasurementStream> execute(SQLiteDatabase readOnlyDatabase)
@@ -134,11 +136,15 @@ public class StreamRepository
   {
     for (MeasurementStream oneToSave : streamsToSave)
     {
+      Stopwatch s = new Stopwatch().start();
       oneToSave.setSessionId(sessionId);
       long streamId = saveOne(oneToSave, sessionId, writableDatabase);
+      Log.d(Constants.TAG, "Saving stream took: " + s.elapsedMillis());
 
+      s.reset().start();
       List<Measurement> measurementsToSave = oneToSave.getMeasurements();
       measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
+      Log.d(Constants.TAG, "Saving " + measurementsToSave.size() + " measurements took: " + s.elapsedMillis());
     }
   }
 
@@ -164,10 +170,10 @@ public class StreamRepository
     final ContentValues values = values(stream);
     values.put(STREAM_SESSION_ID, stream.getSessionId());
 
-    airCastingDB.executeDbTask(new DatabaseTask<Object>()
+    airCastingDB.executeWritableTask(new WritableDatabaseTask<Void>()
     {
       @Override
-      public Object execute(SQLiteDatabase writableDatabase)
+      public Void execute(SQLiteDatabase writableDatabase)
       {
         try
         {
@@ -195,34 +201,42 @@ public class StreamRepository
     }
   }
 
-  @API
-  public void deleteSubmitted()
+  @Internal
+  void deleteSubmitted(SQLiteDatabase writableDatabase)
   {
-   airCastingDB.executeDbTask(new DatabaseTask<Object>()
-   {
-     @Override
-     public Object execute(SQLiteDatabase writableDatabase)
-     {
-       try
-       {
-         Cursor cursor = writableDatabase.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
-         cursor.moveToFirst();
-         while(!cursor.isAfterLast())
-         {
-           Long streamId = getLong(cursor, STREAM_ID);
-           deleteMeasurements(streamId, writableDatabase);
-           cursor.moveToNext();
-         }
-         cursor.close();
+    try
+    {
+      Cursor cursor = writableDatabase.query(STREAM_TABLE_NAME, null, STREAM_IS_SUBMITTED_FOR_DELETE, null, null, null, null);
+      cursor.moveToFirst();
+      while(!cursor.isAfterLast())
+      {
+        Long streamId = getLong(cursor, STREAM_ID);
+        deleteMeasurements(streamId, writableDatabase);
+        cursor.moveToNext();
+      }
+      cursor.close();
 
-         writableDatabase.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
-       }
-       catch (SQLException e)
-       {
-         Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
-       }
-       return null;
-     }
-   });
+      writableDatabase.execSQL("DELETE FROM " + STREAM_TABLE_NAME + " WHERE " + STREAM_IS_SUBMITTED_FOR_DELETE);
+    }
+    catch (SQLException e)
+    {
+      Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
+    }
+  }
+
+  @API
+  public void markRemovedForRemovalAsSubmitted()
+  {
+    airCastingDB.executeWritableTask(new WritableDatabaseTask<Void>()
+    {
+      @Override
+      public Void execute(SQLiteDatabase writableDatabase)
+      {
+        @Language("SQL")
+        String sql = "UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SUBMITTED_FOR_REMOVAL + "=1 WHERE " + STREAM_MARKED_FOR_REMOVAL + "=1";
+        writableDatabase.execSQL(sql);
+        return null;
+      }
+    });
   }
 }

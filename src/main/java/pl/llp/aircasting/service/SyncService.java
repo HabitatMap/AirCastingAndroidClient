@@ -92,7 +92,6 @@ public class SyncService extends RoboIntentService
         if (syncResponse != null)
         {
             sessionRepository.deleteSubmitted();
-            sessionRepository.streams().deleteSubmitted();
             uploadSessions(syncResponse.getUpload());
 
             downloadSessions(syncResponse.getDownload());

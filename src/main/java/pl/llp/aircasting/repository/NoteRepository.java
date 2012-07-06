@@ -3,7 +3,7 @@ package pl.llp.aircasting.repository;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.DatabaseTask;
+import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -48,7 +48,7 @@ public class NoteRepository
   @API
   List<Note> load(final Session session)
   {
-    return dbAccessor.executeDbTask(new DatabaseTask<List<Note>>()
+    return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Note>>()
     {
       @Override
       public List<Note> execute(SQLiteDatabase readOnlyDatabase)

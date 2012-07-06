@@ -21,6 +21,7 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SessionUpdateTask;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.api.data.UserInfo;
@@ -103,10 +104,29 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
                         Toast.makeText(context, R.string.login_error, Toast.LENGTH_LONG).show();
                         break;
                     default:
-                        Intents.triggerSync(context);
-                        finish();
+//                      syncInForeground();
+                      syncInBackground();
+                        break;
                 }
             }
+
+          private void syncInForeground()
+          {
+            new SessionUpdateTask(SignInActivity.this, syncer)
+            {
+              @Override
+              protected void onPostExecute(Void aVoid)
+              {
+                finish();
+              }
+            }.execute();
+          }
+
+          private void syncInBackground()
+          {
+            Intents.triggerSync(context);
+            finish();
+          }
         }.execute();
     }
 

@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
 import static pl.llp.aircasting.repository.DBHelper.getDate;
 import static pl.llp.aircasting.repository.DBHelper.getDouble;
 import static pl.llp.aircasting.repository.DBHelper.getLong;
+import static pl.llp.aircasting.repository.db.DBConstants.*;
 
 class MeasurementRepository
 {
@@ -93,22 +93,18 @@ class MeasurementRepository
   {
     SQLiteStatement st = writableDatabase.compileStatement(INSERT_MEASUREMENTS);
 
+    st.bindLong(1, streamId);
+    st.bindLong(2, sessionId);
+
     for (Measurement measurement : measurementsToSave)
     {
-      int pos = 1;
 
-      st.bindLong(pos++, streamId);
-      st.bindLong(pos++, sessionId);
-      st.bindLong(pos++, measurement.getTime().getTime());
-      st.bindDouble(pos++, measurement.getLatitude());
-      st.bindDouble(pos++, measurement.getLongitude());
-      st.bindDouble(pos++, measurement.getValue());
-
+      st.bindLong(3, measurement.getTime().getTime());
+      st.bindDouble(4, measurement.getLatitude());
+      st.bindDouble(5, measurement.getLongitude());
+      st.bindDouble(6, measurement.getValue());
       st.executeInsert();
-      st.clearBindings();
     }
-
-    st.close();
   }
 
   @Internal

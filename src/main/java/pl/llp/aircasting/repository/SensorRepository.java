@@ -3,7 +3,7 @@ package pl.llp.aircasting.repository;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.repository.db.AirCastingDB;
 import pl.llp.aircasting.repository.db.DBConstants;
-import pl.llp.aircasting.repository.db.DatabaseTask;
+import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,20 +28,20 @@ public class SensorRepository implements DBConstants
 
   public List<Sensor> getAll() {
 
-    return airCastingDB.executeDbTask(readSensorsTask());
+    return airCastingDB.executeReadOnlyTask(readSensorsTask());
   }
 
-  private DatabaseTask<List<Sensor>> readSensorsTask()
+  private ReadOnlyDatabaseTask<List<Sensor>> readSensorsTask()
   {
-    return new DatabaseTask<List<Sensor>>()
+    return new ReadOnlyDatabaseTask<List<Sensor>>()
     {
       @Override
-      public List<Sensor> execute(SQLiteDatabase database)
+      public List<Sensor> execute(SQLiteDatabase readOnlyDatabase)
       {
         List<Sensor> result = newArrayList();
 
         boolean distinct = true;
-        Cursor cursor = database.query(distinct, STREAM_TABLE_NAME, SENSOR_FIELDS, null, null, null, null, null, null);
+        Cursor cursor = readOnlyDatabase.query(distinct, STREAM_TABLE_NAME, SENSOR_FIELDS, null, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

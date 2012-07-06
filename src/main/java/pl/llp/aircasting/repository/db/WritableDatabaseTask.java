@@ -2,7 +2,7 @@ package pl.llp.aircasting.repository.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
-interface DatabaseTask<T>
+public interface WritableDatabaseTask<T> extends DatabaseTask<T>
 {
   T execute(SQLiteDatabase writableDatabase);
 }

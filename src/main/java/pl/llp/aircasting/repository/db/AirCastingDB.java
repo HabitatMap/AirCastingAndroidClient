@@ -1,16 +1,20 @@
 package pl.llp.aircasting.repository.db;
 
+import pl.llp.aircasting.util.Constants;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Stopwatch;
 import com.google.inject.Singleton;
 
 @Singleton
 public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
 {
   private static volatile SQLiteDatabase db;
+  private Throwable lockedAt;
 
   public AirCastingDB(Context context)
   {
@@ -47,31 +51,57 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
     return getDatabase();
   }
 
-  private SQLiteDatabase getDatabase()
+  private synchronized SQLiteDatabase getDatabase()
   {
     if(db == null || !db.isOpen())
     {
       db = super.getWritableDatabase();
+      lockedAt = new Throwable();
     }
 
-    if(db.isDbLockedByOtherThreads() || db.isDbLockedByCurrentThread())
+    if(db.isDbLockedByOtherThreads())
     {
-      Log.e("DATABASE!", "Database is locked");
+      Log.e("DATABASE!", "Database is locked: ", new Throwable("Locked at: ", lockedAt));
     }
 
     return db;
   }
 
-  public synchronized <T> T executeDbTask(DatabaseTask<T> task)
+  public synchronized <T> T executeWritableTask(WritableDatabaseTask<T> task)
   {
     SQLiteDatabase database = getDatabase();
 
     T result;
+    database.beginTransaction();
+    try
+    {
+      result = measureExecution(task, database);
+      database.setTransactionSuccessful();
+    }
+    finally
+    {
+      database.endTransaction();
+    }
 
-    result = task.execute(database);
+    return result;
+  }
 
-    Log.e("DATABASE!", "Database is locked: " + database.isOpen());
+  public synchronized <T> T executeReadOnlyTask(ReadOnlyDatabaseTask<T> task)
+  {
+    SQLiteDatabase database = getDatabase();
 
+    T result;
+    result = measureExecution(task, database);
+
+    return result;
+  }
+
+  private <T> T measureExecution(DatabaseTask<T> task, SQLiteDatabase database)
+  {
+    Stopwatch stopwatch = new Stopwatch().start();
+    T result = task.execute(database);
+    stopwatch.stop();
+    Log.d(Constants.TAG, "Database task took: " + stopwatch.elapsedMillis());
     return result;
   }
 }

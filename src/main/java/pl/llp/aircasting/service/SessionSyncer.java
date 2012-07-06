@@ -16,6 +16,7 @@ import pl.llp.aircasting.util.http.Status;
 
 import android.util.Log;
 import com.google.common.base.Predicate;
+import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 
 import java.util.Collection;
@@ -52,7 +53,6 @@ public class SessionSyncer
       uploadSessions(upload, listener);
 
       sessionRepository.deleteSubmitted();
-      sessionRepository.streams().deleteSubmitted();
 
       downloadSessions(download, listener, upload.length);
     }
@@ -63,7 +63,6 @@ public class SessionSyncer
     for (Session session : sessionsToUpdate) {
       if (session.isMarkedForRemoval()) {
         session.setSubmittedForRemoval(true);
-        sessionRepository.update(session);
       }
       else
       {
@@ -73,11 +72,12 @@ public class SessionSyncer
           if(stream.isMarkedForRemoval())
           {
             stream.setSubmittedForRemoval(true);
-            sessionRepository.streams().update(stream);
           }
         }
       }
     }
+    sessionRepository.markRemovedForRemovalAsSubmitted();
+    sessionRepository.streams().markRemovedForRemovalAsSubmitted();
   }
 
   private List<Session> prepareSessions()
@@ -89,9 +89,12 @@ public class SessionSyncer
   private void uploadSessions(UUID[] uuids, ProgressListener listener)
   {
     int step = 0;
+    Stopwatch watch = new Stopwatch();
     for (UUID uuid : uuids)
     {
+      watch.reset().start();
       Session session = sessionRepository.loadFully(uuid);
+      Log.d(Constants.TAG, "loading session from db [" + uuid + "] took:" + watch.elapsedMillis());
       if (session != null && !session.isMarkedForRemoval())
       {
         HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
@@ -101,6 +104,7 @@ public class SessionSyncer
           updateSession(session, result.getContent());
         }
       }
+      Log.d(Constants.TAG, "upload of session [" + uuid + "] took: " + watch.stop().elapsedMillis());
       step++;
       listener.onProgress(step);
     }
@@ -128,21 +132,26 @@ public class SessionSyncer
     private void downloadSessions(long[] ids, ProgressListener listener, int length)
     {
       int step = 0;
+      Stopwatch watch = new Stopwatch();
+      Stopwatch dbCounter = new Stopwatch().start();
+
       for (long id : ids)
       {
         HttpResult<Session> result = sessionDriver.show(id);
-
+        watch.reset().start();
         if (result.getStatus() == Status.SUCCESS) {
           Session session = result.getContent();
           if (session == null)
           {
-            Log.w(Constants.TAG, "Session [" + id + "] couldn't ");
+            Log.w(Constants.TAG, "Session [" + id + "] couldn't be downloaded");
           }
           else
           {
             try
             {
+              dbCounter.reset().start();
               sessionRepository.save(session);
+              Log.d(Constants.TAG, "Saving session [" + id + "] took: " + dbCounter.elapsedMillis());
             }
             catch (RepositoryException e)
             {
@@ -151,6 +160,7 @@ public class SessionSyncer
           }
         }
         step++;
+        Log.d(Constants.TAG, "download of session [" + id + "] took: " + watch.stop().elapsedMillis());
         listener.onProgress(length + step);
       }
     }
