@@ -14,7 +14,7 @@ import com.google.inject.Singleton;
 public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
 {
   private static volatile SQLiteDatabase db;
-  private Throwable lockedAt;
+  private static volatile Throwable lockedAt;
 
   public AirCastingDB(Context context)
   {
@@ -61,7 +61,8 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
 
     if(db.isDbLockedByOtherThreads())
     {
-      Log.e("DATABASE!", "Database is locked: ", new Throwable("Locked at: ", lockedAt));
+      Log.v("DATABASE!", "Database is locked: ", new Throwable());
+      Log.v("DATABASE!", "Locked at: ", lockedAt);
     }
 
     return db;
@@ -101,7 +102,7 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
     Stopwatch stopwatch = new Stopwatch().start();
     T result = task.execute(database);
     stopwatch.stop();
-    Log.d(Constants.TAG, "Database task took: " + stopwatch.elapsedMillis());
+    Log.v(Constants.TAG, "Database task took: " + stopwatch.elapsedMillis());
     return result;
   }
 }
