@@ -313,4 +313,15 @@ public class Session implements Serializable
       }
     }));
   }
+
+  @Override
+  public String toString()
+  {
+    return "Session{" +
+        "id=" + id +
+        ", title='" + title + '\'' +
+        ", markedForRemoval=" + markedForRemoval +
+        ", submittedForRemoval=" + submittedForRemoval +
+        '}';
+  }
 }
