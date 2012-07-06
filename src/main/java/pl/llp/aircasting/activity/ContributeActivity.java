@@ -64,13 +64,13 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
 
     private void saveSession() {
         //noinspection unchecked
-        new SaveSessionTask(this, ProgressDialog.STYLE_HORIZONTAL).execute();
+        new SaveSessionTask(this).execute();
     }
 
     private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements ProgressListener
     {
-        public SaveSessionTask(ActivityWithProgress context, int styleHorizontal) {
-            super(context, styleHorizontal);
+        public SaveSessionTask(ActivityWithProgress context) {
+            super(context, ProgressDialog.STYLE_SPINNER);
         }
 
         @Override
@@ -88,22 +88,12 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
 
         @Override
         public void onSizeCalculated(final int workSize) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    dialog.setMax(workSize);
-                }
-            });
+
         }
 
         @Override
         public void onProgress(final int progress) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    dialog.setProgress(progress);
-                }
-            });
+
         }
     }
 }
