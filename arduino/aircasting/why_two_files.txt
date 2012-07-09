@@ -1,0 +1,8 @@
+You're probably wondering, why there are two files with almost the same code
+available: answer is pretty simple, there are multiple types of sensors
+in real world.
+
+File ending with lm335a uses that sensor for temperature, the one with tmp36..
+I'm sure you get me :-) The only important difference in the code is function
+that actually calculates the temperature is different for both sensors. Rest
+of the code is basically the same.
