@@ -10,7 +10,7 @@ public class DBHelper
       return cursor.getDouble(cursor.getColumnIndex(columnName));
   }
 
-  static Date getDate(Cursor cursor, String columnName) {
+  public static Date getDate(Cursor cursor, String columnName) {
       return new Date(cursor.getLong(cursor.getColumnIndex(columnName)));
   }
 

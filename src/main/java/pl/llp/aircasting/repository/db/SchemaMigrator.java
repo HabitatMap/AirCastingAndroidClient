@@ -29,72 +29,76 @@ public class SchemaMigrator
 {
   MeasurementToStreamMigrator measurementsToStreams = new MeasurementToStreamMigrator();
 
-  private void createStreamTable(SQLiteDatabase db) {
-    db.execSQL(SchemaCreator.CREATE_STREAMS_TABLE);
+  private void createStreamTable(SQLiteDatabase db, int revision) {
+    String query = new SchemaCreator().streamTable().asSQL(revision);
+    db.execSQL(query);
   }
 
   public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) { if (oldVersion < 19 && newVersion >= 19) {
-      addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, "text");
+      addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, Datatype.TEXT);
     }
 
     if (oldVersion < 20 && newVersion >= 20) {
-      addColumn(db, NOTE_TABLE_NAME, NOTE_NUMBER, "integer");
+      addColumn(db, NOTE_TABLE_NAME, NOTE_NUMBER, Datatype.INTEGER);
     }
 
     if (oldVersion < 21 && newVersion >= 21) {
-      addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, "boolean");
+      addColumn(db, SESSION_TABLE_NAME, SESSION_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN);
     }
 
     if (oldVersion < 22 && newVersion >= 22) {
-      addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID, "integer");
+      addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_STREAM_ID, Datatype.INTEGER);
 
-      createStreamTable(db);
+      createStreamTable(db, 22);
       measurementsToStreams.migrate(db);
 
-      dropColumn(db, SESSION_TABLE_NAME, SESSION_PEAK);
-      dropColumn(db, SESSION_TABLE_NAME, SESSION_AVG);
+      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);
+      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_AVG);
     }
 
     if (oldVersion < 25 && newVersion >= 25) {
-      addColumn(db, STREAM_TABLE_NAME, STREAM_SHORT_TYPE, "text");
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SHORT_TYPE, Datatype.TEXT);
       db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SHORT_TYPE +
                      " = '" + SimpleAudioReader.SHORT_TYPE + "'");
     }
 
     if( oldVersion < 26 && newVersion >= 26)
     {
-      addColumn(db, SESSION_TABLE_NAME, SESSION_CALIBRATED, "boolean");
+      addColumn(db, SESSION_TABLE_NAME, SESSION_CALIBRATED, Datatype.BOOLEAN);
     }
 
     if(oldVersion < 27 && newVersion >= 27)
     {
-      addColumn(db, STREAM_TABLE_NAME, STREAM_SENSOR_PACKAGE_NAME, "text");
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SENSOR_PACKAGE_NAME, Datatype.TEXT);
       db.execSQL("UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SENSOR_PACKAGE_NAME + " = 'builtin' " );
     }
 
     if(oldVersion < 28 && newVersion >= 28)
     {
-      addColumn(db, STREAM_TABLE_NAME, STREAM_MARKED_FOR_REMOVAL, "boolean");
-      addColumn(db, STREAM_TABLE_NAME, STREAM_SUBMITTED_FOR_REMOVAL, "boolean");
+      addColumn(db, STREAM_TABLE_NAME, STREAM_MARKED_FOR_REMOVAL, Datatype.BOOLEAN);
+      addColumn(db, STREAM_TABLE_NAME, STREAM_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN);
     }
   }
 
-  private void dropColumn(SQLiteDatabase db, String tableName, String column) {
-    StringBuilder q = new StringBuilder(50);
-
-    q.append("ALTER TABLE ").append(tableName);
-    q.append(" DROP COLUMN ").append(column);
-
-    db.execSQL(q.toString());
+  private void dropColumn(SQLiteDatabase db, String tableName, String column)
+  {
+    // do nothing
+    // sqlite doesn't allow for easy dropping of columns :(
+//    StringBuilder q = new StringBuilder(50);
+//
+//    q.append("ALTER TABLE ").append(tableName);
+//    q.append(" DROP COLUMN ").append(column);
+//
+//    db.execSQL(q.toString());
   }
 
-  private void addColumn(SQLiteDatabase db, String tableName, String columnName, String datatype) {
+  private void addColumn(SQLiteDatabase db, String tableName, String columnName, Datatype datatype) {
     StringBuilder q = new StringBuilder(50);
 
     q.append("ALTER TABLE ");
     q.append(tableName);
     q.append(" ADD COLUMN ").append(columnName);
-    q.append(" ").append(datatype);
+    q.append(" ").append(datatype.getTypeName());
 
     db.execSQL(q.toString());
   }

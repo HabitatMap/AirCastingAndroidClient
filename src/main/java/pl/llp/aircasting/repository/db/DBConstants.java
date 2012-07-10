@@ -48,9 +48,9 @@ public interface DBConstants
   String SESSION_CALIBRATED = "is_calibrated";
 
   /** @deprecated belongs to streams */
-  String SESSION_AVG = "Average";
+  String DEPRECATED_SESSION_AVG = "Average";
   /** @deprecated belongs to streams */
-  String SESSION_PEAK = "Peak";
+  String DEPRECATED_SESSION_PEAK = "Peak";
 
   String MEASUREMENT_TABLE_NAME = "Measurements";
   String MEASUREMENT_ID = BaseColumns._ID;

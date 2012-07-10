@@ -3,58 +3,13 @@ package pl.llp.aircasting.repository.db;
 import android.database.sqlite.SQLiteDatabase;
 import org.intellij.lang.annotations.Language;
 
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.repository.db.DBConstants.*;
-import static pl.llp.aircasting.repository.db.DBConstants.NOTE_DATE;
-import static pl.llp.aircasting.repository.db.DBConstants.NOTE_NUMBER;
-import static pl.llp.aircasting.repository.db.DBConstants.NOTE_PHOTO;
-import static pl.llp.aircasting.repository.db.DBConstants.NOTE_TEXT;
 
 public class SchemaCreator
 {
-  @Language("SQL")
-  public static final String CREATE_STREAMS_TABLE =
-      "CREATE TABLE streams (\n  " +
-          STREAM_ID + " INTEGER PRIMARY KEY,\n  " +
-          STREAM_SESSION_ID + " INTEGER, \n" +
-          STREAM_AVG + " REAL,\n  " +
-          STREAM_PEAK + " REAL,\n  " +
-          STREAM_SENSOR_NAME + " TEXT, \n  " +
-          STREAM_SENSOR_PACKAGE_NAME + " TEXT, \n  " +
-          STREAM_MEASUREMENT_UNIT + " TEXT, \n  " +
-          STREAM_MEASUREMENT_TYPE + " TEXT, \n  " +
-          STREAM_SHORT_TYPE + " TEXT, \n  " +
-          STREAM_MEASUREMENT_SYMBOL + " TEXT,\n " +
-          STREAM_THRESHOLD_VERY_LOW + " INTEGER, \n " +
-          STREAM_THRESHOLD_LOW + " INTEGER, \n " +
-          STREAM_THRESHOLD_MEDIUM + " INTEGER, \n " +
-          STREAM_THRESHOLD_HIGH + " INTEGER, \n " +
-          STREAM_THRESHOLD_VERY_HIGH + " INTEGER,\n " +
-          STREAM_MARKED_FOR_REMOVAL + " BOOLEAN, \n " +
-          STREAM_SUBMITTED_FOR_REMOVAL + " BOOLEAN " +
-          ")";
-
-  @Language("SQL")
-  private static final String CREATE_SESSION_TABLE = "create table " + SESSION_TABLE_NAME + " (" +
-      SESSION_ID + " integer primary key" +
-      ", " + SESSION_TITLE + " text" +
-      ", " + SESSION_DESCRIPTION + " text" +
-      ", " + SESSION_TAGS + " text" +
-      ", " + SESSION_START + " integer" +
-      ", " + SESSION_END + " integer" +
-      ", " + SESSION_UUID + " text" +
-      ", " + SESSION_LOCATION + " text" +
-      ", " + SESSION_CALIBRATION + " integer" +
-      ", " + SESSION_CONTRIBUTE + " boolean" +
-      ", " + SESSION_PHONE_MODEL + " text" +
-      ", " + SESSION_INSTRUMENT + " text" +
-      ", " + SESSION_DATA_TYPE + " text" +
-      ", " + SESSION_OS_VERSION + " text" +
-      ", " + SESSION_OFFSET_60_DB + " integer" +
-      ", " + SESSION_MARKED_FOR_REMOVAL + " boolean" +
-      ", " + SESSION_SUBMITTED_FOR_REMOVAL + " boolean" +
-      ", " + SESSION_CALIBRATED + " boolean" +
-      ")";
-
   @Language("SQL")
   private static final String CREATE_MEASUREMENT_TABLE = "create table " + MEASUREMENT_TABLE_NAME +
       " (" + MEASUREMENT_ID + " integer primary key" +
@@ -79,9 +34,135 @@ public class SchemaCreator
 
   public void create(SQLiteDatabase db)
   {
-    db.execSQL(CREATE_SESSION_TABLE);
+    db.execSQL(sessionTable().asSQL(DBConstants.DB_VERSION));
     db.execSQL(CREATE_MEASUREMENT_TABLE);
-    db.execSQL(CREATE_STREAMS_TABLE);
+    db.execSQL(streamTable().asSQL(DB_VERSION));
     db.execSQL(CREATE_NOTE_TABLE);
+  }
+
+  Table streamTable()
+  {
+    Table table = new Table(STREAM_TABLE_NAME);
+    table.setPrimaryKey(new Column(STREAM_ID, Datatype.INTEGER));
+
+    table.addColumn(new Column(STREAM_SESSION_ID, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_AVG, Datatype.REAL));
+    table.addColumn(new Column(STREAM_PEAK, Datatype.REAL));
+    table.addColumn(new Column(STREAM_SENSOR_NAME, Datatype.TEXT));
+    table.addColumn(new Column(STREAM_SENSOR_PACKAGE_NAME, Datatype.TEXT, 27));
+    table.addColumn(new Column(STREAM_MEASUREMENT_UNIT, Datatype.TEXT));
+    table.addColumn(new Column(STREAM_MEASUREMENT_TYPE, Datatype.TEXT));
+    table.addColumn(new Column(STREAM_SHORT_TYPE, Datatype.TEXT, 25));
+    table.addColumn(new Column(STREAM_MEASUREMENT_SYMBOL, Datatype.TEXT));
+    table.addColumn(new Column(STREAM_THRESHOLD_VERY_LOW, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_THRESHOLD_LOW, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_THRESHOLD_MEDIUM, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_THRESHOLD_HIGH, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_THRESHOLD_VERY_HIGH, Datatype.INTEGER));
+    table.addColumn(new Column(STREAM_MARKED_FOR_REMOVAL, Datatype.BOOLEAN, 28));
+    table.addColumn(new Column(STREAM_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN, 28));
+    return table;
+  }
+
+  Table sessionTable()
+  {
+    Table table = new Table(SESSION_TABLE_NAME);
+    table.setPrimaryKey(new Column(SESSION_ID, Datatype.INTEGER));
+
+    table.addColumn(new Column(SESSION_TITLE, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_DESCRIPTION, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_TAGS, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_START, Datatype.INTEGER));
+    table.addColumn(new Column(SESSION_END, Datatype.INTEGER));
+    table.addColumn(new Column(SESSION_UUID, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_LOCATION, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_CALIBRATION, Datatype.INTEGER));
+    table.addColumn(new Column(SESSION_CONTRIBUTE, Datatype.BOOLEAN));
+    table.addColumn(new Column(SESSION_PHONE_MODEL, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_INSTRUMENT, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_DATA_TYPE, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_OS_VERSION, Datatype.TEXT));
+    table.addColumn(new Column(SESSION_OFFSET_60_DB, Datatype.INTEGER));
+    table.addColumn(new Column(SESSION_MARKED_FOR_REMOVAL,Datatype.BOOLEAN));
+    table.addColumn(new Column(SESSION_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN, 21));
+    table.addColumn(new Column(SESSION_CALIBRATED, Datatype.BOOLEAN, 26));
+
+    return table;
+  }
+
+  public static class Table
+  {
+    String name;
+    private List<Column> columns = newArrayList();
+    private Column primaryKey;
+
+    public Table(String name)
+    {
+      this.name = name;
+    }
+
+    public void addColumn(Column column)
+    {
+      this.columns.add(column);
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public List<Column> getColumns()
+    {
+      return columns;
+    }
+
+    public void setPrimaryKey(Column primaryKey)
+    {
+      this.primaryKey = primaryKey;
+    }
+
+    public Column getPrimaryKey()
+    {
+      return primaryKey;
+    }
+
+    public String asSQL(int revision)
+    {
+      return new CreateSQLWriter().createSql(this, revision);
+    }
+  }
+
+  class Column
+  {
+    String name;
+    Datatype datatype;
+    int appearedInRevision;
+
+    public Column(String columnName, Datatype datatype)
+    {
+      this.name = columnName;
+      this.datatype = datatype;
+    }
+
+    public Column(String name, Datatype datatype, int appearedInRevision)
+    {
+      this(name, datatype);
+      this.appearedInRevision = appearedInRevision;
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public Datatype getDatatype()
+    {
+      return datatype;
+    }
+
+    public int getAppearedInRevision()
+    {
+      return appearedInRevision;
+    }
   }
 }
