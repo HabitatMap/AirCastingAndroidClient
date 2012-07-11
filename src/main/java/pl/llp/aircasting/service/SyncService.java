@@ -53,145 +53,153 @@ import static com.google.common.collect.Iterables.find;
 
 public class SyncService extends RoboIntentService
 {
-    @Inject ConnectivityManager connectivityManager;
-    @Inject SessionRepository sessionRepository;
-    @Inject SyncDriver syncDriver;
-    @Inject SettingsHelper settingsHelper;
-    @Inject SessionDriver sessionDriver;
-    @Inject SyncState syncState;
-    @Inject Context context;
+  @Inject ConnectivityManager connectivityManager;
+  @Inject SessionRepository sessionRepository;
+  @Inject SyncDriver syncDriver;
+  @Inject SettingsHelper settingsHelper;
+  @Inject SessionDriver sessionDriver;
+  @Inject SyncState syncState;
+  @Inject Context context;
 
-    @InjectResource(R.string.account_reminder) String accountReminder;
+  @InjectResource(R.string.account_reminder) String accountReminder;
 
-    public SyncService() {
-        super(SyncService.class.getSimpleName());
+  @Inject SessionTimeFixer adjustTimes;
+
+  public SyncService() {
+    super(SyncService.class.getSimpleName());
+  }
+
+  @Override
+  protected void onHandleIntent(Intent intent) {
+    try {
+      syncState.setInProgress(true);
+
+      if (canUpload()) {
+        sync();
+      } else if (!settingsHelper.hasCredentials()) {
+        Intents.notifySyncUpdate(context, accountReminder);
+      }
+    } finally {
+      syncState.setInProgress(false);
     }
+  }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        try {
-            syncState.setInProgress(true);
+  private void sync()
+  {
+    Iterable<Session> sessions = prepareSessions();
 
-            if (canUpload()) {
-                sync();
-            } else if (!settingsHelper.hasCredentials()) {
-                Intents.notifySyncUpdate(context, accountReminder);
-            }
-        } finally {
-            syncState.setInProgress(false);
-        }
-    }
+    HttpResult<SyncResponse> result = syncDriver.sync(sessions);
+    SyncResponse syncResponse = result.getContent();
 
-    private void sync()
+    if (syncResponse != null)
     {
-        Iterable<Session> sessions = prepareSessions();
+      sessionRepository.deleteSubmitted();
+      uploadSessions(syncResponse.getUpload());
 
-        HttpResult<SyncResponse> result = syncDriver.sync(sessions);
-        SyncResponse syncResponse = result.getContent();
-
-        if (syncResponse != null)
-        {
-            sessionRepository.deleteSubmitted();
-            uploadSessions(syncResponse.getUpload());
-
-            downloadSessions(syncResponse.getDownload());
-        }
+      downloadSessions(syncResponse.getDownload());
     }
+  }
 
-    private Iterable<Session> prepareSessions()
-    {
-        Iterable<Session> sessions = sessionRepository.all();
+  private Iterable<Session> prepareSessions()
+  {
+    Iterable<Session> sessions = sessionRepository.all();
 
-        for (Session session : sessions) {
-            if (session.isMarkedForRemoval()) {
-                session.setSubmittedForRemoval(true);
-                sessionRepository.update(session);
-            }
-          else
-            {
-              Collection<MeasurementStream> streams = session.getMeasurementStreams();
-              for (MeasurementStream stream : streams)
-              {
-                if(stream.isMarkedForRemoval())
-                {
-                  stream.setSubmittedForRemoval(true);
-                  sessionRepository.streams().update(stream);
-                }
-              }
-            }
-        }
-
-        return sessions;
-    }
-
-    private boolean canUpload() {
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-        return networkInfo != null
-                && networkInfo.isConnected()
-                && (!settingsHelper.isSyncOnlyWifi() || networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
-                && settingsHelper.hasCredentials();
-    }
-
-    private void uploadSessions(UUID[] uuids) {
-        for (UUID uuid : uuids) {
-            Session session = sessionRepository.loadFully(uuid);
-            if (session != null && !session.isMarkedForRemoval()) {
-                HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
-
-                if (result.getStatus() == Status.SUCCESS) {
-                    updateSession(session, result.getContent());
-                }
-            }
-
-            Intents.notifySyncUpdate(context);
-        }
-    }
-
-    private void updateSession(Session session, CreateSessionResponse sessionResponse) {
-        session.setLocation(sessionResponse.getLocation());
-
-        for (CreateSessionResponse.Note responseNote : sessionResponse.getNotes()) {
-            final int number = responseNote.getNumber();
-
-            Note note = find(session.getNotes(), new Predicate<Note>() {
-                @Override
-                public boolean apply(Note note) {
-                    return note.getNumber() == number;
-                }
-            });
-
-            note.setPhotoPath(responseNote.getPhotoLocation());
-        }
-
+    for (Session session : sessions) {
+      if (session.isMarkedForRemoval()) {
+        session.setSubmittedForRemoval(true);
         sessionRepository.update(session);
-    }
-
-    private void downloadSessions(long[] ids)
-    {
-        for (long id : ids) {
-            HttpResult<Session> result = sessionDriver.show(id);
-
-            if (result.getStatus() == Status.SUCCESS) {
-              Session session = result.getContent();
-              if (session == null)
-              {
-                Log.w(Constants.TAG, "Session [" + id + "] couldn't ");
-              }
-              else
-              {
-                try
-                {
-                  sessionRepository.save(session);
-                }
-                catch (RepositoryException e)
-                {
-                  Log.e(Constants.TAG, "Error saving session [" + id + "]", e);
-                }
-              }
-            }
-
-            Intents.notifySyncUpdate(context);
+      }
+      else
+      {
+        Collection<MeasurementStream> streams = session.getMeasurementStreams();
+        for (MeasurementStream stream : streams)
+        {
+          if(stream.isMarkedForRemoval())
+          {
+            stream.setSubmittedForRemoval(true);
+            sessionRepository.streams().update(stream);
+          }
         }
+      }
     }
+
+    return sessions;
+  }
+
+  private boolean canUpload() {
+    NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+    return networkInfo != null
+        && networkInfo.isConnected()
+        && (!settingsHelper.isSyncOnlyWifi() || networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+        && settingsHelper.hasCredentials();
+  }
+
+  private void uploadSessions(UUID[] uuids) {
+    for (UUID uuid : uuids) {
+      Session session = sessionRepository.loadFully(uuid);
+      if (session != null && !session.isMarkedForRemoval()) {
+        HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
+
+        if (result.getStatus() == Status.SUCCESS) {
+          updateSession(session, result.getContent());
+        }
+      }
+
+      Intents.notifySyncUpdate(context);
+    }
+  }
+
+  private void updateSession(Session session, CreateSessionResponse sessionResponse) {
+    session.setLocation(sessionResponse.getLocation());
+
+    for (CreateSessionResponse.Note responseNote : sessionResponse.getNotes()) {
+      final int number = responseNote.getNumber();
+
+      Note note = find(session.getNotes(), new Predicate<Note>() {
+        @Override
+        public boolean apply(Note note) {
+          return note.getNumber() == number;
+        }
+      });
+
+      note.setPhotoPath(responseNote.getPhotoLocation());
+    }
+
+    sessionRepository.update(session);
+  }
+
+  private void downloadSessions(long[] ids)
+  {
+    for (long id : ids) {
+      HttpResult<Session> result = sessionDriver.show(id);
+
+      if (result.getStatus() == Status.SUCCESS) {
+        Session session = result.getContent();
+        if (session == null)
+        {
+          Log.w(Constants.TAG, "Session [" + id + "] couldn't ");
+        }
+        else
+        {
+          try
+          {
+            fixTimesFromUTC(session);
+            sessionRepository.save(session);
+          }
+          catch (RepositoryException e)
+          {
+            Log.e(Constants.TAG, "Error saving session [" + id + "]", e);
+          }
+        }
+      }
+
+      Intents.notifySyncUpdate(context);
+    }
+  }
+
+  private void fixTimesFromUTC(Session session)
+  {
+    adjustTimes.fromUTCtoLocal(session);
+  }
 }

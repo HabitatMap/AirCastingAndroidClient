@@ -20,6 +20,7 @@
 package pl.llp.aircasting.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
@@ -29,6 +30,7 @@ public class Measurement
   @Expose private double longitude;
   @Expose private double value;
   @Expose private Date time;
+  @Expose @SerializedName("timezone_offset") private int timeZoneOffsetMinutes;
 
   public Measurement(double value) {
     this.value = value;
@@ -121,4 +123,14 @@ public class Measurement
     public void setTime(Date time) {
         this.time = time;
     }
+
+  public int getTimeZoneOffsetMinutes()
+  {
+    return timeZoneOffsetMinutes;
+  }
+
+  public void setTimeZoneOffsetMinutes(int timeZoneOffsetMinutes)
+  {
+    this.timeZoneOffsetMinutes = timeZoneOffsetMinutes;
+  }
 }
