@@ -517,11 +517,17 @@ public class SessionRepository
       {
         Cursor c;
         c = readOnlyDatabase.query(SESSION_TABLE_NAME, new String[]{SESSION_ID, SESSION_MARKED_FOR_REMOVAL, SESSION_SUBMITTED_FOR_REMOVAL}, whereClause, null, null, null, null);
-                c.moveToFirst();
-                String string = c.getString(0);
-                String string1 = c.getString(1);
-                String string2 = c.getString(2);
-        Log.d(Constants.TAG, "Session " + string + ", marked " + string1 + ", submitted " + string2);
+        if(c.moveToFirst())
+        {
+          String string = c.getString(0);
+          String string1 = c.getString(1);
+          String string2 = c.getString(2);
+          Log.d(Constants.TAG, "Session " + string + ", marked " + string1 + ", submitted " + string2);
+        }
+        else
+        {
+          Log.e(Constants.TAG, "Session [" + whereClause + "] not found in database");
+        }
         return "";
       }
     });
