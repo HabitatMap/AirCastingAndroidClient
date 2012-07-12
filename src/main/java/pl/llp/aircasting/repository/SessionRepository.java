@@ -40,7 +40,6 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,7 +57,7 @@ public class SessionRepository
       "SELECT " + SESSION_TABLE_NAME + ".*" +
           " FROM " + SESSION_TABLE_NAME +
           " JOIN " + STREAM_TABLE_NAME +
-          " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_SESSION_ID +
+          " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_TABLE_NAME + "." + STREAM_SESSION_ID +
           " WHERE " + STREAM_SENSOR_NAME + " = ?" +
           " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
           " ORDER BY " + SESSION_START + " DESC";
@@ -95,11 +94,6 @@ public class SessionRepository
     setupProgressListener(session, progressListener);
 
     final ContentValues values = new ContentValues();
-
-    if (session.getStart() == null || session.getEnd() == null)
-    {
-      fixStartEndTimeFromMeasurements(session);
-    }
 
     prepareHeader(session, values);
 
@@ -149,49 +143,6 @@ public class SessionRepository
       }
     });
   }
-
-  private void fixStartEndTimeFromMeasurements(Session session)
-  {
-    Date start = session.getStart();
-    Date end = session.getEnd();
-
-    for (MeasurementStream stream : session.getMeasurementStreams())
-    {
-      List<Measurement> measurements = stream.getMeasurements();
-      if(measurements.isEmpty())
-        continue;
-
-      Measurement first = measurements.get(0);
-      Measurement last = measurements.get(measurements.size());
-
-      if (start != null)
-      {
-        start = start.before(first.getTime()) ? start : first.getTime();
-      }
-      else
-      {
-        start = first.getTime();
-      }
-
-      if (end != null)
-      {
-        end = end.before(last.getTime()) ? last.getTime() : end;
-      }
-      else
-      {
-        end = last.getTime();
-      }
-    }
-
-    if(start == null || end == null)
-    {
-      String message = "Session [" + session.getId() + "] has incorrect start/end date [" + start + "/" + end + "]";
-      throw new RepositoryException(message);
-    }
-
-    session.setStart(new Date(start.getTime()));
-    session.setEnd(new Date(end.getTime()));
-}
 
   private void setupProgressListener(Session session, ProgressListener progressListener)
   {
@@ -468,8 +419,16 @@ public class SessionRepository
         {
           if (load.containsKey(stream.getId()))
           {
-            stream.setMeasurements(load.get(stream.getId()));
-            session.add(stream);
+            List<Measurement> measurements = load.get(stream.getId());
+            if(measurements == null || measurements.isEmpty())
+            {
+
+            }
+            else
+            {
+              stream.setMeasurements(measurements);
+              session.add(stream);
+            }
           }
         }
 
