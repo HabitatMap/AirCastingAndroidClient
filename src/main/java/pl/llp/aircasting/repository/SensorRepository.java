@@ -43,24 +43,26 @@ public class SensorRepository implements DBConstants
         boolean distinct = true;
         Cursor cursor = readOnlyDatabase.query(distinct, STREAM_TABLE_NAME, SENSOR_FIELDS, null, null, null, null, null, null);
 
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-          String name = getString(cursor, STREAM_SENSOR_NAME);
-          String packageName = getString(cursor, STREAM_SENSOR_PACKAGE_NAME);
-          String measurementType = getString(cursor, STREAM_MEASUREMENT_TYPE);
-          String shortType = getString(cursor, STREAM_SHORT_TYPE);
-          String unit = getString(cursor, STREAM_MEASUREMENT_UNIT);
-          String symbol = getString(cursor, STREAM_MEASUREMENT_SYMBOL);
-          int veryLow = getInt(cursor, STREAM_THRESHOLD_VERY_LOW);
-          int low = getInt(cursor, STREAM_THRESHOLD_LOW);
-          int mid = getInt(cursor, STREAM_THRESHOLD_MEDIUM);
-          int high = getInt(cursor, STREAM_THRESHOLD_HIGH);
-          int veryHigh = getInt(cursor, STREAM_THRESHOLD_VERY_HIGH);
+        if(cursor.moveToFirst())
+        {
+          while (!cursor.isAfterLast()) {
+            String name = getString(cursor, STREAM_SENSOR_NAME);
+            String packageName = getString(cursor, STREAM_SENSOR_PACKAGE_NAME);
+            String measurementType = getString(cursor, STREAM_MEASUREMENT_TYPE);
+            String shortType = getString(cursor, STREAM_SHORT_TYPE);
+            String unit = getString(cursor, STREAM_MEASUREMENT_UNIT);
+            String symbol = getString(cursor, STREAM_MEASUREMENT_SYMBOL);
+            int veryLow = getInt(cursor, STREAM_THRESHOLD_VERY_LOW);
+            int low = getInt(cursor, STREAM_THRESHOLD_LOW);
+            int mid = getInt(cursor, STREAM_THRESHOLD_MEDIUM);
+            int high = getInt(cursor, STREAM_THRESHOLD_HIGH);
+            int veryHigh = getInt(cursor, STREAM_THRESHOLD_VERY_HIGH);
 
-          Sensor sensor = new Sensor(packageName, name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
-          result.add(sensor);
+            Sensor sensor = new Sensor(packageName, name, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh);
+            result.add(sensor);
 
-          cursor.moveToNext();
+            cursor.moveToNext();
+          }
         }
         cursor.close();
 
