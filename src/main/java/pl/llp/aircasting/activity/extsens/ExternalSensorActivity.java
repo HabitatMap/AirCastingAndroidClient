@@ -160,15 +160,23 @@ public class ExternalSensorActivity extends DialogActivity
         bluetoothAdapter.startDiscovery();
     }
 
-  private class BluetoothFoundReceiver extends BroadcastReceiver {
+  private class BluetoothFoundReceiver extends BroadcastReceiver
+  {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+      runOnUiThread(new Runnable()
+      {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            if(connectedSensorAdapter.knows(device.getAddress()))
-            {
-              return;
-            }
-            availableSensorAdapter.deviceFound(device);
+        public void run()
+        {
+          if(connectedSensorAdapter.knows(device.getAddress()))
+          {
+            return;
+          }
+          availableSensorAdapter.deviceFound(device);
         }
+      });
     }
+  }
 }

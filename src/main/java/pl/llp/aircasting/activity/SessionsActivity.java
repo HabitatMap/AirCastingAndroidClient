@@ -131,8 +131,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     IntentFilter filter = new IntentFilter();
     filter.addAction(Intents.ACTION_SYNC_UPDATE);
-
     registerReceiver(broadcastReceiver, filter);
+
     registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     eventBus.register(this);
   }
@@ -167,10 +167,18 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     eventBus.unregister(this);
   }
 
-  private void refreshList() {
-    refreshBottomBar();
-    refreshSensors();
-    refreshItems();
+  private void refreshList()
+  {
+    runOnUiThread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        refreshBottomBar();
+        refreshSensors();
+        refreshItems();
+      }
+    });
   }
 
   private void refreshSensors() {
