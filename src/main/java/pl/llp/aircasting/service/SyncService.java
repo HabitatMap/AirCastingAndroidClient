@@ -63,7 +63,7 @@ public class SyncService extends RoboIntentService
 
   @InjectResource(R.string.account_reminder) String accountReminder;
 
-  @Inject SessionTimeFixer adjustTimes;
+  @Inject SessionTimeFixer sessionTimes;
 
   public SyncService() {
     super(SyncService.class.getSimpleName());
@@ -200,6 +200,6 @@ public class SyncService extends RoboIntentService
 
   private void fixTimesFromUTC(Session session)
   {
-    adjustTimes.fromUTCtoLocal(session);
+    sessionTimes.fromUTCtoLocal(session);
   }
 }
