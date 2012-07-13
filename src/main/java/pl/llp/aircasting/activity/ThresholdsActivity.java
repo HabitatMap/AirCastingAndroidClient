@@ -19,27 +19,27 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.app.Application;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
+
+import android.app.Application;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 import static java.lang.String.valueOf;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/8/11
- * Time: 2:37 PM
- */
-public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener {
+public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener
+{
     @InjectView(R.id.color_scale_very_loud) EditText veryLoudEdit;
     @InjectView(R.id.color_scale_too_loud) EditText tooLoudEdit;
     @InjectView(R.id.color_scale_average) EditText averageEdit;

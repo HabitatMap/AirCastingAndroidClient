@@ -43,10 +43,7 @@
                                            android:title="@string/offset_60_db"
                                            android:summary="@string/offset_60_db_summary"
             />
-    <android.preference.Preference android:title="@string/color_scale"
-                                   android:summary="@string/color_scale_summary"
-                                   android:key="color_scale"
-            />
+
     <android.preference.EditTextPreference android:defaultValue="10"
                                            android:numeric="integer"
                                            android:key="heat_map_density"
