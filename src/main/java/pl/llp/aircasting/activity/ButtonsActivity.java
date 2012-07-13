@@ -237,7 +237,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             setButton(contextButtonLeft, R.layout.context_button_stop);
             setButton(contextButtonRight, R.layout.context_button_note);
         } else if (!sessionManager.isSessionSaved()) {
-            setButton(contextButtonLeft, R.layout.context_button_play);
+            setButton(contextButtonLeft, R.layout.context_button_record);
             setButton(contextButtonRight, R.layout.context_button_placeholder);
         }
     }
