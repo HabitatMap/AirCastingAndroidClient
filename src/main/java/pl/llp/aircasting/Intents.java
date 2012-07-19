@@ -27,6 +27,7 @@ import pl.llp.aircasting.activity.StreamsActivity;
 import pl.llp.aircasting.activity.ThresholdsActivity;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.service.IOIOService;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.service.SyncService;
 
@@ -41,12 +42,6 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/20/11
- * Time: 10:42 AM
- */
 public final class Intents {
     public static final String SESSION = "session";
     public static final int SAVE_DIALOG = 0;
@@ -92,6 +87,9 @@ public final class Intents {
         intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
         context.startService(intent);
+
+      Intent i = new Intent(context, IOIOService.class);
+      context.startService(i);
     }
 
     public static void stopSensors(Context context) {
