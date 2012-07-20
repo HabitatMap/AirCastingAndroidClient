@@ -54,18 +54,19 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay
   {
     if (shadow || bitmap == null || mapView.getZoomLevel() != zoomLevel) return;
 
-    Projection projection = mapView.getProjection();
-    Point oldCenter = projection.toPixels(mapCenter, null);
-    Point newCenter = projection.toPixels(mapView.getMapCenter(), null);
-
-    int x = oldCenter.x - newCenter.x;
-    int y = oldCenter.y - newCenter.y;
     if(bitmap.isRecycled())
     {
       String msg = "Trying to draw [" + mapView.getWidth() + ", " + mapView.getHeight() + "] with a recycled bitmap ";
       Log.e(Constants.TAG, msg);
       return;
     }
+
+    Projection projection = mapView.getProjection();
+    Point oldCenter = projection.toPixels(mapCenter, null);
+    Point newCenter = projection.toPixels(mapView.getMapCenter(), null);
+
+    int x = oldCenter.x - newCenter.x;
+    int y = oldCenter.y - newCenter.y;
 
     canvas.drawBitmap(bitmap, x, y, null);
   }

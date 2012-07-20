@@ -10,7 +10,6 @@ public class ExternalSensorParser
    */
   enum Fields
   {
-
     MEASUREMENT_VALUE,
 
     SENSOR_PACKAGE_NAME,

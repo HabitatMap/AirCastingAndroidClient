@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.extsens;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -29,6 +31,7 @@ public class ExternalSensorActivityTest
   Context context = null;
 
   private String ANY_ADDRESS = "any";
+  private ExternalSensorDescriptor ANY_DESCRIPTOR = new ExternalSensorDescriptor("", ANY_ADDRESS);
 
   Intent intent;
   private SettingsHelper mockHelper;
@@ -43,7 +46,7 @@ public class ExternalSensorActivityTest
     when(ANY_DEVICE.getAddress()).thenReturn(ANY_ADDRESS);
 
     mockHelper = mock(SettingsHelper.class);
-    when(mockHelper.getSensorAddress()).thenReturn(ANY_ADDRESS);
+    when(mockHelper.sensorsFromSettings()).thenReturn(newArrayList(ANY_DESCRIPTOR));
   }
 
   @Test
@@ -67,7 +70,7 @@ public class ExternalSensorActivityTest
     activity.receiver.onReceive(context, intent);
 
     // then
-    assertEquals(0, activity.connectedSensorAdapter.devices.size());
+    assertEquals(0, activity.knownSensorAdapter.getCount());
     assertEquals(1, activity.availableSensorAdapter.devices.size());
   }
 
@@ -81,7 +84,7 @@ public class ExternalSensorActivityTest
     activity.showPreviouslyConnectedSensor();
 
       // then
-    assertEquals(1, activity.connectedSensorAdapter.data.size());
+    assertEquals(1, activity.knownSensorAdapter.data.size());
   }
 
   @Test

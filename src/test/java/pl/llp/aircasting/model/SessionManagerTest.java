@@ -30,7 +30,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import pl.llp.aircasting.sensor.external.ExternalSensor;
+import pl.llp.aircasting.sensor.external.ExternalSensors;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -69,7 +69,7 @@ public class SessionManagerTest {
         sessionManager.locationHelper = mock(LocationHelper.class);
         sessionManager.audioReader = mock(SimpleAudioReader.class);
         sessionManager.metadataHelper = mock(MetadataHelper.class);
-        sessionManager.externalSensor = mock(ExternalSensor.class);
+        sessionManager.externalSensors = mock(ExternalSensors.class);
         sessionManager.eventBus = mock(EventBus.class);
         sessionManager.sensorManager = mock(SensorManager.class);
 
@@ -231,7 +231,7 @@ public class SessionManagerTest {
 
         verify(sessionManager.locationHelper).start();
         verify(sessionManager.audioReader).start();
-        verify(sessionManager.externalSensor).start();
+        verify(sessionManager.externalSensors).start();
         assertThat(sessionManager.isRecording(), equalTo(true));
     }
 
@@ -434,7 +434,7 @@ public class SessionManagerTest {
     public void shouldRestartExternalSensor() {
         sessionManager.restartSensors();
 
-        verify(sessionManager.externalSensor).start();
+        verify(sessionManager.externalSensors).start();
     }
 
   @Test

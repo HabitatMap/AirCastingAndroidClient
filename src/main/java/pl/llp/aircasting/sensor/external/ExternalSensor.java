@@ -1,42 +1,39 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
-@Singleton
 public class ExternalSensor
 {
-  public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-  @Inject EventBus eventBus;
-  @Inject SettingsHelper settingsHelper;
-  @Nullable @Inject BluetoothAdapter bluetoothAdapter;
-  @Inject ExternalSensorParser parser;
+  EventBus eventBus;
+  BluetoothAdapter bluetooth;
 
   private BluetoothDevice device;
   ReaderWorker readerWorker;
+  private ExternalSensorDescriptor descriptor;
+
+  public ExternalSensor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter)
+  {
+    this.descriptor = descriptor;
+    this.eventBus = eventBus;
+    this.bluetooth = adapter;
+
+    if(descriptor == null || eventBus == null || adapter == null)
+    {
+      throw new NullPointerException("Cannot have nulls!");
+    }
+  }
 
   public synchronized void start()
   {
-    String address = settingsHelper.getSensorAddress();
-    if (bluetoothAdapter != null && address != null && (device == null || addressChanged(address)))
+    if (device == null || addressChanged(descriptor.getAddress()))
     {
-      if (device != null)
-      {
-        stop();
-      }
-      device = bluetoothAdapter.getRemoteDevice(address);
+      device = bluetooth.getRemoteDevice(descriptor.getAddress());
 
-      readerWorker = new ReaderWorker(bluetoothAdapter, device, parser, eventBus);
+      readerWorker = new ReaderWorker(bluetooth, device, eventBus);
       readerWorker.start();
     }
   }
@@ -46,9 +43,17 @@ public class ExternalSensor
     return !device.getAddress().equals(address);
   }
 
-  private void stop()
+  void stop()
   {
-    readerWorker.stop();
+    if(readerWorker != null)
+    {
+      readerWorker.stop();
+    }
+  }
+
+  public String getName()
+  {
+    return descriptor.getName();
   }
 }
 

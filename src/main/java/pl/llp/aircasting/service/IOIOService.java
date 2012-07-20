@@ -1,8 +1,9 @@
 package pl.llp.aircasting.service;
 
 import pl.llp.aircasting.MeasurementLevel;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.helper.SoundHelper;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 
@@ -76,12 +77,13 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   }
 
   @Subscribe
-  public void onEvent(SensorEvent event)
+  public void onEvent(MeasurementEvent event)
   {
     Sensor visibleSensor = sensorManager.getVisibleSensor();
-    if(visibleSensor.matches(event))
+    if(visibleSensor.matches(event.getSensor()))
     {
-      MeasurementLevel level = soundHelper.level(visibleSensor, event.getValue());
+      Measurement measurement = event.getMeasurement();
+      MeasurementLevel level = soundHelper.level(visibleSensor, measurement.getValue());
       switch (level)
       {
         case TOO_LOW:

@@ -82,31 +82,46 @@ public final class Intents {
         activity.startActivity(intent);
     }
 
-    public static void startSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
+  public static void startSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
-        context.startService(intent);
+    context.startService(intent);
 
-      Intent i = new Intent(context, IOIOService.class);
-      context.startService(i);
-    }
+    startIOIO(context);
+  }
 
-    public static void stopSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
+  public static void stopSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
 
-        context.startService(intent);
-    }
+    context.startService(intent);
 
-    public static void restartSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
+    stopIOIO(context);
+  }
 
-        context.startService(intent);
-    }
+  private static void stopIOIO(Context context)
+  {
+    Intent ioioService = new Intent(context, IOIOService.class);
+    context.stopService(ioioService);
+  }
 
-    public static int getSensorServiceTask(Intent intent) {
+  public static void restartSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
+
+    context.startService(intent);
+
+    startIOIO(context);
+  }
+
+  private static void startIOIO(Context context)
+  {
+    Intent ioioService = new Intent(context, IOIOService.class);
+    context.startService(ioioService);
+  }
+
+  public static int getSensorServiceTask(Intent intent) {
         if (intent != null && intent.hasExtra(SESSION_SERVICE_TASK)) {
             return intent.getIntExtra(SESSION_SERVICE_TASK, START_SENSORS);
         } else {

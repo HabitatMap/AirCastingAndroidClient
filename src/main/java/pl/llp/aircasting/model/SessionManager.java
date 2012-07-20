@@ -31,7 +31,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import pl.llp.aircasting.sensor.external.ExternalSensor;
+import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
@@ -57,7 +57,6 @@ import static com.google.common.collect.Maps.newHashMap;
 public class SessionManager
 {
   @Inject SimpleAudioReader audioReader;
-  @Inject ExternalSensor externalSensor;
   @Inject EventBus eventBus;
 
   @Inject SessionRepository sessionRepository;
@@ -72,6 +71,8 @@ public class SessionManager
   @Inject SensorManager sensorManager;
 
   @NotNull Session session = new Session();
+
+  @Inject ExternalSensors externalSensors;
 
   private Map<String, Double> recentMeasurements = newHashMap();
 
@@ -147,7 +148,7 @@ public class SessionManager
 
             audioReader.start();
 
-            externalSensor.start();
+            externalSensors.start();
 
             recording = true;
         }
@@ -245,7 +246,7 @@ public class SessionManager
     }
 
     public void restartSensors() {
-        externalSensor.start();
+        externalSensors.start();
     }
 
     public Collection<MeasurementStream> getMeasurementStreams() {

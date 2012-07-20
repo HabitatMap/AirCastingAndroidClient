@@ -196,4 +196,6 @@
   <string name="backend_port">Backend port</string>
   <string name="backend_settings">Backend settings</string>
   <string name="backend_settings_summary">Set backend address and port</string>
+  <string name="know_sensors_label">Known</string>
+  <string name="available_sensors_label">Available</string>
 </resources>
