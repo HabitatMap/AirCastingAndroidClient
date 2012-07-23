@@ -46,6 +46,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.zephyr.hxm</groupId>
+      <artifactId>bluetooth</artifactId>
+      <version>9700.0124.01d</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.code.gson</groupId>
       <version>${gson.version}</version>
       <artifactId>gson</artifactId>
