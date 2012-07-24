@@ -115,9 +115,16 @@ class ReaderWorker
             adapter.cancelDiscovery();
           }
         }
-//        socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
-        Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
-        socket = (BluetoothSocket) m.invoke(device, 1);
+
+        try
+        {
+          Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+          socket = (BluetoothSocket) m.invoke(device, 1);
+        }
+        catch (NoSuchMethodException e)
+        {
+          socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+        }
         socket.connect();
         status = Status.CONNECTED;
         return socket;
