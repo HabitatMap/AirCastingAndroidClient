@@ -46,6 +46,9 @@ public class HXMHeartBeatMonitor extends AbstractSensor
       {
         while (active.get())
         {
+          if(!active.get())
+            break;
+
           try
           {
             listener = new HxMConnectionListener(messageHandler);
@@ -55,12 +58,15 @@ public class HXMHeartBeatMonitor extends AbstractSensor
               client.addConnectedEventListener(listener);
               client.start();
             }
+            else
+            {
+              Thread.sleep(Constants.THREE_SECONDS);
+            }
           }
           catch (InterruptedException e)
           {
             status = Status.DID_NOT_CONNECT;
             Log.e(Constants.TAG, "Failed to establish adapter connection", e);
-            return;
           }
         }
       }
@@ -148,7 +154,7 @@ class EventMaker
 {
   static SensorEvent event(String packageName, String sensorName, double value)
   {
-    return new SensorEvent(packageName, sensorName, "Heart Rate", "hz", "Hz", "HRT", 0, 10, 20, 30, 40, value);
+    return new SensorEvent(packageName, sensorName, "Heart Rate", "hz", "Hz", "HRT", 60, 90, 120, 150, 180, value);
   }
 
 }
