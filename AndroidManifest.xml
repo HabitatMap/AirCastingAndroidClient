@@ -19,8 +19,8 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="32"
-          android:versionName="1.3.8-SNAPSHOT"
+          android:versionCode="33"
+          android:versionName="1.3.9-SNAPSHOT"
           package="pl.llp.aircasting">
 
   <uses-sdk android:minSdkVersion="7"
@@ -148,6 +148,8 @@
     <service android:name=".service.SensorService"/>
 
     <service android:name=".service.SyncService"/>
+
+    <service android:name=".service.IOIOService"/>
 
     <!-- Receivers -->
     <receiver android:name=".receiver.NetworkReceiver">
