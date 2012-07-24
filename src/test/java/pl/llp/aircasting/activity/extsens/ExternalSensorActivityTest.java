@@ -79,6 +79,7 @@ public class ExternalSensorActivityTest
   {
       // given
     activity.settingsHelper = mockHelper;
+    activity.knownSensorAdapter.settingsHelper = mockHelper;
 
       // when
     activity.showPreviouslyConnectedSensor();
@@ -91,6 +92,7 @@ public class ExternalSensorActivityTest
   public void should_notAddKnownDeviceAsAvailable() throws Exception
   {
     // given
+    activity.knownSensorAdapter.settingsHelper = mockHelper;
     activity.settingsHelper = mockHelper;
     when(intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)).thenReturn(ANY_DEVICE);
     activity.showPreviouslyConnectedSensor();

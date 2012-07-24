@@ -27,6 +27,7 @@ public class ReaderWorkerTest
     worker = new ReaderWorker(mock(BluetoothAdapter.class),
                               mock(BluetoothDevice.class),
                               mock(EventBus.class));
+    worker.parser = mock(ExternalSensorParser.class);
   }
 
   @Test
