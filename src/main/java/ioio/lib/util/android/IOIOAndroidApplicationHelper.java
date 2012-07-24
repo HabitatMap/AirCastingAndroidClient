@@ -12,7 +12,7 @@ public class IOIOAndroidApplicationHelper extends IOIOApplicationHelper
     IOIOConnectionRegistry
     				.addBootstraps(new String[]{
                 "ioio.lib.android.accessory.AccessoryConnectionBootstrap",
-                "ioio.lib.android.adapter.BluetoothIOIOConnectionBootstrap"});
+                "ioio.lib.android.bluetooth.BluetoothIOIOConnectionBootstrap"});
   }
 
 	private final ContextWrapper contextWrapper_;
