@@ -6,7 +6,7 @@
               android:orientation="vertical"
     >
 
-  <TextView android:text="Connected"
+  <TextView android:text="@string/know_sensors_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/connected_sensor_label"
@@ -21,7 +21,7 @@
             android:id="@+id/connected_sensor_list"
       />
 
-  <TextView android:text="Available"
+  <TextView android:text="@string/available_sensors_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/external_sensor_label"

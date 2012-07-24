@@ -3,6 +3,8 @@ package pl.llp.aircasting.model;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
+import roboguice.util.Strings;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -115,5 +117,11 @@ public class Sensor implements Serializable
   public String getPackageName()
   {
     return packageName;
+  }
+
+  public boolean matches(Sensor sensor)
+  {
+    return Strings.equals(sensor.getSensorName(), getSensorName()) &&
+        Strings.equals(sensor.getMeasurementType(), getMeasurementType());
   }
 }

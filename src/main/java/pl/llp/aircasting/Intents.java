@@ -27,6 +27,7 @@ import pl.llp.aircasting.activity.StreamsActivity;
 import pl.llp.aircasting.activity.ThresholdsActivity;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.service.IOIOService;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.service.SyncService;
 
@@ -41,12 +42,6 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/20/11
- * Time: 10:42 AM
- */
 public final class Intents {
     public static final String SESSION = "session";
     public static final int SAVE_DIALOG = 0;
@@ -87,28 +82,46 @@ public final class Intents {
         activity.startActivity(intent);
     }
 
-    public static void startSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
+  public static void startSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
-        context.startService(intent);
-    }
+    context.startService(intent);
 
-    public static void stopSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
+    startIOIO(context);
+  }
 
-        context.startService(intent);
-    }
+  public static void stopSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
 
-    public static void restartSensors(Context context) {
-        Intent intent = new Intent(context, SensorService.class);
-        intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
+    context.startService(intent);
 
-        context.startService(intent);
-    }
+    stopIOIO(context);
+  }
 
-    public static int getSensorServiceTask(Intent intent) {
+  private static void stopIOIO(Context context)
+  {
+    Intent ioioService = new Intent(context, IOIOService.class);
+    context.stopService(ioioService);
+  }
+
+  public static void restartSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
+
+    context.startService(intent);
+
+    startIOIO(context);
+  }
+
+  private static void startIOIO(Context context)
+  {
+    Intent ioioService = new Intent(context, IOIOService.class);
+    context.startService(ioioService);
+  }
+
+  public static int getSensorServiceTask(Intent intent) {
         if (intent != null && intent.hasExtra(SESSION_SERVICE_TASK)) {
             return intent.getIntExtra(SESSION_SERVICE_TASK, START_SENSORS);
         } else {

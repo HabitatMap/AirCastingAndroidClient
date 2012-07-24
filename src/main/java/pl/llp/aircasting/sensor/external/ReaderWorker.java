@@ -1,6 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.sensor.Status;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
@@ -25,29 +28,31 @@ import static com.google.common.io.Closeables.closeQuietly;
  */
 class ReaderWorker
 {
-  public static final int THREE_SECONDS = 3000;
+  public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   BluetoothAdapter adapter;
   BluetoothDevice device;
-  ExternalSensorParser parser;
   EventBus eventBus;
 
   AtomicBoolean active = new AtomicBoolean(false);
 
+  Status status = Status.NOT_YET_STARTED;
+
+  ExternalSensorParser parser = new ExternalSensorParser();
+
   public ReaderWorker(BluetoothAdapter adapter,
                       BluetoothDevice device,
-                      ExternalSensorParser parser,
                       EventBus eventBus)
   {
     this.adapter = adapter;
     this.device = device;
-    this.parser = parser;
     this.eventBus = eventBus;
   }
 
   public void start()
   {
     active.set(true);
+    status = Status.STARTED;
     new Thread(new Runnable()
     {
       @Override
@@ -58,11 +63,13 @@ class ReaderWorker
           try
           {
             BluetoothSocket socket = connect();
-            read(socket);
+            if(socket != null)
+              read(socket);
           }
           catch (InterruptedException e)
           {
-            Log.e(Constants.TAG, "Failed to establish bluetooth connection", e);
+            status = Status.DID_NOT_CONNECT;
+            Log.e(Constants.TAG, "Failed to establish adapter connection", e);
             return;
           }
         }
@@ -84,6 +91,7 @@ class ReaderWorker
     }
     catch (IOException e)
     {
+      status = Status.CONNECTION_INTERRUPTED;
       Log.w(Constants.TAG, "Bluetooth communication failure - mostly likely end of stream", e);
     }
     finally
@@ -96,24 +104,35 @@ class ReaderWorker
   private BluetoothSocket connect() throws InterruptedException
   {
     BluetoothSocket socket = null;
-    while (socket == null)
+    while (socket == null && active.get())
     {
       try
       {
-        adapter.cancelDiscovery();
-        socket = device.createRfcommSocketToServiceRecord(ExternalSensor.SPP_SERIAL);
+        synchronized (adapter)
+        {
+          if(adapter.isDiscovering())
+          {
+            adapter.cancelDiscovery();
+          }
+        }
+//        socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+        Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+        socket = (BluetoothSocket) m.invoke(device, 1);
         socket.connect();
+        status = Status.CONNECTED;
+        return socket;
       }
       catch (Exception e)
       {
-        Thread.sleep(THREE_SECONDS);
+        Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + " ]", e);
+        Thread.sleep(Constants.THREE_SECONDS);
         socket = null;
       }
     }
     return socket;
   }
 
-  public void process(String line)
+  void process(String line)
   {
     try
     {
@@ -129,6 +148,7 @@ class ReaderWorker
   public void stop()
   {
     active.set(false);
+    status = Status.STOPPED;
   }
 
   private LineProcessor<Void> lineProcessor()
@@ -150,6 +170,15 @@ class ReaderWorker
     };
   }
 
+  @Override
+  public String toString()
+  {
+    return "ReaderWorker{" +
+        "device=" + device +
+        ", status=" + status +
+        '}';
+  }
+
   private InputSupplier<Reader> inputSupplier(final Reader finalReader)
   {
     return new InputSupplier<Reader>()
@@ -161,4 +190,5 @@ class ReaderWorker
       }
     };
   }
+
 }

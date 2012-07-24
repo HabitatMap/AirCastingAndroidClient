@@ -20,49 +20,61 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.Sensor;
 
 import android.content.SharedPreferences;
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class SettingsHelper
 {
-    public static final String AUTH_TOKEN = "auth_token";
-    public static final String USER_LOGIN = "user_login";
-    public static final String KEEP_SCREEN_ON = "keep_screen_on";
-    public static final String OFFSET_60_DB = "offset_60_db";
-    public static final String CALIBRATION = "calibration";
-    public static final String SATELLITE = "satellite";
-    public static final String BACKEND = "backend";
-    public static final String BACKEND_PORT = "backend_port";
-    public static final String HEAT_MAP_DENSITY = "heat_map_density";
-    public static final String FIRST_LAUNCH = "first_launch";
+  public static final String AUTH_TOKEN = "auth_token";
+  public static final String USER_LOGIN = "user_login";
+  public static final String KEEP_SCREEN_ON = "keep_screen_on";
+  public static final String OFFSET_60_DB = "offset_60_db";
+  public static final String CALIBRATION = "calibration";
+  public static final String SATELLITE = "satellite";
+  public static final String BACKEND = "backend";
+  public static final String BACKEND_PORT = "backend_port";
+  public static final String HEAT_MAP_DENSITY = "heat_map_density";
+  public static final String FIRST_LAUNCH = "first_launch";
 
-    public static final int DEFAULT_CALIBRATION = 100;
-    public static final boolean DEFAULT_SATELLITE = false;
-    public static final String DEFAULT_BACKEND = "aircasting.org";
-    public static final int DEFAULT_BACKEND_PORT = 80;
-    public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
-    public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
-    public static final int DEFAULT_OFFSET_60_DB = 0;
-    public static final int MIN_OFFSET_60_DB = -5;
-    public static final int MAX_OFFSET_60_DB = 5;
-    public static final String SAMPLE_INTERVAL = "sample_interval";
-    public static final int MIN_SAMPLE_INTERVAL = 1;
-    public static final int MAX_SAMPLE_INTERVAL = 3600;
-    public static final String AVERAGING_TIME = "averaging_time";
-    private static final int MIN_AVERAGING_TIME = 1;
-    private static final int MAX_AVERAGING_TIME = 3600;
-    public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
-    public static final String SHOW_ROUTE = "show_route";
-    public static final String SENSOR_ADDRESS = "sensor_address";
-    public static final String SENSOR_NAME = "sensor_name";
+  public static final int DEFAULT_CALIBRATION = 100;
+  public static final boolean DEFAULT_SATELLITE = false;
+  public static final String DEFAULT_BACKEND = "aircasting.org";
+  public static final int DEFAULT_BACKEND_PORT = 80;
+  public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
+  public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
+  public static final int DEFAULT_OFFSET_60_DB = 0;
+  public static final int MIN_OFFSET_60_DB = -5;
+  public static final int MAX_OFFSET_60_DB = 5;
+  public static final String SAMPLE_INTERVAL = "sample_interval";
+  public static final int MIN_SAMPLE_INTERVAL = 1;
+  public static final int MAX_SAMPLE_INTERVAL = 3600;
+  public static final String AVERAGING_TIME = "averaging_time";
+  private static final int MIN_AVERAGING_TIME = 1;
+  private static final int MAX_AVERAGING_TIME = 3600;
+  public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
+  public static final String SHOW_ROUTE = "show_route";
+  public static final String SENSOR_ADDRESS = "sensor_address";
+  public static final String SENSOR_NAME = "sensor_name";
+  public static final String SENSORS = "external_sensors_json";
 
-    @Inject SharedPreferences preferences;
+  @Inject SharedPreferences preferences;
+  @Inject Gson gson;
 
-    public int getCalibration() {
-        return getInt(CALIBRATION, DEFAULT_CALIBRATION);
-    }
+  public int getCalibration() {
+    return getInt(CALIBRATION, DEFAULT_CALIBRATION);
+  }
 
     private int getInt(String key, int defaultValue) {
         String value = preferences.getString(key, Integer.toString(defaultValue));
@@ -236,23 +248,6 @@ public class SettingsHelper
         return preferences.getBoolean(SHOW_ROUTE, true);
     }
 
-    public void setSensorAddress(String address) {
-        writeString(SENSOR_ADDRESS, address);
-    }
-
-    public void setSensorName(String name) {
-          writeString(SENSOR_NAME, name);
-    }
-
-    public String getSensorAddress() {
-        return preferences.getString(SENSOR_ADDRESS, null);
-    }
-
-  public String geSensorName()
-  {
-    return preferences.getString(SENSOR_NAME, null);
-  }
-
   public void setBackendAddress(String backendAddress)
   {
     writeString(BACKEND, backendAddress);
@@ -262,4 +257,35 @@ public class SettingsHelper
     {
       writeString(BACKEND_PORT, backendAddress);
     }
+
+  public Iterable<ExternalSensorDescriptor> sensorsFromSettings()
+  {
+    String json = getExternalSensorsAsJson();
+    if (Strings.isNullOrEmpty(json))
+    {
+      return newArrayList();
+    }
+
+    Type type = new TypeToken<List<ExternalSensorDescriptor>>() {}.getType();
+    try
+    {
+      return gson.fromJson(json, type);
+    }
+    catch (JsonSyntaxException e)
+    {
+      writeString(SENSORS, "");
+    }
+    return newArrayList();
+  }
+
+  public String getExternalSensorsAsJson()
+  {
+    return preferences.getString(SENSORS, null);
+  }
+
+  public void setExternalSensors(List<ExternalSensorDescriptor> sensors)
+  {
+    String sensorsAsJson = gson.toJson(sensors);
+    writeString(SENSORS, sensorsAsJson);
+  }
 }
