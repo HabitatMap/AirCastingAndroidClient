@@ -4,7 +4,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
-import pl.llp.aircasting.sensor.ioio.IOIODisplayStrip;
+import pl.llp.aircasting.sensor.ioio.IOIOFakeSensor;
 
 import android.bluetooth.BluetoothAdapter;
 import com.google.common.base.Strings;
@@ -21,7 +21,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class ExternalSensors
 {
   private static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
-  private static final String IOIO_DISPLAY_STRIP = "IOIO";
+//  private static final String IOIO_DISPLAY_STRIP = "IOIO";
   @Nullable @Inject BluetoothAdapter bluetoothAdapter;
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
@@ -57,9 +57,9 @@ public class ExternalSensors
     {
       return new HXMHeartBeatMonitor(descriptor, eventBus, bluetoothAdapter);
     }
-    if(sensorName.startsWith(IOIO_DISPLAY_STRIP))
+    if(sensorName.startsWith("IOIO"))
     {
-      return new IOIODisplayStrip(descriptor, eventBus, bluetoothAdapter);
+      return new IOIOFakeSensor(descriptor, eventBus, bluetoothAdapter);
     }
 
     return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);

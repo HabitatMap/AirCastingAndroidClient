@@ -35,6 +35,11 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   private final IOIOAndroidApplicationHelper helper = new IOIOAndroidApplicationHelper(this, this);
   private boolean started = false;
 
+  public IOIOService()
+  {
+    setColors(Colors.GREEN);
+  }
+
   @Override
   public void onCreate()
   {

@@ -5,6 +5,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.helper.NoOpOnClickListener;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 
@@ -26,6 +27,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
+import java.util.List;
 import java.util.Map;
 
 public class ExternalSensorActivity extends DialogActivity
@@ -64,6 +66,10 @@ public class ExternalSensorActivity extends DialogActivity
           {
             String address = availableSensorAdapter.getAddress(position);
             String name = availableSensorAdapter.getName(position);
+            if(name.startsWith("IOIO"))
+            {
+              Intents.startIOIO(context);
+            }
 
             availableSensorAdapter.remove(position);
             knownSensorAdapter.addSensor(Strings.nullToEmpty(name), address);
@@ -87,11 +93,15 @@ public class ExternalSensorActivity extends DialogActivity
                   @Override
                   public void onClick(DialogInterface dialog, int which)
                   {
-                    Map<String,String> removed = knownSensorAdapter.remove(position);
+                    Map<String, String> removed = knownSensorAdapter.remove(position);
                     externalSensors.disconnect(removed.get(SensorAdapter.ADDRESS));
                     showPreviouslyConnectedSensor();
 
                     Intents.restartSensors(context);
+                    if (removed.get(SensorAdapter.NAME).startsWith("IOIO"))
+                    {
+                      Intents.stopIOIO(context);
+                    }
                   }
                 }).setNegativeButton("No", new NoOpOnClickListener());
             AlertDialog dialog = builder.create();
@@ -123,7 +133,8 @@ public class ExternalSensorActivity extends DialogActivity
 
   void showPreviouslyConnectedSensor()
   {
-    knownSensorAdapter.updatePreviouslyConnected();
+    List<ExternalSensorDescriptor> descriptors = settingsHelper.sensorsFromSettings();
+    knownSensorAdapter.updatePreviouslyConnected(descriptors);
     if (knownSensorAdapter.getCount() > 0)
     {
       findViewById(R.id.connected_sensor_label).setVisibility(View.VISIBLE);
@@ -133,6 +144,13 @@ public class ExternalSensorActivity extends DialogActivity
     {
       findViewById(R.id.connected_sensor_label).setVisibility(View.GONE);
       findViewById(R.id.connected_sensor_list).setVisibility(View.GONE);
+    }
+    for (ExternalSensorDescriptor descriptor : descriptors)
+    {
+      if(descriptor.getName().startsWith("IOIO"))
+      {
+        Intents.startIOIO(context);
+      }
     }
   }
 

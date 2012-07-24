@@ -87,8 +87,6 @@ public final class Intents {
     intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
     context.startService(intent);
-
-    startIOIO(context);
   }
 
   public static void stopSensors(Context context) {
@@ -96,11 +94,9 @@ public final class Intents {
     intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
 
     context.startService(intent);
-
-    stopIOIO(context);
   }
 
-  private static void stopIOIO(Context context)
+  public static void stopIOIO(Context context)
   {
     Intent ioioService = new Intent(context, IOIOService.class);
     context.stopService(ioioService);
@@ -111,11 +107,9 @@ public final class Intents {
     intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
 
     context.startService(intent);
-
-    startIOIO(context);
   }
 
-  private static void startIOIO(Context context)
+  public static void startIOIO(Context context)
   {
     Intent ioioService = new Intent(context, IOIOService.class);
     context.startService(ioioService);

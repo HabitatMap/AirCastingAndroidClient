@@ -77,10 +77,9 @@ public class KnownSensorAdapter extends SensorAdapter
     return new ExternalSensorDescriptor(name, address);
   }
 
-  public void updatePreviouslyConnected()
+  public void updatePreviouslyConnected(List<ExternalSensorDescriptor> descriptors)
   {
-    Iterable<ExternalSensorDescriptor> sensors = settingsHelper.sensorsFromSettings();
-    for (ExternalSensorDescriptor sensor : sensors)
+    for (ExternalSensorDescriptor sensor : descriptors)
     {
       if(!containsAddress(sensor.getAddress()))
       {
