@@ -2,8 +2,12 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
+import pl.llp.aircasting.sensor.ioio.IOIODisplayStrip;
 
 import android.bluetooth.BluetoothAdapter;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -16,11 +20,13 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class ExternalSensors
 {
+  private static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
+  private static final String IOIO_DISPLAY_STRIP = "IOIO";
   @Nullable @Inject BluetoothAdapter bluetoothAdapter;
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
 
-  Map<String, ExternalSensor> sensors = newHashMap();
+  Map<String, AbstractSensor> sensors = newHashMap();
 
   @Inject
   public void init()
@@ -34,26 +40,45 @@ public class ExternalSensors
       }
       else
       {
-        sensors.put(descriptor.getAddress(), new ExternalSensor(descriptor, eventBus, bluetoothAdapter));
+        AbstractSensor sensor = createExternalSensor(descriptor);
+        sensors.put(descriptor.getAddress(), sensor);
       }
     }
+  }
+
+  private AbstractSensor createExternalSensor(ExternalSensorDescriptor descriptor)
+  {
+    String sensorName = descriptor.getName();
+    if(Strings.isNullOrEmpty(sensorName))
+    {
+      return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);
+    }
+    if(sensorName.startsWith(ZEPHYR_HEART_RATE_MONITOR))
+    {
+      return new HXMHeartBeatMonitor(descriptor, eventBus, bluetoothAdapter);
+    }
+    if(sensorName.startsWith(IOIO_DISPLAY_STRIP))
+    {
+      return new IOIODisplayStrip(descriptor, eventBus, bluetoothAdapter);
+    }
+
+    return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);
   }
 
   public void start()
   {
     init();
-    for (ExternalSensor sensor : sensors.values())
+    for (AbstractSensor sensor : sensors.values())
     {
-      if (!sensor.getName().startsWith("IOIO"))
-      {
-        sensor.start();
-      }
+      sensor.start();
     }
   }
 
   public void disconnect(String address)
   {
     if(sensors.containsKey(address))
+    {
       sensors.get(address).stop();
+    }
   }
 }

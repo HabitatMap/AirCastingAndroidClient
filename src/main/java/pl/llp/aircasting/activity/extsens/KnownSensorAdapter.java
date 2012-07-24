@@ -24,6 +24,11 @@ public class KnownSensorAdapter extends SensorAdapter
 
   public boolean knows(String address)
   {
+    return containsAddress(address);
+  }
+
+  private boolean containsAddress(String address)
+  {
     for (Map<String, String> keyValues : data)
     {
       if (address.equalsIgnoreCase(keyValues.get(ADDRESS)))
@@ -60,7 +65,10 @@ public class KnownSensorAdapter extends SensorAdapter
   public void addSensor(String name, String address)
   {
     ExternalSensorDescriptor sensor = sensor(name, address);
-    data.add(sensor.asMap());
+    if(!containsAddress(address))
+    {
+      data.add(sensor.asMap());
+    }
     updateSettings();
   }
 
@@ -74,11 +82,14 @@ public class KnownSensorAdapter extends SensorAdapter
     Iterable<ExternalSensorDescriptor> sensors = settingsHelper.sensorsFromSettings();
     for (ExternalSensorDescriptor sensor : sensors)
     {
-      Map<String, String> item = newHashMap();
-      item.put(ADDRESS, sensor.getAddress());
-      item.put(NAME, sensor.getName());
+      if(!containsAddress(sensor.getAddress()))
+      {
+        Map<String, String> item = newHashMap();
+        item.put(ADDRESS, sensor.getAddress());
+        item.put(NAME, sensor.getName());
 
-      data.add(item);
+        data.add(item);
+      }
     }
 
     notifyDataSetChanged();

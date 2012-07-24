@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
@@ -65,7 +66,7 @@ public class ExternalSensorActivity extends DialogActivity
             String name = availableSensorAdapter.getName(position);
 
             availableSensorAdapter.remove(position);
-            knownSensorAdapter.addSensor(name, address);
+            knownSensorAdapter.addSensor(Strings.nullToEmpty(name), address);
 
             Intents.restartSensors(context);
             Intents.startStreamsActivity(a);
@@ -88,6 +89,7 @@ public class ExternalSensorActivity extends DialogActivity
                   {
                     Map<String,String> removed = knownSensorAdapter.remove(position);
                     externalSensors.disconnect(removed.get(SensorAdapter.ADDRESS));
+                    showPreviouslyConnectedSensor();
 
                     Intents.restartSensors(context);
                   }

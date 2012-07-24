@@ -2,6 +2,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.activity.extsens.SensorAdapter;
 
+import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 
 import java.util.HashMap;
@@ -16,6 +17,10 @@ public class ExternalSensorDescriptor
 
   public ExternalSensorDescriptor(String name, String address)
   {
+    if(Strings.isNullOrEmpty(name))
+    {
+      name = "Unnamed";
+    }
     this.name = name;
     this.address = address;
   }

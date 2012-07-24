@@ -1,6 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.sensor.Status;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,7 +28,6 @@ import static com.google.common.io.Closeables.closeQuietly;
  */
 class ReaderWorker
 {
-  public static final int THREE_SECONDS = 3000;
   public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
   BluetoothAdapter adapter;
@@ -68,7 +69,7 @@ class ReaderWorker
           catch (InterruptedException e)
           {
             status = Status.DID_NOT_CONNECT;
-            Log.e(Constants.TAG, "Failed to establish bluetooth connection", e);
+            Log.e(Constants.TAG, "Failed to establish adapter connection", e);
             return;
           }
         }
@@ -109,9 +110,14 @@ class ReaderWorker
       {
         synchronized (adapter)
         {
-          adapter.cancelDiscovery();
+          if(adapter.isDiscovering())
+          {
+            adapter.cancelDiscovery();
+          }
         }
-        socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+//        socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+        Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+        socket = (BluetoothSocket) m.invoke(device, 1);
         socket.connect();
         status = Status.CONNECTED;
         return socket;
@@ -119,7 +125,7 @@ class ReaderWorker
       catch (Exception e)
       {
         Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + " ]", e);
-        Thread.sleep(THREE_SECONDS);
+        Thread.sleep(Constants.THREE_SECONDS);
         socket = null;
       }
     }
@@ -185,9 +191,4 @@ class ReaderWorker
     };
   }
 
-  enum Status
-  {
-    CONNECTION_INTERRUPTED, CONNECTED, DID_NOT_CONNECT, STOPPED, STARTED, NOT_YET_STARTED
-
-  }
 }
