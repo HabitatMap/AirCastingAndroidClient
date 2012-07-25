@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.guice.GsonProvider;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
@@ -43,9 +44,6 @@ public class CSVHelper
   public static final String BASE_PATH = "/mnt/sdcard/../..";
   public static final String SESSION_TEMP_FILE = "session.csv";
 
-  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-  final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-
   public Uri prepareCSV(Context context, Session session) throws IOException
   {
     OutputStream outputStream = null;
@@ -62,29 +60,14 @@ public class CSVHelper
       csvWriter.write("sensor:capability");
       csvWriter.write("Date");
       csvWriter.write("Time");
+      csvWriter.write("Timestamp");
       csvWriter.write("geo:lat");
       csvWriter.write("geo:long");
       csvWriter.write("sensor:units");
       csvWriter.write("Value");
       csvWriter.endRecord();
 
-      Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
-      for (MeasurementStream stream : streams)
-      {
-        for (Measurement measurement : stream.getMeasurements())
-        {
-          csvWriter.write(stream.getSensorName());
-          csvWriter.write(stream.getPackageName());
-          csvWriter.write(stream.getMeasurementType());
-          csvWriter.write(DATE_FORMAT.format(measurement.getTime()));
-          csvWriter.write(TIME_FORMAT.format(measurement.getTime()));
-          csvWriter.write(valueOf(measurement.getLongitude()));
-          csvWriter.write(valueOf(measurement.getLatitude()));
-          csvWriter.write(valueOf(stream.getUnit()));
-          csvWriter.write(valueOf(measurement.getValue()));
-          csvWriter.endRecord();
-        }
-      }
+      write(session).toWriter(csvWriter);
 
       csvWriter.close();
 
@@ -105,5 +88,46 @@ public class CSVHelper
         .append(SESSION_TEMP_FILE)
         .toString();
     return new File(path);
+  }
+
+  private SessionWriter write(Session session)
+  {
+    return new SessionWriter(session);
+  }
+}
+
+class SessionWriter
+{
+  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+  final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+  final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(GsonProvider.ISO_8601);
+
+  Session session;
+
+  SessionWriter(Session session)
+  {
+    this.session = session;
+  }
+
+  void toWriter(CsvWriter writer) throws IOException
+  {
+    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
+    for (MeasurementStream stream : streams)
+    {
+      for (Measurement measurement : stream.getMeasurements())
+      {
+        writer.write(stream.getSensorName());
+        writer.write(stream.getPackageName());
+        writer.write(stream.getMeasurementType());
+        writer.write(DATE_FORMAT.format(measurement.getTime()));
+        writer.write(TIME_FORMAT.format(measurement.getTime()));
+        writer.write(TIMESTAMP_FORMAT.format(measurement.getTime()));
+        writer.write(valueOf(measurement.getLongitude()));
+        writer.write(valueOf(measurement.getLatitude()));
+        writer.write(valueOf(stream.getUnit()));
+        writer.write(valueOf(measurement.getValue()));
+        writer.endRecord();
+      }
+    }
   }
 }
