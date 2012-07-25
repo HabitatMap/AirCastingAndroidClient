@@ -142,7 +142,7 @@ public class HXMHeartBeatMonitor extends AbstractSensor
           {
             byte[] messageBytes = msg.getBytes();
             int heartRate = HRSpeedDistPacket.GetHeartRate(messageBytes);
-            eventBus.post(EventMaker.event("Zephyr", "HxM", heartRate));
+            eventBus.post(EventMaker.event("Zephyr", "Zephyr HxM", heartRate));
           }
         }
       });
@@ -154,7 +154,7 @@ class EventMaker
 {
   static SensorEvent event(String packageName, String sensorName, double value)
   {
-    return new SensorEvent(packageName, sensorName, "Heart Rate", "hz", "Hz", "HRT", 60, 90, 120, 150, 180, value);
+    return new SensorEvent(packageName, sensorName, "Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, value);
   }
 
 }
