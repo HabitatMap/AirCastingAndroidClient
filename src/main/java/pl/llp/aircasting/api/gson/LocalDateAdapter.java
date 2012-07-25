@@ -1,4 +1,4 @@
-package pl.llp.aircasting.gson;
+package pl.llp.aircasting.api.gson;
 
 import pl.llp.aircasting.util.Constants;
 

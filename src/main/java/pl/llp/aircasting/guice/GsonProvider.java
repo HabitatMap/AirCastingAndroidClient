@@ -19,8 +19,8 @@
  */
 package pl.llp.aircasting.guice;
 
-import pl.llp.aircasting.gson.LocalDateAdapter;
-import pl.llp.aircasting.gson.NoteAdapter;
+import pl.llp.aircasting.api.gson.LocalDateAdapter;
+import pl.llp.aircasting.api.gson.NoteAdapter;
 import pl.llp.aircasting.model.Note;
 
 import com.google.gson.FieldNamingPolicy;

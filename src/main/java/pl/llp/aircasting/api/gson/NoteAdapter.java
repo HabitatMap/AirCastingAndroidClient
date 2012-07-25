@@ -17,7 +17,7 @@
 
  You can contact the authors by email at <info@habitatmap.org>
  */
-package pl.llp.aircasting.gson;
+package pl.llp.aircasting.api.gson;
 
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.util.Constants;
