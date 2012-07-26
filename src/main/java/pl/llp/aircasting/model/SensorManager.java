@@ -72,7 +72,7 @@ public class SensorManager {
    * @param sensorName the name of the Sensor
    * @return The Sensor with the given name if known, null otherwise
    */
-  public Sensor getSensor(String sensorName) {
+  public Sensor getSensorByName(String sensorName) {
     return sensors.get(sensorName);
   }
 

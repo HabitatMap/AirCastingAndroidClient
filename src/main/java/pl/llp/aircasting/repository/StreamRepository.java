@@ -1,5 +1,6 @@
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.repository.db.AirCastingDB;
@@ -36,7 +37,7 @@ public class StreamRepository
 
   public StreamRepository()
   {
-    measurements = new MeasurementRepository(new NullProgressListener());
+    measurements = new MeasurementRepository(NoOp.progressListener());
   }
 
   @Internal

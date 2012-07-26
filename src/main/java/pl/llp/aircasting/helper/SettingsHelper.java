@@ -258,7 +258,7 @@ public class SettingsHelper
       writeString(BACKEND_PORT, backendAddress);
     }
 
-  public List<ExternalSensorDescriptor> sensorsFromSettings()
+  public List<ExternalSensorDescriptor> knownSensors()
   {
     String json = getExternalSensorsAsJson();
     if (Strings.isNullOrEmpty(json))

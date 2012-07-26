@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 
 import android.content.Context;
 import android.widget.SimpleAdapter;
@@ -30,14 +31,10 @@ public class SensorAdapter extends SimpleAdapter
     this.data = data;
   }
 
-  public String getAddress(int position)
+  public ExternalSensorDescriptor get(int position)
   {
-    return data.get(position).get(ADDRESS);
-  }
-
-  public String getName(int position)
-  {
-    return data.get(position).get(NAME);
+    Map<String, String> map = data.get(position);
+    return new ExternalSensorDescriptor(map.get(NAME), map.get(ADDRESS));
   }
 
   public Map<String, String> remove(int position)

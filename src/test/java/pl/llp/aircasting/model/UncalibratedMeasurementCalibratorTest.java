@@ -1,7 +1,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.repository.NullProgressListener;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.repository.ProgressListener;
 import pl.llp.aircasting.repository.SessionRepository;
 import pl.llp.aircasting.repository.db.AirCastingDB;
@@ -34,7 +34,7 @@ public class UncalibratedMeasurementCalibratorTest
   public void setUp() throws Exception
   {
     db = acdb.getDatabaseDuringTests();
-    PROGRESS = new NullProgressListener();
+    PROGRESS = NoOp.progressListener();
   }
 
   @Test

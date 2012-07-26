@@ -46,7 +46,7 @@ public class ExternalSensorActivityTest
     when(ANY_DEVICE.getAddress()).thenReturn(ANY_ADDRESS);
 
     mockHelper = mock(SettingsHelper.class);
-    when(mockHelper.sensorsFromSettings()).thenReturn(newArrayList(ANY_DESCRIPTOR));
+    when(mockHelper.knownSensors()).thenReturn(newArrayList(ANY_DESCRIPTOR));
   }
 
   @Test
@@ -72,35 +72,5 @@ public class ExternalSensorActivityTest
     // then
     assertEquals(0, activity.knownSensorAdapter.getCount());
     assertEquals(1, activity.availableSensorAdapter.devices.size());
-  }
-
-  @Test
-  public void should_addKnownDevices() throws Exception
-  {
-      // given
-    activity.settingsHelper = mockHelper;
-    activity.knownSensorAdapter.settingsHelper = mockHelper;
-
-      // when
-    activity.showPreviouslyConnectedSensor();
-
-      // then
-    assertEquals(1, activity.knownSensorAdapter.data.size());
-  }
-
-  @Test
-  public void should_notAddKnownDeviceAsAvailable() throws Exception
-  {
-    // given
-    activity.knownSensorAdapter.settingsHelper = mockHelper;
-    activity.settingsHelper = mockHelper;
-    when(intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)).thenReturn(ANY_DEVICE);
-    activity.showPreviouslyConnectedSensor();
-
-    // when
-    activity.receiver.onReceive(context, intent);
-
-    // then
-    assertEquals(0, activity.availableSensorAdapter.data.size());
   }
 }

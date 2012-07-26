@@ -41,10 +41,5 @@ public class ExternalSensor extends AbstractSensor
       readerWorker.stop();
     }
   }
-
-  public String getName()
-  {
-    return descriptor.getName();
-  }
 }
 

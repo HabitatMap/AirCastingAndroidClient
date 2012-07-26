@@ -6,7 +6,7 @@ import pl.llp.aircasting.activity.ButtonsActivity;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
-import pl.llp.aircasting.helper.NoOpOnClickListener;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
@@ -252,7 +252,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Intents.triggerSync(context);
         Intents.sessions(context, context);
       }
-    }).setNegativeButton("No", new NoOpOnClickListener());
+    }).setNegativeButton("No", NoOp.dialogOnClick());
     AlertDialog dialog = b.create();
     dialog.show();
 
@@ -272,7 +272,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         update();
         Intents.triggerSync(context);
       }
-    }).setNegativeButton("No", new NoOpOnClickListener());
+    }).setNegativeButton("No", NoOp.dialogOnClick());
     AlertDialog dialog = b.create();
     dialog.show();
   }

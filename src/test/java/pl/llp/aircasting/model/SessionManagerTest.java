@@ -78,7 +78,7 @@ public class SessionManagerTest {
         when(sensor.getSensorName()).thenReturn("LHC");
 
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
-        when(sessionManager.sensorManager.getSensor(Mockito.any(String.class))).thenReturn(sensor);
+        when(sessionManager.sensorManager.getSensorByName(Mockito.any(String.class))).thenReturn(sensor);
     }
 
   @Before

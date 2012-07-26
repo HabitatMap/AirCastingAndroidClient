@@ -1,5 +1,6 @@
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.util.Constants;
@@ -23,7 +24,7 @@ import static pl.llp.aircasting.repository.db.DBConstants.*;
 
 class MeasurementRepository
 {
-  private ProgressListener progress = new NullProgressListener();
+  private ProgressListener progress = NoOp.progressListener();
 
   @Language("SQL")
   private static final String INSERT_MEASUREMENTS = "" +

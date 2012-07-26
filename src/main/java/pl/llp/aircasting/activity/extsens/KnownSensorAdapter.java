@@ -47,7 +47,7 @@ public class KnownSensorAdapter extends SensorAdapter
     return removed;
   }
 
-  private void updateSettings()
+  void updateSettings()
   {
     Iterator<Map<String,String>> iterator = data.iterator();
     List<ExternalSensorDescriptor> sensors = newArrayList();
@@ -62,10 +62,9 @@ public class KnownSensorAdapter extends SensorAdapter
     notifyDataSetChanged();
   }
 
-  public void addSensor(String name, String address)
+  public void addSensor(ExternalSensorDescriptor sensor)
   {
-    ExternalSensorDescriptor sensor = sensor(name, address);
-    if(!containsAddress(address))
+    if(!knows(sensor.getAddress()))
     {
       data.add(sensor.asMap());
     }

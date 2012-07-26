@@ -17,7 +17,7 @@ public class ExternalSensorDescriptor
 
   public ExternalSensorDescriptor(String name, String address)
   {
-    if(Strings.isNullOrEmpty(name))
+    if (Strings.isNullOrEmpty(name))
     {
       name = "Unnamed";
     }
@@ -41,5 +41,10 @@ public class ExternalSensorDescriptor
     result.put(SensorAdapter.ADDRESS, address);
     result.put(SensorAdapter.NAME, name);
     return result;
+  }
+
+  public static ExternalSensorDescriptor from(Map<String, String> map)
+  {
+    return new ExternalSensorDescriptor(map.get(SensorAdapter.NAME), map.get(SensorAdapter.ADDRESS));
   }
 }

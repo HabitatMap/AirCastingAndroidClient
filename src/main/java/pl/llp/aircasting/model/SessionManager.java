@@ -191,7 +191,7 @@ public class SessionManager
   {
     double value = event.getValue();
     String sensorName = event.getSensorName();
-    Sensor sensor = sensorManager.getSensor(sensorName);
+    Sensor sensor = sensorManager.getSensorByName(sensorName);
     recentMeasurements.put(sensorName, value);
 
     if (locationHelper.getLastLocation() != null && sensor.isEnabled())

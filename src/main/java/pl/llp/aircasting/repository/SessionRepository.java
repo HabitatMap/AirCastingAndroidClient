@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.repository;
 
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
@@ -70,7 +71,7 @@ public class SessionRepository
   @API
   public Session save(@NotNull Session session)
   {
-    save(session, new NullProgressListener());
+    save(session, NoOp.progressListener());
     return session;
   }
 
@@ -393,7 +394,7 @@ public class SessionRepository
   public Session loadFully(UUID uuid)
   {
     Session session = loadShallow(uuid);
-    return fill(session, new NullProgressListener());
+    return fill(session, NoOp.progressListener());
   }
 
   @API

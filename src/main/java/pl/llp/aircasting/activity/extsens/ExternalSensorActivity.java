@@ -3,11 +3,10 @@ package pl.llp.aircasting.activity.extsens;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DialogActivity;
-import pl.llp.aircasting.helper.NoOpOnClickListener;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
-import pl.llp.aircasting.util.Constants;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -18,17 +17,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
-
-import java.util.List;
-import java.util.Map;
 
 public class ExternalSensorActivity extends DialogActivity
 {
@@ -45,6 +39,9 @@ public class ExternalSensorActivity extends DialogActivity
     AvailableSensorAdapter availableSensorAdapter;
     KnownSensorAdapter knownSensorAdapter;
 
+    AdapterInteractor sensorLists;
+    IOIOInteractor ioio;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,8 +49,6 @@ public class ExternalSensorActivity extends DialogActivity
         setContentView(R.layout.external_sensors_list);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        final ExternalSensorActivity a = this;
 
         knownSensorAdapter = adapterFactory.getKnownSensorAdapter(this, settingsHelper);
         availableSensorAdapter = adapterFactory.getAvailabelSensorAdapter(this);
@@ -64,18 +59,11 @@ public class ExternalSensorActivity extends DialogActivity
           @Override
           public void onItemClick(AdapterView<?> parent, View view, int position, long id)
           {
-            String address = availableSensorAdapter.getAddress(position);
-            String name = availableSensorAdapter.getName(position);
-            if(name.startsWith("IOIO"))
-            {
-              Intents.startIOIO(context);
-            }
-
-            availableSensorAdapter.remove(position);
-            knownSensorAdapter.addSensor(Strings.nullToEmpty(name), address);
+            ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
+            ioio.startIfNecessary(connected);
 
             Intents.restartSensors(context);
-            Intents.startStreamsActivity(a);
+            Intents.startStreamsActivity(ExternalSensorActivity.this);
           }
         });
 
@@ -93,21 +81,20 @@ public class ExternalSensorActivity extends DialogActivity
                   @Override
                   public void onClick(DialogInterface dialog, int which)
                   {
-                    Map<String, String> removed = knownSensorAdapter.remove(position);
-                    externalSensors.disconnect(removed.get(SensorAdapter.ADDRESS));
-                    showPreviouslyConnectedSensor();
+                    ExternalSensorDescriptor disconnected = sensorLists.disconnect(position);
+                    externalSensors.disconnect(disconnected.getAddress());
 
                     Intents.restartSensors(context);
-                    if (removed.get(SensorAdapter.NAME).startsWith("IOIO"))
-                    {
-                      Intents.stopIOIO(context);
-                    }
+                    ioio.stopIfNecessary(disconnected);
                   }
-                }).setNegativeButton("No", new NoOpOnClickListener());
+                }).setNegativeButton("No", NoOp.dialogOnClick());
             AlertDialog dialog = builder.create();
             dialog.show();
           }
         });
+
+      sensorLists = new AdapterInteractor(this, knownSensorAdapter, availableSensorAdapter, settingsHelper);
+      ioio = new IOIOInteractor(this, settingsHelper);
     }
 
     @Override
@@ -121,8 +108,9 @@ public class ExternalSensorActivity extends DialogActivity
         }
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        showPreviouslyConnectedSensor();
         registerReceiver(receiver, filter);
+        sensorLists.updateKnownSensorListVisibility();
+        ioio.startPreviouslyConnectedIOIO();
 
         if (!bluetoothAdapter.isEnabled()) {
             Intents.requestEnableBluetooth(this);
@@ -130,29 +118,6 @@ public class ExternalSensorActivity extends DialogActivity
             findDevices();
         }
     }
-
-  void showPreviouslyConnectedSensor()
-  {
-    List<ExternalSensorDescriptor> descriptors = settingsHelper.sensorsFromSettings();
-    knownSensorAdapter.updatePreviouslyConnected(descriptors);
-    if (knownSensorAdapter.getCount() > 0)
-    {
-      findViewById(R.id.connected_sensor_label).setVisibility(View.VISIBLE);
-      findViewById(R.id.connected_sensor_list).setVisibility(View.VISIBLE);
-    }
-    else
-    {
-      findViewById(R.id.connected_sensor_label).setVisibility(View.GONE);
-      findViewById(R.id.connected_sensor_list).setVisibility(View.GONE);
-    }
-    for (ExternalSensorDescriptor descriptor : descriptors)
-    {
-      if(descriptor.getName().startsWith("IOIO"))
-      {
-        Intents.startIOIO(context);
-      }
-    }
-  }
 
   @Override
     protected void onPause() {
@@ -186,17 +151,14 @@ public class ExternalSensorActivity extends DialogActivity
         @Override
         public void run()
         {
-          if(knownSensorAdapter.knows(device.getAddress()))
+          if(sensorLists.knows(device))
           {
-            return;
+            availableSensorAdapter.deviceFound(device);
           }
-          availableSensorAdapter.deviceFound(device);
-          if(Constants.isDevMode())
-          {
-            Log.e(Constants.TAG, "", new Throwable());
-          }
+
         }
       });
     }
   }
 }
+

@@ -2,6 +2,7 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
 import pl.llp.aircasting.sensor.ioio.IOIOFakeSensor;
@@ -25,13 +26,14 @@ public class ExternalSensors
   @Nullable @Inject BluetoothAdapter bluetoothAdapter;
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
+  @Inject SessionManager sessionManager;
 
   Map<String, AbstractSensor> sensors = newHashMap();
 
   @Inject
   public void init()
   {
-    Iterable<ExternalSensorDescriptor> descriptors = settings.sensorsFromSettings();
+    Iterable<ExternalSensorDescriptor> descriptors = settings.knownSensors();
     for (ExternalSensorDescriptor descriptor : descriptors)
     {
       if(sensors.containsKey(descriptor.getAddress()))

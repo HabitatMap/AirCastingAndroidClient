@@ -51,14 +51,14 @@ public class SensorManagerTest {
   @Test
   public void shouldNotOverwriteSensors() {
     manager.onEvent(sensorEvent);
-    sensor = manager.getSensor("LHC");
+    sensor = manager.getSensorByName("LHC");
 
     assertThat(sensor.getMeasurementType(), equalTo("Hadrons"));
   }
 
   @Test
   public void shouldReturnSensorsByName() {
-    assertThat(manager.getSensor(sensor.getSensorName()), equalTo(sensor));
+    assertThat(manager.getSensorByName(sensor.getSensorName()), equalTo(sensor));
   }
 
   @Test
@@ -122,7 +122,7 @@ public class SensorManagerTest {
     manager.onEvent(sessionChangeEvent);
     manager.onEvent(sensorEvent);
 
-    Sensor sensor1 = manager.getSensor(sensor.getSensorName());
+    Sensor sensor1 = manager.getSensorByName(sensor.getSensorName());
     assertThat(sensor1.isEnabled(), equalTo(true));
   }
 
@@ -133,7 +133,7 @@ public class SensorManagerTest {
     manager.onEvent(sessionChangeEvent);
     manager.onEvent(sensorEvent);
 
-    Sensor sensor1 = manager.getSensor(sensor.getSensorName());
+    Sensor sensor1 = manager.getSensorByName(sensor.getSensorName());
     assertThat(sensor1.isEnabled(), equalTo(false));
   }
 }
