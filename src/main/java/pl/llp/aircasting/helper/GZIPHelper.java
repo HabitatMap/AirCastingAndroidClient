@@ -1,53 +1,52 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
+ AirCasting - Share your Air!
+ Copyright (C) 2011-2012 HabitatMap, Inc.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.helper;
+
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.util.base64.Base64OutputStream;
+
+import com.google.gson.Gson;
+import com.google.inject.Inject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.zip.GZIPOutputStream;
 
-import static com.google.common.io.Closeables.closeQuietly;
+public class GZIPHelper
+{
+  @Inject Gson gson;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 12/16/11
- * Time: 3:46 PM
- */
-public class GZIPHelper {
-    public byte[] zip(String input) throws IOException {
-        ByteArrayOutputStream stream = null;
-        GZIPOutputStream gzip = null;
+  public byte[] zippedSession(Session session) throws IOException
+  {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream);
+    GZIPOutputStream gzip = new GZIPOutputStream(base64OutputStream);
+    OutputStreamWriter writer = new OutputStreamWriter(gzip);
+    gson.toJson(session, session.getClass(), writer);
 
-        try {
-            stream = new ByteArrayOutputStream();
-            gzip = new GZIPOutputStream(stream);
+    writer.flush();
+    gzip.finish();
+    writer.close();
 
-            gzip.write(input.getBytes());
-            gzip.finish();
-            gzip.flush();
+    return byteStream.toByteArray();
+  }
 
-            return stream.toByteArray();
-        } finally {
-            closeQuietly(gzip);
-            closeQuietly(stream);
-        }
-    }
 }

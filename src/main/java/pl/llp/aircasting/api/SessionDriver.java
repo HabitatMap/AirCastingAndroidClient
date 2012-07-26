@@ -30,14 +30,9 @@ import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
 import pl.llp.aircasting.util.http.Uploadable;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
-import org.apache.commons.codec.binary.Base64OutputStream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.zip.GZIPOutputStream;
 
 import static pl.llp.aircasting.util.http.HttpBuilder.error;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
@@ -56,7 +51,6 @@ public class SessionDriver {
 
     @Inject SessionRepository sessionRepository;
     @Inject GZIPHelper gzipHelper;
-    @Inject Gson gson;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
 
@@ -69,7 +63,7 @@ public class SessionDriver {
     public HttpResult<CreateSessionResponse> create(Session session) {
         String zipped;
         try {
-            zipped = new String(zippedSession(session));
+            zipped = new String(gzip(session));
         } catch (IOException e) {
             return error();
         }
@@ -85,7 +79,12 @@ public class SessionDriver {
         return builder.into(CreateSessionResponse.class);
     }
 
-    private PerformRequest attachPhotos(Session session, PerformRequest builder) {
+  private byte[] gzip(Session session) throws IOException
+  {
+    return gzipHelper.zippedSession(session);
+  }
+
+  private PerformRequest attachPhotos(Session session, PerformRequest builder) {
         for (int i = 0; i < session.getNotes().size(); i++) {
             Note note = session.getNotes().get(i);
 
@@ -100,20 +99,6 @@ public class SessionDriver {
         }
         return builder;
     }
-
-  private byte[] zippedSession(Session session) throws IOException
-  {
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream);
-    GZIPOutputStream gzip = new GZIPOutputStream(base64OutputStream);
-    OutputStreamWriter writer = new OutputStreamWriter(gzip);
-    gson.toJson(session, session.getClass(), writer);
-
-    writer.flush();
-    writer.close();
-
-    return byteStream.toByteArray();
-  }
 
     public HttpResult<Session> show(long id) {
         return http()
