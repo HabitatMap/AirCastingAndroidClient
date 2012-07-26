@@ -50,7 +50,8 @@ public class CSVHelper
 
     try
     {
-      outputStream = context.openFileOutput(SESSION_TEMP_FILE, Context.MODE_WORLD_READABLE);
+      File file = new File(getTarget(context), SESSION_TEMP_FILE);
+      outputStream = context.openFileOutput(file.getAbsolutePath(), Context.MODE_WORLD_READABLE);
       Writer writer = new OutputStreamWriter(outputStream);
 
       CsvWriter csvWriter = new CsvWriter(writer, ',');
@@ -69,9 +70,9 @@ public class CSVHelper
 
       write(session).toWriter(csvWriter);
 
+      csvWriter.flush();
       csvWriter.close();
 
-      File file = getTarget(context);
       return Uri.fromFile(file);
     }
     finally
