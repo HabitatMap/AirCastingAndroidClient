@@ -3,6 +3,7 @@ package pl.llp.aircasting.model;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import com.google.common.eventbus.EventBus;
@@ -11,6 +12,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,18 +23,20 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 @Singleton
-public class SensorManager {
+public class SensorManager
+{
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
-
-  @Inject
-  public void init() {
-    eventBus.register(this);
-  }
 
   private Sensor visibleSensor = SimpleAudioReader.getSensor();
   private Map<String, ToggleableSensor> sensors = newHashMap();
   private Set<Sensor> disabled = newHashSet();
+
+  @Inject
+  public void init()
+  {
+    eventBus.register(this);
+  }
 
   @Subscribe
   public void onEvent(SensorEvent event)
@@ -50,6 +55,12 @@ public class SensorManager {
   @Subscribe
   public void onEvent(ViewStreamEvent event) {
     visibleSensor = sensors.get(event.getSensor().getSensorName());
+  }
+
+  @Subscribe
+  public void onSensorStopped(SensorStoppedEvent event)
+  {
+    disconnectSensors(event.getDescriptor());
   }
 
   /**
@@ -122,6 +133,33 @@ public class SensorManager {
   public boolean hasBackingSession()
   {
     return sessionManager.isSessionSaved();
+  }
+
+  public void setActive(String sensorName)
+  {
+    eventBus.post(new ViewStreamEvent(sensors.get(sensorName)));
+  }
+
+  public void disconnectSensors(ExternalSensorDescriptor descriptor)
+  {
+    String address = descriptor.getAddress();
+    Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
+    for (MeasurementStream stream : streams)
+    {
+      if(address.equals(stream.getAddress()))
+      {
+        stream.markAs(MeasurementStream.Visibility.INVISIBLE_DISCONNECTED);
+      }
+    }
+
+    for (Iterator<ToggleableSensor> iterator = sensors.values().iterator(); iterator.hasNext(); )
+    {
+      ToggleableSensor sensor = iterator.next();
+      if (address.equals(sensor.getAddress()))
+      {
+        iterator.remove();
+      }
+    }
   }
 
   private static class ToggleableSensor extends Sensor {

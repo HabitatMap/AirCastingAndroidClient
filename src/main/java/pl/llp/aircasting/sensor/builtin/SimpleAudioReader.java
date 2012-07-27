@@ -37,6 +37,7 @@ public class SimpleAudioReader extends AudioReader.Listener
   public static final String SHORT_TYPE = "dB";
   public static final String SENSOR_NAME = "Phone Microphone";
   public static final String SENSOR_PACKAGE_NAME = "Builtin";
+  public static final String SENSOR_ADDRESS_BUILTIN = "none";
 
   public static final int VERY_LOW = 20;
   public static final int LOW = 60;
@@ -45,7 +46,7 @@ public class SimpleAudioReader extends AudioReader.Listener
   public static final int VERY_HIGH = 100;
 
   public static final Sensor sensor = new Sensor(
-      SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+      SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH, SENSOR_ADDRESS_BUILTIN
   );
 
   @Inject SettingsHelper settingsHelper;

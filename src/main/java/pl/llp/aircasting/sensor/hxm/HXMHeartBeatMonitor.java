@@ -102,6 +102,7 @@ public class HXMHeartBeatMonitor extends AbstractSensor
 
   public void stop()
   {
+    super.stop();
     active.set(false);
     status = Status.STOPPED;
     if (client != null && client.IsConnected())

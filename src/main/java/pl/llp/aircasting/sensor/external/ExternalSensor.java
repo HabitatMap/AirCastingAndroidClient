@@ -36,6 +36,7 @@ public class ExternalSensor extends AbstractSensor
   @Override
   public void stop()
   {
+    super.stop();
     if(readerWorker != null)
     {
       readerWorker.stop();

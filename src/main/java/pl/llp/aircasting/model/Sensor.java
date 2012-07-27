@@ -25,7 +25,7 @@ public class Sensor implements Serializable
 
   public Sensor(SensorEvent event) {
     this(event.getPackageName(), event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
-         event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh());
+         event.getVeryLow(), event.getLow(), event.getMid(), event.getHigh(), event.getVeryHigh(), event.getAddress());
   }
 
   public Sensor(MeasurementStream stream)
@@ -33,11 +33,17 @@ public class Sensor implements Serializable
     this(stream.getPackageName(), stream.getSensorName(),
          stream.getMeasurementType(), stream.getShortType(), stream.getUnit(), stream.getSymbol(),
          stream.getThresholdVeryLow(), stream.getThresholdLow(), stream.getThresholdMedium(),
-         stream.getThresholdHigh(), stream.getThresholdVeryHigh());
+         stream.getThresholdHigh(), stream.getThresholdVeryHigh(), stream.getAddress());
   }
 
   public Sensor(String packageName, String name, String type, String shortType, String unit, String symbol,
                 int veryLow, int low, int mid, int high, int veryHigh)
+  {
+    this(packageName, name, type, shortType, unit, symbol, veryLow, low, mid, high, veryHigh, "none");
+  }
+
+  public Sensor(String packageName, String name, String type, String shortType, String unit, String symbol,
+                int veryLow, int low, int mid, int high, int veryHigh, String address)
   {
     this.packageName = packageName;
     this.sensorName = name;
@@ -51,6 +57,8 @@ public class Sensor implements Serializable
     thresholds.put(MeasurementLevel.MID, mid);
     thresholds.put(MeasurementLevel.LOW, low);
     thresholds.put(MeasurementLevel.VERY_LOW, veryLow);
+
+    this.address = address;
   }
 
   public Sensor(String name) {
@@ -123,11 +131,6 @@ public class Sensor implements Serializable
   {
     return Strings.equals(sensor.getSensorName(), getSensorName()) &&
         Strings.equals(sensor.getMeasurementType(), getMeasurementType());
-  }
-
-  public void setAddress(String address)
-  {
-    this.address = address;
   }
 
   public String getAddress()

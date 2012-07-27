@@ -55,7 +55,7 @@ public class MeasurementStream implements Serializable
 
   private transient boolean submittedForRemoval;
 
-  private transient StreamState state = StreamState.NEW;
+  private transient Visibility visibility = Visibility.VISIBLE;
 
   private transient String address = "none";
 
@@ -318,21 +318,29 @@ public class MeasurementStream implements Serializable
 
   public boolean isDisconnected()
   {
-    return state != StreamState.DISCONNECTED;
+    return !(visibility == Visibility.INVISIBLE_DELETED || visibility == Visibility.INVISIBLE_DISCONNECTED);
   }
 
-  public void markAs(StreamState state)
+  public void markAs(Visibility state)
   {
-    setState(state);
+    setVisibility(state);
   }
 
-  public void setState(StreamState state)
+  public void setVisibility(Visibility visibility)
   {
-    this.state = state;
+    this.visibility = visibility;
   }
 
   public String getAddress()
   {
     return address;
+  }
+
+  public enum Visibility
+  {
+    VISIBLE,
+    INVISIBLE_DELETED,
+    INVISIBLE_DISCONNECTED,
+    VISIBLE_RECONNECTED;
   }
 }

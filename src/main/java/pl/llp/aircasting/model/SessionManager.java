@@ -212,7 +212,8 @@ public class SessionManager
     }
   }
 
-  private MeasurementStream prepareStream(SensorEvent event) {
+  private MeasurementStream prepareStream(SensorEvent event)
+  {
     String sensorName = event.getSensorName();
 
     if (!session.hasStream(sensorName)) {
@@ -220,7 +221,13 @@ public class SessionManager
       session.add(stream);
     }
 
-    return session.getStream(sensorName);
+    MeasurementStream stream = session.getStream(sensorName);
+    if(stream.isDisconnected())
+    {
+      stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
+    }
+
+    return stream;
   }
 
   public Note getNote(int i) {
@@ -384,8 +391,13 @@ public class SessionManager
     {
       if(address.equals(stream.getAddress()))
       {
-        stream.markAs(StreamState.DISCONNECTED);
+        stream.markAs(MeasurementStream.Visibility.INVISIBLE_DISCONNECTED);
       }
     }
+  }
+
+  public MeasurementStream getMeasurementStream(Sensor sensor)
+  {
+    return getMeasurementStream(sensor.getSensorName());
   }
 }

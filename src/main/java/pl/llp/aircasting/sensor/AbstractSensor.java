@@ -33,6 +33,6 @@ public abstract class AbstractSensor
 
   public void stop()
   {
-
+    eventBus.post(new SensorStoppedEvent(descriptor));
   }
 }
