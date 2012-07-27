@@ -17,6 +17,8 @@ public class SensorEvent extends AirCastingEvent
   private int veryHigh;
   private double value;
 
+  private String address = "none";
+
   public String getSensorName()
   {
     return sensorName;
@@ -70,6 +72,25 @@ public class SensorEvent extends AirCastingEvent
   public String getShortType()
   {
     return shortType;
+  }
+
+  public SensorEvent(String packageName, String sensorName, String shortType,
+                     String unit, String symbol, String measurementType,
+                     int veryLow, int low, int mid, int high, int veryHigh, double value, String address)
+  {
+    this.packageName = packageName;
+    this.sensorName = sensorName;
+    this.shortType = shortType;
+    this.unit = unit;
+    this.symbol = symbol;
+    this.measurementType = measurementType;
+    this.veryLow = veryLow;
+    this.low = low;
+    this.mid = mid;
+    this.high = high;
+    this.veryHigh = veryHigh;
+    this.value = value;
+    this.address = address;
   }
 
   public SensorEvent(String packageName, String sensorName, String measurementType, String shortType, String unit, String symbol,
@@ -156,5 +177,10 @@ public class SensorEvent extends AirCastingEvent
         ", veryHigh=" + veryHigh +
         ", value=" + value +
         '}';
+  }
+
+  public void setAddress(String address)
+  {
+    this.address = address;
   }
 }

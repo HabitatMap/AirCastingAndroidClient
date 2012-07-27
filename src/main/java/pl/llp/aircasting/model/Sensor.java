@@ -21,7 +21,7 @@ public class Sensor implements Serializable
   private Map<MeasurementLevel, Integer> thresholds = newHashMap();
 
   protected boolean enabled = true;
-
+  private String address = "none";
 
   public Sensor(SensorEvent event) {
     this(event.getPackageName(), event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
@@ -123,5 +123,15 @@ public class Sensor implements Serializable
   {
     return Strings.equals(sensor.getSensorName(), getSensorName()) &&
         Strings.equals(sensor.getMeasurementType(), getMeasurementType());
+  }
+
+  public void setAddress(String address)
+  {
+    this.address = address;
+  }
+
+  public String getAddress()
+  {
+    return address;
   }
 }

@@ -144,6 +144,7 @@ class ReaderWorker
     try
     {
       SensorEvent event = parser.parse(line);
+      event.setAddress(device.getAddress());
       eventBus.post(event);
     }
     catch (ParseException e)
