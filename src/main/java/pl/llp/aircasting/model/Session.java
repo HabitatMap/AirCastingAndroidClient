@@ -309,7 +309,7 @@ public class Session implements Serializable
       @Override
       public boolean apply(@Nullable MeasurementStream stream)
       {
-        return stream != null && !stream.isMarkedForRemoval() && !stream.isDisconnected();
+        return stream != null && !stream.isMarkedForRemoval() && stream.isVisible();
       }
     }));
   }

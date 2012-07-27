@@ -316,9 +316,11 @@ public class MeasurementStream implements Serializable
     this.submittedForRemoval = submittedForRemoval;
   }
 
-  public boolean isDisconnected()
+  public boolean isVisible()
   {
-    return !(visibility == Visibility.INVISIBLE_DELETED || visibility == Visibility.INVISIBLE_DISCONNECTED);
+    boolean deleted = Visibility.INVISIBLE_DELETED.equals(visibility);
+    boolean disconnected = Visibility.INVISIBLE_DISCONNECTED.equals(visibility);
+    return !(deleted || disconnected);
   }
 
   public void markAs(Visibility state)

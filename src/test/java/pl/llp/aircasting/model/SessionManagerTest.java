@@ -46,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
+import java.util.Collection;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -107,15 +108,16 @@ public class SessionManagerTest {
         triggerMeasurement(10);
     }
 
-    @Test
-    public void shouldCreateMeasurementStreams() {
-        sessionManager.startSession();
+  @Test
+  public void shouldCreateMeasurementStreams() {
+    sessionManager.startSession();
 
-        triggerMeasurement();
+    triggerMeasurement();
 
-        MeasurementStream expected = new MeasurementStream(lastEvent);
-        assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
-    }
+    MeasurementStream expected = new MeasurementStream(lastEvent);
+    Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
+    assertThat(streams, hasItem(expected));
+  }
 
     @Test
     public void shouldCreateOnlyOneStreamPerSensor() {

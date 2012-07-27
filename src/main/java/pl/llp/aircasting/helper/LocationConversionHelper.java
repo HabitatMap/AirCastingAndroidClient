@@ -19,12 +19,13 @@
  */
 package pl.llp.aircasting.helper;
 
-import android.location.Location;
-import com.google.android.maps.GeoPoint;
-import com.google.common.base.Function;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
+
+import android.location.Location;
+import com.google.android.maps.GeoPoint;
+import com.google.common.base.Function;
 
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
@@ -80,7 +81,7 @@ public class LocationConversionHelper {
 
     private static Iterable<Measurement> allMeasurements(Session session) {
         Iterable<Iterable<Measurement>> measurements =
-                transform(session.getActiveMeasurementStreams(), new Function<MeasurementStream, Iterable<Measurement>>() {
+                transform(session.getMeasurementStreams(), new Function<MeasurementStream, Iterable<Measurement>>() {
                     @Override
                     public Iterable<Measurement> apply(MeasurementStream input) {
                         return input.getMeasurements();

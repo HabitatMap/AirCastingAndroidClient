@@ -222,7 +222,7 @@ public class SessionManager
     }
 
     MeasurementStream stream = session.getStream(sensorName);
-    if(stream.isDisconnected())
+    if(stream.isVisible())
     {
       stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
     }
