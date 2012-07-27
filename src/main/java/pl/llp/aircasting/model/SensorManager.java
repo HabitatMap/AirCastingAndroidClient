@@ -58,7 +58,7 @@ public class SensorManager
   }
 
   @Subscribe
-  public void onSensorStopped(SensorStoppedEvent event)
+  public void onEvent(SensorStoppedEvent event)
   {
     disconnectSensors(event.getDescriptor());
   }
@@ -159,6 +159,10 @@ public class SensorManager
       {
         iterator.remove();
       }
+    }
+    if(!sensors.containsKey(visibleSensor.getSensorName()))
+    {
+      eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor()));
     }
   }
 

@@ -384,18 +384,6 @@ public class SessionManager
     session.removeStream(stream);
   }
 
-  public void disconnectStreamsFrom(String address)
-  {
-    Collection<MeasurementStream> streams = session.getMeasurementStreams();
-    for (MeasurementStream stream : streams)
-    {
-      if(address.equals(stream.getAddress()))
-      {
-        stream.markAs(MeasurementStream.Visibility.INVISIBLE_DISCONNECTED);
-      }
-    }
-  }
-
   public MeasurementStream getMeasurementStream(Sensor sensor)
   {
     return getMeasurementStream(sensor.getSensorName());
