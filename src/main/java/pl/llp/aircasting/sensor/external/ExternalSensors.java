@@ -21,8 +21,9 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class ExternalSensors
 {
-  private static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
-//  private static final String IOIO_DISPLAY_STRIP = "IOIO";
+  public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
+  public static final String IOIO_DISPLAY_STRIP = "IOIO";
+
   @Nullable @Inject BluetoothAdapter bluetoothAdapter;
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
@@ -59,7 +60,7 @@ public class ExternalSensors
     {
       return new HXMHeartBeatMonitor(descriptor, eventBus, bluetoothAdapter);
     }
-    if(sensorName.startsWith("IOIO"))
+    if(sensorName.startsWith(IOIO_DISPLAY_STRIP))
     {
       return new IOIOFakeSensor(descriptor, eventBus, bluetoothAdapter);
     }
