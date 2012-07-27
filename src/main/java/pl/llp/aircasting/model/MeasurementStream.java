@@ -55,6 +55,10 @@ public class MeasurementStream implements Serializable
 
   private transient boolean submittedForRemoval;
 
+  private transient StreamState state = StreamState.NEW;
+
+  private transient String address = "none";
+
   public MeasurementStream() {
   }
 
@@ -298,5 +302,25 @@ public class MeasurementStream implements Serializable
   public void setSubmittedForRemoval(boolean submittedForRemoval)
   {
     this.submittedForRemoval = submittedForRemoval;
+  }
+
+  public boolean isDisconnected()
+  {
+    return state != StreamState.DISCONNECTED;
+  }
+
+  public void markAs(StreamState state)
+  {
+    setState(state);
+  }
+
+  public void setState(StreamState state)
+  {
+    this.state = state;
+  }
+
+  public String getAddress()
+  {
+    return address;
   }
 }
