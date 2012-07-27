@@ -307,9 +307,9 @@ public class Session implements Serializable
     return newArrayList(filter(getMeasurementStreams(), new Predicate<MeasurementStream>()
     {
       @Override
-      public boolean apply(@Nullable MeasurementStream input)
+      public boolean apply(@Nullable MeasurementStream stream)
       {
-        return input != null && !input.isMarkedForRemoval();
+        return stream != null && !stream.isMarkedForRemoval() && !stream.isDisconnected();
       }
     }));
   }

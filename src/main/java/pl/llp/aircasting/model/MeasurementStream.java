@@ -74,7 +74,8 @@ public class MeasurementStream implements Serializable
          sensor.getThreshold(MeasurementLevel.MID),
          sensor.getThreshold(MeasurementLevel.LOW),
          sensor.getThreshold(MeasurementLevel.HIGH),
-         sensor.getThreshold(MeasurementLevel.VERY_HIGH));
+         sensor.getThreshold(MeasurementLevel.VERY_HIGH),
+         "none");
   }
 
   public MeasurementStream(SensorEvent evt)
@@ -86,13 +87,22 @@ public class MeasurementStream implements Serializable
          evt.getLow(),
          evt.getMid(),
          evt.getHigh(),
-         evt.getVeryHigh());
+         evt.getVeryHigh(),
+         evt.getAddress());
+  }
+
+  public MeasurementStream(
+      String packageName, String sensorName, String type, String shortType, String unit, String symbol,
+      int thresholdVeryLow, int thresholdLow, int thresholdMedium, int thresholdHigh, int thresholdVeryHigh)
+  {
+    this(packageName, sensorName, type, shortType, unit, symbol,
+         thresholdVeryLow, thresholdLow, thresholdMedium, thresholdHigh, thresholdVeryHigh, "none");
   }
 
   public MeasurementStream(String packageName, String sensorName, String type, String shortType, String unit, String symbol,
                            int thresholdVeryLow, int thresholdLow,
                            int thresholdMedium,
-                           int thresholdHigh, int thresholdVeryHigh
+                           int thresholdHigh, int thresholdVeryHigh, String address
                           ) {
     this.packageName = packageName;
     this.sensorName = sensorName;
@@ -106,6 +116,8 @@ public class MeasurementStream implements Serializable
     this.thresholdMedium = thresholdMedium;
     this.thresholdHigh = thresholdHigh;
     this.thresholdVeryHigh = thresholdVeryHigh;
+
+    this.address = address;
   }
 
   public List<Measurement> getMeasurements() {

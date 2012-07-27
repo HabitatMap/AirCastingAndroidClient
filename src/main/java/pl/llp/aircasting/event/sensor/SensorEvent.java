@@ -183,4 +183,9 @@ public class SensorEvent extends AirCastingEvent
   {
     this.address = address;
   }
+
+  public String getAddress()
+  {
+    return address;
+  }
 }
