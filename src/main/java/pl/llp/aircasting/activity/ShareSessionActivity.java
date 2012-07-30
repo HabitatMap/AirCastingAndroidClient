@@ -118,7 +118,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
             @Override
             protected Uri doInBackground(Void... voids) {
                 try {
-                    return csvHelper.prepareCSV(ShareSessionActivity.this, session);
+                    return csvHelper.prepareCSV(session);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "Error while creating session CSV", e);
                     return null;

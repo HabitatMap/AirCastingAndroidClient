@@ -23,12 +23,15 @@ import pl.llp.aircasting.guice.GsonProvider;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.util.Constants;
 
-import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 import com.csvreader.CsvWriter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -41,17 +44,19 @@ import static java.lang.String.valueOf;
 public class CSVHelper
 {
   // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
-  public static final String BASE_PATH = "/mnt/sdcard/../..";
   public static final String SESSION_TEMP_FILE = "session.csv";
 
-  public Uri prepareCSV(Context context, Session session) throws IOException
+  public Uri prepareCSV(Session session) throws IOException
   {
     OutputStream outputStream = null;
 
     try
     {
-      File file = new File(getTarget(context), SESSION_TEMP_FILE);
-      outputStream = context.openFileOutput(file.getAbsolutePath(), Context.MODE_WORLD_READABLE);
+      File storage = Environment.getExternalStorageDirectory();
+      File dir = new File(storage, "aircasting_sessions");
+      dir.mkdirs();
+      File file = new File(dir, SESSION_TEMP_FILE);
+      outputStream = new FileOutputStream(file);
       Writer writer = new OutputStreamWriter(outputStream);
 
       CsvWriter csvWriter = new CsvWriter(writer, ',');
@@ -73,22 +78,17 @@ public class CSVHelper
       csvWriter.flush();
       csvWriter.close();
 
-      return Uri.fromFile(file);
+      Uri uri = Uri.fromFile(file);
+      if(Constants.isDevMode())
+      {
+        Log.i(Constants.TAG, "File path [" + uri + "]");
+      }
+      return uri;
     }
     finally
     {
       closeQuietly(outputStream);
     }
-  }
-
-  private File getTarget(Context context)
-  {
-    String path = new StringBuilder(BASE_PATH)
-        .append(context.getFilesDir())
-        .append("/")
-        .append(SESSION_TEMP_FILE)
-        .toString();
-    return new File(path);
   }
 
   private SessionWriter write(Session session)
