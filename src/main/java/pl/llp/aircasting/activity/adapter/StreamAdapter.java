@@ -159,7 +159,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       recordButton.setVisibility(View.GONE);
     }
 
-    if (sensorManager.getVisibleSensor().equals(sensor))
+    Sensor visibleSensor = sensorManager.getVisibleSensor();
+    if (visibleSensor.equals(sensor))
     {
       viewButton.setBackgroundResource(R.drawable.viewing_active);
     }
