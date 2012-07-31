@@ -34,5 +34,8 @@ public abstract class AbstractSensor
   public void stop()
   {
     eventBus.post(new SensorStoppedEvent(descriptor));
+    customStop();
   }
+
+  protected abstract void customStop();
 }

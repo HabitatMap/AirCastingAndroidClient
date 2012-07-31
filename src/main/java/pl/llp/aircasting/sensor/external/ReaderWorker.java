@@ -39,6 +39,7 @@ class ReaderWorker
   Status status = Status.NOT_YET_STARTED;
 
   ExternalSensorParser parser = new ExternalSensorParser();
+  private Thread thread;
 
   public ReaderWorker(BluetoothAdapter adapter,
                       BluetoothDevice device,
@@ -53,7 +54,7 @@ class ReaderWorker
   {
     active.set(true);
     status = Status.STARTED;
-    new Thread(new Runnable()
+    thread = new Thread(new Runnable()
     {
       @Override
       public void run()
@@ -63,7 +64,7 @@ class ReaderWorker
           try
           {
             BluetoothSocket socket = connect();
-            if(socket != null)
+            if (socket != null)
               read(socket);
           }
           catch (InterruptedException e)
@@ -74,7 +75,8 @@ class ReaderWorker
           }
         }
       }
-    }).start();
+    });
+    thread.start();
   }
 
   private void read(BluetoothSocket socket)
@@ -131,7 +133,7 @@ class ReaderWorker
       }
       catch (Exception e)
       {
-        Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + " ]", e);
+        Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
         Thread.sleep(Constants.THREE_SECONDS);
         socket = null;
       }
@@ -157,6 +159,7 @@ class ReaderWorker
   {
     active.set(false);
     status = Status.STOPPED;
+    thread.interrupt();
   }
 
   private LineProcessor<Void> lineProcessor()

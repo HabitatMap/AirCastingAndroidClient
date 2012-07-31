@@ -34,12 +34,12 @@ public class ExternalSensor extends AbstractSensor
   }
 
   @Override
-  public void stop()
+  protected void customStop()
   {
-    super.stop();
     if(readerWorker != null)
     {
       readerWorker.stop();
+      device = null;
     }
   }
 }

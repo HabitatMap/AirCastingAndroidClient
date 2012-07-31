@@ -28,7 +28,7 @@ public class SensorManager
   @Inject EventBus eventBus;
 
   private Sensor visibleSensor = SimpleAudioReader.getSensor();
-  private Map<SensorName, ToggleableSensor> sensors = newConcurrentMap();
+  private volatile Map<SensorName, ToggleableSensor> sensors = newConcurrentMap();
   private Set<Sensor> disabled = newHashSet();
 
   @Inject
@@ -53,7 +53,8 @@ public class SensorManager
 
   @Subscribe
   public void onEvent(ViewStreamEvent event) {
-    visibleSensor = sensors.get(event.getSensor().getSensorName());
+    String sensorName = event.getSensor().getSensorName();
+    visibleSensor = sensors.get(SensorName.from(sensorName));
     if(visibleSensor == null) visibleSensor = SimpleAudioReader.getSensor();
   }
 
@@ -132,7 +133,8 @@ public class SensorManager
 
   public void deleteSensorFromCurrentSession(Sensor sensor)
   {
-    sensors.remove(sensor.getSensorName());
+    String sensorName = sensor.getSensorName();
+    sensors.remove(SensorName.from(sensorName));
     sessionManager.deleteSensorStream(sensor);
   }
 
@@ -143,7 +145,7 @@ public class SensorManager
 
   public void setActive(String sensorName)
   {
-    eventBus.post(new ViewStreamEvent(sensors.get(sensorName)));
+    eventBus.post(new ViewStreamEvent(sensors.get(SensorName.from(sensorName))));
   }
 
   public void disconnectSensors(ExternalSensorDescriptor descriptor)
@@ -158,22 +160,25 @@ public class SensorManager
       }
     }
 
-    Set<SensorName> keysToRemove = newHashSet();
+    Set<SensorName> newSensorNames = newHashSet();
     for (Map.Entry<SensorName, ToggleableSensor> entry : sensors.entrySet())
     {
-      if (address.equals(entry.getValue().getAddress()))
+      if (!address.equals(entry.getValue().getAddress()))
       {
-        keysToRemove.add(entry.getKey());
+        newSensorNames.add(entry.getKey());
       }
     }
 
-    for (SensorName sensorName : keysToRemove)
+    for (SensorName sensorName : newSensorNames)
     {
-      ToggleableSensor sensor = sensors.remove(sensorName);
-      sensor.setConnectionStatus(Sensor.ConnectionStatus.DISCONNECTED);
+      Map<SensorName, ToggleableSensor> newSensors = newConcurrentMap();
+      ToggleableSensor sensor = sensors.get(sensorName);
+      newSensors.put(sensorName, sensor);
+      sensors = newSensors;
     }
 
-    if(!sensors.containsKey(visibleSensor.getSensorName()))
+    String sensorName = visibleSensor.getSensorName();
+    if(!sensors.containsKey(SensorName.from(sensorName)))
     {
       eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor()));
     }

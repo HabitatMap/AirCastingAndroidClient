@@ -53,14 +53,14 @@ public class HXMHeartBeatMonitor extends AbstractSensor
           {
             listener = new HxMConnectionListener(noOpMessageHandler);
             client = connect();
-            if (client != null)
+            if (client == null)
+            {
+              Thread.sleep(Constants.THREE_SECONDS);
+            }
+            else if (!client.isAlive())
             {
               client.addConnectedEventListener(listener);
               client.start();
-            }
-            else
-            {
-              Thread.sleep(Constants.THREE_SECONDS);
             }
           }
           catch (InterruptedException e)
@@ -100,9 +100,9 @@ public class HXMHeartBeatMonitor extends AbstractSensor
     return obtainedClient;
   }
 
-  public void stop()
+  @Override
+  protected void customStop()
   {
-    super.stop();
     active.set(false);
     status = Status.STOPPED;
     if (client != null && client.IsConnected())

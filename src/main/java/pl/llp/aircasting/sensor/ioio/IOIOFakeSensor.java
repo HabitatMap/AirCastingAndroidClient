@@ -15,4 +15,10 @@ public class IOIOFakeSensor extends AbstractSensor
   {
     super(descriptor, eventBus, adapter);
   }
+
+  @Override
+  protected void customStop()
+  {
+
+  }
 }

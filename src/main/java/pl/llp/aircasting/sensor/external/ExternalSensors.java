@@ -81,7 +81,7 @@ public class ExternalSensors
   {
     if(sensors.containsKey(address))
     {
-      sensors.get(address).stop();
+      sensors.remove(address).stop();
     }
   }
 }
