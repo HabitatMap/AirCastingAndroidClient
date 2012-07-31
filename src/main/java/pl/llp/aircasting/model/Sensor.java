@@ -22,6 +22,7 @@ public class Sensor implements Serializable
 
   protected boolean enabled = true;
   private String address = "none";
+  volatile ConnectionStatus connectionStatus = ConnectionStatus.CONNECTED;
 
   public Sensor(SensorEvent event) {
     this(event.getPackageName(), event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
@@ -136,5 +137,22 @@ public class Sensor implements Serializable
   public String getAddress()
   {
     return address;
+  }
+
+  public enum ConnectionStatus
+  {
+    CONNECTED,
+    DISCONNECTED,
+    RECONNECTED
+  }
+
+  public ConnectionStatus getConnectionStatus()
+  {
+    return connectionStatus;
+  }
+
+  public void setConnectionStatus(ConnectionStatus connectionStatus)
+  {
+    this.connectionStatus = connectionStatus;
   }
 }
