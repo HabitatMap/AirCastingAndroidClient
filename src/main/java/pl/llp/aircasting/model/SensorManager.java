@@ -6,6 +6,7 @@ import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.util.Constants;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -46,7 +47,7 @@ public class SensorManager
     {
       return;
     }
-    if(externalSensors.knows(event.getAddress()))
+    if(externalSensors.knows(event.getAddress()) || Constants.isDevMode())
     {
       ToggleableSensor sensor = new ToggleableSensor(event);
       if (disabled.contains(sensor)) {
@@ -121,8 +122,10 @@ public class SensorManager
 
     for (MeasurementStream stream : sessionManager.getMeasurementStreams())
     {
-      if(stream.isMarkedForRemoval())
+      if (stream.isMarkedForRemoval())
+      {
         continue;
+      }
 
       ToggleableSensor sensor = new ToggleableSensor(stream);
       String name = sensor.getSensorName();

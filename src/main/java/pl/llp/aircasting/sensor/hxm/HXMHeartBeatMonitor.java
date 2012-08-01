@@ -44,7 +44,7 @@ public class HXMHeartBeatMonitor extends AbstractSensor
       @Override
       public void run()
       {
-        while (active.get())
+        while (active.get() && client == null)
         {
           if(!active.get())
             break;
@@ -105,9 +105,14 @@ public class HXMHeartBeatMonitor extends AbstractSensor
   {
     active.set(false);
     status = Status.STOPPED;
-    if (client != null && client.IsConnected())
+    if (client == null)
     {
-      client.removeConnectedEventListener(listener);
+      return;
+    }
+    client.removeConnectedEventListener(listener);
+
+    if(client.IsConnected())
+    {
       client.Close();
     }
   }
