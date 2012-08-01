@@ -38,6 +38,8 @@ public class GaugeHelper
     int now = (int) sessionManager.getNow(sensor);
     updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
     updateLabel(sensor, view.findViewById(R.id.now_label), nowLabel);
+    updateLabel(sensor, view.findViewById(R.id.avg_label), avgLabel);
+    updateLabel(sensor, view.findViewById(R.id.peak_label), peakLabel);
 
     boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
     if (hasStats && sensor.isEnabled())
@@ -47,9 +49,6 @@ public class GaugeHelper
 
       updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
       updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
-
-      updateLabel(sensor, view.findViewById(R.id.avg_label), avgLabel);
-      updateLabel(sensor, view.findViewById(R.id.peak_label), peakLabel);
     }
     else
     {
