@@ -5,6 +5,7 @@ import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.sensor.external.ExternalSensors;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -24,6 +25,7 @@ import static com.google.common.collect.Sets.newHashSet;
 @Singleton
 public class SensorManager
 {
+  @Inject ExternalSensors externalSensors;
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
 
@@ -40,7 +42,11 @@ public class SensorManager
   @Subscribe
   public void onEvent(SensorEvent event)
   {
-    if (!sessionManager.isSessionSaved() && !sensors.containsKey(SensorName.from(event.getSensorName())))
+    if (sessionManager.isSessionSaved() || sensors.containsKey(SensorName.from(event.getSensorName())))
+    {
+      return;
+    }
+    if(externalSensors.knows(event.getAddress()))
     {
       ToggleableSensor sensor = new ToggleableSensor(event);
       if (disabled.contains(sensor)) {
@@ -169,13 +175,13 @@ public class SensorManager
       }
     }
 
+    Map<SensorName, ToggleableSensor> newSensors = newConcurrentMap();
     for (SensorName sensorName : newSensorNames)
     {
-      Map<SensorName, ToggleableSensor> newSensors = newConcurrentMap();
       ToggleableSensor sensor = sensors.get(sensorName);
       newSensors.put(sensorName, sensor);
-      sensors = newSensors;
     }
+    sensors = newSensors;
 
     String sensorName = visibleSensor.getSensorName();
     if(!sensors.containsKey(SensorName.from(sensorName)))

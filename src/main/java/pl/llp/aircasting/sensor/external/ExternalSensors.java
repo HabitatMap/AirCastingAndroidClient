@@ -4,6 +4,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
 import pl.llp.aircasting.sensor.ioio.IOIOFakeSensor;
 
@@ -83,5 +84,18 @@ public class ExternalSensors
     {
       sensors.remove(address).stop();
     }
+  }
+
+  public boolean knows(String address)
+  {
+    if(SimpleAudioReader.SENSOR_ADDRESS_BUILTIN.equals(address))
+      return true;
+
+    for (String knownAddress : sensors.keySet())
+    {
+      if(knownAddress.equals(address))
+        return true;
+    }
+    return false;
   }
 }
