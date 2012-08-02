@@ -296,6 +296,13 @@ public class SessionManager
     notificationHelper.showRecordingNotification();
   }
 
+  public void stopSession()
+  {
+    session.setEnd(new Date());
+    sessionStarted = false;
+    notificationHelper.hideRecordingNotification();
+  }
+
   public void finishSession(ProgressListener progressListener) {
     synchronized (this) {
       fillInDetails();

@@ -266,6 +266,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
             sessionManager.discardSession();
         } else {
+            sessionManager.stopSession();
             Intent intent = new Intent(this, SaveSessionActivity.class);
             startActivityForResult(intent, Intents.SAVE_DIALOG);
         }
