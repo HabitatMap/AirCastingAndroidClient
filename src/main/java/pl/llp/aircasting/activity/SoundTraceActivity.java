@@ -19,12 +19,17 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.view.MapIdleDetector;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import com.google.common.eventbus.Subscribe;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.view.MapIdleDetector;
+
+import java.util.List;
 
 import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
 
@@ -45,17 +50,27 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
         mapView.getOverlays().add(traceOverlay);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+  @Override
+  protected void onResume() {
+    super.onResume();
 
-        refreshDetector = detectMapIdle(mapView, REFRESH_OVERLAY_TIMEOUT, this);
-
-        if (!sessionManager.isSessionSaved()) {
-            MapCenterer centerer = new MapCenterer();
-            centerDetector = detectMapIdle(mapView, RECENTER_TIMEOUT, centerer);
-        }
+    if(getIntent().getBooleanExtra("reconsiderCurrentSensor", false))
+    {
+      List<Sensor> currentSensors = sensorManager.getSensors();
+      Sensor visibleSensor = sensorManager.getVisibleSensor();
+      if (!currentSensors.contains(visibleSensor))
+      {
+        eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor()));
+        updateGauges();
+      }
     }
+    refreshDetector = detectMapIdle(mapView, REFRESH_OVERLAY_TIMEOUT, this);
+
+    if (!sessionManager.isSessionSaved()) {
+      MapCenterer centerer = new MapCenterer();
+      centerDetector = detectMapIdle(mapView, RECENTER_TIMEOUT, centerer);
+    }
+  }
 
     @Override
     protected void onPause() {

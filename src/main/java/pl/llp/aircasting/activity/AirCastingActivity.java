@@ -142,7 +142,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         }
     }
 
-    private void updateGauges() {
+    protected void updateGauges() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

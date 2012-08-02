@@ -19,6 +19,13 @@
 */
 package pl.llp.aircasting.activity.menu;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.AboutActivity;
+import pl.llp.aircasting.activity.SessionsActivity;
+import pl.llp.aircasting.activity.SettingsActivity;
+import pl.llp.aircasting.activity.SoundTraceActivity;
+import pl.llp.aircasting.model.SessionManager;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -26,12 +33,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.AboutActivity;
-import pl.llp.aircasting.activity.SessionsActivity;
-import pl.llp.aircasting.activity.SettingsActivity;
-import pl.llp.aircasting.activity.SoundTraceActivity;
-import pl.llp.aircasting.model.SessionManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +57,9 @@ public class MainMenu {
                 if (sessionManager.isSessionSaved()) {
                     sessionManager.discardSession();
                 }
-                activity.startActivity(new Intent(context, SoundTraceActivity.class));
+              Intent intent = new Intent(context, SoundTraceActivity.class);
+              intent.putExtra("reconsiderCurrentSensor", true);
+              activity.startActivity(intent);
                 break;
             case R.id.sessions:
                 activity.startActivity(new Intent(context, SessionsActivity.class));
