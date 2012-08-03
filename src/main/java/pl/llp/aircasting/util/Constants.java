@@ -10,4 +10,14 @@ public class Constants
   {
     return false;
   }
+
+  public static boolean logDbPerformance()
+  {
+    return true;
+  }
+
+  public static boolean logGraphPerformance()
+  {
+    return true;
+  }
 }

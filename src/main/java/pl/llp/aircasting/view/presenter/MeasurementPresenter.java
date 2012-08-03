@@ -27,10 +27,13 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.eventbus.EventBus;
@@ -40,7 +43,6 @@ import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -55,175 +57,210 @@ import static com.google.common.collect.Multimaps.index;
 import static java.util.Collections.sort;
 
 @Singleton
-public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final long MILLIS_IN_SECOND = 1000;
+public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
+{
+  public static final long MILLIS_IN_SECOND = 1000;
 
-    @Inject SessionManager sessionManager;
-    @Inject SettingsHelper settingsHelper;
-    @Inject SharedPreferences preferences;
-    @Inject EventBus eventBus;
-    @Inject SensorManager sensorManager;
+  @Inject SessionManager sessionManager;
+  @Inject SettingsHelper settingsHelper;
+  @Inject SharedPreferences preferences;
+  @Inject EventBus eventBus;
+  @Inject SensorManager sensorManager;
 
-    @Inject
-    public void init() {
-        preferences.registerOnSharedPreferenceChangeListener(this);
-        eventBus.register(this);
+  @Inject
+  public void init()
+  {
+    preferences.registerOnSharedPreferenceChangeListener(this);
+    eventBus.register(this);
+  }
+
+  private double anchor = 0;
+
+  private LinkedList<Measurement> fullView = null;
+  private int measurementsSize;
+
+  private MeasurementAggregator aggregator = new MeasurementAggregator();
+
+  private static final long MIN_ZOOM = 30000;
+  private long zoom = MIN_ZOOM;
+
+  private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
+  private List<Listener> listeners = newArrayList();
+
+  @Subscribe
+  public synchronized void onEvent(MeasurementEvent event)
+  {
+    if (sessionManager.isSessionSaved()) return;
+    if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
+
+    Measurement measurement = event.getMeasurement();
+
+    prepareFullView();
+    updateFullView(measurement);
+
+    if (timelineView != null && (int) anchor == 0)
+    {
+      updateTimelineView();
     }
 
-    private double anchor = 0;
+    notifyListeners();
+  }
 
-    private LinkedList<Measurement> fullView = null;
-    private int measurementsSize;
+  private void updateFullView(Measurement measurement)
+  {
+    boolean newBucket = isNewBucket(measurement);
 
-    private MeasurementAggregator aggregator = new MeasurementAggregator();
-
-    private static final long MIN_ZOOM = 30000;
-    private long zoom = MIN_ZOOM;
-
-    private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
-    private List<Listener> listeners = newArrayList();
-
-    @Subscribe
-    public synchronized void onEvent(MeasurementEvent event) {
-        if (sessionManager.isSessionSaved()) return;
-        if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
-
-        Measurement measurement = event.getMeasurement();
-
-        prepareFullView();
-        updateFullView(measurement);
-
-        if (timelineView != null && (int) anchor == 0) {
-            updateTimelineView();
+    if (newBucket)
+    {
+      if (!aggregator.isEmpty())
+      {
+        for (Listener listener : listeners)
+        {
+          listener.onAveragedMeasurement(aggregator.getAverage());
         }
-
-        notifyListeners();
-    }
-
-    private void updateFullView(Measurement measurement) {
-        boolean newBucket = isNewBucket(measurement);
-
-        if (newBucket) {
-            if (!aggregator.isEmpty()) {
-                for (Listener listener : listeners) {
-                    listener.onAveragedMeasurement(aggregator.getAverage());
-                }
-            }
-            aggregator.reset();
+      }
+      aggregator.reset();
         } else {
             fullView.removeLast();
-        }
-
-        aggregator.add(measurement);
-        fullView.add(aggregator.getAverage());
     }
 
-    private boolean isNewBucket(Measurement measurement) {
-        if (fullView.isEmpty()) return true;
+    aggregator.add(measurement);
+    fullView.add(aggregator.getAverage());
+  }
 
-        Measurement last = getLast(fullView);
+  private boolean isNewBucket(Measurement measurement)
+  {
+    if (fullView.isEmpty()) return true;
 
-        return bucket(last) != bucket(measurement);
-    }
+    Measurement last = getLast(fullView);
 
-    @Subscribe
-    public synchronized void onEvent(SessionChangeEvent event) {
-        reset();
-    }
+    return bucket(last) != bucket(measurement);
+  }
 
-    @Subscribe
-    public synchronized void onEvent(ViewStreamEvent event) {
-        reset();
-    }
+  @Subscribe
+  public synchronized void onEvent(SessionChangeEvent event)
+  {
+    reset();
+  }
 
-    private synchronized void reset() {
-        fullView = null;
-        timelineView.clear();
-        anchor = 0;
+  @Subscribe
+  public synchronized void onEvent(ViewStreamEvent event)
+  {
+    reset();
+  }
 
-        notifyListeners();
-    }
+  private synchronized void reset()
+  {
+    fullView = null;
+    timelineView.clear();
+    anchor = 0;
 
-    private void prepareFullView() {
-        if (fullView != null) return;
+    notifyListeners();
+  }
 
-        String visibleSensor = sensorManager.getVisibleSensor().getSensorName();
-        MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
-        Iterable<Measurement> measurements;
-        if (stream == null) {
-            measurements = newArrayList();
-        } else {
-            measurements = stream.getMeasurements();
-        }
+  private void prepareFullView()
+  {
+    if (fullView != null) return;
 
-        ImmutableListMultimap<Long, Measurement> forAveraging =
-                index(measurements, new Function<Measurement, Long>() {
-                    @Override
-                    public Long apply(Measurement measurement) {
-                        return bucket(measurement);
-                    }
-                });
+    Stopwatch stopwatch = new Stopwatch().start();
 
-        ArrayList<Long> times = newArrayList(forAveraging.keySet());
-        sort(times);
-
-        fullView = newLinkedList();
-        for (Long time : times) {
-            ImmutableList<Measurement> chunk = forAveraging.get(time);
-            fullView.add(average(chunk));
-        }
-    }
-
-    private long bucket(Measurement measurement) {
-        return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * MILLIS_IN_SECOND);
-    }
-
-    private Measurement average(Collection<Measurement> measurements) {
-        aggregator.reset();
-
-        for (Measurement measurement : measurements) {
-            aggregator.add(measurement);
-        }
-
-        return aggregator.getAverage();
-    }
-
-    private void notifyListeners() {
-        for (Listener listener : listeners) {
-            listener.onViewUpdated();
-        }
-    }
-
-    synchronized void setZoom(long zoom) {
-        this.zoom = zoom;
-        timelineView.clear();
-        notifyListeners();
-    }
-
-    public synchronized List<Measurement> getTimelineView() {
-        if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted()) {
-            prepareTimelineView();
-            return timelineView;
-        } else {
-            return new ArrayList<Measurement>();
-        }
-    }
-
-    protected synchronized void prepareTimelineView()
+    String visibleSensor = sensorManager.getVisibleSensor().getSensorName();
+    MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
+    Iterable<Measurement> measurements;
+    if (stream == null)
     {
-        if (!timelineView.isEmpty()) return;
-
-        final List<Measurement> measurements = getFullView();
-        int position = measurements.size() - 1 - (int) anchor;
-        final long lastMeasurementTime = measurements.isEmpty()
-                ? 0 : measurements.get(position).getTime().getTime();
-
-
-        timelineView.clear();
-        timelineView.addAll(newArrayList(filter(measurements, fitsInTimeline(lastMeasurementTime))));
-
-        measurementsSize = measurements.size();
+      measurements = newArrayList();
     }
+    else
+    {
+      measurements = stream.getMeasurements();
+    }
+
+    ImmutableListMultimap<Long, Measurement> forAveraging =
+        index(measurements, new Function<Measurement, Long>()
+        {
+          @Override
+          public Long apply(Measurement measurement)
+          {
+            return bucket(measurement);
+          }
+        });
+
+    ArrayList<Long> times = newArrayList(forAveraging.keySet());
+    sort(times);
+
+    fullView = newLinkedList();
+    for (Long time : times)
+    {
+      ImmutableList<Measurement> chunk = forAveraging.get(time);
+      fullView.add(average(chunk));
+    }
+    Log.i(Constants.TAG, "prepareFullView took " + stopwatch.elapsedMillis());
+  }
+
+  private long bucket(Measurement measurement)
+  {
+    return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * MILLIS_IN_SECOND);
+  }
+
+  private Measurement average(Collection<Measurement> measurements)
+  {
+    aggregator.reset();
+
+    for (Measurement measurement : measurements)
+    {
+      aggregator.add(measurement);
+    }
+
+    return aggregator.getAverage();
+  }
+
+  private void notifyListeners()
+  {
+    for (Listener listener : listeners)
+    {
+      listener.onViewUpdated();
+    }
+  }
+
+  synchronized void setZoom(long zoom)
+  {
+    this.zoom = zoom;
+    timelineView.clear();
+    notifyListeners();
+  }
+
+  public synchronized List<Measurement> getTimelineView()
+  {
+    if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
+    {
+      prepareTimelineView();
+      return timelineView;
+    }
+    else
+    {
+      return new ArrayList<Measurement>();
+    }
+  }
+
+  protected synchronized void prepareTimelineView()
+  {
+    if (!timelineView.isEmpty()) return;
+    Stopwatch stopwatch = new Stopwatch().start();
+
+    final List<Measurement> measurements = getFullView();
+    int position = measurements.size() - 1 - (int) anchor;
+    final long lastMeasurementTime = measurements.isEmpty()
+        ? 0 : measurements.get(position).getTime().getTime();
+
+
+    timelineView.clear();
+    timelineView.addAll(newArrayList(filter(measurements, fitsInTimeline(lastMeasurementTime))));
+
+    measurementsSize = measurements.size();
+
+    Log.i(Constants.TAG, "prepareTimelineView took " + stopwatch.elapsedMillis());
+  }
 
   private Predicate<Measurement> fitsInTimeline(final long lastMeasurementTime)
   {
@@ -232,8 +269,10 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       @Override
       public boolean apply(@Nullable Measurement measurement)
       {
-        if(measurement == null)
+        if (measurement == null)
+        {
           return false;
+        }
 
         return measurement.getTime().getTime() <= lastMeasurementTime &&
             lastMeasurementTime - measurement.getTime().getTime() <= zoom;
@@ -242,137 +281,133 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   }
 
 
-  private synchronized void updateTimelineView() {
-        Measurement measurement = aggregator.getAverage();
+  private synchronized void updateTimelineView()
+  {
+    Stopwatch stopwatch = new Stopwatch().start();
 
-        if (aggregator.isComposite()) {
-            if (!timelineView.isEmpty())
-            {
-              timelineView.remove(timelineView.size() - 1);
-            }
-            timelineView.add(measurement);
-        }
-        else
-        {
-            while (timelineView.size() > 0 &&
-                    measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom) {
-                timelineView.remove(0);
-            }
-            measurementsSize += 1;
-            timelineView.add(measurement);
-        }
+    Measurement measurement = aggregator.getAverage();
+
+    if (aggregator.isComposite())
+    {
+      if (!timelineView.isEmpty())
+      {
+        timelineView.remove(timelineView.size() - 1);
+      }
+      timelineView.add(measurement);
+    }
+    else
+    {
+      while (timelineView.size() > 0 &&
+          measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom)
+      {
+        timelineView.remove(0);
+      }
+      measurementsSize += 1;
+      timelineView.add(measurement);
     }
 
-    public void registerListener(Listener listener) {
-        listeners.add(listener);
+    Log.i(Constants.TAG, "prepareTimelineView took " + stopwatch.elapsedMillis());
+  }
+
+  public void registerListener(Listener listener)
+  {
+    listeners.add(listener);
+  }
+
+  public void unregisterListener(Listener listener)
+  {
+    listeners.remove(listener);
+  }
+
+  public boolean canZoomIn()
+  {
+    return zoom > MIN_ZOOM;
+  }
+
+  public synchronized boolean canZoomOut()
+  {
+    prepareTimelineView();
+    return timelineView.size() < measurementsSize;
+  }
+
+  public void zoomIn()
+  {
+    if (canZoomIn())
+    {
+      setZoom(zoom / 2);
     }
+  }
 
-    public void unregisterListener(Listener listener) {
-        listeners.remove(listener);
+  public synchronized void zoomOut()
+  {
+    if (canZoomOut())
+    {
+      anchor -= timelineView.size();
+      fixAnchor();
+      setZoom(zoom * 2);
     }
+  }
 
-    public boolean canZoomIn() {
-        return zoom > MIN_ZOOM;
+  public List<Measurement> getFullView()
+  {
+    if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
+    {
+      prepareFullView();
+      return fullView;
     }
-
-    public synchronized boolean canZoomOut() {
-        prepareTimelineView();
-        return timelineView.size() < measurementsSize;
+    else
+    {
+      return new ArrayList<Measurement>();
     }
+  }
 
-    public void zoomIn() {
-        if (canZoomIn()) {
-            setZoom(zoom / 2);
-        }
+  public synchronized void scroll(double scrollAmount)
+  {
+    prepareTimelineView();
+
+    anchor -= scrollAmount * timelineView.size();
+    fixAnchor();
+    timelineView.clear();
+
+    notifyListeners();
+  }
+
+  private synchronized void fixAnchor()
+  {
+    if (anchor > measurementsSize - timelineView.size())
+    {
+      anchor = measurementsSize - timelineView.size();
     }
-
-    public synchronized void zoomOut() {
-        if (canZoomOut()) {
-            anchor -= timelineView.size();
-            fixAnchor();
-            setZoom(zoom * 2);
-        }
-    }
-
-    public List<Measurement> getFullView() {
-        if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted()) {
-            prepareFullView();
-            return fullView;
-        } else {
-            return new ArrayList<Measurement>();
-        }
-    }
-
-    public synchronized void scroll(double scrollAmount) {
-        prepareTimelineView();
-
-        anchor -= scrollAmount * timelineView.size();
-        fixAnchor();
-        timelineView.clear();
-
-        notifyListeners();
-    }
-
-    private synchronized void fixAnchor() {
-        if (anchor > measurementsSize - timelineView.size()) {
-            anchor = measurementsSize - timelineView.size();
-        }
         if (anchor < 0) {
             anchor = 0;
         }
     }
 
-    public synchronized boolean canScrollRight() {
-        return anchor != 0;
+  public synchronized boolean canScrollRight()
+  {
+    return anchor != 0;
+  }
+
+  public synchronized boolean canScrollLeft()
+  {
+    prepareTimelineView();
+    return anchor < measurementsSize - timelineView.size();
+  }
+
+  @Override
+  public synchronized void onSharedPreferenceChanged(SharedPreferences preferences, String key)
+  {
+    if (key.equals(SettingsHelper.AVERAGING_TIME))
+    {
+      reset();
     }
+  }
 
-    public synchronized boolean canScrollLeft() {
-        prepareTimelineView();
-        return anchor < measurementsSize - timelineView.size();
-    }
+  public interface Listener
+  {
+    void onViewUpdated();
 
-    @Override
-    public synchronized void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-        if (key.equals(SettingsHelper.AVERAGING_TIME)) {
-            reset();
-        }
-    }
+    void onAveragedMeasurement(Measurement measurement);
+  }
 
-    public interface Listener {
-        void onViewUpdated();
-
-        void onAveragedMeasurement(Measurement measurement);
-    }
-
-    private static class MeasurementAggregator {
-        private double longitude = 0;
-        private double latitude = 0;
-        private double value = 0;
-        private long time = 0;
-        private int count = 0;
-
-        public void add(Measurement measurement) {
-            longitude += measurement.getLongitude();
-            latitude += measurement.getLatitude();
-            value += measurement.getValue();
-            time += measurement.getTime().getTime();
-            count += 1;
-        }
-
-        public void reset() {
-            longitude = latitude = value = time = count = 0;
-        }
-
-        public Measurement getAverage() {
-            return new Measurement(latitude / count, longitude / count, value / count, new Date(time / count));
-        }
-
-        public boolean isComposite() {
-            return count > 1;
-        }
-
-        public boolean isEmpty() {
-            return count == 0;
-        }
-    }
 }

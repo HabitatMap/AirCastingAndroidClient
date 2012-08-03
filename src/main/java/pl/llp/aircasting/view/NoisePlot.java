@@ -19,11 +19,6 @@
  */
 package pl.llp.aircasting.view;
 
-import android.content.Context;
-import android.graphics.*;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.view.View;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -32,7 +27,20 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.Search;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,189 +49,189 @@ import static com.google.common.collect.Iterables.getLast;
 import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
 import static pl.llp.aircasting.util.Search.binarySearch;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/3/11
- * Time: 12:06 PM
- */
-public class NoisePlot extends View {
-    public static final int OPAQUE = 255;
-    private static final double CLICK_RADIUS = 50;
+public class NoisePlot extends View
+{
+  public static final int OPAQUE = 255;
+  private static final double CLICK_RADIUS = 50;
 
-    private Paint paint = new Paint();
+  private Paint paint = new Paint();
 
-    private AirCastingActivity activity;
-    private SettingsHelper settingsHelper;
+  private AirCastingActivity activity;
+  private SettingsHelper settingsHelper;
 
-    private List<Measurement> measurements = new ArrayList<Measurement>();
-    private List<Note> notes;
-    private ResourceHelper resourceHelper;
-    private int bottom;
-    private int top;
-    private Sensor sensor;
+  private List<Measurement> measurements = new ArrayList<Measurement>();
+  private List<Note> notes;
+  private ResourceHelper resourceHelper;
+  private int bottom;
+  private int top;
+  private Sensor sensor;
 
-    @SuppressWarnings("UnusedDeclaration")
-    public NoisePlot(Context context) {
-        super(context);
-    }
+  @SuppressWarnings("UnusedDeclaration")
+  public NoisePlot(Context context) {
+    super(context);
+  }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public NoisePlot(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  @SuppressWarnings("UnusedDeclaration")
+  public NoisePlot(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public NoisePlot(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
+  @SuppressWarnings("UnusedDeclaration")
+  public NoisePlot(Context context, AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
+  }
 
-    public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
-        this.activity = activity;
-        this.settingsHelper = settingsHelper;
-        this.resourceHelper = resourceHelper;
-    }
+  public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
+    this.activity = activity;
+    this.settingsHelper = settingsHelper;
+    this.resourceHelper = resourceHelper;
+  }
 
-    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
-        this.measurements = measurements;
-        this.notes = notes;
-        this.sensor = sensor;
-        invalidate();
-    }
+  @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+  public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
+    this.measurements = measurements;
+    this.notes = notes;
+    this.sensor = sensor;
+    invalidate();
+  }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        bottom = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
-        top = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+  @Override
+  protected void onDraw(Canvas canvas)
+  {
+    Stopwatch stopwatch = new Stopwatch().start();
+
+    bottom = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+    top = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
         
-        drawBackground(canvas);
+    drawBackground(canvas);
 
-        if (!measurements.isEmpty()) {
-            Path path = new Path();
+    if (!measurements.isEmpty()) {
+      Path path = new Path();
 
-            float lastY = project(measurements.get(0).getValue());
-            path.moveTo(0, lastY);
+      float lastY = project(measurements.get(0).getValue());
+      path.moveTo(0, lastY);
 
-            // Avoid concurrent modification
-            for (int i = 1; i < measurements.size(); i++) {
-                Measurement measurement = measurements.get(i);
-                Point place = place(measurement);
-                path.lineTo(place.x, place.y);
-            }
+      // Avoid concurrent modification
+      for (int i = 1; i < measurements.size(); i++) {
+        Measurement measurement = measurements.get(i);
+        Point place = place(measurement);
+        path.lineTo(place.x, place.y);
+      }
 
-            initializePaint();
+      initializePaint();
 
-            canvas.drawPath(path, paint);
+      canvas.drawPath(path, paint);
 
-            for (Note note : notes) {
-                drawNote(canvas, note);
-            }
-        }
+      for (Note note : notes) {
+        drawNote(canvas, note);
+      }
     }
 
-    private Point place(Measurement measurement) {
-        long time = measurement.getTime().getTime();
-        float span = lastTime() - firstTime();
-        float place = time - firstTime();
-        int x = (int) (getWidth() * (place / span));
+    Log.i(Constants.TAG, "onDraw took " + stopwatch.elapsedMillis());
+  }
 
-        double value = measurement.getValue();
-        int y = project(value);
+  private Point place(Measurement measurement) {
+    long time = measurement.getTime().getTime();
+    float span = lastTime() - firstTime();
+    float place = time - firstTime();
+    int x = (int) (getWidth() * (place / span));
 
-        return new Point(x, y);
+    double value = measurement.getValue();
+    int y = project(value);
+
+    return new Point(x, y);
+  }
+
+  private void drawNote(Canvas canvas, Note note) {
+    if (!inRange(note)) return;
+
+    Point place = place(note);
+
+    Drawable noteArrow = resourceHelper.getNoteArrow();
+    centerBottomAt(noteArrow, place);
+    noteArrow.draw(canvas);
+  }
+
+  private Point place(Note note) {
+    Measurement measurement = findClosestMeasurement(note);
+    return place(measurement);
+  }
+
+  private boolean inRange(Note note) {
+    long noteTime = note.getDate().getTime();
+    return noteTime >= firstTime() && noteTime <= lastTime();
+  }
+
+  private long lastTime() {
+    return getLast(measurements).getTime().getTime();
+  }
+
+  private long firstTime() {
+    return measurements.get(0).getTime().getTime();
+  }
+
+  private Measurement findClosestMeasurement(final Note note) {
+    int index = binarySearch(measurements, new Search.Visitor<Measurement>() {
+      @Override
+      public int compareTo(Measurement value) {
+        return note.getDate().compareTo(value.getTime());
+      }
+    });
+
+    return measurements.get(index);
+  }
+
+  private void initializePaint() {
+    paint.setColor(Color.WHITE);
+    paint.setAlpha(OPAQUE);
+    paint.setStrokeWidth(3);
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStrokeJoin(Paint.Join.ROUND);
+    paint.setStrokeCap(Paint.Cap.ROUND);
+    paint.setAntiAlias(true);
+  }
+
+  private void drawBackground(Canvas canvas) {
+    // Make the NoisePlot play nicely with Layout preview
+    if (resourceHelper == null || settingsHelper == null) return;
+
+    paint.setStrokeWidth(0);
+    paint.setStyle(Paint.Style.FILL);
+
+    int lastThreshold = top;
+
+    for (MeasurementLevel measurementLevel : new MeasurementLevel[]{MeasurementLevel.HIGH, MeasurementLevel.MID, MeasurementLevel.LOW}) {
+      paint.setColor(resourceHelper.getGraphColor(measurementLevel));
+      int threshold = settingsHelper.getThreshold(sensor, measurementLevel);
+
+      canvas.drawRect(0, project(lastThreshold), getWidth(), project(threshold), paint);
+      lastThreshold = threshold;
     }
 
-    private void drawNote(Canvas canvas, Note note) {
-        if (!inRange(note)) return;
+    paint.setColor(resourceHelper.getGraphColor(MeasurementLevel.VERY_LOW));
+    canvas.drawRect(0, project(lastThreshold), getWidth(), getHeight(), paint);
+  }
 
-        Point place = place(note);
+  private int project(double value) {
+    return (int) (getHeight() * (top - value) / (top - bottom));
+  }
 
-        Drawable noteArrow = resourceHelper.getNoteArrow();
-        centerBottomAt(noteArrow, place);
-        noteArrow.draw(canvas);
+  public boolean onTap(TapEvent event) {
+    for (int i = 0; i < notes.size(); i++) {
+      Note note = notes.get(i);
+      Point place = place(note);
+
+      if (inRange(note) && isClose(event, place)) {
+        activity.noteClicked(i);
+        return true;
+      }
     }
+    return false;
+  }
 
-    private Point place(Note note) {
-        Measurement measurement = findClosestMeasurement(note);
-        return place(measurement);
-    }
-
-    private boolean inRange(Note note) {
-        long noteTime = note.getDate().getTime();
-        return noteTime >= firstTime() && noteTime <= lastTime();
-    }
-
-    private long lastTime() {
-        return getLast(measurements).getTime().getTime();
-    }
-
-    private long firstTime() {
-        return measurements.get(0).getTime().getTime();
-    }
-
-    private Measurement findClosestMeasurement(final Note note) {
-        int index = binarySearch(measurements, new Search.Visitor<Measurement>() {
-            @Override
-            public int compareTo(Measurement value) {
-                return note.getDate().compareTo(value.getTime());
-            }
-        });
-
-        return measurements.get(index);
-    }
-
-    private void initializePaint() {
-        paint.setColor(Color.WHITE);
-        paint.setAlpha(OPAQUE);
-        paint.setStrokeWidth(3);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAntiAlias(true);
-    }
-
-    private void drawBackground(Canvas canvas) {
-        // Make the NoisePlot play nicely with Layout preview
-        if (resourceHelper == null || settingsHelper == null) return;
-
-        paint.setStrokeWidth(0);
-        paint.setStyle(Paint.Style.FILL);
-
-        int lastThreshold = top;
-
-        for (MeasurementLevel measurementLevel : new MeasurementLevel[]{MeasurementLevel.HIGH, MeasurementLevel.MID, MeasurementLevel.LOW}) {
-            paint.setColor(resourceHelper.getGraphColor(measurementLevel));
-            int threshold = settingsHelper.getThreshold(sensor, measurementLevel);
-
-            canvas.drawRect(0, project(lastThreshold), getWidth(), project(threshold), paint);
-            lastThreshold = threshold;
-        }
-
-        paint.setColor(resourceHelper.getGraphColor(MeasurementLevel.VERY_LOW));
-        canvas.drawRect(0, project(lastThreshold), getWidth(), getHeight(), paint);
-    }
-
-    private int project(double value) {
-        return (int) (getHeight() * (top - value) / (top - bottom));
-    }
-
-    public boolean onTap(TapEvent event) {
-        for (int i = 0; i < notes.size(); i++) {
-            Note note = notes.get(i);
-            Point place = place(note);
-
-            if (inRange(note) && isClose(event, place)) {
-                activity.noteClicked(i);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isClose(TapEvent event, Point place) {
-        float x = event.getX() - place.x;
-        float y = event.getY() - place.y;
-        return Math.sqrt(x * x + y * y) < CLICK_RADIUS;
-    }
+  private boolean isClose(TapEvent event, Point place) {
+    float x = event.getX() - place.x;
+    float y = event.getY() - place.y;
+    return Math.sqrt(x * x + y * y) < CLICK_RADIUS;
+  }
 }
