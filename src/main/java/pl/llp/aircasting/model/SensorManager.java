@@ -152,11 +152,6 @@ public class SensorManager
     return sessionManager.isSessionSaved();
   }
 
-  public void setActive(String sensorName)
-  {
-    eventBus.post(new ViewStreamEvent(sensors.get(SensorName.from(sensorName))));
-  }
-
   public void disconnectSensors(ExternalSensorDescriptor descriptor)
   {
     String address = descriptor.getAddress();
