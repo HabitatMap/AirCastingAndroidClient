@@ -102,8 +102,10 @@ public class NoisePlot extends View
 
     bottom = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
     top = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
-        
+
     drawBackground(canvas);
+
+    Log.i(Constants.TAG, "onDraw to background took " + stopwatch.elapsedMillis());
 
     if (!measurements.isEmpty()) {
       Path path = new Path();
@@ -117,10 +119,12 @@ public class NoisePlot extends View
         Point place = place(measurement);
         path.lineTo(place.x, place.y);
       }
+      Log.i(Constants.TAG, "onDraw to path creation took " + stopwatch.elapsedMillis());
 
       initializePaint();
 
       canvas.drawPath(path, paint);
+      Log.i(Constants.TAG, "onDraw to path draw took " + stopwatch.elapsedMillis());
 
       for (Note note : notes) {
         drawNote(canvas, note);

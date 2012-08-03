@@ -60,6 +60,7 @@ import static java.util.Collections.sort;
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
   public static final long MILLIS_IN_SECOND = 1000;
+  private static final int SAMPLE_LIMIT = 1000;
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
@@ -189,12 +190,22 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     ArrayList<Long> times = newArrayList(forAveraging.keySet());
     sort(times);
 
-    fullView = newLinkedList();
+    List<Measurement> timeboxedMeasurements = newLinkedList();
     for (Long time : times)
     {
       ImmutableList<Measurement> chunk = forAveraging.get(time);
-      fullView.add(average(chunk));
+      timeboxedMeasurements.add(average(chunk));
     }
+
+    if(timeboxedMeasurements.size() > SAMPLE_LIMIT)
+    {
+      fullView = aggregator.smoothenSamplesToReduceCount(timeboxedMeasurements, SAMPLE_LIMIT);
+    }
+    else
+    {
+      fullView = newLinkedList(timeboxedMeasurements);
+    }
+
     Log.i(Constants.TAG, "prepareFullView took " + stopwatch.elapsedMillis());
   }
 
@@ -243,9 +254,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
   }
 
-  protected synchronized void prepareTimelineView()
+  protected synchronized CopyOnWriteArrayList<Measurement> prepareTimelineView()
   {
-    if (!timelineView.isEmpty()) return;
+    if (!timelineView.isEmpty()) return null;
     Stopwatch stopwatch = new Stopwatch().start();
 
     final List<Measurement> measurements = getFullView();
@@ -260,6 +271,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     measurementsSize = measurements.size();
 
     Log.i(Constants.TAG, "prepareTimelineView took " + stopwatch.elapsedMillis());
+    return timelineView;
   }
 
   private Predicate<Measurement> fitsInTimeline(final long lastMeasurementTime)

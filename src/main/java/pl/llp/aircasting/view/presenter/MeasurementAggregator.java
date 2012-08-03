@@ -3,39 +3,71 @@ package pl.llp.aircasting.view.presenter;
 import pl.llp.aircasting.model.Measurement;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-/**
-* Created by ags on 02/08/12 at 16:09
-*/
+import static com.google.common.collect.Lists.newLinkedList;
+
 class MeasurementAggregator
 {
-    private double longitude = 0;
-    private double latitude = 0;
-    private double value = 0;
-    private long time = 0;
-    private int count = 0;
+  private double longitude = 0;
+  private double latitude = 0;
+  private double value = 0;
+  private long time = 0;
+  private int count = 0;
 
-    public void add(Measurement measurement) {
-        longitude += measurement.getLongitude();
-        latitude += measurement.getLatitude();
-        value += measurement.getValue();
-        time += measurement.getTime().getTime();
-        count += 1;
-    }
+  public void add(Measurement measurement)
+  {
+    longitude += measurement.getLongitude();
+    latitude += measurement.getLatitude();
+    value += measurement.getValue();
+    time += measurement.getTime().getTime();
+    count += 1;
+  }
 
-    public void reset() {
-        longitude = latitude = value = time = count = 0;
-    }
+  public void reset()
+  {
+    longitude = latitude = value = time = count = 0;
+  }
 
-    public Measurement getAverage() {
-        return new Measurement(latitude / count, longitude / count, value / count, new Date(time / count));
-    }
+  public Measurement getAverage()
+  {
+    return new Measurement(latitude / count, longitude / count, value / count, new Date(time / count));
+  }
 
-    public boolean isComposite() {
-        return count > 1;
-    }
+  public boolean isComposite()
+  {
+    return count > 1;
+  }
 
-    public boolean isEmpty() {
-        return count == 0;
+  public boolean isEmpty()
+  {
+    return count == 0;
+  }
+
+  public LinkedList<Measurement> smoothenSamplesToReduceCount(List<Measurement> samples, int limit)
+  {
+    reset();
+
+    LinkedList<Measurement> result = newLinkedList();
+    double fillFactor = 1.0 * limit / samples.size();
+    double fill = 0.0;
+
+    for (Measurement measurement : samples)
+    {
+      add(measurement);
+      fill += fillFactor;
+      if(fill > 1)
+      {
+        fill -= 1;
+        result.add(getAverage());
+        reset();
+      }
     }
+    if(!isEmpty())
+    {
+      result.add(getAverage());
+    }
+    return result;
+  }
 }
