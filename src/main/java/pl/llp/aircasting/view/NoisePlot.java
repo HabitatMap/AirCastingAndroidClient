@@ -29,6 +29,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.Search;
+import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -38,7 +39,6 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import com.google.common.base.Stopwatch;
 
@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
+import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.util.DrawableTransformer.centerBottomAt;
 import static pl.llp.aircasting.util.Search.binarySearch;
 
@@ -65,6 +66,8 @@ public class NoisePlot extends View
   private int bottom;
   private int top;
   private Sensor sensor;
+
+  MeasurementAggregator aggregator = new MeasurementAggregator();
 
   @SuppressWarnings("UnusedDeclaration")
   public NoisePlot(Context context) {
@@ -89,7 +92,7 @@ public class NoisePlot extends View
 
   @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
   public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
-    this.measurements = measurements;
+    this.measurements = aggregator.smoothenSamplesToReduceCount(newArrayList(measurements), 1000);
     this.notes = notes;
     this.sensor = sensor;
     invalidate();
@@ -105,7 +108,7 @@ public class NoisePlot extends View
 
     drawBackground(canvas);
 
-    Log.i(Constants.TAG, "onDraw to background took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("onDraw to background took " + stopwatch.elapsedMillis());
 
     if (!measurements.isEmpty()) {
       Path path = new Path();
@@ -119,19 +122,19 @@ public class NoisePlot extends View
         Point place = place(measurement);
         path.lineTo(place.x, place.y);
       }
-      Log.i(Constants.TAG, "onDraw to path creation took " + stopwatch.elapsedMillis());
+      Constants.logGraphPerformance("onDraw to path creation took " + stopwatch.elapsedMillis());
 
       initializePaint();
 
       canvas.drawPath(path, paint);
-      Log.i(Constants.TAG, "onDraw to path draw took " + stopwatch.elapsedMillis());
+      Constants.logGraphPerformance("onDraw to path draw took " + stopwatch.elapsedMillis());
 
       for (Note note : notes) {
         drawNote(canvas, note);
       }
     }
 
-    Log.i(Constants.TAG, "onDraw took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("onDraw took " + stopwatch.elapsedMillis());
   }
 
   private Point place(Measurement measurement) {

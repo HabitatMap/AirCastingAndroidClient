@@ -19,22 +19,26 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.New;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Sensor;
+
 import android.content.Intent;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.MeasurementLevel;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Any;
-import pl.llp.aircasting.model.Sensor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static pl.llp.aircasting.TestHelper.click;
 import static pl.llp.aircasting.TestHelper.fill;
 
@@ -52,7 +56,7 @@ public class ThresholdsActivityTest {
 
     @Before
     public void setup() {
-        sensor = Any.sensor();
+        sensor = New.sensor();
 
         Intent intent = new Intent();
         intent.putExtra(Intents.EXTRA_SENSOR, sensor);

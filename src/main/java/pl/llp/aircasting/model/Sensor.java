@@ -18,11 +18,10 @@ public class Sensor implements Serializable
   private String shortType;
   private String unit;
   private String symbol;
-  private Map<MeasurementLevel, Integer> thresholds = newHashMap();
+  private final Map<MeasurementLevel, Integer> thresholds = newHashMap();
 
   protected boolean enabled = true;
   private String address = "none";
-  volatile ConnectionStatus connectionStatus = ConnectionStatus.CONNECTED;
 
   public Sensor(SensorEvent event) {
     this(event.getPackageName(), event.getSensorName(), event.getMeasurementType(), event.getShortType(), event.getUnit(), event.getSymbol(),
@@ -139,20 +138,13 @@ public class Sensor implements Serializable
     return address;
   }
 
-  public enum ConnectionStatus
+  public MeasurementLevel level(double value)
   {
-    CONNECTED,
-    DISCONNECTED,
-    RECONNECTED
-  }
-
-  public ConnectionStatus getConnectionStatus()
-  {
-    return connectionStatus;
-  }
-
-  public void setConnectionStatus(ConnectionStatus connectionStatus)
-  {
-    this.connectionStatus = connectionStatus;
+    for (MeasurementLevel measurementLevel : MeasurementLevel.OBTAINABLE_LEVELS) {
+      if ((int) value > getThreshold(measurementLevel)) {
+        return measurementLevel;
+      }
+    }
+    return MeasurementLevel.TOO_LOW;
   }
 }

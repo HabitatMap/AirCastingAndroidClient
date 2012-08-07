@@ -19,14 +19,8 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.view.View;
-import android.widget.TextView;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import pl.llp.aircasting.R;
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -35,9 +29,15 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
+
+import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.view.View;
+import android.widget.TextView;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
@@ -77,90 +77,90 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         measurementPresenter.unregisterListener(this);
     }
 
-    private void refresh() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                zoomIn.setEnabled(measurementPresenter.canZoomIn());
-                zoomOut.setEnabled(measurementPresenter.canZoomOut());
+  private void refresh() {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        zoomIn.setEnabled(measurementPresenter.canZoomIn());
+        zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
-                List<Measurement> measurements = measurementPresenter.getTimelineView();
-                ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
+        List<Measurement> measurements = measurementPresenter.getTimelineView();
+        List<Note> notes = newArrayList(sessionManager.getNotes());
 
-                plot.update(sensorManager.getVisibleSensor(), measurements, notes);
+        plot.update(sensorManager.getVisibleSensor(), measurements, notes);
 
-                scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
-                scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
+        scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
+        scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
 
-                updateLabels(measurements);
-            }
-        });
+        updateLabels(measurements);
+      }
+    });
+  }
+
+  private void updateLabels(List<Measurement> measurements) {
+    Sensor sensor = sensorManager.getVisibleSensor();
+    int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+    int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
+    graphTop.setText(high + " " + sensor.getSymbol());
+    graphBottom.setText(low + " " + sensor.getSymbol());
+
+    if (!measurements.isEmpty()) {
+      graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
+      graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
     }
+  }
 
-    private void updateLabels(List<Measurement> measurements) {
-        Sensor sensor = sensorManager.getVisibleSensor();
-        int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
-        int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
-        graphTop.setText(high + " " + sensor.getSymbol());
-        graphBottom.setText(low + " " + sensor.getSymbol());
-
-        if (!measurements.isEmpty()) {
-            graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
-            graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.zoom_in:
-                zoomIn();
-                break;
-            case R.id.zoom_out:
-                zoomOut();
-                break;
-            default:
-                super.onClick(view);
-        }
-    }
-
-    private void zoomIn() {
-        measurementPresenter.zoomIn();
-    }
-
-    private void zoomOut() {
-        measurementPresenter.zoomOut();
-    }
-
-    @Override
-    public void onViewUpdated() {
-        refresh();
-    }
-
-    @Override
-    public void onAveragedMeasurement(Measurement measurement) {
-    }
-
-    @Subscribe
-    public void onEvent(TapEvent event) {
-        if (!plot.onTap(event)) {
-            super.onEvent(event);
-        }
-    }
-
-    @Override
-    protected void refreshNotes() {
-        refresh();
-    }
-
-    @Subscribe
-    public void onEvent(DoubleTapEvent event) {
+  @Override
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.zoom_in:
         zoomIn();
+        break;
+      case R.id.zoom_out:
+        zoomOut();
+        break;
+      default:
+        super.onClick(view);
     }
+  }
 
-    @Subscribe
-    public void onEvent(ScrollEvent event) {
-        float relativeScroll = event.getDistanceX() / plot.getWidth();
-        measurementPresenter.scroll(relativeScroll);
+  private void zoomIn() {
+    measurementPresenter.zoomIn();
+  }
+
+  private void zoomOut() {
+    measurementPresenter.zoomOut();
+  }
+
+  @Override
+  public void onViewUpdated() {
+    refresh();
+  }
+
+  @Override
+  public void onAveragedMeasurement(Measurement measurement) {
+  }
+
+  @Subscribe
+  public void onEvent(TapEvent event) {
+    if (!plot.onTap(event)) {
+      super.onEvent(event);
     }
+  }
+
+  @Override
+  protected void refreshNotes() {
+    refresh();
+  }
+
+  @Subscribe
+  public void onEvent(DoubleTapEvent event) {
+    zoomIn();
+  }
+
+  @Subscribe
+  public void onEvent(ScrollEvent event) {
+    float relativeScroll = event.getDistanceX() / plot.getWidth();
+    measurementPresenter.scroll(relativeScroll);
+  }
 }

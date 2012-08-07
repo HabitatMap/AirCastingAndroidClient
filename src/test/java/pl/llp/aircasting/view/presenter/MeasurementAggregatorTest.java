@@ -32,7 +32,7 @@ public class MeasurementAggregatorTest
     List<Measurement> measurements = measurements(1, -1);
 
     // when
-    LinkedList<Measurement> list = aggregator.smoothenSamplesToReduceCount(measurements, 1);
+    List<Measurement> list = aggregator.smoothenSamplesToReduceCount(measurements, 1);
 
     // then
     assertEquals(0, list.get(0).getValue(), 0.1);

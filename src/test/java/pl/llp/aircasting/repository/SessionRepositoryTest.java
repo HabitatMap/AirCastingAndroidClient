@@ -1,7 +1,7 @@
 package pl.llp.aircasting.repository;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.model.Any;
+import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.db.AirCastingDB;
 
@@ -25,7 +25,7 @@ public class SessionRepositoryTest
   @Before
   public void setUp() throws Exception
   {
-    session = Any.session();
+    session = New.session();
   }
 
   @Test

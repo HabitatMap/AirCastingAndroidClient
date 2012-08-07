@@ -102,11 +102,7 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
     Stopwatch stopwatch = new Stopwatch().start();
     T result = task.execute(database);
 
-    if(Constants.logDbPerformance())
-    {
-      stopwatch.stop();
-      Log.v(Constants.TAG, "Database task took: " + stopwatch.elapsedMillis());
-    }
+    Constants.logDbPerformance("Database task took: " + stopwatch.elapsedMillis());
     return result;
   }
 }

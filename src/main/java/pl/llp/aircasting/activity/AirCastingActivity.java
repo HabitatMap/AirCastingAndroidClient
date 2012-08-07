@@ -20,6 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
@@ -33,7 +34,9 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.model.MeasurementLevelEvent;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 
@@ -142,14 +145,31 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         }
     }
 
-    protected void updateGauges() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                gaugeHelper.updateGauges(sensorManager.getVisibleSensor(), gauges);
-            }
-        });
+  protected void updateGauges()
+  {
+    final Sensor visibleSensor = sensorManager.getVisibleSensor();
+    runOnUiThread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+
+        gaugeHelper.updateGauges(visibleSensor, gauges);
+      }
+    });
+
+    MeasurementLevel level = null;
+    if (sessionManager.isSessionSaved())
+    {
+      level = MeasurementLevel.TOO_LOW;
     }
+    else
+    {
+      int now = (int) sessionManager.getNow(visibleSensor);
+      level = visibleSensor.level(now);
+    }
+    eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
+  }
 
     @Subscribe
     public void onEvent(MeasurementEvent event) {

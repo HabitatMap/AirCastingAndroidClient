@@ -19,14 +19,15 @@
  */
 package pl.llp.aircasting.helper;
 
-import com.google.inject.Inject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -40,72 +41,38 @@ import static org.mockito.Mockito.when;
  * Time: 3:56 PM
  */
 @RunWith(InjectedTestRunner.class)
-public class SoundHelperTest {
-    @Inject SoundHelper soundHelper;
+public class SoundHelperTest
+{
+  @Inject SoundHelper soundHelper;
+  private final Sensor SENSOR = SimpleAudioReader.getSensor();
 
-    @Before
-    public void setup() {
-        soundHelper.settingsHelper = mock(SettingsHelper.class);
+  @Before
+  public void setup()
+  {
+    soundHelper.settingsHelper = mock(SettingsHelper.class);
 
-        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_HIGH)).thenReturn(60);
-        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.HIGH)).thenReturn(50);
-        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.MID)).thenReturn(30);
-        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.LOW)).thenReturn(10);
-        when(soundHelper.settingsHelper.getThreshold(SimpleAudioReader.getSensor(), MeasurementLevel.VERY_LOW)).thenReturn(-20);
-    }
+    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.VERY_HIGH)).thenReturn(60);
+    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.HIGH)).thenReturn(50);
+    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.MID)).thenReturn(30);
+    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.LOW)).thenReturn(10);
+    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.VERY_LOW)).thenReturn(-20);
+  }
 
-    @Test
-    public void shouldRecognizeIndistinctSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), -35), equalTo(MeasurementLevel.TOO_LOW));
-    }
+  @Test
+  public void shouldAdviseToDisplayAbsoluteAverageData()
+  {
+    assertThat(soundHelper.shouldDisplay(SENSOR, 45), equalTo(true));
+  }
 
-    @Test
-    public void shouldRecognizeQuietSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), -10), equalTo(MeasurementLevel.VERY_LOW));
-    }
+  @Test
+  public void shouldNotAdviseToDisplayAbsoluteTooLoudData()
+  {
+    assertThat(soundHelper.shouldDisplay(SENSOR, 101), equalTo(false));
+  }
 
-    @Test
-    public void shouldRecognizeAverageSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), 15), equalTo(MeasurementLevel.LOW));
-    }
-
-    @Test
-    public void shouldRecognizeLoudSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), 35), equalTo(MeasurementLevel.MID));
-    }
-
-    @Test
-    public void shouldRecognizeVeryLoudSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), 55), equalTo(MeasurementLevel.HIGH));
-    }
-
-    @Test
-    public void shouldRecognizeTooLoudSounds() {
-        assertThat(soundHelper.level(SimpleAudioReader.getSensor(), 65), equalTo(MeasurementLevel.VERY_HIGH));
-    }
-
-    @Test
-    public void shouldAdviseToDisplayAbsoluteAverageData() {
-        assertThat(soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), 45), equalTo(true));
-    }
-
-    @Test
-    public void shouldNotAdviseToDisplayAbsoluteTooLoudData() {
-        assertThat(soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), 61), equalTo(false));
-    }
-
-    @Test
-    public void shouldNotAdviseToDisplayAbsoluteTooQuietData() {
-        assertThat(soundHelper.shouldDisplay(SimpleAudioReader.getSensor(), -21), equalTo(false));
-    }
-
-    @Test
-    public void shouldReturnLowerOneOnTheBorder() {
-        Sensor sensor = SimpleAudioReader.getSensor();
-        
-        assertThat(soundHelper.level(sensor, 10.1), equalTo(MeasurementLevel.VERY_LOW));
-        assertThat(soundHelper.level(sensor, 30.1), equalTo(MeasurementLevel.LOW));
-        assertThat(soundHelper.level(sensor, 50.1), equalTo(MeasurementLevel.MID));
-        assertThat(soundHelper.level(sensor, 60.1), equalTo(MeasurementLevel.HIGH));
-    }
+  @Test
+  public void shouldNotAdviseToDisplayAbsoluteTooQuietData()
+  {
+    assertThat(soundHelper.shouldDisplay(SENSOR, -21), equalTo(false));
+  }
 }

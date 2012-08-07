@@ -69,6 +69,8 @@ public class SettingsHelper
   public static final String SENSOR_NAME = "sensor_name";
   public static final String SENSORS = "external_sensors_json";
 
+  public static final String DEBUG_MODE = "debug_mode";
+
   @Inject SharedPreferences preferences;
   @Inject Gson gson;
 

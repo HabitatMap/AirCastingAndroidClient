@@ -73,4 +73,9 @@
                                            android:title="@string/show_route"
             />
 
+  <android.preference.CheckBoxPreference android:defaultValue="true"
+                                         android:key="debug_mode"
+                                         android:title="@string/debug_mode"
+          />
+
 </PreferenceScreen>

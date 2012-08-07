@@ -26,5 +26,7 @@ package pl.llp.aircasting;
  * Time: 3:32 PM
  */
 public enum MeasurementLevel {
-    VERY_HIGH, HIGH, MID, LOW, VERY_LOW, TOO_LOW
+  VERY_HIGH, HIGH, MID, LOW, VERY_LOW, TOO_LOW;
+
+  public static MeasurementLevel[] OBTAINABLE_LEVELS = {VERY_HIGH, HIGH, MID, LOW, VERY_LOW};
 }

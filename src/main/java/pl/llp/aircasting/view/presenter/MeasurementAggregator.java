@@ -3,12 +3,11 @@ package pl.llp.aircasting.view.presenter;
 import pl.llp.aircasting.model.Measurement;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 
-class MeasurementAggregator
+public class MeasurementAggregator
 {
   private double longitude = 0;
   private double latitude = 0;
@@ -45,11 +44,11 @@ class MeasurementAggregator
     return count == 0;
   }
 
-  public LinkedList<Measurement> smoothenSamplesToReduceCount(List<Measurement> samples, int limit)
+  public List<Measurement> smoothenSamplesToReduceCount(List<Measurement> samples, int limit)
   {
     reset();
 
-    LinkedList<Measurement> result = newLinkedList();
+    List<Measurement> result = newCopyOnWriteArrayList();
     double fillFactor = 1.0 * limit / samples.size();
     double fill = 0.0;
 
@@ -64,7 +63,7 @@ class MeasurementAggregator
         reset();
       }
     }
-    if(!isEmpty())
+    if(count > 0)
     {
       result.add(getAverage());
     }

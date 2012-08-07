@@ -196,7 +196,7 @@ public class SessionManager
     recentMeasurements.put(sensorName, value);
 
     Location location = locationHelper.getLastLocation();
-    if (location != null && sensor.isEnabled())
+    if (location != null && sensor != null && sensor.isEnabled())
     {
       double latitude = location.getLatitude();
       double longitude = location.getLongitude();

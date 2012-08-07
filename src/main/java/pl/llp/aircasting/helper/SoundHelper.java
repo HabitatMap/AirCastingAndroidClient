@@ -19,9 +19,10 @@
 */
 package pl.llp.aircasting.helper;
 
-import com.google.inject.Inject;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
+
+import com.google.inject.Inject;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,12 +44,7 @@ public class SoundHelper {
     @Inject SettingsHelper settingsHelper;
 
     public MeasurementLevel level(Sensor sensor, double value) {
-        for (MeasurementLevel measurementLevel : MEASUREMENT_LEVELS) {
-            if ((int) value > settingsHelper.getThreshold(sensor, measurementLevel)) {
-                return measurementLevel;
-            }
-        }
-        return MeasurementLevel.TOO_LOW;
+        return sensor.level(value);
     }
 
     public boolean shouldDisplay(Sensor sensor, double value) {

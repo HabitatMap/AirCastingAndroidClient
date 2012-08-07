@@ -44,298 +44,321 @@ import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/4/11
- * Time: 1:48 PM
- */
 @RunWith(InjectedTestRunner.class)
-public class MeasurementPresenterTest {
-    @Inject MeasurementPresenter presenter;
-    List<Measurement> measurements;
-    private Measurement measurement1;
-    private Measurement measurement2;
-    private MeasurementPresenter.Listener listener;
-    private MeasurementStream stream;
-    private Sensor sensor;
+public class MeasurementPresenterTest
+{
+  @Inject MeasurementPresenter presenter;
+  List<Measurement> measurements;
+  private Measurement measurement1;
+  private Measurement measurement2;
+  private MeasurementPresenter.Listener listener;
+  private MeasurementStream stream;
+  private Sensor sensor;
 
-    @Before
-    public void setup() {
-        measurements = new ArrayList<Measurement>();
-        for (int i = 0; i < 4; i++) {
-            measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
-        }
-
-        sensor = mock(Sensor.class);
-        when(sensor.getSensorName()).thenReturn("LHC");
-        
-        presenter.sensorManager = mock(SensorManager.class);
-        when(presenter.sensorManager.getVisibleSensor()).thenReturn(sensor);
-
-        stream = mock(MeasurementStream.class);
-        when(stream.getMeasurements()).thenReturn(measurements);
-        
-        presenter.sessionManager = mockSessionManager();
-        when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
-        when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
-
-        measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
-        measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
-
-        listener = mock(MeasurementPresenter.Listener.class);
-        presenter.registerListener(listener);
-
-        presenter.settingsHelper = mock(SettingsHelper.class);
-        when(presenter.settingsHelper.getAveragingTime()).thenReturn(1);
+  @Before
+  public void setup()
+  {
+    measurements = new ArrayList<Measurement>();
+    for (int i = 0; i < 4; i++)
+    {
+      measurements.add(new Measurement(i, i, i, new Date(0, 0, 0, 0, 1, 2 * i)));
     }
 
-    private SessionManager mockSessionManager() {
-        SessionManager result = mock(SessionManager.class);
-        when(result.isSessionStarted()).thenReturn(true);
-        return result;
-    }
+    sensor = mock(Sensor.class);
+    when(sensor.getSensorName()).thenReturn("LHC");
 
-    private void triggerMeasurement(Measurement measurement){
-        presenter.onEvent(new MeasurementEvent(measurement, sensor));
-    }
+    presenter.sensorManager = mock(SensorManager.class);
+    when(presenter.sensorManager.getVisibleSensor()).thenReturn(sensor);
 
-    @Test
-    public void shouldShowLastNMillis() {
-        presenter.setZoom(100);
+    stream = mock(MeasurementStream.class);
+    when(stream.getMeasurements()).thenReturn(measurements);
 
-        List<Measurement> result = presenter.getTimelineView();
+    presenter.sessionManager = mockSessionManager();
+    when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
+    when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
 
-        assertThat(result, hasItem(equalTo(measurements.get(3))));
-        assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
-    }
+    measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
+    measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
 
-    @Test
-    public void shouldNotCluster() {
-        presenter.setZoom(4000);
+    listener = mock(MeasurementPresenter.Listener.class);
+    presenter.registerListener(listener);
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(3))));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
-    }
+    presenter.settingsHelper = mock(SettingsHelper.class);
+    when(presenter.settingsHelper.getAveragingTime()).thenReturn(1);
+  }
 
-    @Test
-    public void shouldHandleEmptyList() {
-        when(stream.getMeasurements()).thenReturn(new ArrayList<Measurement>());
+  private SessionManager mockSessionManager()
+  {
+    SessionManager result = mock(SessionManager.class);
+    when(result.isSessionStarted()).thenReturn(true);
+    return result;
+  }
 
-        assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
-    }
+  private void triggerMeasurement(Measurement measurement)
+  {
+    presenter.onEvent(new MeasurementEvent(measurement, sensor));
+  }
 
-    @Test
-    public void shouldAppendWithoutRecalculating() {
-        presenter.setZoom(4000);
-        presenter.getTimelineView();
-        presenter.sessionManager = mockSessionManager();
+  @Test
+  public void shouldShowLastNMillis()
+  {
+    presenter.setZoom(100);
 
-        triggerMeasurement(measurement1);
-        List<Measurement> result = presenter.getTimelineView();
+    List<Measurement> result = presenter.getTimelineView();
 
-        assertThat(result, hasItem(equalTo(measurement1)));
-        assertThat(result, hasItem(equalTo(measurements.get(3))));
-        assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
-    }
+    assertThat(result, hasItem(equalTo(measurements.get(3))));
+    assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
+  }
 
-    @Test
-    public void shouldNotifyListeners() {
-        triggerMeasurement(measurement1);
+  @Test
+  public void shouldNotCluster()
+  {
+    presenter.setZoom(4000);
 
-        verify(listener).onViewUpdated();
-    }
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(3))));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
+  }
 
-    @Test
-    public void shouldUnregisterListeners() {
-        presenter.unregisterListener(listener);
+  @Test
+  public void shouldHandleEmptyList()
+  {
+    when(stream.getMeasurements()).thenReturn(new ArrayList<Measurement>());
 
-        triggerMeasurement(measurement1);
+    assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
+  }
 
-        verifyZeroInteractions(listener);
-    }
+  @Test
+  public void shouldAppendWithoutRecalculating()
+  {
+    presenter.setZoom(4000);
+    presenter.getTimelineView();
+    presenter.sessionManager = mockSessionManager();
 
-    @Test
-    public void shouldAllowToZoomOut() {
-        presenter.setZoom(2000);
-        assertThat(presenter.canZoomOut(), equalTo(true));
-    }
+    triggerMeasurement(measurement1);
+    List<Measurement> result = presenter.getTimelineView();
 
-    @Test
-    public void shouldNotAllowToZoomOutTooMuch() {
-        presenter.setZoom(100000000);
-        assertThat(presenter.canZoomOut(), equalTo(false));
-    }
+    assertThat(result, hasItem(equalTo(measurement1)));
+    assertThat(result, hasItem(equalTo(measurements.get(3))));
+    assertThat(result, not(hasItem(equalTo(measurements.get(2)))));
+  }
 
-    @Test
-    public void shouldAllowToZoomOutAfterMoreDataArrives() {
-        presenter.setZoom(8000);
-        presenter.getTimelineView();
-        triggerMeasurement(measurement1);
-        assertThat(presenter.canZoomOut(), equalTo(true));
-    }
+  @Test
+  public void shouldNotifyListeners()
+  {
+    triggerMeasurement(measurement1);
 
-    @Test
-    public void shouldUpdateTheFullView() {
-        presenter.getFullView();
-        presenter.sessionManager = mockSessionManager();
+    verify(listener).onViewUpdated();
+  }
 
-        triggerMeasurement(measurement1);
-        List<Measurement> result = presenter.getFullView();
+  @Test
+  public void shouldUnregisterListeners()
+  {
+    presenter.unregisterListener(listener);
 
-        assertThat(result, hasItem(equalTo(measurement1)));
-    }
+    triggerMeasurement(measurement1);
 
-    @Test
-    public void shouldNotUpdateWhenViewingASession() {
-        presenter.getFullView();
-        presenter.sessionManager = mockSessionManager();
-        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
-        when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+    verifyZeroInteractions(listener);
+  }
 
-        presenter.onEvent(new SessionChangeEvent());
-        triggerMeasurement(measurement1);
+  @Test
+  public void shouldAllowToZoomOut()
+  {
+    presenter.setZoom(2000);
+    assertThat(presenter.canZoomOut(), equalTo(true));
+  }
 
-        assertThat(presenter.getFullView().isEmpty(), equalTo(true));
-    }
+  @Test
+  public void shouldNotAllowToZoomOutTooMuch()
+  {
+    presenter.setZoom(100000000);
+    assertThat(presenter.canZoomOut(), equalTo(false));
+  }
 
-    @Test
-    public void shouldOnlyUpdateFromVisibleSensorEvents() {
-        presenter.getFullView();
-        presenter.sessionManager = mockSessionManager();
-        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
-        when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+  @Test
+  public void shouldAllowToZoomOutAfterMoreDataArrives()
+  {
+    presenter.setZoom(8000);
+    presenter.getTimelineView();
+    triggerMeasurement(measurement1);
+    assertThat(presenter.canZoomOut(), equalTo(true));
+  }
 
-        presenter.onEvent(new SessionChangeEvent());
-        triggerMeasurement(measurement1);
+  @Test
+  public void shouldUpdateTheFullView()
+  {
+    presenter.getFullView();
+    presenter.sessionManager = mockSessionManager();
 
-        assertThat(presenter.getFullView().isEmpty(), equalTo(true));
-    }
+    triggerMeasurement(measurement1);
+    List<Measurement> result = presenter.getFullView();
 
-    @Test
-    public void fullViewShouldBeEmptyWithoutASession() {
-        when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
-        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    assertThat(result, hasItem(equalTo(measurement1)));
+  }
 
-        triggerMeasurement(measurement1);
+  @Test
+  public void shouldNotUpdateWhenViewingASession()
+  {
+    presenter.getFullView();
+    presenter.sessionManager = mockSessionManager();
+    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
 
-        assertThat(presenter.getFullView().isEmpty(), equalTo(true));
-    }
+    presenter.onEvent(new SessionChangeEvent());
+    triggerMeasurement(measurement1);
 
-    @Test
-    public void timelineViewShouldBeEmptyWithoutASession() {
-        when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
-        when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    assertThat(presenter.getFullView().isEmpty(), equalTo(true));
+  }
 
-        assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
-    }
+  @Test
+  public void shouldOnlyUpdateFromVisibleSensorEvents()
+  {
+    presenter.getFullView();
+    presenter.sessionManager = mockSessionManager();
+    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
 
-    @Test
-    public void shouldScrollLeft() {
-        presenter.setZoom(4000);
+    presenter.onEvent(new SessionChangeEvent());
+    triggerMeasurement(measurement1);
 
-        presenter.scroll(-0.5);
+    assertThat(presenter.getFullView().isEmpty(), equalTo(true));
+  }
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
-    }
+  @Test
+  public void fullViewShouldBeEmptyWithoutASession()
+  {
+    when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
+    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
 
-    @Test
-    public void shouldScrollRight() {
-        presenter.setZoom(4000);
+    triggerMeasurement(measurement1);
 
-        presenter.scroll(-1);
-        presenter.scroll(0.5);
+    assertThat(presenter.getFullView().isEmpty(), equalTo(true));
+  }
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
-    }
+  @Test
+  public void timelineViewShouldBeEmptyWithoutASession()
+  {
+    when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
+    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
 
-    @Test
-    public void shouldNotScrollTooMuchRight() {
-        presenter.setZoom(4000);
+    assertThat(presenter.getTimelineView().isEmpty(), equalTo(true));
+  }
 
-        presenter.scroll(2);
+  @Test
+  public void shouldScrollLeft()
+  {
+    presenter.setZoom(4000);
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(3))));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
-    }
+    presenter.scroll(-0.5);
 
-    @Test
-    public void shouldNotScrollTooMuchLeft() {
-        presenter.setZoom(4000);
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
+  }
 
-        presenter.scroll(-10);
+  @Test
+  public void shouldScrollRight()
+  {
+    presenter.setZoom(4000);
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(0))));
-    }
+    presenter.scroll(-1);
+    presenter.scroll(0.5);
 
-    @Test
-    public void shouldNotifyListenersOnScroll() {
-        presenter.scroll(-10);
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
+  }
 
-        verify(listener).onViewUpdated();
-    }
+  @Test
+  public void shouldNotScrollTooMuchRight()
+  {
+    presenter.setZoom(4000);
 
-    @Test
-    public void shouldNotUpdateTheTimelineIfScrolled() {
-        presenter.setZoom(4000);
-        presenter.scroll(-0.5);
+    presenter.scroll(2);
 
-        presenter.getTimelineView();
-        triggerMeasurement(measurement1);
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(3))));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(2))));
+  }
 
-        assertThat(presenter.getTimelineView(), not(hasItem(equalTo(measurement1))));
-    }
+  @Test
+  public void shouldNotScrollTooMuchLeft()
+  {
+    presenter.setZoom(4000);
 
-    @Test
-    public void shouldAverage() {
-        when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        Measurement expected = new Measurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
+    presenter.scroll(-10);
 
-        presenter.onEvent(new SessionChangeEvent());
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(1))));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurements.get(0))));
+  }
 
-        assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
-    }
+  @Test
+  public void shouldNotifyListenersOnScroll()
+  {
+    presenter.scroll(-10);
 
-    @Test
-    public void shouldAverageOnTheFly() {
-        when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+    verify(listener).onViewUpdated();
+  }
 
-        presenter.onEvent(new SessionChangeEvent());
-        triggerMeasurement(measurement1);
-        triggerMeasurement(measurement2);
+  @Test
+  public void shouldNotUpdateTheTimelineIfScrolled()
+  {
+    presenter.setZoom(4000);
+    presenter.scroll(-0.5);
 
-        assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
-        assertThat(presenter.getFullView(), hasItem(equalTo(measurement2)));
-    }
+    presenter.getTimelineView();
+    triggerMeasurement(measurement1);
 
-    @Test
-    public void shouldAverageTimelineOnTheFly() {
-        when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+    assertThat(presenter.getTimelineView(), not(hasItem(equalTo(measurement1))));
+  }
 
-        presenter.onEvent(new SessionChangeEvent());
-        presenter.getTimelineView();
-        triggerMeasurement(measurement1);
-        triggerMeasurement(measurement2);
+  @Test
+  public void shouldAverage()
+  {
+    when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
+    Measurement expected = new Measurement(1.5, 1.5, 1.5, new Date(0, 0, 0, 0, 1, 3));
 
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(expected)));
-        assertThat(presenter.getTimelineView(), hasItem(equalTo(measurement2)));
-    }
+    presenter.onEvent(new SessionChangeEvent());
 
-    @Test
-    public void shouldNotifyListenersAboutNewAveragedMeasurements() {
-        when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
-        Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
-        presenter.registerListener(listener);
+    assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
+  }
 
-        triggerMeasurement(measurement1);
-        triggerMeasurement(measurement2);
-        triggerMeasurement(new Measurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
+  @Test
+  public void shouldAverageOnTheFly()
+  {
+    when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
+    Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
 
-        verify(listener, atLeastOnce()).onAveragedMeasurement(expected);
-    }
+    presenter.onEvent(new SessionChangeEvent());
+    triggerMeasurement(measurement1);
+    triggerMeasurement(measurement2);
+
+    assertThat(presenter.getFullView(), hasItem(equalTo(expected)));
+    assertThat(presenter.getFullView(), hasItem(equalTo(measurement2)));
+  }
+
+  @Test
+  public void shouldAverageTimelineOnTheFly()
+  {
+    when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
+    Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+
+    presenter.onEvent(new SessionChangeEvent());
+    presenter.getTimelineView();
+    triggerMeasurement(measurement1);
+    triggerMeasurement(measurement2);
+
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(expected)));
+    assertThat(presenter.getTimelineView(), hasItem(equalTo(measurement2)));
+  }
+
+  @Test
+  public void shouldNotifyListenersAboutNewAveragedMeasurements()
+  {
+    when(presenter.settingsHelper.getAveragingTime()).thenReturn(4);
+    Measurement expected = new Measurement(3.5, 3.5, 3.5, new Date(0, 0, 0, 0, 1, 5));
+    presenter.registerListener(listener);
+
+    triggerMeasurement(measurement1);
+    triggerMeasurement(measurement2);
+    triggerMeasurement(new Measurement(0, 0, 0, new Date(0, 0, 0, 0, 1, 10)));
+
+    verify(listener, atLeastOnce()).onAveragedMeasurement(expected);
+  }
 }

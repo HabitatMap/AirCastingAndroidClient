@@ -27,7 +27,7 @@ public class MeasurementStreamTest
 
     @Before
     public void setup() {
-        event = Any.sensorEvent();
+        event = New.sensorEvent();
         stream = new MeasurementStream(event);
 
         stream.add(measurement);

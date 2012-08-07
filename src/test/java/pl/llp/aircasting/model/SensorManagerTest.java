@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.New;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
@@ -37,7 +38,7 @@ public class SensorManagerTest {
     manager.eventBus = mock(EventBus.class);
     manager.sessionManager = sessionManager;
 
-    sensorEvent = Any.sensorEvent();
+    sensorEvent = New.sensorEvent();
     sensor = new Sensor(sensorEvent);
 
     manager.onEvent(sensorEvent);
@@ -79,8 +80,8 @@ public class SensorManagerTest {
 
   @Test
   public void should_read_sensor_info_from_new_session() {
-    MeasurementStream stream1 = Any.stream();
-    MeasurementStream stream2 = spy(Any.stream());
+    MeasurementStream stream1 = New.stream();
+    MeasurementStream stream2 = spy(New.stream());
     when(stream2.getSensorName()).thenReturn("Some random name");
     when(sessionManager.getMeasurementStreams()).thenReturn(newArrayList(stream1, stream2));
 
@@ -106,7 +107,7 @@ public class SensorManagerTest {
 
   @Test
   public void should_use_one_of_the_sensors_as_visible_when_viewing_a_session() {
-    MeasurementStream stream = Any.stream();
+    MeasurementStream stream = New.stream();
     when(sessionManager.isSessionSaved()).thenReturn(true);
     when(sessionManager.getMeasurementStreams()).thenReturn(newArrayList(stream));
 

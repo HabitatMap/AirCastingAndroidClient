@@ -20,6 +20,7 @@
 package pl.llp.aircasting.sensor.builtin;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
@@ -27,11 +28,13 @@ import pl.llp.aircasting.helper.SettingsHelper;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -116,4 +119,41 @@ public class SimpleAudioReaderTest
         SensorEvent expected = expected(2.2);
         verify(audioReader.eventBus).post(expected);
     }
+
+  @Test
+  public void shouldRecognizeIndistinctSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(-35), IsEqual.equalTo(MeasurementLevel.TOO_LOW));
+  }
+
+  @Test
+  public void shouldRecognizeQuietSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(51), IsEqual.equalTo(MeasurementLevel.VERY_LOW));
+  }
+
+  @Test
+  public void shouldRecognizeAverageSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(65), IsEqual.equalTo(MeasurementLevel.LOW));
+  }
+
+  @Test
+  public void shouldRecognizeLoudSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(75), IsEqual.equalTo(MeasurementLevel.MID));
+  }
+
+  @Test
+  public void shouldRecognizeVeryLoudSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(87), IsEqual.equalTo(MeasurementLevel.HIGH));
+  }
+
+  @Test
+  public void shouldRecognizeTooLoudSounds()
+  {
+    assertThat(SimpleAudioReader.getSensor().level(101), IsEqual.equalTo(MeasurementLevel.VERY_HIGH));
+  }
+
 }

@@ -30,12 +30,13 @@ import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -43,7 +44,6 @@ import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,6 +52,7 @@ import javax.annotation.Nullable;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Multimaps.index;
 import static java.util.Collections.sort;
@@ -61,12 +62,24 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 {
   public static final long MILLIS_IN_SECOND = 1000;
   private static final int SAMPLE_LIMIT = 1000;
+  private static final long MIN_ZOOM = 30000;
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
   @Inject SensorManager sensorManager;
+  @Inject MeasurementAggregator aggregator;
+
+  private double anchor = 0;
+
+  private List<Measurement> fullView = null;
+  private int measurementsSize;
+
+  private long zoom = MIN_ZOOM;
+
+  private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
+  private List<Listener> listeners = newArrayList();
 
   @Inject
   public void init()
@@ -75,36 +88,57 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     eventBus.register(this);
   }
 
-  private double anchor = 0;
-
-  private LinkedList<Measurement> fullView = null;
-  private int measurementsSize;
-
-  private MeasurementAggregator aggregator = new MeasurementAggregator();
-
-  private static final long MIN_ZOOM = 30000;
-  private long zoom = MIN_ZOOM;
-
-  private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
-  private List<Listener> listeners = newArrayList();
-
   @Subscribe
   public synchronized void onEvent(MeasurementEvent event)
   {
+    onMeasurement(event);
+  }
+
+  private void onMeasurement(MeasurementEvent event)
+  {
     if (sessionManager.isSessionSaved()) return;
-    if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
+        if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
-    Measurement measurement = event.getMeasurement();
+        Measurement measurement = event.getMeasurement();
 
-    prepareFullView();
-    updateFullView(measurement);
+        prepareFullView();
+        updateFullView(measurement);
 
-    if (timelineView != null && (int) anchor == 0)
+        if (timelineView != null && (int) anchor == 0)
+        {
+          updateTimelineView();
+        }
+
+        notifyListeners();
+  }
+
+
+  private synchronized void updateTimelineView()
+  {
+    Stopwatch stopwatch = new Stopwatch().start();
+
+    Measurement measurement = aggregator.getAverage();
+
+    if (aggregator.isComposite())
     {
-      updateTimelineView();
+      if (!timelineView.isEmpty())
+      {
+        timelineView.remove(timelineView.size() - 1);
+      }
+      timelineView.add(measurement);
+    }
+    else
+    {
+      while (timelineView.size() > 0 &&
+          measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom)
+      {
+        timelineView.remove(0);
+      }
+      measurementsSize += 1;
+      timelineView.add(measurement);
     }
 
-    notifyListeners();
+    Constants.logGraphPerformance("prepareTimelineView took " + stopwatch.elapsedMillis());
   }
 
   private void updateFullView(Measurement measurement)
@@ -121,8 +155,10 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
       }
       aggregator.reset();
-        } else {
-            fullView.removeLast();
+    }
+    else
+    {
+      fullView.remove(fullView.size() - 1);
     }
 
     aggregator.add(measurement);
@@ -159,9 +195,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     notifyListeners();
   }
 
-  private void prepareFullView()
+  private List<Measurement> prepareFullView()
   {
-    if (fullView != null) return;
+    if (fullView != null) return fullView;
 
     Stopwatch stopwatch = new Stopwatch().start();
 
@@ -197,16 +233,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       timeboxedMeasurements.add(average(chunk));
     }
 
-    if(timeboxedMeasurements.size() > SAMPLE_LIMIT)
-    {
-      fullView = aggregator.smoothenSamplesToReduceCount(timeboxedMeasurements, SAMPLE_LIMIT);
-    }
-    else
-    {
-      fullView = newLinkedList(timeboxedMeasurements);
-    }
+    List<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
 
-    Log.i(Constants.TAG, "prepareFullView took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("prepareFullView took " + stopwatch.elapsedMillis());
+    fullView = result;
+    return result;
   }
 
   private long bucket(Measurement measurement)
@@ -224,14 +255,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     return aggregator.getAverage();
-  }
-
-  private void notifyListeners()
-  {
-    for (Listener listener : listeners)
-    {
-      listener.onViewUpdated();
-    }
   }
 
   synchronized void setZoom(long zoom)
@@ -266,11 +289,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
 
     timelineView.clear();
-    timelineView.addAll(newArrayList(filter(measurements, fitsInTimeline(lastMeasurementTime))));
+    Iterables.addAll(timelineView, filter(measurements, fitsInTimeline(lastMeasurementTime)));
 
     measurementsSize = measurements.size();
 
-    Log.i(Constants.TAG, "prepareTimelineView took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("prepareTimelineView took " + stopwatch.elapsedMillis());
     return timelineView;
   }
 
@@ -290,35 +313,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
             lastMeasurementTime - measurement.getTime().getTime() <= zoom;
       }
     };
-  }
-
-
-  private synchronized void updateTimelineView()
-  {
-    Stopwatch stopwatch = new Stopwatch().start();
-
-    Measurement measurement = aggregator.getAverage();
-
-    if (aggregator.isComposite())
-    {
-      if (!timelineView.isEmpty())
-      {
-        timelineView.remove(timelineView.size() - 1);
-      }
-      timelineView.add(measurement);
-    }
-    else
-    {
-      while (timelineView.size() > 0 &&
-          measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom)
-      {
-        timelineView.remove(0);
-      }
-      measurementsSize += 1;
-      timelineView.add(measurement);
-    }
-
-    Log.i(Constants.TAG, "prepareTimelineView took " + stopwatch.elapsedMillis());
   }
 
   public void registerListener(Listener listener)
@@ -364,13 +358,13 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   {
     if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
     {
-      prepareFullView();
-      return fullView;
+      fullView = prepareFullView();
     }
     else
     {
-      return new ArrayList<Measurement>();
+      fullView = newCopyOnWriteArrayList();
     }
+    return fullView;
   }
 
   public synchronized void scroll(double scrollAmount)
@@ -422,4 +416,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     void onAveragedMeasurement(Measurement measurement);
   }
 
+  private void notifyListeners()
+  {
+    for (Listener listener : listeners)
+    {
+      listener.onViewUpdated();
+    }
+  }
 }
