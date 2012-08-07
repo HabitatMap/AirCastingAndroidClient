@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import com.csvreader.CsvWriter;
+import com.google.common.base.Strings;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +38,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.String.valueOf;
@@ -55,7 +58,7 @@ public class CSVHelper
       File storage = Environment.getExternalStorageDirectory();
       File dir = new File(storage, "aircasting_sessions");
       dir.mkdirs();
-      File file = new File(dir, SESSION_TEMP_FILE);
+      File file = new File(dir, fileName(session.getTitle()));
       outputStream = new FileOutputStream(file);
       Writer writer = new OutputStreamWriter(outputStream);
 
@@ -89,6 +92,28 @@ public class CSVHelper
     {
       closeQuietly(outputStream);
     }
+  }
+
+  String fileName(String title)
+  {
+    StringBuilder result = new StringBuilder();
+    if (!Strings.isNullOrEmpty(title))
+    {
+      try
+      {
+        Matcher matcher = Pattern.compile("([_\\-a-zA-Z0-9])*").matcher(title.toLowerCase());
+        while(matcher.find())
+        {
+          result.append(matcher.group());
+        }
+      }
+      catch (IllegalStateException ignore)
+      {
+
+      }
+    }
+
+    return result.length() > 0 ? result.append(".csv").toString() : SESSION_TEMP_FILE;
   }
 
   private SessionWriter write(Session session)
