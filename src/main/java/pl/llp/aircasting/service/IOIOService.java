@@ -96,14 +96,12 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
           setColors(Colors.GREEN);
           break;
         case LOW:
-          setColors(Colors.GREEN);
-          break;
-        case MID:
           setColors(Colors.YELLOW);
           break;
-        case HIGH:
+        case MID:
           setColors(Colors.ORANGE);
           break;
+        case HIGH:
         case VERY_HIGH:
           setColors(Colors.RED);
           break;
