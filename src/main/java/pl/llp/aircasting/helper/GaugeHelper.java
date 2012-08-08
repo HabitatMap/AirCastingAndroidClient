@@ -69,6 +69,19 @@ public class GaugeHelper
     TextView textView = (TextView) view;
 
     String formatted = String.format(label, sensor.getShortType());
+
+    if (formatted.length() <= 7)
+    {
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+    }
+    else if (formatted.length() <= 9)
+    {
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+    }
+    else
+    {
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+    }
     textView.setText(formatted);
   }
 

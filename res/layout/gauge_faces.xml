@@ -14,6 +14,7 @@
                   android:text="@string/db_avg"
                   android:id="@+id/avg_label"
                   android:layout_marginTop="2dp"
+                  android:layout_height="20sp"
                 />
         <TextView style="@style/Gauge"
                   android:textSize="35sp"
@@ -40,6 +41,7 @@
             >
         <TextView style="@style/GaugeLabel"
                   android:text="@string/peak_gauge"
+                  android:layout_height="20sp"
                   android:id="@+id/peak_label"
                   android:layout_marginTop="2dp"
                 />
