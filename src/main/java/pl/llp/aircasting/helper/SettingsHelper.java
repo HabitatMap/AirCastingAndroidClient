@@ -290,4 +290,9 @@ public class SettingsHelper
     String sensorsAsJson = gson.toJson(sensors);
     writeString(SENSORS, sensorsAsJson);
   }
+
+  public boolean isDebugMode()
+  {
+    return preferences.getBoolean(DEBUG_MODE, false);
+  }
 }
