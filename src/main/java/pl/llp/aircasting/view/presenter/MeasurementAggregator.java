@@ -2,10 +2,12 @@ package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.model.Measurement;
 
-import java.util.Date;
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.Date;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class MeasurementAggregator
 {
@@ -44,11 +46,11 @@ public class MeasurementAggregator
     return count == 0;
   }
 
-  public List<Measurement> smoothenSamplesToReduceCount(List<Measurement> samples, int limit)
+  public ArrayList<Measurement> smoothenSamplesToReduceCount(ArrayList<Measurement> samples, int limit)
   {
     reset();
 
-    List<Measurement> result = newCopyOnWriteArrayList();
+    ArrayList<Measurement> result = newArrayList();
     double fillFactor = 1.0 * limit / samples.size();
     double fill = 0.0;
 
@@ -68,5 +70,17 @@ public class MeasurementAggregator
       result.add(getAverage());
     }
     return result;
+  }
+
+  public static Measurement getAverage(ImmutableList<Measurement> measurements)
+  {
+    MeasurementAggregator aggregator = new MeasurementAggregator();
+
+    for (Measurement measurement : measurements)
+    {
+      aggregator.add(measurement);
+    }
+
+    return aggregator.getAverage();
   }
 }

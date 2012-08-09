@@ -4,7 +4,8 @@ import android.util.Log;
 
 public class Constants
 {
-  public static final int THREE_SECONDS = 3000;
+  public static final int MILLIS_IN_SECOND = 1000;
+  public static final int THREE_SECONDS = 3 * MILLIS_IN_SECOND;
 
   public static final String TAG = "AirCasting";
 
@@ -20,7 +21,7 @@ public class Constants
 
   public static boolean logGraphPerformance()
   {
-    return true;
+    return false;
   }
 
   public static void logDbPerformance(String message)

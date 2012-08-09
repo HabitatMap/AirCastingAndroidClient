@@ -31,11 +31,9 @@ import pl.llp.aircasting.util.Constants;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -43,13 +41,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.annotation.Nullable;
-
-import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
@@ -60,7 +55,6 @@ import static java.util.Collections.sort;
 @Singleton
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-  public static final long MILLIS_IN_SECOND = 1000;
   private static final int SAMPLE_LIMIT = 1000;
   private static final long MIN_ZOOM = 30000;
 
@@ -73,7 +67,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   private double anchor = 0;
 
-  private List<Measurement> fullView = null;
+  private CopyOnWriteArrayList<Measurement> fullView = null;
   private int measurementsSize;
 
   private long zoom = MIN_ZOOM;
@@ -97,19 +91,19 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private void onMeasurement(MeasurementEvent event)
   {
     if (sessionManager.isSessionSaved()) return;
-        if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
+    if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
-        Measurement measurement = event.getMeasurement();
+    Measurement measurement = event.getMeasurement();
 
-        prepareFullView();
-        updateFullView(measurement);
+    prepareFullView();
+    updateFullView(measurement);
 
-        if (timelineView != null && (int) anchor == 0)
-        {
-          updateTimelineView();
-        }
+    if (timelineView != null && (int) anchor == 0)
+    {
+      updateTimelineView();
+    }
 
-        notifyListeners();
+    notifyListeners();
   }
 
 
@@ -126,6 +120,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         timelineView.remove(timelineView.size() - 1);
       }
       timelineView.add(measurement);
+      Constants.logGraphPerformance("updateTimelineView step 0 took " + stopwatch.elapsedMillis());
     }
     else
     {
@@ -134,11 +129,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       {
         timelineView.remove(0);
       }
+      Constants.logGraphPerformance("updateTimelineView step 1 took " + stopwatch.elapsedMillis());
       measurementsSize += 1;
       timelineView.add(measurement);
     }
 
-    Constants.logGraphPerformance("prepareTimelineView took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("updateTimelineView step n took " + stopwatch.elapsedMillis());
   }
 
   private void updateFullView(Measurement measurement)
@@ -171,7 +167,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     Measurement last = getLast(fullView);
 
-    return bucket(last) != bucket(measurement);
+    long b1 = bucketBySecond(last);
+    long b2 = bucketBySecond(measurement);
+    return b1 != b2;
   }
 
   @Subscribe
@@ -195,7 +193,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     notifyListeners();
   }
 
-  private List<Measurement> prepareFullView()
+  private CopyOnWriteArrayList<Measurement> prepareFullView()
   {
     if (fullView != null) return fullView;
 
@@ -219,13 +217,16 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
           @Override
           public Long apply(Measurement measurement)
           {
-            return bucket(measurement);
+            return measurement.getSecond() / settingsHelper.getAveragingTime();
           }
         });
+
+    Constants.logGraphPerformance("prepareFullView step 1 took " + stopwatch.elapsedMillis());
 
     ArrayList<Long> times = newArrayList(forAveraging.keySet());
     sort(times);
 
+    Constants.logGraphPerformance("prepareFullView step 2 took " + stopwatch.elapsedMillis());
     List<Measurement> timeboxedMeasurements = newLinkedList();
     for (Long time : times)
     {
@@ -233,19 +234,20 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       timeboxedMeasurements.add(average(chunk));
     }
 
-    List<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
+    Constants.logGraphPerformance("prepareFullView step 3 took " + stopwatch.elapsedMillis());
+    CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
 
-    Constants.logGraphPerformance("prepareFullView took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("prepareFullView step n took " + stopwatch.elapsedMillis());
     fullView = result;
     return result;
   }
 
-  private long bucket(Measurement measurement)
+  private long bucketBySecond(Measurement measurement)
   {
-    return measurement.getTime().getTime() / (settingsHelper.getAveragingTime() * MILLIS_IN_SECOND);
+    return measurement.getSecond() / settingsHelper.getAveragingTime();
   }
 
-  private Measurement average(Collection<Measurement> measurements)
+  private Measurement average(ImmutableList<Measurement> measurements)
   {
     aggregator.reset();
 
@@ -266,6 +268,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public synchronized List<Measurement> getTimelineView()
   {
+    Stopwatch stopwatch = new Stopwatch();
     if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
     {
       prepareTimelineView();
@@ -275,6 +278,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       return new ArrayList<Measurement>();
     }
+
   }
 
   protected synchronized CopyOnWriteArrayList<Measurement> prepareTimelineView()
@@ -284,35 +288,21 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     final List<Measurement> measurements = getFullView();
     int position = measurements.size() - 1 - (int) anchor;
-    final long lastMeasurementTime = measurements.isEmpty()
-        ? 0 : measurements.get(position).getTime().getTime();
-
+    final long lastMeasurementTime = measurements.isEmpty() ? 0 : measurements.get(position).getTime().getTime();
 
     timelineView.clear();
-    Iterables.addAll(timelineView, filter(measurements, fitsInTimeline(lastMeasurementTime)));
+    TreeMap<Long, Measurement> measurementsMap = new TreeMap<Long, Measurement>();
+    for (Measurement m : measurements)
+    {
+      measurementsMap.put(m.getTime().getTime(), m);
+    }
 
+//    +1 because subMap parameters are (inclusive, exclusive)
+    timelineView.addAll(measurementsMap.subMap(lastMeasurementTime - zoom, lastMeasurementTime + 1).values());
     measurementsSize = measurements.size();
 
-    Constants.logGraphPerformance("prepareTimelineView took " + stopwatch.elapsedMillis());
+    Constants.logGraphPerformance("prepareTimelineView for [" + timelineView.size() + "] took " + stopwatch.elapsedMillis());
     return timelineView;
-  }
-
-  private Predicate<Measurement> fitsInTimeline(final long lastMeasurementTime)
-  {
-    return new Predicate<Measurement>()
-    {
-      @Override
-      public boolean apply(@Nullable Measurement measurement)
-      {
-        if (measurement == null)
-        {
-          return false;
-        }
-
-        return measurement.getTime().getTime() <= lastMeasurementTime &&
-            lastMeasurementTime - measurement.getTime().getTime() <= zoom;
-      }
-    };
   }
 
   public void registerListener(Listener listener)

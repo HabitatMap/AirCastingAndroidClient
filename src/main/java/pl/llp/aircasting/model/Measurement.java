@@ -19,10 +19,15 @@
 */
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.util.Constants;
+
+import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
+
+import javax.annotation.Nullable;
 
 public class Measurement
 {
@@ -31,6 +36,8 @@ public class Measurement
   @Expose private double value;
   @Expose private Date time;
   @Expose @SerializedName("timezone_offset") private int timeZoneOffsetMinutes;
+
+  private transient Long seconds;
 
   public Measurement(double value) {
     this.value = value;
@@ -132,5 +139,34 @@ public class Measurement
   public void setTimeZoneOffsetMinutes(int timeZoneOffsetMinutes)
   {
     this.timeZoneOffsetMinutes = timeZoneOffsetMinutes;
+  }
+
+  /*
+  * seconds since time 0
+  **/
+  public long getSecond()
+  {
+    if(seconds == null && time != null)
+    {
+      seconds = getTime().getTime() / Constants.MILLIS_IN_SECOND;
+    }
+    return seconds;
+  }
+
+  public static Predicate<Measurement> timeFitsIn(final long start, final long end)
+  {
+    return new Predicate<Measurement>()
+    {
+      @Override
+      public boolean apply(@Nullable Measurement measurement)
+      {
+        if (measurement == null)
+        {
+          return false;
+        }
+
+        return start <= measurement.getTime().getTime() && measurement.getTime().getTime() <= end;
+      }
+    };
   }
 }

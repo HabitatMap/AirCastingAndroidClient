@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -29,7 +29,7 @@ public class MeasurementAggregatorTest
   public void should_decreaseNumberOfSamples() throws Exception
   {
     // given
-    List<Measurement> measurements = measurements(1, -1);
+    ArrayList<Measurement> measurements = measurements(1, -1);
 
     // when
     List<Measurement> list = aggregator.smoothenSamplesToReduceCount(measurements, 1);
@@ -39,9 +39,9 @@ public class MeasurementAggregatorTest
 
   }
 
-  List<Measurement> measurements(int... values)
+  ArrayList<Measurement> measurements(int... values)
   {
-    List<Measurement> result = Lists.newArrayList();
+    ArrayList<Measurement> result = Lists.newArrayList();
 
     for (int value : values)
     {

@@ -43,7 +43,6 @@ import android.view.View;
 import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -60,8 +59,8 @@ public class NoisePlot extends View
   private AirCastingActivity activity;
   private SettingsHelper settingsHelper;
 
-  private List<Measurement> measurements = new ArrayList<Measurement>();
-  private List<Note> notes;
+  private ArrayList<Measurement> measurements = new ArrayList<Measurement>();
+  private ArrayList<Note> notes;
   private ResourceHelper resourceHelper;
   private int bottom;
   private int top;
@@ -91,8 +90,8 @@ public class NoisePlot extends View
   }
 
   @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-  public void update(Sensor sensor, List<Measurement> measurements, List<Note> notes) {
-    this.measurements = aggregator.smoothenSamplesToReduceCount(newArrayList(measurements), 1000);
+  public void update(Sensor sensor, ArrayList<Measurement> measurements, ArrayList<Note> notes) {
+    this.measurements = measurements;
     this.notes = notes;
     this.sensor = sensor;
     invalidate();
@@ -108,9 +107,8 @@ public class NoisePlot extends View
 
     drawBackground(canvas);
 
-    Constants.logGraphPerformance("onDraw to background took " + stopwatch.elapsedMillis());
-
     if (!measurements.isEmpty()) {
+      measurements = aggregator.smoothenSamplesToReduceCount(newArrayList(measurements), 1000);
       Path path = new Path();
 
       float lastY = project(measurements.get(0).getValue());
@@ -132,9 +130,14 @@ public class NoisePlot extends View
       for (Note note : notes) {
         drawNote(canvas, note);
       }
-    }
 
-    Constants.logGraphPerformance("onDraw took " + stopwatch.elapsedMillis());
+      if(settingsHelper.isDebugMode())
+      {
+        String message = "[" +  measurements.size() + "] pts";
+        canvas.drawText(message, getWidth() - 100, getHeight() - 20, paint);
+        canvas.drawText("drawing took " + stopwatch.elapsedMillis(), getWidth() - 100, getHeight() - 10, paint);
+      }
+    }
   }
 
   private Point place(Measurement measurement) {

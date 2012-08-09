@@ -38,7 +38,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -84,8 +84,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         zoomIn.setEnabled(measurementPresenter.canZoomIn());
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
-        List<Measurement> measurements = measurementPresenter.getTimelineView();
-        List<Note> notes = newArrayList(sessionManager.getNotes());
+        ArrayList<Measurement> measurements = newArrayList(measurementPresenter.getTimelineView());
+        ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
 
         plot.update(sensorManager.getVisibleSensor(), measurements, notes);
 
@@ -97,7 +97,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     });
   }
 
-  private void updateLabels(List<Measurement> measurements) {
+  private void updateLabels(ArrayList<Measurement> measurements) {
     Sensor sensor = sensorManager.getVisibleSensor();
     int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
     int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
