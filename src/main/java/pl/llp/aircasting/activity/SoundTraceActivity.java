@@ -22,6 +22,7 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SessionStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.view.MapIdleDetector;
 
@@ -54,7 +55,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
   protected void onResume() {
     super.onResume();
 
-    if(getIntent().getBooleanExtra("reconsiderCurrentSensor", false))
+    if(getIntent().getBooleanExtra("startingAircasting", false))
     {
       List<Sensor> currentSensors = sensorManager.getSensors();
       Sensor visibleSensor = sensorManager.getVisibleSensor();
@@ -64,6 +65,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
         updateGauges();
       }
     }
+    eventBus.post(new SessionStoppedEvent());
     refreshDetector = detectMapIdle(mapView, REFRESH_OVERLAY_TIMEOUT, this);
 
     if (!sessionManager.isSessionSaved()) {

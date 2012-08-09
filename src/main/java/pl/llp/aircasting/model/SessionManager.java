@@ -148,7 +148,6 @@ public class SessionManager
       locationHelper.start();
 
       audioReader.start();
-
       externalSensors.start();
 
       recording = true;
@@ -294,6 +293,7 @@ public class SessionManager
     startSensors();
     sessionStarted = true;
     notificationHelper.showRecordingNotification();
+    eventBus.post(new SessionStartedEvent());
   }
 
   public void stopSession()
@@ -301,6 +301,7 @@ public class SessionManager
     session.setEnd(new Date());
     sessionStarted = false;
     notificationHelper.hideRecordingNotification();
+    eventBus.post(new SessionStoppedEvent());
   }
 
   public void finishSession(ProgressListener progressListener) {

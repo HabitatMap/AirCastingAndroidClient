@@ -19,6 +19,12 @@
  */
 package pl.llp.aircasting.view.overlay;
 
+import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.model.SessionLoadedEvent;
+import pl.llp.aircasting.model.SessionStartedEvent;
+import pl.llp.aircasting.model.SessionStoppedEvent;
+import pl.llp.aircasting.util.map.PathSmoother;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -27,13 +33,15 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.util.map.PathSmoother;
 
 import java.util.List;
 
-import static com.google.common.collect.Iterables.*;
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.isEmpty;
+import static com.google.common.collect.Iterables.skip;
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
@@ -58,7 +66,9 @@ public class RouteOverlay extends Overlay {
     private Paint paint;
     private Path path;
 
-    @Inject
+  private boolean skipDrawing;
+
+  @Inject
     public void init() {
         preparePaint();
     }
@@ -76,6 +86,11 @@ public class RouteOverlay extends Overlay {
     public void draw(Canvas canvas, MapView view, boolean shadow) {
         if (shadow) return;
 
+        if(skipDrawing())
+        {
+          return;
+        }
+
         if (isRefreshRequired(view)) {
             path = new Path();
 
@@ -89,7 +104,30 @@ public class RouteOverlay extends Overlay {
         canvas.drawPath(path, paint);
     }
 
-    private boolean isRefreshRequired(MapView view) {
+  @Subscribe
+  public void onEvent(SessionStartedEvent event)
+  {
+    skipDrawing = false;
+  }
+
+  @Subscribe
+  public void onEvent(SessionStoppedEvent event)
+  {
+    skipDrawing = true;
+  }
+
+  @Subscribe
+  public void onEvent(SessionLoadedEvent event)
+  {
+    this.skipDrawing = false;
+  }
+
+  private boolean skipDrawing()
+  {
+    return this.skipDrawing;
+  }
+
+  private boolean isRefreshRequired(MapView view) {
         return path == null ||
                 zoomLevel != view.getZoomLevel() ||
                 !mapCenter.equals(view.getMapCenter());
@@ -136,4 +174,9 @@ public class RouteOverlay extends Overlay {
         pendingPoints.clear();
         smoothedPoints.clear();
     }
+
+  public void setSkipDrawing(boolean skipDrawing)
+  {
+    this.skipDrawing = skipDrawing;
+  }
 }
