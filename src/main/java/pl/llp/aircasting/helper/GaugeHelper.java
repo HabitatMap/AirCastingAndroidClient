@@ -5,6 +5,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SessionManager;
 
+import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -37,9 +38,24 @@ public class GaugeHelper
 
     int now = (int) sessionManager.getNow(sensor);
     updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
-    updateLabel(sensor, view.findViewById(R.id.now_label), nowLabel);
-    updateLabel(sensor, view.findViewById(R.id.avg_label), avgLabel);
-    updateLabel(sensor, view.findViewById(R.id.peak_label), peakLabel);
+
+    String nowText = String.format(nowLabel, sensor.getShortType());
+    String avgText = String.format(avgLabel, sensor.getShortType());
+    String peakText = String.format(peakLabel, sensor.getShortType());
+
+    TextView nowTextView = (TextView) view.findViewById(R.id.now_label);
+    TextView avgTextView = (TextView) view.findViewById(R.id.avg_label);
+    TextView peakTextView = (TextView) view.findViewById(R.id.peak_label);
+
+    float avgSize = findMinimumVisibleSize(avgTextView, avgText);
+    float peakSize = findMinimumVisibleSize(peakTextView, peakText);
+    float nowSize = findMinimumVisibleSize(nowTextView, nowText);
+
+    avgSize = peakSize = Math.min(avgSize, peakSize);
+
+    updateLabel(nowTextView, nowText, nowSize);
+    updateLabel(avgTextView, avgText, avgSize);
+    updateLabel(peakTextView, peakText, peakSize);
 
     boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
     if (hasStats && sensor.isEnabled())
@@ -64,25 +80,29 @@ public class GaugeHelper
     nowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
   }
 
-  private void updateLabel(Sensor sensor, View view, String label)
+  private void updateLabel(TextView view, String label, float size)
   {
-    TextView textView = (TextView) view;
+    view.getPaint().setTextSize(size);
+    view.setText(label);
+  }
 
-    String formatted = String.format(label, sensor.getShortType());
+  private float findMinimumVisibleSize(TextView textView, String message)
+  {
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+    long viewWidth = textView.getWidth();
+    if(viewWidth < 1)
+      return textView.getTextSize();
 
-    if (formatted.length() <= 7)
+    TextPaint textPaint = textView.getPaint();
+    float textSize = textView.getTextSize();
+    float paintWidth = textPaint.measureText(message);
+    while(paintWidth > viewWidth)
     {
-      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+      textSize--;
+      textPaint.setTextSize(textSize);
+      paintWidth = textPaint.measureText(message);
     }
-    else if (formatted.length() <= 9)
-    {
-      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-    }
-    else
-    {
-      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-    }
-    textView.setText(formatted);
+    return textSize;
   }
 
   private void updateGauge(View view, Sensor sensor, MarkerSize size, int value)
