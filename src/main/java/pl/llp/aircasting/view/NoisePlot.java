@@ -20,6 +20,7 @@
 package pl.llp.aircasting.view;
 
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
@@ -131,11 +132,21 @@ public class NoisePlot extends View
         drawNote(canvas, note);
       }
 
-      if(settingsHelper.isDebugMode())
+      if(settingsHelper.showGraphMetadata())
       {
         String message = "[" +  measurements.size() + "] pts";
-        canvas.drawText(message, getWidth() - 100, getHeight() - 20, paint);
-        canvas.drawText("drawing took " + stopwatch.elapsedMillis(), getWidth() - 100, getHeight() - 10, paint);
+        String message2 = "drawing took " + stopwatch.elapsedMillis();
+        long textSize = getResources().getDimensionPixelSize(R.dimen.debugFontSize);
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+        textPaint.setAlpha(OPAQUE);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(textSize);
+
+        float textWidth = Math.max(textPaint.measureText(message), textPaint.measureText(message2));
+
+        canvas.drawText(message, getWidth() - textWidth - 5, getHeight() - textSize -5, textPaint);
+        canvas.drawText(message2, getWidth() - textWidth - 5, getHeight() - 5, textPaint);
       }
     }
   }

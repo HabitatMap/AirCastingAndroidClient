@@ -69,7 +69,7 @@ public class SettingsHelper
   public static final String SENSOR_NAME = "sensor_name";
   public static final String SENSORS = "external_sensors_json";
 
-  public static final String DEBUG_MODE = "debug_mode";
+  public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
 
   @Inject SharedPreferences preferences;
   @Inject Gson gson;
@@ -291,8 +291,8 @@ public class SettingsHelper
     writeString(SENSORS, sensorsAsJson);
   }
 
-  public boolean isDebugMode()
+  public boolean showGraphMetadata()
   {
-    return preferences.getBoolean(DEBUG_MODE, false);
+    return preferences.getBoolean(SHOW_GRAPH_METADATA, false);
   }
 }

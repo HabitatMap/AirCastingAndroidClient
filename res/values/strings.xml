@@ -198,5 +198,5 @@
   <string name="backend_settings_summary">Set backend address and port</string>
   <string name="know_sensors_label">Known</string>
   <string name="available_sensors_label">Available</string>
-  <string name="debug_mode">Debug mode</string>
+  <string name="show_graph_metadata">Show graph metadata</string>
 </resources>
