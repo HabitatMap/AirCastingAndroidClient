@@ -55,7 +55,6 @@ import static java.util.Collections.sort;
 @Singleton
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-  private static final int SAMPLE_LIMIT = 1000;
   private static final long MIN_ZOOM = 30000;
 
   @Inject SessionManager sessionManager;
@@ -65,12 +64,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Inject SensorManager sensorManager;
   @Inject MeasurementAggregator aggregator;
 
-  private double anchor = 0;
-
   private CopyOnWriteArrayList<Measurement> fullView = null;
   private int measurementsSize;
 
-  private long zoom = MIN_ZOOM;
+  private int anchor;
+  private long visibleMilliseconds = MIN_ZOOM;
 
   private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
   private List<Listener> listeners = newArrayList();
@@ -98,7 +96,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     prepareFullView();
     updateFullView(measurement);
 
-    if (timelineView != null && (int) anchor == 0)
+    if (timelineView != null && anchor == 0)
     {
       updateTimelineView();
     }
@@ -124,8 +122,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
     else
     {
-      while (timelineView.size() > 0 &&
-          measurement.getTime().getTime() - timelineView.get(0).getTime().getTime() >= zoom)
+      long firstToDisplay = measurement.getTime().getTime() - visibleMilliseconds;
+      while (!timelineView.isEmpty() &&
+          firstToDisplay >=  timelineView.get(0).getTime().getTime())
       {
         timelineView.remove(0);
       }
@@ -259,16 +258,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     return aggregator.getAverage();
   }
 
-  synchronized void setZoom(long zoom)
-  {
-    this.zoom = zoom;
-    timelineView.clear();
-    notifyListeners();
-  }
-
   public synchronized List<Measurement> getTimelineView()
   {
-    Stopwatch stopwatch = new Stopwatch();
     if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
     {
       prepareTimelineView();
@@ -278,7 +269,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       return new ArrayList<Measurement>();
     }
-
   }
 
   protected synchronized CopyOnWriteArrayList<Measurement> prepareTimelineView()
@@ -287,7 +277,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     Stopwatch stopwatch = new Stopwatch().start();
 
     final List<Measurement> measurements = getFullView();
-    int position = measurements.size() - 1 - (int) anchor;
+    int position = measurements.size() - 1 - anchor;
     final long lastMeasurementTime = measurements.isEmpty() ? 0 : measurements.get(position).getTime().getTime();
 
     timelineView.clear();
@@ -298,7 +288,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
 //    +1 because subMap parameters are (inclusive, exclusive)
-    timelineView.addAll(measurementsMap.subMap(lastMeasurementTime - zoom, lastMeasurementTime + 1).values());
+    timelineView.addAll(measurementsMap.subMap(lastMeasurementTime - visibleMilliseconds, lastMeasurementTime + 1).values());
     measurementsSize = measurements.size();
 
     Constants.logGraphPerformance("prepareTimelineView for [" + timelineView.size() + "] took " + stopwatch.elapsedMillis());
@@ -317,7 +307,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public boolean canZoomIn()
   {
-    return zoom > MIN_ZOOM;
+    return visibleMilliseconds > MIN_ZOOM;
   }
 
   public synchronized boolean canZoomOut()
@@ -330,7 +320,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   {
     if (canZoomIn())
     {
-      setZoom(zoom / 2);
+      anchor += timelineView.size() / 4;
+      fixAnchor();
+      setZoom(visibleMilliseconds / 2);
     }
   }
 
@@ -338,10 +330,39 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   {
     if (canZoomOut())
     {
-      anchor -= timelineView.size();
+      anchor -= timelineView.size() / 2;
       fixAnchor();
-      setZoom(zoom * 2);
+      setZoom(visibleMilliseconds * 2);
     }
+  }
+
+  synchronized void setZoom(long zoom)
+  {
+    this.visibleMilliseconds = zoom;
+    timelineView.clear();
+    notifyListeners();
+  }
+
+  private synchronized void fixAnchor()
+  {
+    if (anchor > measurementsSize - timelineView.size())
+    {
+      anchor = measurementsSize - timelineView.size();
+    }
+    if (anchor < 0) {
+      anchor = 0;
+    }
+  }
+
+  public synchronized void scroll(double scrollAmount)
+  {
+    prepareTimelineView();
+
+    anchor -= scrollAmount * timelineView.size();
+    fixAnchor();
+    timelineView.clear();
+
+    notifyListeners();
   }
 
   public List<Measurement> getFullView()
@@ -356,28 +377,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
     return fullView;
   }
-
-  public synchronized void scroll(double scrollAmount)
-  {
-    prepareTimelineView();
-
-    anchor -= scrollAmount * timelineView.size();
-    fixAnchor();
-    timelineView.clear();
-
-    notifyListeners();
-  }
-
-  private synchronized void fixAnchor()
-  {
-    if (anchor > measurementsSize - timelineView.size())
-    {
-      anchor = measurementsSize - timelineView.size();
-    }
-        if (anchor < 0) {
-            anchor = 0;
-        }
-    }
 
   public synchronized boolean canScrollRight()
   {
