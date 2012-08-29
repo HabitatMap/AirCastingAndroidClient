@@ -18,6 +18,8 @@ import static java.lang.String.valueOf;
 @Singleton
 public class GaugeHelper
 {
+  public static final int MARGIN = 2;
+
   @Inject ResourceHelper resourceHelper;
   @Inject SettingsHelper settingsHelper;
   @Inject SessionManager sessionManager;
@@ -91,16 +93,21 @@ public class GaugeHelper
     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
     long viewWidth = textView.getWidth();
     if(viewWidth < 1)
-      return textView.getTextSize();
+    {
+      textView.measure(0, 0);
+      viewWidth = textView.getMeasuredWidth();
+
+      if(viewWidth < 1) return textView.getTextSize();
+    }
 
     TextPaint textPaint = textView.getPaint();
     float textSize = textView.getTextSize();
-    float paintWidth = textPaint.measureText(message);
+    float paintWidth = textPaint.measureText(message) + 2*MARGIN;
     while(paintWidth > viewWidth)
     {
       textSize--;
       textPaint.setTextSize(textSize);
-      paintWidth = textPaint.measureText(message);
+      paintWidth = textPaint.measureText(message) + 2*MARGIN;
     }
     return textSize;
   }
