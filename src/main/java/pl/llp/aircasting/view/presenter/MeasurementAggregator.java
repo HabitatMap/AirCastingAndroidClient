@@ -11,29 +11,33 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class MeasurementAggregator
 {
-  private double longitude = 0;
-  private double latitude = 0;
-  private double value = 0;
-  private long time = 0;
-  private int count = 0;
+  private double cumulativeLongitude;
+  private double cumulativeLatitude;
+  private double cumulativeValue;
+  private long cumulativeTime;
+  private int count;
 
   public void add(Measurement measurement)
   {
-    longitude += measurement.getLongitude();
-    latitude += measurement.getLatitude();
-    value += measurement.getValue();
-    time += measurement.getTime().getTime();
+    cumulativeLongitude += measurement.getLongitude();
+    cumulativeLatitude += measurement.getLatitude();
+    cumulativeValue += measurement.getValue();
+    cumulativeTime += measurement.getTime().getTime();
     count += 1;
   }
 
   public void reset()
   {
-    longitude = latitude = value = time = count = 0;
+    cumulativeLongitude = cumulativeLatitude = cumulativeValue = cumulativeTime = count = 0;
   }
 
   public Measurement getAverage()
   {
-    return new Measurement(latitude / count, longitude / count, value / count, new Date(time / count));
+    double latitude = cumulativeLatitude / count;
+    double longitude = cumulativeLongitude / count;
+    double value = cumulativeValue / count;
+    Date time = new Date(cumulativeTime / count);
+    return new Measurement(latitude, longitude, value, time);
   }
 
   public boolean isComposite()
