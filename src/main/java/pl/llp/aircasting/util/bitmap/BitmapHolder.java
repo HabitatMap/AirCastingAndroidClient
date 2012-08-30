@@ -19,25 +19,34 @@
 */
 package pl.llp.aircasting.util.bitmap;
 
+import pl.llp.aircasting.util.Constants;
+
 import android.graphics.Bitmap;
 import com.google.common.collect.MapMaker;
 import com.google.inject.Singleton;
 
+import java.lang.ref.PhantomReference;
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
 import java.util.Map;
 
 @Singleton
 public class BitmapHolder {
 
     Map<BitmapKey, Bitmap> cache = new MapMaker().concurrencyLevel(1).makeMap();
-   
-    public Bitmap getBitmap(int width, int height, int index)
+  private ReferenceQueue<Bitmap> bitmapReferenceQueue = new ReferenceQueue<Bitmap>();
+
+  public Bitmap getBitmap(int width, int height, int index)
     {
        if(width == 0 || height == 0) return null;
        BitmapKey key = new BitmapKey(width, height, index);
 
        if(!cache.containsKey(key))
        {
-          cache.put(key, Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888));
+         Bitmap bitmap = Bitmap.createBitmap(key.getWidth(), key.getHeight(), Bitmap.Config.ARGB_8888);
+         new PhantomReference<Bitmap>(bitmap, bitmapReferenceQueue);
+
+         cache.put(key, bitmap);
        }
 
        return cache.get(key);
@@ -50,9 +59,33 @@ public class BitmapHolder {
          BitmapKey key = entry.getKey();
          if((key.getWidth() == width) && (key.getHeight() == height))
          {
-            Bitmap removed = cache.remove(key);
-            removed.recycle();
+            cache.remove(key);
          }
       }
+
+     new Thread(new Runnable()
+     {
+       @Override
+       public void run()
+       {
+         for (int i = 0; i < 5; i++)
+         {
+           try
+           {
+             while(bitmapReferenceQueue.poll() != null)
+             {
+               Reference<? extends Bitmap> ref = bitmapReferenceQueue.remove();
+               Bitmap bitmap = ref.get();
+               if(bitmap != null)
+               {
+                 bitmap.recycle();
+               }
+             }
+             Thread.sleep(Constants.ONE_SECOND);
+           }
+           catch (InterruptedException ignored) { }
+         }
+       }
+     }).start();
    }
 }

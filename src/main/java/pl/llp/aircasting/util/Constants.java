@@ -5,6 +5,7 @@ import android.util.Log;
 public class Constants
 {
   public static final int MILLIS_IN_SECOND = 1000;
+  public static final int ONE_SECOND = MILLIS_IN_SECOND;
   public static final int THREE_SECONDS = 3 * MILLIS_IN_SECOND;
 
   public static final String TAG = "AirCasting";

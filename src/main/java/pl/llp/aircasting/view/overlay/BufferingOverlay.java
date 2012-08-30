@@ -86,7 +86,12 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay
     int height = mapView.getHeight();
     Bitmap newBitmap = bitmapHolder.getBitmap(width, height, bitmapIndex);
 
-    if (newBitmap != null)
+    if(newBitmap == null || newBitmap.isRecycled())
+    {
+      newBitmap = bitmapHolder.getBitmap(width, height, 2);
+    }
+
+    if (newBitmap != null && !newBitmap.isRecycled())
     {
       newBitmap.eraseColor(transparent);
 
