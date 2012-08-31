@@ -20,12 +20,12 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.FormatHelper;
@@ -34,7 +34,6 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
-import pl.llp.aircasting.model.MeasurementLevelEvent;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
@@ -57,12 +56,6 @@ import java.text.NumberFormat;
 
 import static pl.llp.aircasting.Intents.triggerSync;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 9/30/11
- * Time: 3:18 PM
- */
 public abstract class AirCastingActivity extends ButtonsActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
 
@@ -148,59 +141,57 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
   protected void updateGauges()
   {
     final Sensor visibleSensor = sensorManager.getVisibleSensor();
+    updateGaugeFaces(visibleSensor);
+  }
+
+  private void updateGaugeFaces(final Sensor visibleSensor)
+  {
     runOnUiThread(new Runnable()
     {
       @Override
       public void run()
       {
-
         gaugeHelper.updateGauges(visibleSensor, gauges);
       }
     });
-
-    MeasurementLevel level = null;
-    if (sessionManager.isSessionSaved())
-    {
-      level = MeasurementLevel.TOO_LOW;
-    }
-    else
-    {
-      int now = (int) sessionManager.getNow(visibleSensor);
-      level = visibleSensor.level(now);
-    }
-    eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
   }
 
-    @Subscribe
-    public void onEvent(MeasurementEvent event) {
-        updateGauges();
-    }
+  @Subscribe
+  public void onEvent(MeasurementEvent event) {
+    updateGauges();
+  }
 
-    @Subscribe
-    public void onEvent(SessionChangeEvent event) {
-        updateGauges();
-    }
+  @Subscribe
+  public void onEvent(SessionChangeEvent event) {
+    updateGauges();
+  }
 
-    @Subscribe
-    public void onEvent(SensorEvent event) {
-        updateGauges();
-    }
+  @Subscribe
+  public void onEvent(SensorEvent event) {
+    updateGauges();
+  }
 
-    @Subscribe
-    public void onEvent(AudioReaderErrorEvent event) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+  @Subscribe
+  public void onEvent(ThresholdSetEvent event)
+  {
+    updateGauges();
+  }
 
-    @Subscribe
-    public void onEvent(ViewStreamEvent event) {
-        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
-        updateGauges();
-    }
+  @Subscribe
+  public void onEvent(AudioReaderErrorEvent event) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+      }
+    });
+  }
+
+  @Subscribe
+  public void onEvent(ViewStreamEvent event) {
+    topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+    updateGauges();
+  }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -20,21 +20,26 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.Sensor;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+@Singleton
 public class SettingsHelper
 {
   public static final String AUTH_TOKEN = "auth_token";
@@ -58,21 +63,30 @@ public class SettingsHelper
   public static final int MIN_OFFSET_60_DB = -5;
   public static final int MAX_OFFSET_60_DB = 5;
   public static final String SAMPLE_INTERVAL = "sample_interval";
-  public static final int MIN_SAMPLE_INTERVAL = 1;
-  public static final int MAX_SAMPLE_INTERVAL = 3600;
   public static final String AVERAGING_TIME = "averaging_time";
   private static final int MIN_AVERAGING_TIME = 1;
   private static final int MAX_AVERAGING_TIME = 3600;
   public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
   public static final String SHOW_ROUTE = "show_route";
-  public static final String SENSOR_ADDRESS = "sensor_address";
-  public static final String SENSOR_NAME = "sensor_name";
   public static final String SENSORS = "external_sensors_json";
 
   public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
 
   @Inject SharedPreferences preferences;
   @Inject Gson gson;
+  @Inject EventBus eventBus;
+
+  @Inject
+  public void init()
+  {
+    eventBus.register(this);
+  }
+
+  @Subscribe
+  public void onEvent(ThresholdSetEvent event)
+  {
+    setThreshold(event.getSensor(), event.getLevel(), event.getValue());
+  }
 
   public int getCalibration() {
     return getInt(CALIBRATION, DEFAULT_CALIBRATION);

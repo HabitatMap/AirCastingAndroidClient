@@ -21,13 +21,13 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
 
 import android.content.Intent;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +35,8 @@ import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
 import static pl.llp.aircasting.TestHelper.click;
 import static pl.llp.aircasting.TestHelper.fill;
 
@@ -64,6 +62,7 @@ public class ThresholdsActivityTest {
         
         activity.onCreate(null);
 
+        activity.eventBus = mock(EventBus.class);
         activity.settingsHelper = mock(SettingsHelper.class);
 
         fill(activity, R.id.color_scale_too_loud, "100");
@@ -77,11 +76,7 @@ public class ThresholdsActivityTest {
     public void shouldSaveThresholds() {
         click(activity, R.id.save);
 
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_HIGH, 100);
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.HIGH, 90);
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.MID, 80);
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.LOW, 70);
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_LOW, 60);
+        verify(activity.eventBus, atLeast(5)).post(anyObject());
 
         assertThat(activity.isFinishing(), equalTo(true));
     }
@@ -92,10 +87,9 @@ public class ThresholdsActivityTest {
         when(activity.getCurrentFocus()).thenReturn(activity.veryLoudEdit);
         fill(activity, R.id.color_scale_very_loud, "110");
 
-        click(activity, R.id.save);
+        activity.saveThresholds();
 
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.VERY_HIGH, 111);
-        verify(activity.settingsHelper).setThreshold(sensor, MeasurementLevel.HIGH, 110);
+        verify(activity, atLeast(1)).fixThresholds();
 
         assertThat(activity.isFinishing(), equalTo(true));
     }

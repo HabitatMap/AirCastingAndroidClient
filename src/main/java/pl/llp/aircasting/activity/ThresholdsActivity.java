@@ -22,6 +22,7 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
 
@@ -33,6 +34,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
@@ -61,6 +63,7 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
 
     @Inject SettingsHelper settingsHelper;
     @Inject Application context;
+    @Inject EventBus eventBus;
 
     private int veryLoud;
     private int tooLoud;
@@ -105,25 +108,34 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
                 break;
             case R.id.reset:
                 finish();
-                settingsHelper.resetThresholds(sensor);
+                resetThresholds();
                 break;
         }
     }
 
-    private void saveThresholds() {
+  private void resetThresholds()
+  {
+    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS)
+    {
+      eventBus.post(new ThresholdSetEvent(sensor, level, sensor.getThreshold(level)));
+    }
+    settingsHelper.resetThresholds(sensor);
+  }
+
+  void saveThresholds() {
         calculateThresholds();
         fixThresholds();
 
-        settingsHelper.setThreshold(sensor, MeasurementLevel.VERY_HIGH, tooLoud);
-        settingsHelper.setThreshold(sensor, MeasurementLevel.HIGH, veryLoud);
-        settingsHelper.setThreshold(sensor, MeasurementLevel.MID, loud);
-        settingsHelper.setThreshold(sensor, MeasurementLevel.LOW, average);
-        settingsHelper.setThreshold(sensor, MeasurementLevel.VERY_LOW, quiet);
+        eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.VERY_HIGH, tooLoud));
+        eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.HIGH, veryLoud));
+        eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.MID, loud));
+        eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.LOW, average));
+        eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.VERY_LOW, quiet));
 
         finish();
     }
 
-    private void fixThresholds() {
+    void fixThresholds() {
         View focus = getCurrentFocus();
         int id = focus == null ? 0 : focus.getId();
         MeasurementLevel measurementLevel = toSoundLevel(id);

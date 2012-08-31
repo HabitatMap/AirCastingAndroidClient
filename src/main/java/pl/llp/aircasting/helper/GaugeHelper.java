@@ -1,14 +1,18 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.MarkerSize;
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.MeasurementLevelEvent;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 
 import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.inject.InjectResource;
@@ -23,10 +27,14 @@ public class GaugeHelper
   @Inject ResourceHelper resourceHelper;
   @Inject SettingsHelper settingsHelper;
   @Inject SessionManager sessionManager;
+  @Inject SensorManager sensorManager;
+
+  @Inject EventBus eventBus;
 
   @InjectResource(R.string.avg_label_template) String avgLabel;
   @InjectResource(R.string.now_label_template) String nowLabel;
   @InjectResource(R.string.peak_label_template) String peakLabel;
+
 
   /**
    * Update a set of now/avg/peak gauges
@@ -37,6 +45,7 @@ public class GaugeHelper
   public void updateGauges(Sensor sensor, View view)
   {
     updateVisibility(view);
+    updateExternalGauges(sensor);
 
     int now = (int) sessionManager.getNow(sensor);
     updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
@@ -72,6 +81,25 @@ public class GaugeHelper
     {
       displayInactiveGauge(view.findViewById(R.id.avg_gauge), MarkerSize.SMALL);
       displayInactiveGauge(view.findViewById(R.id.peak_gauge), MarkerSize.SMALL);
+    }
+  }
+
+  private void updateExternalGauges(Sensor sensor)
+  {
+    Sensor visibleSensor = sensorManager.getVisibleSensor();
+    if (visibleSensor.matches(sensor))
+    {
+      MeasurementLevel level = null;
+      if (sessionManager.isSessionSaved())
+      {
+        level = MeasurementLevel.TOO_LOW;
+      }
+      else
+      {
+        int now = (int) sessionManager.getNow(visibleSensor);
+        level = resourceHelper.getLevel(visibleSensor, now);
+      }
+      eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
     }
   }
 

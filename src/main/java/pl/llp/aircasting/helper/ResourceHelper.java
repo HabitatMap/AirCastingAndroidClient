@@ -22,11 +22,20 @@ package pl.llp.aircasting.helper;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.Sensor;
 
 import android.graphics.drawable.Drawable;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.inject.InjectResource;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,8 +86,32 @@ public class ResourceHelper
 
   @InjectResource(R.color.gps_route) int gpsRoute;
 
+  @Inject SettingsHelper settings;
+  @Inject EventBus eventBus;
+
+  private Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
+
+  @Inject
+  public void init()
+  {
+    eventBus.register(this);
+  }
+
+  @Subscribe
+  public void onEvent(ThresholdSetEvent event)
+  {
+    Sensor sensor = event.getSensor();
+
+    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
+    if(levels == null)
+    {
+      levels = initLevels(sensor);
+    }
+    levels.put(event.getLevel(), event.getValue());
+  }
+
   public Drawable getGauge(Sensor sensor, MarkerSize size, double value) {
-    switch (sensor.level(value)) {
+    switch (getLevel(sensor, value)) {
       case TOO_LOW:
       case VERY_LOW:
         return size == MarkerSize.SMALL ? smallGreenGauge : bigGreenGauge;
@@ -110,7 +143,7 @@ public class ResourceHelper
   }
 
   public Drawable getLocationBullet(Sensor sensor, double value) {
-    switch (sensor.level(value)) {
+    switch (getLevel(sensor, value)) {
       case LOW:
         return dotYellow;
       case MID:
@@ -125,8 +158,10 @@ public class ResourceHelper
     }
   }
 
-  public int getColorAbsolute(Sensor sensor, double value) {
-    switch (sensor.level(value)){
+  public int getColorAbsolute(Sensor sensor, double value)
+  {
+    switch (getLevel(sensor, value))
+    {
       case VERY_LOW:
         return green;
       case LOW:
@@ -138,10 +173,39 @@ public class ResourceHelper
     }
   }
 
-  public Drawable getBulletAbsolute(Sensor sensor, double value) {
-    MeasurementLevel measurementLevel = sensor.level(value);
+  public MeasurementLevel getLevel(Sensor sensor, double value)
+  {
+    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
+    if(levels == null)
+    {
+      levels = initLevels(sensor);
+    }
 
-    switch (measurementLevel) {
+    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
+      if ((int) value > levels.get(level))
+      {
+        return level;
+      }
+    }
+    return MeasurementLevel.TOO_LOW;
+  }
+
+  private HashMap<MeasurementLevel, Integer> initLevels(Sensor sensor)
+  {
+    HashMap<MeasurementLevel, Integer> values = new HashMap<MeasurementLevel, Integer>();
+    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS)
+    {
+      int threshold = settings.getThreshold(sensor, level);
+      values.put(level, threshold);
+    }
+    thresholds.put(sensor, values);
+    return values;
+  }
+
+  public Drawable getBulletAbsolute(Sensor sensor, double value)
+  {
+    switch (getLevel(sensor, value))
+    {
       case TOO_LOW:
       case VERY_LOW:
         return greenBullet;
