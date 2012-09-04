@@ -38,6 +38,8 @@ import ioio.lib.api.exception.ConnectionLostException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 public class BluetoothIOIOConnection implements IOIOConnection
@@ -90,6 +92,20 @@ public class BluetoothIOIOConnection implements IOIOConnection
   public static BluetoothSocket createSocket(final BluetoothDevice device)
       throws IOException
   {
+    try
+    {
+      Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+      return (BluetoothSocket) m.invoke(device, 1);
+    }
+    catch (NoSuchMethodException ignore)
+    {
+    }
+    catch (InvocationTargetException ignore)
+    {
+    }
+    catch (IllegalAccessException ignore)
+    {
+    }
     return device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
   }
 
