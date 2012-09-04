@@ -96,6 +96,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         updateGauges();
         updateKeepScreenOn();
         topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+        Intents.startIOIO(context);
     }
 
     private void initialize() {
