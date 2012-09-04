@@ -36,7 +36,7 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
 
   public IOIOService()
   {
-    setColors(Colors.GREEN);
+    setColors(Colors.BLACK);
   }
 
   @Override
