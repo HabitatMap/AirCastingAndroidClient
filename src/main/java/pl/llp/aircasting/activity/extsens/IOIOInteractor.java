@@ -8,21 +8,9 @@ import android.content.Context;
 
 import java.util.List;
 
-/**
- * Created by ags on 26/07/12 at 16:51
- */
 class IOIOInteractor
 {
-  Context context;
-  SettingsHelper settings;
-
-  IOIOInteractor(Context context, SettingsHelper settings)
-  {
-    this.context = context;
-    this.settings = settings;
-  }
-
-  public void startIfNecessary(ExternalSensorDescriptor descriptor)
+  public void startIfNecessary(ExternalSensorDescriptor descriptor, Context context)
   {
     if(descriptor.getName().startsWith("IOIO"))
     {
@@ -30,16 +18,16 @@ class IOIOInteractor
     }
   }
 
-  void startPreviouslyConnectedIOIO()
+  void startPreviouslyConnectedIOIO(SettingsHelper settings, Context context)
   {
     List<ExternalSensorDescriptor> descriptors = settings.knownSensors();
     for (ExternalSensorDescriptor descriptor : descriptors)
     {
-      startIfNecessary(descriptor);
+      startIfNecessary(descriptor, context);
     }
   }
 
-  public void stopIfNecessary(ExternalSensorDescriptor disconnected)
+  public void stopIfNecessary(ExternalSensorDescriptor disconnected, Context context)
   {
     if (disconnected.getName().startsWith("IOIO"))
     {

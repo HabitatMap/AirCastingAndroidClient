@@ -40,7 +40,7 @@ public class ExternalSensorActivity extends DialogActivity
     KnownSensorAdapter knownSensorAdapter;
 
     AdapterInteractor sensorLists;
-    IOIOInteractor ioio;
+    IOIOInteractor ioio = new IOIOInteractor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,7 +60,7 @@ public class ExternalSensorActivity extends DialogActivity
           public void onItemClick(AdapterView<?> parent, View view, int position, long id)
           {
             ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
-            ioio.startIfNecessary(connected);
+            ioio.startIfNecessary(connected, context);
 
             Intents.restartSensors(context);
             Intents.startStreamsActivity(ExternalSensorActivity.this);
@@ -85,7 +85,7 @@ public class ExternalSensorActivity extends DialogActivity
                     externalSensors.disconnect(disconnected.getAddress());
 
                     Intents.restartSensors(context);
-                    ioio.stopIfNecessary(disconnected);
+                    ioio.stopIfNecessary(disconnected, context);
                   }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
             AlertDialog dialog = builder.create();
@@ -94,7 +94,6 @@ public class ExternalSensorActivity extends DialogActivity
         });
 
       sensorLists = new AdapterInteractor(this, knownSensorAdapter, availableSensorAdapter, settingsHelper);
-      ioio = new IOIOInteractor(this, settingsHelper);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class ExternalSensorActivity extends DialogActivity
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(receiver, filter);
         sensorLists.updateKnownSensorListVisibility();
-        ioio.startPreviouslyConnectedIOIO();
+        ioio.startPreviouslyConnectedIOIO(settingsHelper, context);
 
         if (!bluetoothAdapter.isEnabled()) {
             Intents.requestEnableBluetooth(this);
@@ -155,7 +154,6 @@ public class ExternalSensorActivity extends DialogActivity
           {
             availableSensorAdapter.deviceFound(device);
           }
-
         }
       });
     }

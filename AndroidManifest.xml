@@ -17,20 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     You can contact the authors by email at <info@habitatmap.org>
--->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="34"
-          android:versionName="1.3.9-SNAPSHOT"
-          package="pl.llp.aircasting">
+--><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="42" android:versionName="1.3.24-SNAPSHOT" package="pl.llp.aircasting">
 
-  <uses-sdk android:minSdkVersion="7"
-            android:targetSdkVersion="7"/>
+  <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="7"/>
 
   <!-- Settings -->
-  <supports-screens android:anyDensity="true"
-                    android:largeScreens="true"
-                    android:normalScreens="true"
-                    android:smallScreens="true"/>
+  <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
 
   <!-- Permissions -->
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -43,106 +35,61 @@
   <uses-permission android:name="android.permission.BLUETOOTH"/>
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
-  <application android:debuggable="true"
-               android:icon="@drawable/icon"
-               android:label="@string/app_name"
-               android:name=".guice.AirCastingApplication">
+  <application android:debuggable="true" android:icon="@drawable/icon" android:label="@string/app_name" android:name=".guice.AirCastingApplication">
 
     <!-- Libraries -->
     <uses-library android:name="com.google.android.maps"/>
 
     <!-- Activities -->
-    <activity android:label="@string/app_name"
-              android:name=".activity.SplashActivity"
-              android:noHistory="true"
-              android:theme="@android:style/Theme.NoTitleBar">
+    <activity android:label="@string/app_name" android:name=".activity.SplashActivity" android:noHistory="true" android:theme="@android:style/Theme.NoTitleBar">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 
-    <activity android:label="@string/app_name"
-              android:name=".activity.SoundTraceActivity"
-              android:theme="@android:style/Theme.NoTitleBar">
+    <activity android:label="@string/app_name" android:name=".activity.SoundTraceActivity" android:theme="@android:style/Theme.NoTitleBar">
     </activity>
 
-    <activity android:label="@string/app_name"
-              android:name=".activity.GraphActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/app_name"
-              android:name=".activity.SessionsActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/session_details"
-              android:name=".activity.SaveSessionActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/session_details" android:name=".activity.SaveSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/session_details"
-              android:name=".activity.EditSessionActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.SettingsActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.SettingsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/session_options"
-              android:name=".activity.OpenSessionActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/session_options" android:name=".activity.OpenSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.HeatMapActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.HeatMapActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:name=".activity.AboutActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.AboutActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/make_a_note"
-              android:name=".activity.MakeANoteActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/make_a_note" android:name=".activity.MakeANoteActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/color_scale"
-              android:name=".activity.ThresholdsActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/color_scale" android:name=".activity.ThresholdsActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/connect_to_aircasting"
-              android:name=".activity.SignUpActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/connect_to_aircasting" android:name=".activity.SignUpActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/sign_out"
-              android:name=".activity.SignOutActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/sign_out" android:name=".activity.SignOutActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/sign_in"
-              android:name=".activity.SignInActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/sign_in" android:name=".activity.SignInActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/reset_password"
-              android:name=".activity.ResetPasswordActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/reset_password" android:name=".activity.ResetPasswordActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/profile"
-              android:name=".activity.ProfileActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/profile" android:name=".activity.ProfileActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/contribute_to_crowd_map"
-              android:name=".activity.ContributeActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/contribute_to_crowd_map" android:name=".activity.ContributeActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/share_session"
-              android:name=".activity.ShareSessionActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/share_session" android:name=".activity.ShareSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/external_devices"
-              android:name=".activity.extsens.ExternalSensorActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/external_devices" android:name=".activity.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/measurement_streams"
-              android:name=".activity.StreamsActivity"
-              android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/backend_settings"
-              android:name=".activity.BackendSettingsActivity"
-              android:theme="@style/Dialog"/>
+    <activity android:label="@string/backend_settings" android:name=".activity.BackendSettingsActivity" android:theme="@style/Dialog"/>
 
     <!-- Services -->
     <service android:name=".service.SensorService"/>
