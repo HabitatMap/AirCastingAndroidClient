@@ -66,7 +66,7 @@
     <string name="very_loud_threshold">Very loud sounds (dB)</string>
 
     <string name="profile_summary">Create an account or sign in</string>
-    <string name="average_threshold_summary">Sounds louder than this will be marked in yellow.</string>
+    <string name="average_threshold_summary">Measurements greater than this will be marked in yellow.</string>
     <string name="calibration_summary">Set this to match the maximum sound level that can be processed by your phone\'s
         microphone. For most phones this is between 80 and 100.
     </string>
@@ -76,12 +76,12 @@
     <string name="heat_map_density_summary">Higher resolutions will display averages for smaller areas but will increase
         downloading times.
     </string>
-    <string name="loud_threshold_summary">Sounds louder than this will be marked in orange.</string>
+    <string name="loud_threshold_summary">Measurements greater than this will be marked in orange.</string>
     <string name="save_and_share">Save and share</string>
     <string name="share_with">Share with</string>
-    <string name="very_loud_threshold_summary">Sounds louder than this will be marked in red.</string>
-    <string name="too_loud_summary">Data louder than this will not be displayed.</string>
-    <string name="too_quiet_summary">Data quieter than this will not be displayed.</string>
+    <string name="very_loud_threshold_summary">Measurements greater than this will be marked in red.</string>
+    <string name="too_loud_summary">Measurements greater than this will not be displayed.</string>
+    <string name="too_quiet_summary">Measurements less than this will not be displayed.</string>
 
     <string name="color_scale_error">The values are incorrect</string>
     <string name="login_error">Login failed</string>
