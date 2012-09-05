@@ -49,6 +49,12 @@ public class MeasurementStream implements Serializable
 
   @Expose @SerializedName("threshold_high") private int thresholdHigh;
 
+  @Expose @SerializedName("min_latitude") private Double minLatitude;
+  @Expose @SerializedName("max_latitude") private Double maxLatitude;
+
+  @Expose @SerializedName("min_longitude") private Double minLongitude;
+  @Expose @SerializedName("max_longitude") private Double maxLongitude;
+
   private transient boolean avgDirty = true;
 
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
@@ -136,6 +142,17 @@ public class MeasurementStream implements Serializable
     }
     Optional<Double> average = Optional.fromNullable(avg);
     avg = average.or(0.0) + (value - average.or(0.0))/(measurements.size());
+
+    if(minLatitude == null) minLatitude = Double.POSITIVE_INFINITY;
+    if(minLongitude == null) minLongitude = Double.POSITIVE_INFINITY;
+    if(maxLatitude == null) maxLatitude = Double.NEGATIVE_INFINITY;
+    if(maxLongitude == null) maxLongitude = Double.NEGATIVE_INFINITY;
+
+    maxLatitude = Math.max(maxLatitude, measurement.getLatitude());
+    minLatitude = Math.min(minLatitude, measurement.getLatitude());
+
+    maxLongitude = Math.max(maxLongitude, measurement.getLatitude());
+    minLongitude = Math.min(minLongitude, measurement.getLatitude());
   }
 
   public String getSensorName() {
