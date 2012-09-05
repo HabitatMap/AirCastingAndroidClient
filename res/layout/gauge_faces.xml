@@ -32,9 +32,9 @@
                 />
         <TextView style="@style/Gauge"
                   android:background="@drawable/round_bottom_green_big"
-                  android:textSize="40sp"
+                  android:textSize="38sp"
                   android:id="@+id/now_gauge"
-                />
+                  android:singleLine="true"/>
     </LinearLayout>
     <LinearLayout style="@style/GaugeContainer"
                   android:id="@+id/peak_container"
