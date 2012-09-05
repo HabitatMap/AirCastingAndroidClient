@@ -134,12 +134,7 @@
     <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
         correct.
     </string>
-    <string name="contribute_explanation">Do you want to contribute your AirCasting Session to the CrowdMap? Only press
-        yes if your session took place outdoors and every effort was made to minimize factors that may interfere with
-        the collection of accurate readings, e.g. wind on the microphone, clothing rubbing against the microphone, loud
-        conversation from the AirCasters, etc. Also note that data from sessions contributed to the CrowdMap are
-        publicly accessible.
-    </string>
+    <string name="contribute_explanation">Do you want to contribute your AirCasting session to the CrowdMap?  Sessions contributed to the CrowdMap are publicly accessible.</string>
     <string name="yes_contribute">Yes, save and contribute</string>
     <string name="no_contribute">Save but don\'t contribute</string>
     <string name="keep_screen_on">Keep screen on</string>
