@@ -82,7 +82,7 @@ public class BluetoothIOIOConnection implements IOIOConnection
 					throw new ConnectionLostException(e);
 				}
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(3000);
 				} catch (InterruptedException e1) {
 				}
 			}
@@ -92,21 +92,21 @@ public class BluetoothIOIOConnection implements IOIOConnection
   public static BluetoothSocket createSocket(final BluetoothDevice device)
       throws IOException
   {
+    BluetoothSocket socket = null;
     try
     {
       Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
-      return (BluetoothSocket) m.invoke(device, 1);
+      socket = (BluetoothSocket) m.invoke(device, 1);
     }
     catch (NoSuchMethodException ignore)
     {
+      socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
     }
-    catch (InvocationTargetException ignore)
+    catch (Exception ignore)
     {
     }
-    catch (IllegalAccessException ignore)
-    {
-    }
-    return device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+
+    return socket;
   }
 
   @Override
