@@ -6,6 +6,7 @@ import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.BluetoothBondEnforcer;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 
 import android.app.AlertDialog;
@@ -111,11 +112,14 @@ public class ExternalSensorActivity extends DialogActivity
         sensorLists.updateKnownSensorListVisibility();
         ioio.startPreviouslyConnectedIOIO(settingsHelper, context);
 
-        if (!bluetoothAdapter.isEnabled()) {
-            Intents.requestEnableBluetooth(this);
-        } else {
-            findDevices();
-        }
+      if (bluetoothAdapter.isEnabled())
+      {
+          findDevices();
+      }
+      else
+      {
+          Intents.requestEnableBluetooth(this);
+      }
     }
 
   @Override
@@ -136,8 +140,16 @@ public class ExternalSensorActivity extends DialogActivity
         }
     }
 
-    private void findDevices() {
-        bluetoothAdapter.startDiscovery();
+    private void findDevices()
+    {
+      bluetoothAdapter.startDiscovery();
+      long scanMode = bluetoothAdapter.getScanMode();
+      if(scanMode != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
+      {
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
+        startActivity(discoverableIntent);
+      }
     }
 
   private class BluetoothFoundReceiver extends BroadcastReceiver
@@ -145,12 +157,13 @@ public class ExternalSensorActivity extends DialogActivity
     @Override
     public void onReceive(Context context, Intent intent) {
       final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+      BluetoothBondEnforcer.forceBonding(device);
       runOnUiThread(new Runnable()
       {
         @Override
         public void run()
         {
-          if(sensorLists.knows(device))
+          if(!sensorLists.knows(device))
           {
             availableSensorAdapter.deviceFound(device);
           }

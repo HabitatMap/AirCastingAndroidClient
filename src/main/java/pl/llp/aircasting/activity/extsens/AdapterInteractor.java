@@ -64,6 +64,6 @@ class AdapterInteractor
 
   public boolean knows(BluetoothDevice device)
   {
-    return !knownSensorAdapter.knows(device.getAddress());
+    return knownSensorAdapter.knows(device.getAddress());
   }
 }
