@@ -1,5 +1,10 @@
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,13 +14,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
+import org.jetbrains.annotations.Nullable;
 import roboguice.inject.InjectResource;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 

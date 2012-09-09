@@ -124,6 +124,8 @@ class HxMReaderWorker
           socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
         }
         socket.connect();
+        Thread.sleep(300);
+
         status = Status.CONNECTED;
         return socket;
       }
@@ -176,7 +178,7 @@ class HxMReaderWorker
 
       private boolean check(byte[] bytes)
       {
-        return bytes[0] == 0x02 && bytes[1] == 0x26;
+        return bytes[1] == 0x26;
       }
 
       @Override

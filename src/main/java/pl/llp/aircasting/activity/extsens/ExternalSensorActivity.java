@@ -6,24 +6,29 @@ import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
-import pl.llp.aircasting.sensor.BluetoothBondEnforcer;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.util.Constants;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.IBluetooth;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
+
+import java.lang.reflect.Method;
 
 public class ExternalSensorActivity extends DialogActivity
 {
@@ -61,6 +66,23 @@ public class ExternalSensorActivity extends DialogActivity
           public void onItemClick(AdapterView<?> parent, View view, int position, long id)
           {
             ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
+            String address = connected.getAddress();
+            try
+            {
+              IBluetooth iBluetooth = getIBluetooth();
+              if(bluetoothAdapter.getBondedDevices().contains(address))
+              {
+
+              }
+              else
+              {
+                iBluetooth.createBond(address);
+              }
+            }
+            catch (Exception e)
+            {
+                Log.e(Constants.TAG, "Failed to request pairing!", e);
+            }
             ioio.startIfNecessary(connected, context);
 
             Intents.restartSensors(context);
@@ -109,6 +131,7 @@ public class ExternalSensorActivity extends DialogActivity
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(receiver, filter);
+
         sensorLists.updateKnownSensorListVisibility();
         ioio.startPreviouslyConnectedIOIO(settingsHelper, context);
 
@@ -121,6 +144,34 @@ public class ExternalSensorActivity extends DialogActivity
           Intents.requestEnableBluetooth(this);
       }
     }
+
+  private IBluetooth getIBluetooth()
+  {
+    IBluetooth ibt = null;
+
+    try
+    {
+      Class c2 = Class.forName("android.os.ServiceManager");
+
+      Method m2 = c2.getDeclaredMethod("getService", String.class);
+      IBinder b = (IBinder) m2.invoke(null, "bluetooth");
+
+      Class c3 = Class.forName("android.bluetooth.IBluetooth");
+
+      Class[] s2 = c3.getDeclaredClasses();
+
+      Class c = s2[0];
+      Method m = c.getDeclaredMethod("asInterface", IBinder.class);
+      m.setAccessible(true);
+      ibt = (IBluetooth) m.invoke(null, b);
+    }
+    catch (Exception e)
+    {
+      Log.e("flowlab", "Erroraco!!! " + e.getMessage());
+    }
+
+    return ibt;
+  }
 
   @Override
     protected void onPause() {
@@ -143,13 +194,6 @@ public class ExternalSensorActivity extends DialogActivity
     private void findDevices()
     {
       bluetoothAdapter.startDiscovery();
-      long scanMode = bluetoothAdapter.getScanMode();
-      if(scanMode != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
-      {
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
-        startActivity(discoverableIntent);
-      }
     }
 
   private class BluetoothFoundReceiver extends BroadcastReceiver
@@ -157,7 +201,6 @@ public class ExternalSensorActivity extends DialogActivity
     @Override
     public void onReceive(Context context, Intent intent) {
       final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-      BluetoothBondEnforcer.forceBonding(device);
       runOnUiThread(new Runnable()
       {
         @Override

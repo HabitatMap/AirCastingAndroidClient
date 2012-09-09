@@ -38,7 +38,6 @@ import ioio.lib.api.exception.ConnectionLostException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -65,7 +64,7 @@ public class BluetoothIOIOConnection implements IOIOConnection
 			}
 			try {
 				socket_ = createSocket(device_);
-			} catch (IOException e) {
+      } catch (IOException e) {
 				throw new ConnectionLostException(e);
 			}
 		}
@@ -74,8 +73,7 @@ public class BluetoothIOIOConnection implements IOIOConnection
 			try {
 				Log.v(TAG, "Attempting to connect to Bluetooth device: " + name_);
 				socket_.connect();
-				Log.v(TAG, "Established connection to device " + name_
-						+ " address: " + address_);
+				Log.v(TAG, "Established connection to device " + name_ + " address: " + address_);
 				break; // if we got here, we're connected
 			} catch (Exception e) {
 				if (disconnect_) {
