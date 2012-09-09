@@ -49,7 +49,7 @@ void loop()
 
   //Display of humidity
   mySerial.print(humi);
-  mySerial.print(";HabitatMap1;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
+  mySerial.print(";InsertSensorPackageName;HIH4030;Humidity;RH;percent;%;0;25;50;75;100");
   mySerial.print("\n");
   Serial.print("Humidity: ");
   Serial.print(humi);
@@ -57,7 +57,7 @@ void loop()
 
   //Display of CO gas sensor
   mySerial.print(CO);
-  mySerial.print(";HabitatMap1;TGS2442;CO Gas;CO;response indicator;RI;0;25;50;75;100");
+  mySerial.print(";InsertSensorPackageName;TGS2442;CO Gas;CO;response indicator;RI;0;25;50;75;100");
   mySerial.print("\n");
   Serial.print("CO Gas: ");
   Serial.print(CO);
@@ -66,14 +66,14 @@ void loop()
   //Display of temperature in K, C, and F
   /*
   mySerial.print(kelv);
-  mySerial.print(";HabitatMap1;TMP36;Temperature;K;kelvin;K;273;300;400;500;600");
+  mySerial.print(";InsertSensorPackageName;TMP36;Temperature;K;kelvin;K;273;300;400;500;600");
   mySerial.print("\n");
   mySerial.print(cel);
-  mySerial.print(";HabitatMap1;TMP36;Temperature;C;degrees Celsius;C;0;10;15;20;25");
+  mySerial.print(";InsertSensorPackageName;TMP36;Temperature;C;degrees Celsius;C;0;10;15;20;25");
   mySerial.print("\n");
   */
   mySerial.print(fah);
-  mySerial.print(";HabitatMap1;TMP36;Temperature;F;degrees Fahrenheit;F;0;30;60;90;120");
+  mySerial.print(";InsertSensorPackageName;TMP36;Temperature;F;degrees Fahrenheit;F;0;30;60;90;120");
   mySerial.print("\n");
 
   Serial.print("Temperature: ");
@@ -85,7 +85,7 @@ void loop()
   Serial.print("F ");
 
   mySerial.print(NO2);
-  mySerial.print(";HabitatMap1;MiCS-2710;N02 Gas;NO2;response indicator;RI;0;25;50;75;100");
+  mySerial.print(";InsertSensorPackageName;MiCS-2710;N02 Gas;NO2;response indicator;RI;0;25;50;75;100");
   mySerial.print("\n");
   Serial.print("NO2 Gas: ");
   Serial.print(NO2);
