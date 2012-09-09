@@ -39,13 +39,12 @@ import com.google.inject.Inject;
 import com.google.inject.internal.Lists;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.repository.DBHelper.*;

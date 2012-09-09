@@ -19,13 +19,12 @@ import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;

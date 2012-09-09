@@ -62,12 +62,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import org.jetbrains.annotations.Nullable;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.collect.Lists.newArrayList;
 

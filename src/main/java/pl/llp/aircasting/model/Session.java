@@ -22,6 +22,7 @@ package pl.llp.aircasting.model;
 import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.collect.Iterables.all;
 import static com.google.common.collect.Iterables.filter;

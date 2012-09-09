@@ -24,10 +24,9 @@ import pl.llp.aircasting.util.Constants;
 import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
-
-import javax.annotation.Nullable;
 
 public class Measurement
 {
