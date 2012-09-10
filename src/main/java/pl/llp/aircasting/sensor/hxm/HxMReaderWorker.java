@@ -124,7 +124,7 @@ class HxMReaderWorker
           socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
         }
         socket.connect();
-        Thread.sleep(300);
+        Thread.sleep(Constants.THREE_SECONDS);
 
         status = Status.CONNECTED;
         return socket;
@@ -141,7 +141,7 @@ class HxMReaderWorker
 
   void process(byte[] packet)
   {
-    int heartRate = HxMPacket.getHeartRate(packet);
+    int heartRate = Math.abs(packet[12]);
     SensorEvent event = heartRateEvent(heartRate);
     event.setAddress(device.getAddress());
     eventBus.post(event);
@@ -170,15 +170,9 @@ class HxMReaderWorker
         {
           byte[] data = new byte[len];
           System.arraycopy(buf, off, data, 0, len);
-          if(check(data))
-            process(data);
+          process(data);
         }
         return active.get();
-      }
-
-      private boolean check(byte[] bytes)
-      {
-        return bytes[1] == 0x26;
       }
 
       @Override
