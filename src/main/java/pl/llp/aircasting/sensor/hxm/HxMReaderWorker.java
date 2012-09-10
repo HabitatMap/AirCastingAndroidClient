@@ -61,6 +61,7 @@ class HxMReaderWorker
           try
           {
             BluetoothSocket socket = connect();
+            status = Status.CONNECTED;
             if (socket != null)
               read(socket);
           }
@@ -102,7 +103,7 @@ class HxMReaderWorker
   private BluetoothSocket connect() throws InterruptedException
   {
     BluetoothSocket socket = null;
-    while (socket == null && active.get())
+    while (active.get())
     {
       try
       {
@@ -118,16 +119,15 @@ class HxMReaderWorker
         {
           Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
           socket = (BluetoothSocket) m.invoke(device, 1);
+          socket.connect();
+          return socket;
         }
-        catch (NoSuchMethodException e)
+        catch (Exception e)
         {
           socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+          socket.connect();
+          return socket;
         }
-        socket.connect();
-        Thread.sleep(Constants.THREE_SECONDS);
-
-        status = Status.CONNECTED;
-        return socket;
       }
       catch (Exception e)
       {
@@ -141,7 +141,7 @@ class HxMReaderWorker
 
   void process(byte[] packet)
   {
-    int heartRate = Math.abs(packet[12]);
+    int heartRate = Math.abs(packet[11]);
     SensorEvent event = heartRateEvent(heartRate);
     event.setAddress(device.getAddress());
     eventBus.post(event);
