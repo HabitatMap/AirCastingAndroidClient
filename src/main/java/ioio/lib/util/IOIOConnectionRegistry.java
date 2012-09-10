@@ -109,8 +109,6 @@ public class IOIOConnectionRegistry
   static
   {
     bootstraps_ = new LinkedList<IOIOConnectionBootstrap>();
-    String[] classNames = new String[]{"ioio.lib.impl.SocketIOIOConnectionBootstrap"};
-    addBootstraps(classNames);
   }
 
   private static void addBootstrap(String className)
