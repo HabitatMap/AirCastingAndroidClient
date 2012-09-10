@@ -1,8 +1,10 @@
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
@@ -26,6 +28,7 @@ import static com.google.common.collect.Sets.newHashSet;
 @Singleton
 public class SensorManager
 {
+  @Inject ResourceHelper resourceHelper;
   @Inject ExternalSensors externalSensors;
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
@@ -43,6 +46,22 @@ public class SensorManager
   @Subscribe
   public void onEvent(SensorEvent event)
   {
+    Sensor visibleSensor = getVisibleSensor();
+    if (visibleSensor != null && visibleSensor.matches(getSensorByName(event.getSensorName())))
+    {
+      MeasurementLevel level = null;
+      if (sessionManager.isSessionSaved())
+      {
+        level = MeasurementLevel.TOO_LOW;
+      }
+      else
+      {
+        int now = (int) sessionManager.getNow(visibleSensor);
+        level = resourceHelper.getLevel(visibleSensor, now);
+      }
+      eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
+    }
+
     if (sessionManager.isSessionSaved() || sensors.containsKey(SensorName.from(event.getSensorName())))
     {
       return;

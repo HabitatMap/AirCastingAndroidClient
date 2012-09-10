@@ -129,8 +129,9 @@ public class Sensor implements Serializable
 
   public boolean matches(Sensor sensor)
   {
-    return Strings.equals(sensor.getSensorName(), getSensorName()) &&
-        Strings.equals(sensor.getMeasurementType(), getMeasurementType());
+    return sensor != null && Strings.equals(sensor.getSensorName(), getSensorName()) && Strings
+        .equals(sensor.getMeasurementType(), getMeasurementType());
+
   }
 
   public String getAddress()
