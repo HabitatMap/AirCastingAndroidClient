@@ -19,110 +19,120 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="55dp"
-              android:background="@android:color/white"
-              android:gravity="center_vertical"
-              android:baselineAligned="false"
-        >
-    <RelativeLayout style="@style/Fill"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-            >
-        <ImageView style="@style/Wrap"
-                   android:layout_marginTop="8dp"
-                   android:layout_marginLeft="3dp"
-                   android:src="@drawable/session"
-                   android:id="@+id/session_icon"
-                />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:gravity="center_vertical"
+                android:baselineAligned="false"
+    >
+  <RelativeLayout
+      android:layout_height="fill_parent"
+      android:layout_width="fill_parent"
+      android:layout_toLeftOf="@+id/right_container"
+      >
+  <ImageView style="@style/Wrap"
+             android:layout_marginTop="8dp"
+             android:layout_marginLeft="3dp"
+             android:src="@drawable/session"
+             android:id="@+id/session_icon"
+             android:layout_alignParentLeft="true"
+      />
 
-        <TextView style="@style/SessionsBigText"
-                  android:id="@+id/session_title"
-                  android:layout_toRightOf="@id/session_icon"
-                  android:layout_toLeftOf="@+id/right_container"
-                  android:layout_marginTop="2dp"
-                  android:lines="1"
-                  android:text="Title"
-                />
+  <TextView style="@style/SessionsBigText"
+            android:id="@+id/data_types"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="2dp"
+            android:ellipsize="none"
+            android:gravity="right"
+            android:text="CO/dB/K"
+            android:lines="1"
+            android:layout_toRightOf="@+id/session_icon"
+      />
 
-        <TextView style="@style/Wrap"
-                  android:id="@+id/session_time"
-                  android:textSize="12sp"
-                  android:layout_marginLeft="3dp"
-                  android:layout_marginBottom="3dp"
-                  android:textColor="@android:color/black"
-                  android:gravity="center_vertical"
-                  android:text="01/01/11 00:00 - 00:00"
-                  android:layout_alignParentBottom="true"
-                  android:ellipsize="end"
-                />
-    </RelativeLayout>
+  <TextView style="@style/SessionsBigText"
+            android:id="@+id/session_title"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/session_icon"
+            android:layout_marginLeft="3dp"
+            android:maxLines="5"
+            android:text="A very long title might get wrapped or even better, it should"
+            android:layout_width="wrap_content"
+            android:singleLine="false"
+      />
 
-    <LinearLayout style="@style/High"
-                  android:id="@+id/right_container"
-                  android:gravity="top"
-            >
-        <TextView style="@style/SessionsBigText"
-                  android:id="@+id/data_types"
-                  android:layout_marginTop="2dp"
-                  android:layout_marginRight="5dp"
-                  android:ellipsize="none"
-                  android:gravity="right"
-                  android:text="CO/dB/K"
-                  android:lines="1"
-                />
-        <LinearLayout style="@style/Wrap">
-            <LinearLayout android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:orientation="vertical"
-                          android:gravity="center"
-                          android:layout_marginRight="6dp"
-                          android:layout_marginLeft="2dp"
-                          android:id="@+id/avg_container"
-                    >
-                <ImageView android:layout_height="wrap_content"
-                           android:layout_width="wrap_content"
-                           android:background="@drawable/green"
-                           android:layout_marginTop="4dp"
-                           android:layout_marginBottom="1dp"
-                           android:id="@+id/session_average_marker"
-                        />
-                <TextView style="@style/SessionsBigText"
-                          android:text="60 dB"
-                          android:id="@+id/session_average"
-                        />
-                <TextView android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:textSize="12sp"
-                          android:textColor="@android:color/black"
-                          android:text="@string/avg"
-                        />
-            </LinearLayout>
-            <LinearLayout android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:orientation="vertical"
-                          android:gravity="center"
-                          android:id="@+id/peak_container"
-                    >
-                <ImageView android:layout_height="wrap_content"
-                           android:layout_width="wrap_content"
-                           android:id="@+id/session_peak_marker"
-                           android:background="@drawable/orange"
-                           android:layout_marginTop="4dp"
-                           android:layout_marginBottom="1dp"
-                        />
-                <TextView style="@style/SessionsBigText"
-                          android:id="@+id/session_peak"
-                          android:text="80 dB"
-                        />
-                <TextView android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:textSize="12sp"
-                          android:textColor="@android:color/black"
-                          android:text="@string/peak"
-                        />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+  <TextView style="@style/Wrap"
+            android:id="@+id/session_time"
+            android:textSize="12sp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="3dp"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:text="01/01/11 00:00 - 00:00"
+            android:layout_below="@+id/session_title"
+            android:layout_alignParentLeft="true"
+            android:ellipsize="end"
+      />
+
+  </RelativeLayout>
+
+  <LinearLayout style="@style/High"
+                android:id="@+id/right_container"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_centerVertical="true"
+      >
+    <LinearLayout android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:layout_marginRight="6dp"
+                              android:layout_marginLeft="2dp"
+                              android:id="@+id/avg_container"
+                        >
+                    <ImageView android:layout_height="wrap_content"
+                               android:layout_width="wrap_content"
+                               android:background="@drawable/green"
+                               android:layout_marginTop="4dp"
+                               android:layout_marginBottom="1dp"
+                               android:id="@+id/session_average_marker"
+                            />
+                    <TextView style="@style/SessionsBigText"
+                              android:text="60 dB"
+                              android:id="@+id/session_average"
+                            />
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:textSize="12sp"
+                              android:textColor="@android:color/black"
+                              android:text="@string/avg"
+                            />
+                </LinearLayout>
+                <LinearLayout android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:orientation="vertical"
+                              android:gravity="center"
+                              android:id="@+id/peak_container"
+                        >
+                    <ImageView android:layout_height="wrap_content"
+                               android:layout_width="wrap_content"
+                               android:id="@+id/session_peak_marker"
+                               android:background="@drawable/orange"
+                               android:layout_marginTop="4dp"
+                               android:layout_marginBottom="1dp"
+                            />
+                    <TextView style="@style/SessionsBigText"
+                              android:id="@+id/session_peak"
+                              android:text="80 dB"
+                            />
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:textSize="12sp"
+                              android:textColor="@android:color/black"
+                              android:text="@string/peak"
+                            />
+                </LinearLayout>
+  </LinearLayout>
+</RelativeLayout>

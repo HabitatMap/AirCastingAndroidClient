@@ -34,8 +34,8 @@ public class SessionAdapter extends ArrayAdapter
 
   private ResourceHelper resourceHelper;
   private Context context;
-  Sensor sensor;
   List<Session> sessions = newArrayList();
+  private Sensor selectedSensor;
 
   public SessionAdapter(Context context)
   {
@@ -63,14 +63,14 @@ public class SessionAdapter extends ArrayAdapter
   private void fillStats(View view, Session session) {
     ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
 
-    if (sensor == null) {
+    if (selectedSensor == null) {
       view.findViewById(R.id.avg_container).setVisibility(View.GONE);
       view.findViewById(R.id.peak_container).setVisibility(View.GONE);
     } else {
       view.findViewById(R.id.avg_container).setVisibility(View.VISIBLE);
       view.findViewById(R.id.peak_container).setVisibility(View.VISIBLE);
 
-      String name = sensor.getSensorName();
+      String name = selectedSensor.getSensorName();
       MeasurementStream stream = session.getStream(name);
       int peak = (int) stream.getPeak();
       int avg = (int) stream.getAvg();
@@ -106,7 +106,7 @@ public class SessionAdapter extends ArrayAdapter
 
   private void updateImage(ImageView view, double value)
   {
-    Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);
+    Drawable bullet = resourceHelper.getBulletAbsolute(selectedSensor, value);
     view.setBackgroundDrawable(bullet);
   }
 
@@ -114,7 +114,7 @@ public class SessionAdapter extends ArrayAdapter
   {
     TextView dataTypes = (TextView) view.findViewById(R.id.data_types);
 
-    if (sensor == null)
+    if (selectedSensor == null)
     {
       dataTypes.setVisibility(View.VISIBLE);
 
@@ -157,5 +157,10 @@ public class SessionAdapter extends ArrayAdapter
   public Session getSession(int position)
   {
     return sessions.get(position);
+  }
+
+  public void setSelectedSensor(Sensor selectedSensor)
+  {
+    this.selectedSensor = selectedSensor;
   }
 }

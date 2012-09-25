@@ -156,6 +156,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
 
     sessionAdapter.setSessions(sessions);
+    sessionAdapter.setSelectedSensor(selectedSensor);
   }
 
   @Override
