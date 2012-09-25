@@ -41,88 +41,144 @@ import roboguice.inject.InjectResource;
 
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    public static final String ACCOUNT_KEY = "account";
-    public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
-    public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
-    public static final String BACKEND_SETTINGS_KEY = "backend_settings";
+  public static final String ACCOUNT_KEY = "account";
+  public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
+  public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
+  public static final String BACKEND_SETTINGS_KEY = "backend_settings";
 
-    @Inject Application context;
+  @Inject Application context;
 
-    @Inject SharedPreferences sharedPreferences;
-    @Inject SettingsHelper settingsHelper;
-    @Inject SensorManager sensorManager;
-    @Inject MainMenu mainMenu;
+  @Inject SharedPreferences sharedPreferences;
+  @Inject SettingsHelper settingsHelper;
+  @Inject SensorManager sensorManager;
+  @Inject MainMenu mainMenu;
 
-    @InjectResource(R.string.profile_template) String profileTemplate;
+  @InjectResource(R.string.profile_template) String profileTemplate;
+  Offset60DbInputListener offset60DbInputListener;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState)
+  {
+    super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.preferences);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    addPreferencesFromResource(R.xml.preferences);
+    sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+    offset60DbInputListener = new Offset60DbInputListener();
+
+    final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
+
+    offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
+  }
+
+  @Override
+  protected void onResume()
+  {
+    super.onResume();
+
+    Preference account = getPreferenceScreen().findPreference(ACCOUNT_KEY);
+
+    if (settingsHelper.hasCredentials())
+    {
+      String email = settingsHelper.getUserLogin();
+      String text = String.format(profileTemplate, email);
+      account.setSummary(text);
     }
+    else
+    {
+      account.setSummary(R.string.profile_summary);
+    }
+  }
 
+  @Override
+  public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
+  {
+    if (preference.getKey().equals(ACCOUNT_KEY))
+    {
+      signInOrOut();
+      return true;
+    }
+    else if (preference.getKey().equals(EXTERNAL_SENSOR_KEY))
+    {
+      startActivity(new Intent(this, ExternalSensorActivity.class));
+      return true;
+    }
+    else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY))
+    {
+      Intents.startStreamsActivity(this);
+      return true;
+    }
+    else if (preference.getKey().equals(BACKEND_SETTINGS_KEY))
+    {
+      startActivity(new Intent(this, BackendSettingsActivity.class));
+      return true;
+    }
+    else
+    {
+      return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+  }
+
+  private void signInOrOut()
+  {
+    if (settingsHelper.hasCredentials())
+    {
+      startActivity(new Intent(this, SignOutActivity.class));
+    }
+    else
+    {
+      startActivity(new Intent(this, ProfileActivity.class));
+    }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
+    return mainMenu.create(this, menu);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item)
+  {
+    return mainMenu.handleClick(this, item);
+  }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
+  {
+    if (!settingsHelper.validateFormat(key))
+    {
+      Toast.makeText(context, R.string.setting_error, Toast.LENGTH_LONG).show();
+    }
+    else if (key.equals(SettingsHelper.AVERAGING_TIME) && !settingsHelper.validateAveragingTime())
+    {
+      Toast.makeText(context, R.string.averaging_time_error, Toast.LENGTH_LONG).show();
+    }
+  }
+
+  class Offset60DbInputListener implements Preference.OnPreferenceChangeListener
+  {
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        Preference account = getPreferenceScreen().findPreference(ACCOUNT_KEY);
-
-        if (settingsHelper.hasCredentials()) {
-            String email = settingsHelper.getUserLogin();
-            String text = String.format(profileTemplate, email);
-            account.setSummary(text);
-        } else {
-            account.setSummary(R.string.profile_summary);
+    public boolean onPreferenceChange(Preference preference, Object newValue)
+    {
+      {
+        if (newValue != null)
+        {
+          try
+          {
+            int newOffset = Integer.parseInt(newValue.toString());
+            if (settingsHelper.validateOffset60DB(newOffset))
+            {
+              return true;
+            }
+          }
+          catch (NumberFormatException ignore)
+          {
+          }
         }
+        Toast.makeText(SettingsActivity.this, R.string.offset_error, Toast.LENGTH_LONG).show();
+        return false;
+      }
     }
-
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference.getKey().equals(ACCOUNT_KEY)) {
-            signInOrOut();
-            return true;
-        } else if (preference.getKey().equals(EXTERNAL_SENSOR_KEY)) {
-            startActivity(new Intent(this, ExternalSensorActivity.class));
-            return true;
-        } else if (preference.getKey().equals(MEASUREMENT_STREAMS_KEY)) {
-            Intents.startStreamsActivity(this);
-            return true;
-        } else if (preference.getKey().equals(BACKEND_SETTINGS_KEY)) {
-          startActivity(new Intent(this, BackendSettingsActivity.class));
-          return true;
-        } else {
-            return super.onPreferenceTreeClick(preferenceScreen, preference);
-        }
-    }
-
-    private void signInOrOut() {
-        if (settingsHelper.hasCredentials()) {
-            startActivity(new Intent(this, SignOutActivity.class));
-        } else {
-            startActivity(new Intent(this, ProfileActivity.class));
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-        if (!settingsHelper.validateFormat(key)) {
-            Toast.makeText(context, R.string.setting_error, Toast.LENGTH_LONG).show();
-        } else if (key.equals(SettingsHelper.OFFSET_60_DB) && !settingsHelper.validateOffset60DB()) {
-            Toast.makeText(context, R.string.offset_error, Toast.LENGTH_LONG).show();
-        } else if (key.equals(SettingsHelper.AVERAGING_TIME) && !settingsHelper.validateAveragingTime()) {
-            Toast.makeText(context, R.string.averaging_time_error, Toast.LENGTH_LONG).show();
-        }
-    }
+  }
 }

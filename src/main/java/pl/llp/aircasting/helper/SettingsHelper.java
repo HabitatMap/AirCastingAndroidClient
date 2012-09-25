@@ -185,8 +185,8 @@ public class SettingsHelper
         return getInt(OFFSET_60_DB, DEFAULT_OFFSET_60_DB);
     }
 
-    public boolean validateOffset60DB() {
-        return validateRange(OFFSET_60_DB, getOffset60DB(), MIN_OFFSET_60_DB, MAX_OFFSET_60_DB);
+    public boolean validateOffset60DB(int newValue) {
+        return validateRange(newValue, MIN_OFFSET_60_DB, MAX_OFFSET_60_DB);
     }
 
     private boolean validateRange(String key, int value, int min, int max) {
@@ -200,6 +200,11 @@ public class SettingsHelper
         }
 
         return true;
+    }
+
+    private boolean validateRange(int value, int max, int min)
+    {
+      return value >= min && value <= max;
     }
 
     public boolean validateAveragingTime() {

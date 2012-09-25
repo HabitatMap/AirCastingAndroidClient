@@ -19,18 +19,21 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.SettingsHelper;
+
 import android.content.SharedPreferences;
+import android.preference.Preference;
 import com.google.inject.Inject;
 import com.xtremelabs.robolectric.shadows.ShadowToast;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.SettingsHelper;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,10 +59,10 @@ public class SettingsActivityTest {
     }
 
     @Test
-    public void shouldValidateOffset() {
-        when(activity.settingsHelper.validateOffset60DB()).thenReturn(false);
+    public void shouldComplainAboutInvalidOffset() {
+        when(activity.settingsHelper.validateOffset60DB(anyInt())).thenReturn(false);
 
-        activity.onSharedPreferenceChanged(preferences, SettingsHelper.OFFSET_60_DB);
+        activity.offset60DbInputListener.onPreferenceChange(mock(Preference.class), SettingsHelper.MAX_OFFSET_60_DB + 1);
 
         assertThat(ShadowToast.getTextOfLatestToast(), equalTo(activity.getString(R.string.offset_error)));
     }
