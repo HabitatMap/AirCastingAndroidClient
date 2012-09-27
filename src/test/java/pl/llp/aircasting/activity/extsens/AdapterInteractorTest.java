@@ -21,21 +21,21 @@ public class AdapterInteractorTest
 {
   private SettingsHelper settings;
   private AdapterInteractor interactor;
-  private KnownSensorAdapter known;
-  private AvailableSensorAdapter available;
+  private ConnectedSensorAdapter connected;
+  private PairedSensorAdapter paired;
 
   @Before
   public void setUp() throws Exception
   {
     settings = mock(SettingsHelper.class);
-    known = mock(KnownSensorAdapter.class);
-    available = mock(AvailableSensorAdapter.class);
+    connected = mock(ConnectedSensorAdapter.class);
+    paired = mock(PairedSensorAdapter.class);
     ExternalSensorActivity activity = mock(ExternalSensorActivity.class);
     View mock = mock(View.class);
     when(activity.findViewById(anyInt())).thenReturn(mock);
     interactor = new AdapterInteractor(activity,
-                                       known,
-                                       available,
+                                       paired,
+                                       connected,
                                        settings);
   }
 
@@ -48,7 +48,7 @@ public class AdapterInteractorTest
     interactor.connectToActive(0);
 
       // then
-    verify(known).addSensor(any(ExternalSensorDescriptor.class));
+    verify(connected).addSensor(any(ExternalSensorDescriptor.class));
   }
   
   @Test
@@ -60,7 +60,7 @@ public class AdapterInteractorTest
     interactor.disconnect(0);
       
       // then
-    verify(known).remove(anyInt());
-    verify(known).updatePreviouslyConnected(anyList());
+    verify(connected).remove(anyInt());
+    verify(connected).updatePreviouslyConnected(anyList());
   }
 }

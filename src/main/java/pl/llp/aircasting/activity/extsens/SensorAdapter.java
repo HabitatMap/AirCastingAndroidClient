@@ -43,4 +43,15 @@ public class SensorAdapter extends SimpleAdapter
     notifyDataSetChanged();
     return remove;
   }
+
+  protected int findPosition(ExternalSensorDescriptor descriptor)
+  {
+    for (int i = 0; i < data.size(); i++)
+    {
+      Map<String, String> stringStringMap = data.get(i);
+      if (descriptor.matches(stringStringMap))
+        return i;
+    }
+    return -1;
+  }
 }

@@ -71,9 +71,7 @@ public class BluetoothIOIOConnection implements IOIOConnection
 		// keep trying to connect as long as we're not aborting
 		while (true) {
 			try {
-				Log.v(TAG, "Attempting to connect to Bluetooth device: " + name_);
-				socket_.connect();
-				Log.v(TAG, "Established connection to device " + name_ + " address: " + address_);
+        Log.v(TAG, "Established connection to device " + name_ + " address: " + address_);
 				break; // if we got here, we're connected
 			} catch (Exception e) {
 				if (disconnect_) {
@@ -93,7 +91,7 @@ public class BluetoothIOIOConnection implements IOIOConnection
     BluetoothSocket socket = null;
     try
     {
-      Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+      Method m = device.getClass().getMethod("createRfcommSocket", int.class);
       socket = (BluetoothSocket) m.invoke(device, 1);
     }
     catch (NoSuchMethodException ignore)

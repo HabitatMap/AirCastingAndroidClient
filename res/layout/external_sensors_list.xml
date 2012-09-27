@@ -6,34 +6,40 @@
               android:orientation="vertical"
     >
 
-  <TextView android:text="@string/know_sensors_label"
+  <TextView android:text="@string/connected_sensors_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/connected_sensor_label"
-            android:textSize="20dp"
-            android:layout_marginLeft="15dp"
+            android:id="@+id/connected_sensors_label"
+            android:textSize="16dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
       />
 
   <ListView android:layout_height="wrap_content"
             android:layout_width="fill_parent"
-            android:id="@+id/connected_sensor_list"
+            android:id="@+id/connected_sensors_list"
       />
 
-  <TextView android:text="@string/available_sensors_label"
+  <TextView android:text="@string/paired_sensors_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/external_sensor_label"
-            android:textSize="20dp"
-            android:layout_marginLeft="15dp"
+            android:id="@+id/paired_sensors_label"
+            android:textSize="16dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
       />
 
-  <ListView android:layout_height="300dp"
+  <ListView android:layout_height="wrap_content"
             android:layout_width="fill_parent"
-            android:id="@+id/external_sensor_list"
+            android:id="@+id/paired_sensor_list"
       />
 
+
+  <Button android:text="@string/pair_with_new_devices"
+                android:layout_height="40dip"
+                android:layout_width="fill_parent"
+                android:id="@+id/pair_with_new_sensors_button"
+      />
 </LinearLayout>

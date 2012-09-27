@@ -8,13 +8,13 @@ import com.google.inject.Singleton;
 @Singleton
 public class SensorAdapterFactory
 {
-  public AvailableSensorAdapter getAvailabelSensorAdapter(Activity context)
+  public PairedSensorAdapter getPairedSensorAdapter(Activity context)
   {
-    return new AvailableSensorAdapter(context);
+    return new PairedSensorAdapter(context);
   }
 
-  public KnownSensorAdapter getKnownSensorAdapter(Activity context, SettingsHelper settingsHelper)
+  public ConnectedSensorAdapter getConnectedSensorAdapter(Activity context, SettingsHelper settingsHelper)
   {
-    return new KnownSensorAdapter(context, settingsHelper);
+    return new ConnectedSensorAdapter(context, settingsHelper);
   }
 }

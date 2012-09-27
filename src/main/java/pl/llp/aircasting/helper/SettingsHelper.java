@@ -281,7 +281,7 @@ public class SettingsHelper
 
   public List<ExternalSensorDescriptor> knownSensors()
   {
-    String json = getExternalSensorsAsJson();
+    String json = getConnectedSensorsAsJSON();
     if (Strings.isNullOrEmpty(json))
     {
       return newArrayList();
@@ -299,7 +299,7 @@ public class SettingsHelper
     return newArrayList();
   }
 
-  public String getExternalSensorsAsJson()
+  public String getConnectedSensorsAsJSON()
   {
     return preferences.getString(SENSORS, null);
   }

@@ -13,22 +13,20 @@ import com.xtremelabs.robolectric.shadows.ShadowToast;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
 public class ExternalSensorActivityTest
 {
-  @Inject
-  ExternalSensorActivity activity;
+  @Inject ExternalSensorActivity activity;
   private BluetoothDevice ANY_DEVICE;
-
-  Context context = null;
 
   private String ANY_ADDRESS = "any";
   private ExternalSensorDescriptor ANY_DESCRIPTOR = new ExternalSensorDescriptor("", ANY_ADDRESS);
@@ -52,25 +50,28 @@ public class ExternalSensorActivityTest
   @Test
   public void shouldJustDisplayAMessageIfBluetoothNotSupported()
   {
+    // given
     activity.bluetoothAdapter = null;
 
+    // when
     activity.onResume();
 
+    // then
     assertThat(activity.isFinishing(), equalTo(true));
     assertThat(ShadowToast.getTextOfLatestToast(), equalTo(activity.getString(R.string.bluetooth_not_supported)));
   }
 
   @Test
-  public void should_addUnknownDeviceAsAvailable() throws Exception
+  public void pressing_button_should_openBluetoothSetting() throws Exception
   {
     // given
-    when(intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)).thenReturn(ANY_DEVICE);
+    activity.context = mock(Context.class);
+    activity.onResume();
 
     // when
-    activity.receiver.onReceive(context, intent);
+    activity.openBluetoothButton.performClick();
 
     // then
-    assertEquals(0, activity.knownSensorAdapter.getCount());
-    assertEquals(1, activity.availableSensorAdapter.devices.size());
+    verify(activity.context).startActivity(Matchers.<Intent>anyObject());
   }
 }

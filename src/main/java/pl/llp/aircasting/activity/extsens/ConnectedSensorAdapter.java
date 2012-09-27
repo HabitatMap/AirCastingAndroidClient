@@ -12,11 +12,11 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
-public class KnownSensorAdapter extends SensorAdapter
+public class ConnectedSensorAdapter extends SensorAdapter
 {
   SettingsHelper settingsHelper;
 
-  KnownSensorAdapter(Context context, SettingsHelper settingsHelper)
+  ConnectedSensorAdapter(Context context, SettingsHelper settingsHelper)
   {
     super(context);
     this.settingsHelper = settingsHelper;
@@ -43,6 +43,7 @@ public class KnownSensorAdapter extends SensorAdapter
   public Map<String, String> remove(int position)
   {
     Map<String, String> removed = super.remove(position);
+    notifyDataSetChanged();
     updateSettings();
     return removed;
   }
@@ -59,7 +60,6 @@ public class KnownSensorAdapter extends SensorAdapter
       sensors.add(sensor(name, address));
     }
     settingsHelper.setExternalSensors(sensors);
-    notifyDataSetChanged();
   }
 
   public void addSensor(ExternalSensorDescriptor sensor)
@@ -68,6 +68,7 @@ public class KnownSensorAdapter extends SensorAdapter
     {
       data.add(sensor.asMap());
     }
+    notifyDataSetChanged();
     updateSettings();
   }
 
@@ -91,6 +92,11 @@ public class KnownSensorAdapter extends SensorAdapter
     }
 
     notifyDataSetChanged();
+  }
+
+  public void disconnect()
+  {
+    throw new RuntimeException("Not implemented yet");
   }
 
 }

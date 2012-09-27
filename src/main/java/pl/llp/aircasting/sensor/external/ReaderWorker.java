@@ -1,5 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
+import pl.llp.aircasting.activity.extsens.BluetoothConnector;
+import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.sensor.Status;
 import pl.llp.aircasting.util.Constants;
@@ -17,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Method;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
@@ -28,18 +28,21 @@ import static com.google.common.io.Closeables.closeQuietly;
  */
 class ReaderWorker
 {
-  public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+  private static final long MAX_CONNECTION_FAILURE_TIME = Constants.ONE_MINUTE;
 
   BluetoothAdapter adapter;
   BluetoothDevice device;
   EventBus eventBus;
 
+  BluetoothConnector connector = new BluetoothConnector();
   AtomicBoolean active = new AtomicBoolean(false);
 
   Status status = Status.NOT_YET_STARTED;
 
   ExternalSensorParser parser = new ExternalSensorParser();
   private Thread thread;
+
+  private volatile long connectionFailingSince = -1;
 
   public ReaderWorker(BluetoothAdapter adapter,
                       BluetoothDevice device,
@@ -65,17 +68,20 @@ class ReaderWorker
           {
             BluetoothSocket socket = connect();
             if (socket != null)
+            {
               read(socket);
+            }
           }
           catch (InterruptedException e)
           {
+            considerStoppingOnFailure();
             status = Status.DID_NOT_CONNECT;
             Log.e(Constants.TAG, "Failed to establish adapter connection", e);
             return;
           }
         }
       }
-    });
+    }, String.format("Reader [%s, %s]", device.getName(), device.getAddress()));
     thread.start();
   }
 
@@ -93,6 +99,7 @@ class ReaderWorker
     }
     catch (IOException e)
     {
+      considerStoppingOnFailure();
       status = Status.CONNECTION_INTERRUPTED;
       Log.w(Constants.TAG, "Bluetooth communication failure - mostly likely end of stream", e);
     }
@@ -118,21 +125,12 @@ class ReaderWorker
           }
         }
 
-        try
-        {
-          Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
-          socket = (BluetoothSocket) m.invoke(device, 1);
-        }
-        catch (NoSuchMethodException e)
-        {
-          socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
-        }
-        socket.connect();
+        socket = connector.connect(device);
         status = Status.CONNECTED;
-        return socket;
       }
       catch (Exception e)
       {
+        considerStoppingOnFailure();
         Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
         Thread.sleep(Constants.THREE_SECONDS);
         socket = null;
@@ -141,8 +139,26 @@ class ReaderWorker
     return socket;
   }
 
+  private void considerStoppingOnFailure()
+  {
+    long currentTime = System.currentTimeMillis();
+    if(connectionFailingSince < 0)
+    {
+      connectionFailingSince = currentTime;
+    }
+    else
+    {
+      long difference = currentTime - connectionFailingSince;
+      if(difference > MAX_CONNECTION_FAILURE_TIME)
+      {
+        eventBus.post(new ConnectionUnsuccesfulEvent(device));
+      }
+    }
+  }
+
   void process(String line)
   {
+    connectionFailingSince = -1;
     try
     {
       SensorEvent event = parser.parse(line);

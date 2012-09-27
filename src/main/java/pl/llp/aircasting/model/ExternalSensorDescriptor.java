@@ -2,6 +2,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.activity.extsens.SensorAdapter;
 
+import android.bluetooth.BluetoothDevice;
 import com.google.common.base.Strings;
 import com.google.gson.annotations.Expose;
 
@@ -25,6 +26,11 @@ public class ExternalSensorDescriptor
     this.address = address;
   }
 
+  public ExternalSensorDescriptor(BluetoothDevice device)
+  {
+    this(device.getName(), device.getAddress());
+  }
+
   public String getAddress()
   {
     return address;
@@ -46,5 +52,11 @@ public class ExternalSensorDescriptor
   public static ExternalSensorDescriptor from(Map<String, String> map)
   {
     return new ExternalSensorDescriptor(map.get(SensorAdapter.NAME), map.get(SensorAdapter.ADDRESS));
+  }
+
+  public boolean matches(Map<String, String> stringStringMap)
+  {
+    return address.equalsIgnoreCase(stringStringMap.get(SensorAdapter.ADDRESS))
+        && name.equalsIgnoreCase(stringStringMap.get(SensorAdapter.NAME));
   }
 }
