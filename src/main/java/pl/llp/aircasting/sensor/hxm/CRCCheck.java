@@ -11,15 +11,19 @@ public class CRCCheck
   {
     int crc = 0;
 
-    for (int index = 0; index < bytes.length; index++)
+    for (byte aByte : bytes)
     {
-      crc = (crc ^ bytes[index]) & 0xFF;
+      crc = (crc ^ aByte) & 0xFF;
       for (int loop = 0; loop < 8; loop++)
       {
         if ((crc & 0x1) == 1)
+        {
           crc = crc >> 1 ^ BASE;
+        }
         else
+        {
           crc >>= 1;
+        }
       }
       crc &= 255;
     }

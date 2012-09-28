@@ -11,10 +11,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import com.google.common.eventbus.EventBus;
-import com.google.common.io.ByteProcessor;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.InputSupplier;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -22,16 +20,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
 
-/**
- * Created by ags on 21/06/12 at 13:23
- */
 class HxMReaderWorker
 {
   private static final long MAX_CONNECTION_FAILURE_TIME = Constants.ONE_MINUTE;
 
   BluetoothAdapter adapter;
   BluetoothDevice device;
-  BluetoothConnector connector = new BluetoothConnector();
   EventBus eventBus;
 
   AtomicBoolean active = new AtomicBoolean(false);
@@ -41,6 +35,8 @@ class HxMReaderWorker
   private Thread thread;
 
   private volatile long connectionFailingSince = -1;
+
+  PacketReader packetReader = new PacketReader();
 
   public HxMReaderWorker(BluetoothAdapter adapter,
                          BluetoothDevice device,
@@ -88,10 +84,18 @@ class HxMReaderWorker
     try
     {
       stream = socket.getInputStream();
+      byte[] readBuffer = new byte[4096];
 
-      ByteStreams.readBytes(
-          inputSupplier(stream),
-          byteProcessor());
+      while(active.get())
+      {
+        int bytesRead = stream.read(readBuffer);
+        if(bytesRead > 0)
+        {
+          byte[] data = new byte[bytesRead];
+          System.arraycopy(readBuffer, 0, data, 0, bytesRead);
+          packetReader.tryReading(data);
+        }
+      }
     }
     catch (IOException e)
     {
@@ -143,49 +147,11 @@ class HxMReaderWorker
     return socket;
   }
 
-  void process(byte[] packet)
-  {
-    int heartRate = Math.abs(packet[11]);
-    SensorEvent event = heartRateEvent(heartRate);
-    event.setAddress(device.getAddress());
-    eventBus.post(event);
-  }
-
-  private SensorEvent heartRateEvent(int heartRate)
-  {
-    return new SensorEvent("Zephyr", "Zephyr HxM", "Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, heartRate);
-  }
-
   public void stop()
   {
     active.set(false);
     status = Status.STOPPED;
     thread.interrupt();
-  }
-
-  private ByteProcessor<Void> byteProcessor()
-  {
-    return new ByteProcessor<Void>()
-    {
-      @Override
-      public boolean processBytes(byte[] buf, int off, int len) throws IOException
-      {
-        connectionFailingSince = -1;
-        if(len > 58)
-        {
-          byte[] data = new byte[len];
-          System.arraycopy(buf, off, data, 0, len);
-          process(data);
-        }
-        return active.get();
-      }
-
-      @Override
-      public Void getResult()
-      {
-        return null;
-      }
-    };
   }
 
   @Override
@@ -195,18 +161,6 @@ class HxMReaderWorker
         "device=" + device +
         ", status=" + status +
         '}';
-  }
-
-  private InputSupplier<InputStream> inputSupplier(final InputStream inputStream)
-  {
-    return new InputSupplier<InputStream>()
-    {
-      @Override
-      public InputStream getInput() throws IOException
-      {
-        return inputStream;
-      }
-    };
   }
 
   private void considerStoppingOnFailure()
@@ -224,6 +178,68 @@ class HxMReaderWorker
       {
         eventBus.post(new ConnectionUnsuccesfulEvent(device));
       }
+    }
+  }
+
+  class PacketReader
+  {
+    int STX = 0x02;
+    int ETX = 0x03;
+    int ID = 0x26;
+
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
+
+    public void tryReading(byte[] input)
+    {
+      writeBytesToBuffer(bos, input);
+      if(bos.size() > 59)
+      {
+        byte[] bytes = bos.toByteArray();
+        int index = 0;
+        while(bytes.length - index > 59)
+        {
+          if(validate(bytes, index))
+          {
+            process(bytes, index);
+            bos = new ByteArrayOutputStream(4096);
+            bos.write(bytes, index + 60, Math.min(index + 120, bytes.length - 60));
+            return;
+          }
+          else
+          {
+            index++;
+          }
+        }
+      }
+    }
+
+    private void writeBytesToBuffer(ByteArrayOutputStream bos, byte[] bytes)
+    {
+      try
+      {
+        bos.write(bytes);
+      }
+      catch (IOException ignored) { }
+    }
+
+    boolean validate(byte[] packet, int offset)
+    {
+      return packet[0 + offset] == STX
+          && packet[1 + offset] == ID
+          && packet[59 + offset] == ETX;
+    }
+
+    void process(byte[] packet, int index)
+    {
+      int heartRate = Math.abs(packet[12 + index]);
+      SensorEvent event = heartRateEvent(heartRate);
+      event.setAddress(device.getAddress());
+      eventBus.post(event);
+    }
+
+    private SensorEvent heartRateEvent(int heartRate)
+    {
+      return new SensorEvent("Zephyr", "Zephyr HxM", "Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, heartRate);
     }
   }
 }
