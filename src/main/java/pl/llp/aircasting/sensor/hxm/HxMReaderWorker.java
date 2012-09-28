@@ -17,6 +17,7 @@ import com.google.common.io.InputSupplier;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
@@ -108,7 +109,7 @@ class HxMReaderWorker
   private BluetoothSocket connect() throws InterruptedException
   {
     BluetoothSocket socket = null;
-    while (active.get())
+    while (socket == null && active.get())
     {
       try
       {
@@ -120,7 +121,16 @@ class HxMReaderWorker
           }
         }
 
-        socket = connector.connect(device);
+        try
+        {
+          Method m = device.getClass().getMethod("createRfcommSocket", int.class);
+          socket = (BluetoothSocket) m.invoke(device, 1);
+        }
+        catch (NoSuchMethodException e)
+        {
+          socket = device.createRfcommSocketToServiceRecord(BluetoothConnector.SPP_SERIAL);
+        }
+        socket.connect();
       }
       catch (Exception e)
       {
@@ -208,6 +218,7 @@ class HxMReaderWorker
     }
     else
     {
+      stop();
       long difference = currentTime - connectionFailingSince;
       if(difference > MAX_CONNECTION_FAILURE_TIME)
       {

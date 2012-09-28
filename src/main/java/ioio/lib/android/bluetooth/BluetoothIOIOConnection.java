@@ -71,6 +71,8 @@ public class BluetoothIOIOConnection implements IOIOConnection
 		// keep trying to connect as long as we're not aborting
 		while (true) {
 			try {
+        Log.v(TAG, "Attempting to connect to Bluetooth device: " + name_);
+        socket_.connect();
         Log.v(TAG, "Established connection to device " + name_ + " address: " + address_);
 				break; // if we got here, we're connected
 			} catch (Exception e) {

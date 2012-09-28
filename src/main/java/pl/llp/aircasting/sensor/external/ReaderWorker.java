@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
@@ -125,7 +126,16 @@ class ReaderWorker
           }
         }
 
-        socket = connector.connect(device);
+        try
+        {
+          Method m = device.getClass().getMethod("createRfcommSocket", int.class);
+          socket = (BluetoothSocket) m.invoke(device, 1);
+        }
+        catch (NoSuchMethodException e)
+        {
+          socket = device.createRfcommSocketToServiceRecord(BluetoothConnector.SPP_SERIAL);
+        }
+        socket.connect();
         status = Status.CONNECTED;
       }
       catch (Exception e)
@@ -151,6 +161,7 @@ class ReaderWorker
       long difference = currentTime - connectionFailingSince;
       if(difference > MAX_CONNECTION_FAILURE_TIME)
       {
+        stop();
         eventBus.post(new ConnectionUnsuccesfulEvent(device));
       }
     }

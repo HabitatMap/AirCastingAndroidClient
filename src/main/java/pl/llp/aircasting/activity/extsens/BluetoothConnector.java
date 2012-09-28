@@ -16,6 +16,7 @@ import java.util.UUID;
 public class BluetoothConnector
 {
   public static final UUID SPP_SERIAL = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+  private boolean noSuchMethod;
 
   public BluetoothSocket connect(BluetoothDevice device) throws IOException
   {
@@ -45,11 +46,16 @@ public class BluetoothConnector
 
   private BluetoothSocket connectNormally(BluetoothDevice device)
   {
+    BluetoothSocket socket = null;
     try
     {
-      BluetoothSocket socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
+      socket = device.createRfcommSocketToServiceRecord(SPP_SERIAL);
       socket.connect();
       return socket;
+    }
+    catch (IOException e)
+    {
+      close(socket);
     }
     catch (Exception ignore) { }
     return null;
@@ -57,16 +63,38 @@ public class BluetoothConnector
 
   private BluetoothSocket connectUsingHack(BluetoothDevice device, int channel)
   {
+    BluetoothSocket socket = null;
+    if(noSuchMethod)
+      return socket;
+
     try
     {
       Method m = device.getClass().getMethod("createRfcommSocket", int.class);
-      BluetoothSocket socket = (BluetoothSocket) m.invoke(device, channel);
+      socket = (BluetoothSocket) m.invoke(device, channel);
       socket.connect();
       return socket;
+    }
+    catch (NoSuchMethodException e)
+    {
+      noSuchMethod = true;
+    }
+    catch (IOException e)
+    {
+      close(socket);
     }
     catch (Exception ignore) { }
     return null;
   }
 
-
+  private void close(BluetoothSocket socket)
+  {
+    if(socket != null)
+    {
+      try
+      {
+        socket.close();
+      }
+      catch (IOException ignored) {}
+    }
+  }
 }
