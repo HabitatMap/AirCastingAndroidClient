@@ -2,6 +2,7 @@ package pl.llp.aircasting.sensor.hxm;
 
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.ReaderWorker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,7 +11,7 @@ import com.google.common.eventbus.EventBus;
 public class HXMHeartBeatMonitor extends AbstractSensor
 {
   private BluetoothDevice device;
-  HxMReaderWorker readerWorker;
+  ReaderWorker readerWorker;
 
   public HXMHeartBeatMonitor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter)
   {
@@ -23,7 +24,7 @@ public class HXMHeartBeatMonitor extends AbstractSensor
     {
       device = adapter.getRemoteDevice(descriptor.getAddress());
 
-      readerWorker = new HxMReaderWorker(adapter, device, eventBus);
+      readerWorker = new ReaderWorker(adapter, device, eventBus, new HxMDataReader());
       readerWorker.start();
     }
   }

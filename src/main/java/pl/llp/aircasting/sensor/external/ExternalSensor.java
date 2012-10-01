@@ -2,6 +2,7 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.ReaderWorker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,7 +24,7 @@ public class ExternalSensor extends AbstractSensor
     {
       device = adapter.getRemoteDevice(descriptor.getAddress());
 
-      readerWorker = new ReaderWorker(adapter, device, eventBus);
+      readerWorker = new ReaderWorker(adapter, device, eventBus, new LineDataReader());
       readerWorker.start();
     }
   }
