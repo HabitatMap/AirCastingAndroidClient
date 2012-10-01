@@ -46,10 +46,20 @@ public class SensorAdapter extends SimpleAdapter
 
   protected int findPosition(ExternalSensorDescriptor descriptor)
   {
+    return findPosition(descriptor.getAddress());
+  }
+
+  boolean contains(String address)
+  {
+    return findPosition(address) > -1;
+  }
+
+  protected int findPosition(String address)
+  {
     for (int i = 0; i < data.size(); i++)
     {
-      Map<String, String> stringStringMap = data.get(i);
-      if (descriptor.matches(stringStringMap))
+      Map<String, String> deviceMap = data.get(i);
+      if (address.equalsIgnoreCase(deviceMap.get(ADDRESS)))
         return i;
     }
     return -1;

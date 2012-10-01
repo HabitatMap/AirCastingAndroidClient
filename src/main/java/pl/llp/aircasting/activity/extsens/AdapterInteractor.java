@@ -34,6 +34,7 @@ class AdapterInteractor
       pairedSensorAdapter.markAsConnected(descriptor);
     }
 
+    pairedSensorAdapter.updateIfNecessary();
     if(pairedSensorAdapter.getCount() > 0)
     {
       parent.findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);

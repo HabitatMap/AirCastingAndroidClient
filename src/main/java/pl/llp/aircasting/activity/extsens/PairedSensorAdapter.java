@@ -1,13 +1,14 @@
 package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import com.google.common.collect.Lists;
 
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,8 +16,9 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class PairedSensorAdapter extends SensorAdapter
 {
-  private Map<String, Integer> deviceIndexes = new HashMap<String, Integer>();
   private Set<String> addressesToHide = newHashSet();
+
+  private long lastUpdate = 0;
 
   PairedSensorAdapter(Context context)
   {
@@ -53,20 +55,39 @@ public class PairedSensorAdapter extends SensorAdapter
 
   void add(ExternalSensorDescriptor sensor)
   {
-    deviceIndexes.put(sensor.getAddress(), data.size());
     data.add(sensor.asMap());
     notifyDataSetChanged();
   }
 
-  public void updatePairedDevices()
+  void updatePairedDevices()
   {
-    data.clear();
     Set<BluetoothDevice> bondedDevices = getBondedDevices();
     for (BluetoothDevice device : bondedDevices)
     {
-      if (!addressesToHide.contains(device.getAddress()))
+      String address = device.getAddress();
+      if (!addressesToHide.contains(address) && !contains(address))
       {
         add(new ExternalSensorDescriptor(device));
+      }
+    }
+
+    for (Iterator<Map<String, String>> iterator = data.iterator(); iterator.hasNext(); )
+    {
+      Map<String, String> deviceMap = iterator.next();
+      String address = deviceMap.get(ADDRESS);
+      boolean found = false;
+      for (BluetoothDevice bondedDevice : bondedDevices)
+      {
+        if (bondedDevice.getAddress().equalsIgnoreCase(address))
+        {
+          found = true;
+          break;
+        }
+      }
+      if(!found)
+      {
+        iterator.remove();
+        notifyDataSetChanged();
       }
     }
   }
@@ -80,4 +101,19 @@ public class PairedSensorAdapter extends SensorAdapter
     markAsConnected(pos);
   }
 
+  @Override
+  public ExternalSensorDescriptor get(int position)
+  {
+    return super.get(position);
+  }
+
+  public void updateIfNecessary()
+  {
+    long current = System.currentTimeMillis();
+    if(current - lastUpdate > Constants.ONE_SECOND)
+    {
+      lastUpdate = current;
+      updatePairedDevices();
+    }
+  }
 }
