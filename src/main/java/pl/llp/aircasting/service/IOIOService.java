@@ -1,7 +1,9 @@
 package pl.llp.aircasting.service;
 
 import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.SoundHelper;
+import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.MeasurementLevelEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
@@ -19,6 +21,7 @@ import ioio.lib.util.IOIOLooperProvider;
 import ioio.lib.util.android.IOIOAndroidApplicationHelper;
 import roboguice.service.RoboService;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class IOIOService extends RoboService implements IOIOLooperProvider
@@ -26,6 +29,7 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   @Inject SensorManager sensorManager;
   @Inject SoundHelper soundHelper;
   @Inject EventBus eventBus;
+  @Inject SettingsHelper settings;
 
   AtomicInteger redPower = new AtomicInteger();
   AtomicInteger greenPower = new AtomicInteger();
@@ -50,6 +54,12 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   public void onStart(Intent intent, int startId)
   {
     super.onStart(intent, startId);
+    boolean found = shouldReallyStart();
+    if(!found)
+    {
+      return;
+    }
+
     if (started)
     {
       helper.restart();
@@ -60,6 +70,17 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
       started = true;
     }
     eventBus.register(this);
+  }
+
+  private boolean shouldReallyStart()
+  {
+    List<ExternalSensorDescriptor> known = settings.knownSensors();
+    for (ExternalSensorDescriptor descriptor : known)
+    {
+      if(descriptor.getName().startsWith("IOIO"))
+        return true;
+    }
+    return false;
   }
 
   @Override
