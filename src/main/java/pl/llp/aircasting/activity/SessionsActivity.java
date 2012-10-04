@@ -59,6 +59,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -66,9 +67,12 @@ import org.jetbrains.annotations.Nullable;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
     AdapterView.OnItemSelectedListener
@@ -106,11 +110,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     }
   };
 
-  private ArrayAdapter<SensorWrapper> sensorAdapter;
+  private SensorsAdapter sensorAdapter;
   private SessionAdapter sessionAdapter;
   private Sensor selectedSensor;
   private long sessionId;
   private boolean calibrationAttempted;
+  private DummySensor dummySensor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +125,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     setContentView(R.layout.sessions);
 
     getListView().setOnItemLongClickListener(this);
+
+    dummySensor = new DummySensor(all);
+    sensorAdapter = new SensorsAdapter(this, Lists.<SensorWrapper>newArrayList(), dummySensor);
+    sensorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    sensorAdapter.insert(dummySensor, ALL_ID);
+    sensorSpinner.setAdapter(sensorAdapter);
   }
 
   @Override
@@ -135,6 +146,14 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     eventBus.register(this);
+    topBar.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(SessionsActivity.this, ThresholdsActivity.class);
+            intent.putExtra(Intents.EXTRA_SENSOR, selectedSensor);
+            startActivity(intent);
+        }
+    });
   }
 
   private void refreshTopBar() {
@@ -191,12 +210,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       }
     });
     List<SensorWrapper> wrapperList = newArrayList(wrappers);
-    sensorAdapter = new ArrayAdapter<SensorWrapper>(this, android.R.layout.simple_spinner_item, wrapperList);
-    sensorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    sensorAdapter.insert(new DummySensor(all), ALL_ID);
+
+    sensorAdapter.update(wrapperList);
 
     sensorSpinner.setPromptId(R.string.select_sensor);
-    sensorSpinner.setAdapter(sensorAdapter);
+//    sensorSpinner.setAdapter(sensorAdapter);
     sensorSpinner.setOnItemSelectedListener(this);
   }
 
@@ -364,6 +382,25 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     public String toString() {
       return sensor.getShortType() + " - " + sensor.getSensorName();
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      SensorWrapper that = (SensorWrapper) o;
+
+      if (!sensor.equals(that.sensor)) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return sensor.hashCode();
+    }
   }
 
   private static class DummySensor extends SensorWrapper {
@@ -390,6 +427,43 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     {
       CalibrateSessionsTask task = new CalibrateSessionsTask(this, calibrator);
       task.execute();
+    }
+  }
+
+  static class SensorsAdapter extends ArrayAdapter<SensorWrapper>
+  {
+    private final ArrayList<SensorWrapper> data;
+    private final SensorWrapper dummy;
+
+    public SensorsAdapter(Context context, ArrayList<SensorWrapper> data, SensorWrapper dummy)
+    {
+      super(context, android.R.layout.simple_spinner_item, data);
+      this.data = data;
+      this.dummy = dummy;
+    }
+
+    public void update(List<SensorWrapper> newWrappers)
+    {
+      LinkedList<SensorWrapper> toRemove = newLinkedList();
+      for (SensorWrapper wrapper : data)
+      {
+        if(dummy != wrapper && !newWrappers.contains(wrapper))
+        {
+          toRemove.add(wrapper);
+        }
+      }
+      for (SensorWrapper wrapper : toRemove)
+      {
+        remove(wrapper);
+      }
+
+      for (SensorWrapper potentialWrapper : newWrappers)
+      {
+        if(getPosition(potentialWrapper) < 0)
+        {
+          add(potentialWrapper);
+        }
+      }
     }
   }
 }
