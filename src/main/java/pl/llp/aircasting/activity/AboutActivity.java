@@ -53,74 +53,80 @@ import static pl.llp.aircasting.helper.TextViewHelper.stripUnderlines;
 
 public class AboutActivity extends RoboActivity
 {
-    public static final String HEADING = "heading";
+  public static final String HEADING = "heading";
 
-    @Inject MainMenu mainMenu;
-    @Inject LayoutInflater layoutInflater;
+  @Inject MainMenu mainMenu;
+  @Inject LayoutInflater layoutInflater;
 
-    @InjectView(R.id.about) ExpandableListView about;
+  @InjectView(R.id.about) ExpandableListView about;
 
-    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+  @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
-    private String[] headings;
-    private String[] contents;
+  private String[] headings;
+  private String[] contents;
 
-    public void initializeSections() {
-        headings = new String[]{
-                getString(R.string.about_description),
-                getString(R.string.about_best_practices),
-                getString(R.string.about_start),
-                getString(R.string.about_view_data),
-                getString(R.string.about_note),
-                getString(R.string.about_stop),
-                getString(R.string.about_contribute),
-                getString(R.string.about_view_sessions),
-                getString(R.string.about_open_session),
-                getString(R.string.about_heat_legend),
-                getString(R.string.about_adjust_microphone),
-                getString(R.string.about_profile),
-                getString(R.string.about_limitations),
-                getString(R.string.about_health_effects),
-                getString(R.string.about_habitat_map),
-                getString(R.string.about_open_source),
-                getString(R.string.about_thanks),
-                getString(R.string.about_funders),
-                getString(R.string.about_feedback),
-                getString(R.string.about_version)
-        };
-        contents = new String[]{
-                getString(R.string.about_description_content),
-                getString(R.string.about_best_practices_content),
-                getString(R.string.about_start_content),
-                getString(R.string.about_view_data_content),
-                getString(R.string.about_note_content),
-                getString(R.string.about_stop_content),
-                getString(R.string.about_contribute_content),
-                getString(R.string.about_view_sessions_content),
-                getString(R.string.about_open_session_content),
-                getString(R.string.about_heat_legend_content),
-                getString(R.string.about_adjust_microphone_content),
-                getString(R.string.about_profile_content),
-                getString(R.string.about_limitations_content),
-                getString(R.string.about_health_effects_content),
-                getString(R.string.about_habitat_map_content),
-                getString(R.string.about_open_source_content),
-                getString(R.string.about_thanks_content),
-                getString(R.string.about_funders_content),
-                getString(R.string.about_feedback_content),
-                getVersion()
-        };
-    }
+  public void initializeSections() {
+    headings = new String[]{
+        getString(R.string.about_description),
+        getString(R.string.monitor_air_quality),
+        getString(R.string.monitor_heart_rate),
+        getString(R.string.aircasting_luminescence),
+        getString(R.string.hardware_developers),
+        getString(R.string.connect_external_device),
+        getString(R.string.about_profile),
+        getString(R.string.about_start),
+        getString(R.string.about_view_data),
+        getString(R.string.about_note),
+        getString(R.string.about_stop),
+        getString(R.string.about_contribute),
+        getString(R.string.about_view_sessions),
+        getString(R.string.about_open_session),
+        getString(R.string.about_heat_legend),
+        getString(R.string.about_adjust_microphone),
+        getString(R.string.disable_maps),
+        getString(R.string.about_habitat_map),
+        getString(R.string.about_open_source),
+        getString(R.string.about_thanks),
+        getString(R.string.about_funders),
+        getString(R.string.about_feedback),
+        getString(R.string.about_version)
+    };
+    contents = new String[]{
+        getString(R.string.about_description_content),
+        getString(R.string.monitor_air_quality_content),
+        getString(R.string.monitor_heart_rate_content),
+        getString(R.string.aircasting_luminescence_content),
+        getString(R.string.hardware_developers_content),
+        getString(R.string.connect_external_device_content),
+        getString(R.string.about_profile_content),
+        getString(R.string.about_start_content),
+        getString(R.string.about_view_data_content),
+        getString(R.string.about_note_content),
+        getString(R.string.about_stop_content),
+        getString(R.string.about_contribute_content),
+        getString(R.string.about_view_sessions_content),
+        getString(R.string.about_open_session_content),
+        getString(R.string.about_heat_legend_content),
+        getString(R.string.about_adjust_microphone_content),
+        getString(R.string.disable_maps_content),
+        getString(R.string.about_habitat_map_content),
+        getString(R.string.about_open_source_content),
+        getString(R.string.about_thanks_content),
+        getString(R.string.about_funders_content),
+        getString(R.string.about_feedback_content),
+        getVersion()
+    };
+  }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.about);
+    setContentView(R.layout.about);
 
-        initializeSections();
-        initializeAbout();
-    }
+    initializeSections();
+    initializeAbout();
+  }
 
     @Override
     protected void onResume() {
