@@ -178,7 +178,7 @@
     <string name="now_label_template" formatted="false">Now %s</string>
     <string name="avg_label_template" formatted="false">Avg %s</string>
 
-    <string name="select_sensor">Select a sensor</string>
+    <string name="select_sensor">Select a parameter - sensor</string>
     <string name="all">All</string>
   <string name="delete_button_description">Delete stream button</string>
   <string name="record_button_description">Record stream button</string>
