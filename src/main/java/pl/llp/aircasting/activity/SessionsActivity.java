@@ -218,7 +218,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     sensorSpinner.setOnItemSelectedListener(this);
   }
 
-  private void refreshBottomBar() {
+  private void refreshBottomBar()
+  {
     if (syncState.isInProgress()) {
       syncSummary.setVisibility(View.VISIBLE);
       syncSummary.setText(syncInProgress);

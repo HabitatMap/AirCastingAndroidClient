@@ -2,21 +2,24 @@ package pl.llp.aircasting.util;
 
 import com.google.inject.Singleton;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 1/25/12
- * Time: 1:15 PM
- */
 @Singleton
 public class SyncState {
-    private boolean inProgress = false;
 
-    public synchronized boolean isInProgress() {
-        return inProgress;
-    }
+  public enum States
+  {
+    IN_PROGRESS,
+    NOT_IN_PROGRESS
+  }
 
-    public synchronized void setInProgress(boolean inProgress) {
-        this.inProgress = inProgress;
-    }
+  private States state = States.NOT_IN_PROGRESS;
+
+  public synchronized boolean isInProgress()
+  {
+    return state == States.IN_PROGRESS;
+  }
+
+  public synchronized void setInProgress(boolean inProgress)
+  {
+    state = inProgress ? States.IN_PROGRESS : States.NOT_IN_PROGRESS;
+  }
 }
