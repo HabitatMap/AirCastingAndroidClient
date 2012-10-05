@@ -191,7 +191,7 @@
   <string name="about_open_session_content">
     <![CDATA[
         <p>
-            Long press a past session to share, edit, or delete it. While viewing a session, share or edit it by pressing the corresponding buttons. You can share a session as a web link or CSV file.
+          Long press a past session to share, edit, or delete it. While viewing a session, share or edit it by pressing the corresponding buttons. You can share a session as a web link or CSV file. To delete a sensor stream from a session containing multiple sensor streams first view the session, then toggle to the Sensors Dashboard and press the red “X” next to the stream you would like to delete.
         </p>
         ]]>
   </string>
