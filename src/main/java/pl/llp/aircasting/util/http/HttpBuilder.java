@@ -232,6 +232,8 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
     Reader reader = null;
     InputStream content = null;
 
+    // scoped so high for debugging connectivity in devMode
+    String fullJson = null;
     try
     {
       client.addRequestInterceptor(preemptiveAuth(), 0);
@@ -240,10 +242,11 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
       content = response.getEntity().getContent();
       reader = new InputStreamReader(content);
 
+
       if(Constants.isDevMode())
       {
         List<String> strings = CharStreams.readLines(reader);
-        String fullJson = Joiner.on("\n").join(strings);
+        fullJson = Joiner.on("\n").join(strings);
         reader = new StringReader(fullJson);
       }
 

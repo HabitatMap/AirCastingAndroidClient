@@ -35,7 +35,7 @@ public class MeasurementStream implements Serializable
 
   private Double sum = 0.0;
 
-  private Double avg;
+  @Expose @SerializedName("average_value") Double avg;
 
   private Double peak;
 
@@ -54,8 +54,6 @@ public class MeasurementStream implements Serializable
 
   @Expose @SerializedName("min_longitude") private Double minLongitude;
   @Expose @SerializedName("max_longitude") private Double maxLongitude;
-
-  private transient boolean avgDirty = true;
 
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
@@ -193,9 +191,9 @@ public class MeasurementStream implements Serializable
   }
 
   public double getAvg() {
-    if (avgDirty) {
+    if (avg == null)
+    {
       avg = calculateAvg();
-      avgDirty = false;
     }
     return avg;
   }
@@ -272,7 +270,7 @@ public class MeasurementStream implements Serializable
       sum += measurement.getValue();
     }
 
-    avgDirty = true;
+    avg = null;
   }
 
   public Double getSum() {
@@ -281,7 +279,6 @@ public class MeasurementStream implements Serializable
 
   public void setAvg(double avg) {
     this.avg = avg;
-    avgDirty = false;
   }
 
   public int getThresholdVeryHigh() {
