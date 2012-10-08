@@ -75,9 +75,8 @@ public class SessionAdapter extends ArrayAdapter
       int peak = (int) stream.getPeak();
       int avg = (int) stream.getAvg();
 
-      String type = stream.getShortType();
-      ((TextView) view.findViewById(R.id.session_peak)).setText(valueOf(peak) + " " + type);
-      ((TextView) view.findViewById(R.id.session_average)).setText(valueOf(avg) + " " + type);
+      ((TextView) view.findViewById(R.id.session_peak)).setText(valueOf(peak));
+      ((TextView) view.findViewById(R.id.session_average)).setText(valueOf(avg));
 
       updateImage((ImageView) view.findViewById(R.id.session_average_marker), avg);
       updateImage((ImageView) view.findViewById(R.id.session_peak_marker), peak);
@@ -116,8 +115,6 @@ public class SessionAdapter extends ArrayAdapter
 
     if (selectedSensor == null)
     {
-      dataTypes.setVisibility(View.VISIBLE);
-
       Iterable<String> types = transform(session
                                              .getActiveMeasurementStreams(), new Function<MeasurementStream, String>()
       {
@@ -134,7 +131,7 @@ public class SessionAdapter extends ArrayAdapter
     }
     else
     {
-      dataTypes.setVisibility(View.GONE);
+      dataTypes.setText(selectedSensor.getShortType());
     }
   }
 
