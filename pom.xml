@@ -283,6 +283,10 @@
                   <storepass>${aircasting.keystore.pass}</storepass>
                   <keypass>${aircasting.key.pass}</keypass>
                   <alias>${aircasting.key.alias}</alias>
+                  <arguments>
+                    <argument>-sigalg</argument><argument>MD5withRSA</argument>
+                    <argument>-digestalg</argument><argument>SHA1</argument>
+                  </arguments>
                 </configuration>
               </execution>
             </executions>
@@ -330,6 +334,12 @@
                 <debuggable>false</debuggable>
                 <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
               </manifest>
+              <zipalign>
+                 <skip>false</skip>
+                 <verbose>true</verbose>
+                 <inputApk>${project.build.directory}/${project.artifactId}.apk</inputApk>
+                 <outputApk>${project.build.directory}/${project.artifactId}-aligned.apk</outputApk>
+               </zipalign>
             </configuration>
             <extensions>true</extensions>
 
