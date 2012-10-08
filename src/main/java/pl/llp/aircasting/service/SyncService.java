@@ -41,6 +41,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
@@ -72,23 +73,32 @@ public class SyncService extends RoboIntentService
   @Override
   protected void onHandleIntent(Intent intent) {
     try {
-      syncState.setInProgress(true);
+      syncState.startSync();
 
       if (canUpload()) {
         sync();
       } else if (!settingsHelper.hasCredentials()) {
         Intents.notifySyncUpdate(context, accountReminder);
       }
-    } finally {
-      syncState.setInProgress(false);
+    } catch (SessionSyncException exception)
+    {
+      Toast.makeText(getBaseContext(), R.string.session_sync_failed, Toast.LENGTH_LONG);
+    }
+    finally {
+      syncState.markSyncComplete();
     }
   }
 
-  private void sync()
+  private void sync() throws SessionSyncException
   {
     Iterable<Session> sessions = prepareSessions();
 
     HttpResult<SyncResponse> result = syncDriver.sync(sessions);
+    Status status = result.getStatus();
+    if(status == Status.ERROR || status == Status.FAILURE)
+    {
+      throw new SessionSyncException("Initial sync failed");
+    }
     SyncResponse syncResponse = result.getContent();
 
     if (syncResponse != null)

@@ -391,9 +391,4 @@ public class SessionManager
     sessionRepository.deleteStream(session, stream);
     session.removeStream(stream);
   }
-
-  public MeasurementStream getMeasurementStream(Sensor sensor)
-  {
-    return getMeasurementStream(sensor.getSensorName());
-  }
 }

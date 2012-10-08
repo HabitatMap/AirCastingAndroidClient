@@ -166,6 +166,7 @@
     <string name="storage_error">Could not access the SD card</string>
     <string name="sync_now">Sync now</string>
     <string name="sync_in_progress">Syncing sessions...</string>
+    <string name="sync_possible">Sync now</string>
     <string name="sync_failed">Sync failed. Check your network connection.</string>
     <string name="sync_only_wifi">Sync only through Wi-Fi</string>
     <string name="aircasting_is_recording">AirCasting is recording a session</string>
@@ -199,4 +200,5 @@
   <string name="connected_sensors_label">Connected</string>
   <string name="paired_sensors_label">Paired</string>
   <string name="pair_with_new_devices">Pair with new devices</string>
+  <string name="session_sync_failed">Session sync failed, check your network connection</string>
 </resources>

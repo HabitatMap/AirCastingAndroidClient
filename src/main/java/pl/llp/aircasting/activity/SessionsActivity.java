@@ -94,7 +94,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
   @Inject UncalibratedMeasurementCalibrator calibrator;
 
-  @InjectResource(R.string.sync_in_progress) String syncInProgress;
   @InjectResource(R.string.all) String all;
 
   @InjectView(R.id.sensor_spinner) Spinner sensorSpinner;
@@ -221,10 +220,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   private void refreshBottomBar()
   {
     if (syncState.isInProgress()) {
-      syncSummary.setVisibility(View.VISIBLE);
-      syncSummary.setText(syncInProgress);
-    } else {
-      syncSummary.setVisibility(View.GONE);
+      syncSummary.setText(R.string.sync_in_progress);
+    } else if(syncState.isPossible()) {
+      syncSummary.setText(R.string.sync_possible);
     }
   }
 
