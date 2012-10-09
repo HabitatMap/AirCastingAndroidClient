@@ -56,10 +56,8 @@
             android:ellipsize="none"
             android:gravity="center_vertical"
             android:text="CO/dB/K"
-            android:textSize="12sp"
             android:lines="1"
             android:layout_below="@+id/session_title"
-            android:layout_toRightOf="@+id/session_time"
       />
 
       <TextView style="@style/Wrap"
@@ -70,7 +68,7 @@
             android:textColor="@android:color/black"
             android:gravity="center_vertical"
             android:text="01/01/11 00:00 - 00:00"
-            android:layout_below="@+id/session_title"
+            android:layout_below="@+id/data_types"
             android:layout_alignParentLeft="true"
             android:ellipsize="end"
       />
