@@ -110,6 +110,7 @@ public class SessionRepository
     values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval() ? 1 : 0);
     values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval() ? 1 : 0);
     values.put(SESSION_CALIBRATED, 1);
+    values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
 
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
     {
@@ -186,6 +187,7 @@ public class SessionRepository
     session.setInstrument(getString(cursor, SESSION_INSTRUMENT));
     session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
     session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
+    session.setLocationless(getBool(cursor, SESSION_LOCAL_ONLY));
 
     List<Note> loadedNotes = notes.load(session);
     session.addAll(loadedNotes);

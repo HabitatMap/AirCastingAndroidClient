@@ -120,6 +120,11 @@ public class SyncService extends RoboIntentService
     Iterable<Session> sessions = sessionRepository.all();
 
     for (Session session : sessions) {
+      if(session.isLocationless())
+      {
+        continue;
+      }
+
       if (session.isMarkedForRemoval()) {
         session.setSubmittedForRemoval(true);
         sessionRepository.update(session);

@@ -78,6 +78,10 @@ public class SchemaMigrator
       addColumn(db, STREAM_TABLE_NAME, STREAM_MARKED_FOR_REMOVAL, Datatype.BOOLEAN);
       addColumn(db, STREAM_TABLE_NAME, STREAM_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN);
     }
+    if(oldVersion < 29 && newVersion >= 29)
+    {
+      addColumn(db, SESSION_TABLE_NAME, SESSION_LOCAL_ONLY, Datatype.BOOLEAN);
+    }
   }
 
   private void dropColumn(SQLiteDatabase db, String tableName, String column)

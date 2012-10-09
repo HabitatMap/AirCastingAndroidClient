@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 28;
+  int DB_VERSION = 29;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -46,6 +46,7 @@ public interface DBConstants
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
   String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
   String SESSION_CALIBRATED = "is_calibrated";
+  String SESSION_LOCAL_ONLY = "local_only";
 
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_AVG = "Average";

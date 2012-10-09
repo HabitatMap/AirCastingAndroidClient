@@ -201,13 +201,14 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void shouldSkipMeasurementsWithoutLocation() {
+    public void measurements_withoutLocation_should_get_a_fake() {
         sessionManager.sessionStarted = true;
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
         triggerMeasurement();
 
-        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+        assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(false));
+        assertThat(sessionManager.getSession().isLocationless(), equalTo(true));
     }
 
     @Test

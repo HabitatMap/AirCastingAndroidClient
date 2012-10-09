@@ -19,6 +19,8 @@
  */
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.event.sensor.LocationEvent;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,14 +28,7 @@ import android.os.Bundle;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.event.sensor.LocationEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/30/11
- * Time: 11:18 AM
- */
 @Singleton
 public class LocationHelper implements LocationListener {
     private static final int TWO_MINUTES = 1000 * 60 * 2;

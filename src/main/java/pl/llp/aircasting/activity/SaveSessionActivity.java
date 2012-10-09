@@ -20,10 +20,14 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.repository.ProgressListener;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -71,7 +75,15 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     {
       case R.id.save_button:
         fillSessionDetails();
-        startActivity(new Intent(this, ContributeActivity.class));
+        Session session = sessionManager.getSession();
+        if(session.isLocationless())
+        {
+          new SaveSessionTask(this).execute();
+        }
+        else
+        {
+          startActivity(new Intent(this, ContributeActivity.class));
+        }
         break;
       case R.id.discard_button:
         sessionManager.discardSession();
@@ -85,5 +97,40 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     sessionManager.setTitle(sessionTitle.getText().toString());
     sessionManager.setTags(sessionTags.getText().toString());
     sessionManager.setDescription(sessionDescription.getText().toString());
+  }
+
+  private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements ProgressListener
+  {
+    public SaveSessionTask(ActivityWithProgress context)
+    {
+      super(context, ProgressDialog.STYLE_SPINNER);
+    }
+
+    @Override
+    protected Void doInBackground(Void... voids)
+    {
+      sessionManager.finishSession(this);
+
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid)
+    {
+      dialog.dismiss();
+      finish();
+    }
+
+    @Override
+    public void onSizeCalculated(final int workSize)
+    {
+
+    }
+
+    @Override
+    public void onProgress(final int progress)
+    {
+
+    }
   }
 }

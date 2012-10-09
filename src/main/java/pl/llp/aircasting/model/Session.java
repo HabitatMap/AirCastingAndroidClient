@@ -63,6 +63,8 @@ public class Session implements Serializable
   private Long id = null;
   private boolean submittedForRemoval = false;
 
+  private boolean locationless = true;
+
   public void add(MeasurementStream stream)
   {
     streams.put(stream.getSensorName(), stream);
@@ -322,5 +324,20 @@ public class Session implements Serializable
         ", markedForRemoval=" + markedForRemoval +
         ", submittedForRemoval=" + submittedForRemoval +
         '}';
+  }
+
+  public void markNoLongerLocationless()
+  {
+    this.locationless = false;
+  }
+
+  public boolean isLocationless()
+  {
+    return locationless;
+  }
+
+  public void setLocationless(boolean locationless)
+  {
+    this.locationless = locationless;
   }
 }

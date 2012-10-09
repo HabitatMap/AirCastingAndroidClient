@@ -57,6 +57,8 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class SessionManager
 {
+  public static final int TOTALLY_FAKE_COORDINATE = 200;
+
   @Inject SimpleAudioReader audioReader;
   @Inject EventBus eventBus;
 
@@ -194,7 +196,7 @@ public class SessionManager
     Sensor sensor = sensorManager.getSensorByName(sensorName);
     recentMeasurements.put(sensorName, value);
 
-    Location location = locationHelper.getLastLocation();
+    Location location = getLocation();
     if (location != null && sensor != null && sensor.isEnabled())
     {
       double latitude = location.getLatitude();
@@ -209,6 +211,22 @@ public class SessionManager
 
       eventBus.post(new MeasurementEvent(measurement, sensor));
     }
+  }
+
+  private Location getLocation()
+  {
+    Location location = locationHelper.getLastLocation();
+    if(location == null)
+    {
+      location = new Location("fake");
+      location.setLatitude(TOTALLY_FAKE_COORDINATE);
+      location.setLongitude(TOTALLY_FAKE_COORDINATE);
+    }
+    else
+    {
+      session.markNoLongerLocationless();
+    }
+    return location;
   }
 
   private MeasurementStream prepareStream(SensorEvent event)
