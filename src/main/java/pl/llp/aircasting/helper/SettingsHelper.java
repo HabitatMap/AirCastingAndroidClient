@@ -52,6 +52,7 @@ public class SettingsHelper
   public static final String BACKEND_PORT = "backend_port";
   public static final String HEAT_MAP_DENSITY = "heat_map_density";
   public static final String FIRST_LAUNCH = "first_launch";
+  public static final String DISABLE_MAPS = "disable_maps";
 
   public static final int DEFAULT_CALIBRATION = 100;
   public static final boolean DEFAULT_SATELLITE = false;
@@ -313,5 +314,15 @@ public class SettingsHelper
   public boolean showGraphMetadata()
   {
     return preferences.getBoolean(SHOW_GRAPH_METADATA, false);
+  }
+
+  public void setDisableMaps(boolean checked)
+  {
+    writeBoolean(DISABLE_MAPS, checked);
+  }
+
+  public boolean areMapsDisables()
+  {
+    return preferences.getBoolean(DISABLE_MAPS, false);
   }
 }

@@ -89,7 +89,9 @@
 
     <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 
-    <activity android:label="@string/backend_settings" android:name=".activity.BackendSettingsActivity" android:theme="@style/Dialog"/>
+    <activity android:label="@string/backend_settings" android:name=".activity.settings.BackendSettingsActivity" android:theme="@style/Dialog"/>
+
+    <activity android:label="@string/disable_maps" android:name=".activity.settings.DisplayMapSettingsActivity" android:theme="@style/Dialog"/>
 
     <!-- Services -->
     <service android:name=".service.SensorService"/>

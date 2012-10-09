@@ -17,9 +17,10 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.activity;
+package pl.llp.aircasting.activity.settings;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import android.app.Application;
@@ -46,7 +47,7 @@ public class BackendSettingsActivity extends DialogActivity implements View.OnCl
   {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.backend);
+    setContentView(R.layout.backend_settings);
 
     ok.setOnClickListener(this);
   }
