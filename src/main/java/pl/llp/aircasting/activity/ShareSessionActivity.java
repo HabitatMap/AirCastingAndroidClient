@@ -73,7 +73,21 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         shareLink.setOnClickListener(this);
     }
 
-    @Override
+  @Override
+  protected void onResume()
+  {
+    super.onResume();
+    if(session.isLocationless())
+    {
+      shareLink.setVisibility(View.GONE);
+    }
+    else
+    {
+      shareLink.setVisibility(View.VISIBLE);
+    }
+  }
+
+  @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.share_link:
