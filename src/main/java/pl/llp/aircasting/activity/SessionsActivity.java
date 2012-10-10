@@ -146,13 +146,23 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
     eventBus.register(this);
-    topBar.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(SessionsActivity.this, ThresholdsActivity.class);
-            intent.putExtra(Intents.EXTRA_SENSOR, selectedSensor);
-            startActivity(intent);
-        }
+    topBar.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        Intent intent = new Intent(SessionsActivity.this, ThresholdsActivity.class);
+        intent.putExtra(Intents.EXTRA_SENSOR, selectedSensor);
+        startActivity(intent);
+      }
+    });
+    syncSummary.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        Intents.triggerSync(SessionsActivity.this);
+      }
     });
   }
 
