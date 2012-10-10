@@ -27,11 +27,6 @@ public class SyncState
     return state == States.IN_PROGRESS;
   }
 
-  public boolean isPossible()
-  {
-    return state == States.SYNC_POSSIBLE;
-  }
-
   public enum States
   {
     IN_PROGRESS,

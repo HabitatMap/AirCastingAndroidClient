@@ -25,6 +25,7 @@ import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
+import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
@@ -43,6 +44,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 import com.google.common.base.Predicate;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.service.RoboIntentService;
@@ -61,6 +63,7 @@ public class SyncService extends RoboIntentService
   @Inject SessionDriver sessionDriver;
   @Inject SyncState syncState;
   @Inject Context context;
+  @Inject EventBus events;
 
   @InjectResource(R.string.account_reminder) String accountReminder;
 
@@ -74,6 +77,7 @@ public class SyncService extends RoboIntentService
   protected void onHandleIntent(Intent intent) {
     try {
       syncState.startSync();
+      events.post(new SyncStateChangedEvent());
 
       if (canUpload()) {
         sync();
@@ -86,6 +90,7 @@ public class SyncService extends RoboIntentService
     }
     finally {
       syncState.markSyncComplete();
+      events.post(new SyncStateChangedEvent());
     }
   }
 

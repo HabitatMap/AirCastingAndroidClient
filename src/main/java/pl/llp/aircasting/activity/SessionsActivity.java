@@ -26,6 +26,7 @@ import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
+import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -217,11 +218,27 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     sensorSpinner.setOnItemSelectedListener(this);
   }
 
+  @Subscribe
+  public void onEvent(SyncStateChangedEvent event)
+  {
+    runOnUiThread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        refreshBottomBar();
+      }
+    });
+  }
+
   private void refreshBottomBar()
   {
-    if (syncState.isInProgress()) {
+    if (syncState.isInProgress())
+    {
       syncSummary.setText(R.string.sync_in_progress);
-    } else if(syncState.isPossible()) {
+    }
+    else
+    {
       syncSummary.setText(R.string.sync_possible);
     }
   }
