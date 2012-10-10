@@ -326,11 +326,6 @@ public class Session implements Serializable
         '}';
   }
 
-  public void markNoLongerLocationless()
-  {
-    this.locationless = false;
-  }
-
   public boolean isLocationless()
   {
     return locationless;

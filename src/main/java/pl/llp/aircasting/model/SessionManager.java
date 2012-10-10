@@ -216,7 +216,7 @@ public class SessionManager
   private Location getLocation()
   {
     Location location = locationHelper.getLastLocation();
-    if(location == null)
+    if(location == null && settingsHelper.areMapsDisabled())
     {
       location = new Location("fake");
       location.setLatitude(TOTALLY_FAKE_COORDINATE);
@@ -224,7 +224,7 @@ public class SessionManager
     }
     else
     {
-      session.markNoLongerLocationless();
+      return null;
     }
     return location;
   }
@@ -308,6 +308,7 @@ public class SessionManager
   public void startSession() {
     setSession(new Session());
     session.setStart(new Date());
+    session.setLocationless(settingsHelper.areMapsDisabled());
     startSensors();
     sessionStarted = true;
     notificationHelper.showRecordingNotification();
