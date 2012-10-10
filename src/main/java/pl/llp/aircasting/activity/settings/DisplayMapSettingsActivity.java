@@ -34,6 +34,7 @@ public class DisplayMapSettingsActivity extends DialogActivity
   protected void onResume()
   {
     super.onResume();
+    checkBox.setChecked(settings.areMapsDisabled());
     button.setOnClickListener(new View.OnClickListener()
     {
       @Override

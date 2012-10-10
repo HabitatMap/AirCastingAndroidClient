@@ -321,7 +321,7 @@ public class SettingsHelper
     writeBoolean(DISABLE_MAPS, checked);
   }
 
-  public boolean areMapsDisables()
+  public boolean areMapsDisabled()
   {
     return preferences.getBoolean(DISABLE_MAPS, false);
   }
