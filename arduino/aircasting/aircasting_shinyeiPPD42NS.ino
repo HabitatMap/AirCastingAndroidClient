@@ -32,7 +32,7 @@ void loop() {
     Serial.print(",");
     Serial.println(concentration);
     mySerial.print(concentration);
-    mySerial.print(";InsertSensorPackageName;PPD42NS;Particulate Matter;PM;hundred particles > 1 um per 0.01 cubic feet;hppcf;0;100;200;300;400");
+    mySerial.print(";InsertSensorPackageName;PPD42NS;Particulate Matter;PM;ten thousand particles > 1 um per cubic foot;TtPPCF;0;100;200;300;400");
     mySerial.print("\n");
     lowpulseoccupancy = 0;
     starttime = millis();
