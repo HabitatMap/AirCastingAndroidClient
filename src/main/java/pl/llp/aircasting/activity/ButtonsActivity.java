@@ -5,10 +5,12 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
@@ -272,7 +274,12 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    private void startAirCasting() {
+    private void startAirCasting()
+    {
+      if (locationHelper.getLastLocation() != null)
+      {
+        sessionManager.startSession();
+
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
         } else if (!locationHelper.hasGPSFix()) {
@@ -282,8 +289,13 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         if (!settingsHelper.hasCredentials()) {
             Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
         }
-
-        sessionManager.startSession();
+      }
+      else
+      {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(R.string.cannot_record_session_due_to_location);
+        builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
+      }
     }
 
     @Override

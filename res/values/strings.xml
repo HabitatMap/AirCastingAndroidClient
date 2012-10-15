@@ -201,4 +201,5 @@
   <string name="paired_sensors_label">Paired</string>
   <string name="pair_with_new_devices">Pair with new devices</string>
   <string name="session_sync_failed">Session sync failed, check your network connection</string>
+  <string name="cannot_record_session_due_to_location">Cannot record without a GPS fix. Find some sky or enable WiFi</string>
 </resources>
