@@ -276,7 +276,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     private void startAirCasting()
     {
-      if (locationHelper.getLastLocation() != null)
+      if (settingsHelper.areMapsDisabled() || locationHelper.getLastLocation() != null)
       {
         sessionManager.startSession();
 
