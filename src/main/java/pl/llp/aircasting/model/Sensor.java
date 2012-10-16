@@ -148,4 +148,14 @@ public class Sensor implements Serializable
     }
     return MeasurementLevel.TOO_LOW;
   }
+
+  public boolean matches(SensorEvent event)
+  {
+    return event != null && Strings.equals(getSensorName(), event.getSensorName())
+        && Strings.equals(getMeasurementType(), event.getMeasurementType());
+  }
+
+  void toggle() {
+    enabled = !enabled;
+  }
 }
