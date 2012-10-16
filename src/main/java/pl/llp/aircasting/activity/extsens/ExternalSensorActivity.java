@@ -8,6 +8,7 @@ import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.util.Constants;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -44,6 +45,8 @@ public class ExternalSensorActivity extends DialogActivity
 
   AdapterInteractor sensorLists;
   IOIOInteractor ioio = new IOIOInteractor();
+
+  private long bluetoothRequestTimestamp;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -165,7 +168,20 @@ public class ExternalSensorActivity extends DialogActivity
 
     if (!bluetoothAdapter.isEnabled())
     {
-      Intents.requestEnableBluetooth(this);
+      long now = System.currentTimeMillis();
+      if(now - bluetoothRequestTimestamp > Constants.ONE_SECOND)
+      {
+        Intents.requestEnableBluetooth(this);
+      }
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
+    if(requestCode == Intents.REQUEST_ENABLE_BLUETOOTH)
+    {
+      bluetoothRequestTimestamp = System.currentTimeMillis();
     }
   }
 
