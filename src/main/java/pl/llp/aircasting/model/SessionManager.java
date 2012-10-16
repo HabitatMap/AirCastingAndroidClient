@@ -216,15 +216,11 @@ public class SessionManager
   private Location getLocation()
   {
     Location location = locationHelper.getLastLocation();
-    if(location == null && settingsHelper.areMapsDisabled())
+    if(session.isLocationless())
     {
       location = new Location("fake");
       location.setLatitude(TOTALLY_FAKE_COORDINATE);
       location.setLongitude(TOTALLY_FAKE_COORDINATE);
-    }
-    else
-    {
-      return null;
     }
     return location;
   }
@@ -305,7 +301,8 @@ public class SessionManager
     eventBus.post(new SessionChangeEvent());
   }
 
-  public void startSession() {
+  public void startSession()
+  {
     setSession(new Session());
     session.setStart(new Date());
     session.setLocationless(settingsHelper.areMapsDisabled());
@@ -409,5 +406,10 @@ public class SessionManager
     }
     sessionRepository.deleteStream(session, stream);
     session.removeStream(stream);
+  }
+
+  public boolean isLocationless()
+  {
+    return session.isLocationless();
   }
 }

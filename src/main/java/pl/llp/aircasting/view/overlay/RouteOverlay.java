@@ -21,6 +21,7 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.SessionLoadedEvent;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.SessionStartedEvent;
 import pl.llp.aircasting.model.SessionStoppedEvent;
 import pl.llp.aircasting.util.map.PathSmoother;
@@ -44,32 +45,30 @@ import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Iterables.skip;
 import static com.google.common.collect.Lists.newArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 2/24/12
- * Time: 12:46 PM
- */
-public class RouteOverlay extends Overlay {
-    public static final int OPAQUE = 255;
-    public static final int SMOOTHING_BATCH = 10;
+public class RouteOverlay extends Overlay
+{
+  public static final int OPAQUE = 255;
+  public static final int SMOOTHING_BATCH = 10;
 
-    @Inject PathSmoother pathSmoother;
-    @Inject ResourceHelper resourceHelper;
+  @Inject PathSmoother pathSmoother;
+  @Inject ResourceHelper resourceHelper;
 
-    private List<GeoPoint> points = newArrayList();
-    private List<GeoPoint> pendingPoints = newArrayList();
-    private List<GeoPoint> smoothedPoints = newArrayList();
+  @Inject SessionManager sessionManager;
 
-    private int zoomLevel;
-    private GeoPoint mapCenter;
-    private Paint paint;
-    private Path path;
+  private List<GeoPoint> points = newArrayList();
+  private List<GeoPoint> pendingPoints = newArrayList();
+  private List<GeoPoint> smoothedPoints = newArrayList();
+
+  private int zoomLevel;
+  private GeoPoint mapCenter;
+  private Paint paint;
+  private Path path;
 
   private boolean skipDrawing;
 
+
   @Inject
-    public void init() {
+  public void init() {
         preparePaint();
     }
 
@@ -124,7 +123,7 @@ public class RouteOverlay extends Overlay {
 
   private boolean skipDrawing()
   {
-    return this.skipDrawing;
+    return this.skipDrawing || sessionManager.isLocationless();
   }
 
   private boolean isRefreshRequired(MapView view) {

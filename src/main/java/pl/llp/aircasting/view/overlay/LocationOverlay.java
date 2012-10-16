@@ -19,6 +19,12 @@
  */
 package pl.llp.aircasting.view.overlay;
 
+import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.SessionManager;
+
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -26,13 +32,7 @@ import android.location.Location;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
@@ -47,6 +47,8 @@ public class LocationOverlay extends Overlay {
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {
         if (shadow) return;
 
+      if(shouldSkipDrawing()) return;
+
         Location location = locationHelper.getLastLocation();
         Sensor sensor = sensorManager.getVisibleSensor();
         double value = sessionManager.getNow(sensor);
@@ -60,4 +62,9 @@ public class LocationOverlay extends Overlay {
             bullet.draw(canvas);
         }
     }
+
+  private boolean shouldSkipDrawing()
+  {
+    return sessionManager.isLocationless();
+  }
 }

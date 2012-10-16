@@ -20,6 +20,7 @@
 package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.bitmap.BitmapHolder;
 import pl.llp.aircasting.util.map.ProjectionClone;
@@ -39,6 +40,8 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay
 {
   @Inject BitmapHolder bitmapHolder;
   @InjectResource(R.color.transparent) int transparent;
+
+  @Inject SessionManager sessionManager;
 
   private Bitmap bitmap;
   private int bitmapIndex = 0;

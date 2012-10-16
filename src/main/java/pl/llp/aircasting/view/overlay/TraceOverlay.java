@@ -19,13 +19,6 @@
  */
 package pl.llp.aircasting.view.overlay;
 
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Projection;
-import com.google.inject.Inject;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
@@ -34,49 +27,69 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Projection;
+import com.google.inject.Inject;
+
 import java.util.List;
 
 import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 
-public class TraceOverlay extends BufferingOverlay<Measurement> {
-    @Inject MeasurementPresenter measurementPresenter;
-    @Inject ResourceHelper resourceHelper;
-    @Inject SensorManager sensorManager;
-    @Inject SoundHelper soundHelper;
+public class TraceOverlay extends BufferingOverlay<Measurement>
+{
+  @Inject MeasurementPresenter measurementPresenter;
+  @Inject ResourceHelper resourceHelper;
+  @Inject SensorManager sensorManager;
+  @Inject SoundHelper soundHelper;
 
-    @Override
-    protected void performDraw(Canvas canvas, Projection projection) {
-        List<Measurement> fullView = measurementPresenter.getFullView();
+  @Override
+  protected void performDraw(Canvas canvas, Projection projection)
+  {
+    if(shouldSkipDrawing()) return;
 
-        // Avoid concurrent modification
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, fullViewSize = fullView.size(); i < fullViewSize - 1; i++) {
-            Measurement measurement = fullView.get(i);
-            drawPoint(canvas, projection, measurement);
-        }
+    List<Measurement> fullView = measurementPresenter.getFullView();
+
+    // Avoid concurrent modification
+    //noinspection ForLoopReplaceableByForEach
+    for (int i = 0, fullViewSize = fullView.size(); i < fullViewSize - 1; i++) {
+      Measurement measurement = fullView.get(i);
+      drawPoint(canvas, projection, measurement);
     }
+  }
 
-    @Override
-    protected void performUpdate(Canvas canvas, Projection projection, Measurement measurement) {
-        drawPoint(canvas, projection, measurement);
+  private boolean shouldSkipDrawing()
+  {
+    return sessionManager.isLocationless();
+  }
+
+  @Override
+  protected void performUpdate(Canvas canvas, Projection projection, Measurement measurement)
+  {
+    drawPoint(canvas, projection, measurement);
+  }
+
+  private void drawPoint(Canvas canvas, Projection projection, Measurement measurement)
+  {
+    double value = measurement.getValue();
+    Sensor sensor = sensorManager.getVisibleSensor();
+
+    if (soundHelper.shouldDisplay(sensor, value)) {
+      Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);
+
+      GeoPoint geoPoint = LocationConversionHelper.geoPoint(measurement.getLatitude(), measurement.getLongitude());
+      Point point = projection.toPixels(geoPoint, null);
+
+      centerAt(bullet, point);
+      bullet.draw(canvas);
     }
+  }
 
-    private void drawPoint(Canvas canvas, Projection projection, Measurement measurement) {
-        double value = measurement.getValue();
-        Sensor sensor = sensorManager.getVisibleSensor();
-
-        if (soundHelper.shouldDisplay(sensor, value)) {
-            Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);
-
-            GeoPoint geoPoint = LocationConversionHelper.geoPoint(measurement.getLatitude(), measurement.getLongitude());
-            Point point = projection.toPixels(geoPoint, null);
-
-            centerAt(bullet, point);
-            bullet.draw(canvas);
-        }
-    }
-
-    public void stopDrawing(MapView view) {
-        super.stopDrawing(view);
-    }
+  public void stopDrawing(MapView view)
+  {
+    super.stopDrawing(view);
+  }
 }
