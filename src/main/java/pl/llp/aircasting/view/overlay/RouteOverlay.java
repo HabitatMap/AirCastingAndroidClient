@@ -173,9 +173,4 @@ public class RouteOverlay extends Overlay
         pendingPoints.clear();
         smoothedPoints.clear();
     }
-
-  public void setSkipDrawing(boolean skipDrawing)
-  {
-    this.skipDrawing = skipDrawing;
-  }
 }

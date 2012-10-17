@@ -63,7 +63,7 @@ public class Session implements Serializable
   private Long id = null;
   private boolean submittedForRemoval = false;
 
-  private boolean locationless = true;
+  private boolean locationless = false;
 
   public void add(MeasurementStream stream)
   {
