@@ -29,6 +29,7 @@ public class ReaderWorker
   BluetoothSocketReader reader;
 
   AtomicBoolean active = new AtomicBoolean(false);
+  volatile BluetoothSocket socket;
 
   Status status = Status.NOT_YET_STARTED;
 
@@ -60,7 +61,7 @@ public class ReaderWorker
         {
           try
           {
-            BluetoothSocket socket = connect();
+            socket = connect();
             if (socket != null)
             {
               read(socket);
@@ -158,6 +159,14 @@ public class ReaderWorker
     active.set(false);
     status = Status.STOPPED;
     thread.interrupt();
+    try
+    {
+      if(socket != null)
+      {
+        socket.close();
+      }
+    }
+    catch (IOException ignore) { }
   }
 
   @Override
