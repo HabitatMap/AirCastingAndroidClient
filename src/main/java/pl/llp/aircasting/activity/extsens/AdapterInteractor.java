@@ -4,7 +4,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 
-import android.bluetooth.BluetoothDevice;
 import android.view.View;
 
 import java.util.List;
@@ -74,10 +73,5 @@ class AdapterInteractor
     pairedSensorAdapter.connectionFailedWith(sensor.getAddress());
     updateKnownSensorListVisibility();
     return sensor;
-  }
-
-  public boolean knows(BluetoothDevice device)
-  {
-    return connectedSensorAdapter.knows(device.getAddress());
   }
 }

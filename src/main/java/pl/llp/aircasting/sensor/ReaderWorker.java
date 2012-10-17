@@ -16,9 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.io.Closeables.closeQuietly;
 
-/**
- * Created by ags on 01/10/12 at 16:51
- */
 public class ReaderWorker
 {
   private static final long MAX_CONNECTION_FAILURE_TIME = Constants.ONE_MINUTE;
@@ -166,7 +163,10 @@ public class ReaderWorker
         socket.close();
       }
     }
-    catch (IOException ignore) { }
+    catch (IOException e)
+    {
+      Log.e(Constants.TAG, "Failed to close socket", e);
+    }
   }
 
   @Override

@@ -121,8 +121,9 @@ public class ExternalSensorActivity extends DialogActivity
         int pos = connectedSensorAdapter.findPosition(disconnected);
         if(pos > -1)
         {
-          disconnectFrom(sensorLists.disconnect(pos));
+          sensorLists.disconnect(pos);
         }
+        externalSensors.disconnect(disconnected.getAddress());
 
         Intents.restartSensors(context);
         ioio.stopIfNecessary(disconnected, context); }
