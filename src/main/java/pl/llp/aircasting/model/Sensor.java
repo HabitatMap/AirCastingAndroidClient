@@ -142,17 +142,11 @@ public class Sensor implements Serializable
   public MeasurementLevel level(double value)
   {
     for (MeasurementLevel measurementLevel : MeasurementLevel.OBTAINABLE_LEVELS) {
-      if ((int) value > getThreshold(measurementLevel)) {
+      if (value > getThreshold(measurementLevel)) {
         return measurementLevel;
       }
     }
     return MeasurementLevel.TOO_LOW;
-  }
-
-  public boolean matches(SensorEvent event)
-  {
-    return event != null && Strings.equals(getSensorName(), event.getSensorName())
-        && Strings.equals(getMeasurementType(), event.getMeasurementType());
   }
 
   void toggle() {
