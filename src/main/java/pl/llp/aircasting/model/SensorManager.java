@@ -57,7 +57,7 @@ public class SensorManager
       }
       else
       {
-        int now = (int) sessionManager.getNow(visibleSensor);
+        double now = (int) sessionManager.getNow(visibleSensor);
         level = resourceHelper.getLevel(visibleSensor, now);
       }
       eventBus.post(new MeasurementLevelEvent(visibleSensor, level));

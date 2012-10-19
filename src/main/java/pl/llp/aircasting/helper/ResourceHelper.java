@@ -89,7 +89,7 @@ public class ResourceHelper
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
 
-  private Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
+  Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
 
   @Inject
   public void init()
@@ -182,7 +182,7 @@ public class ResourceHelper
     }
 
     for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
-      if ((int) value > levels.get(level))
+      if (value >= levels.get(level))
       {
         return level;
       }
