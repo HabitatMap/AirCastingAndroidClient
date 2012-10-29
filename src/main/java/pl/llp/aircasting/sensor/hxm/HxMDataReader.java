@@ -10,9 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by ags on 01/10/12 at 17:15
- */
 class HxMDataReader implements BluetoothSocketReader
 {
   PacketReader packetReader = new PacketReader();
@@ -47,7 +44,7 @@ class HxMDataReader implements BluetoothSocketReader
     int ETX = 0x03;
     int ID = 0x26;
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
     public void tryReading(byte[] input)
     {
@@ -61,8 +58,10 @@ class HxMDataReader implements BluetoothSocketReader
           if (validate(bytes, index))
           {
             process(bytes, index);
-            bos = new ByteArrayOutputStream(4096);
-            bos.write(bytes, index + 60, Math.min(index + 120, bytes.length - 60));
+            bos = new ByteArrayOutputStream();
+            int from = index + 60;
+            int len = bytes.length - from;
+            bos.write(bytes, from, len);
             return;
           }
           else
@@ -86,9 +85,9 @@ class HxMDataReader implements BluetoothSocketReader
 
     boolean validate(byte[] packet, int offset)
     {
-      return packet[0 + offset] == STX
-          && packet[1 + offset] == ID
-          && packet[59 + offset] == ETX;
+      return packet[(offset + 0)] == STX
+          && packet[(offset + 1)] == ID
+          && packet[(offset + 59)] == ETX;
     }
 
     void process(byte[] packet, int index)
