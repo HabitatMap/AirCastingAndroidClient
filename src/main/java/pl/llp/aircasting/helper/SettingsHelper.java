@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -298,6 +299,20 @@ public class SettingsHelper
       writeString(SENSORS, "");
     }
     return newArrayList();
+  }
+
+  public void knownSensorsWithout(String addres)
+  {
+    List<ExternalSensorDescriptor> descriptors = knownSensors();
+    for (Iterator<ExternalSensorDescriptor> iterator = descriptors.iterator(); iterator.hasNext(); )
+    {
+      ExternalSensorDescriptor aDescriptor = iterator.next();
+      if(addres.equals(aDescriptor.getAddress()))
+      {
+        iterator.remove();
+      }
+    }
+    setExternalSensors(descriptors);
   }
 
   public String getConnectedSensorsAsJSON()

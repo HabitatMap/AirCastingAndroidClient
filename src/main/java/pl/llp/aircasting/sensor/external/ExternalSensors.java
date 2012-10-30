@@ -1,5 +1,6 @@
 package pl.llp.aircasting.sensor.external;
 
+import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.SessionManager;
@@ -11,6 +12,7 @@ import pl.llp.aircasting.sensor.ioio.IOIOFakeSensor;
 import android.bluetooth.BluetoothAdapter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.internal.Nullable;
@@ -35,6 +37,7 @@ public class ExternalSensors
   @Inject
   public void init()
   {
+    eventBus.register(this);
     Iterable<ExternalSensorDescriptor> descriptors = settings.knownSensors();
     for (ExternalSensorDescriptor descriptor : descriptors)
     {
@@ -83,6 +86,7 @@ public class ExternalSensors
     if(sensors.containsKey(address))
     {
       sensors.remove(address).stop();
+      settings.knownSensorsWithout(address);
     }
   }
 
@@ -97,5 +101,11 @@ public class ExternalSensors
         return true;
     }
     return false;
+  }
+
+  @Subscribe
+  public void onEvent(ConnectionUnsuccesfulEvent event)
+  {
+    disconnect(event.getDevice().getAddress());
   }
 }

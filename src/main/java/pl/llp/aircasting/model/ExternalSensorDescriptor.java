@@ -59,4 +59,23 @@ public class ExternalSensorDescriptor
     return address.equalsIgnoreCase(stringStringMap.get(SensorAdapter.ADDRESS))
         && name.equalsIgnoreCase(stringStringMap.get(SensorAdapter.NAME));
   }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ExternalSensorDescriptor that = (ExternalSensorDescriptor) o;
+
+    if (!address.equals(that.address)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return address.hashCode();
+  }
 }

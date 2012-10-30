@@ -128,7 +128,6 @@ public class ExternalSensorActivity extends DialogActivity
         Intents.restartSensors(context);
         ioio.stopIfNecessary(disconnected, context); }
     });
-
   }
 
   @Subscribe

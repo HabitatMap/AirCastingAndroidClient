@@ -145,8 +145,8 @@ public class ReaderWorker
       long difference = currentTime - connectionFailingSince;
       if(difference > MAX_CONNECTION_FAILURE_TIME)
       {
-        stop();
         eventBus.post(new ConnectionUnsuccesfulEvent(device));
+        stop();
       }
     }
   }
