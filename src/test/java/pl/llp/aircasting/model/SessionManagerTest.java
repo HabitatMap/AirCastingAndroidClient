@@ -203,6 +203,7 @@ public class SessionManagerTest {
     @Test
     public void measurements_withoutLocation_should_get_a_fake() {
         sessionManager.sessionStarted = true;
+        sessionManager.session.setLocationless(true);
         when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
         triggerMeasurement();
