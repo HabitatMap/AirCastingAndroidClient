@@ -20,6 +20,7 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.event.sensor.LocationEvent;
+import pl.llp.aircasting.util.Constants;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,33 +31,24 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class LocationHelper implements LocationListener {
-    private static final int TWO_MINUTES = 1000 * 60 * 2;
+public class LocationHelper implements LocationListener
+{
     public static final int ACCURACY_THRESHOLD = 200;
 
     @Inject LocationManager locationManager;
     @Inject EventBus eventBus;
 
     private Location lastLocation;
-    private int starts;
 
-    public synchronized void start() {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-
-        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-        updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-
-        starts += 1;
+  public synchronized void start() {
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    if(Constants.isDevMode())
+    {
+      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
     }
 
-    public synchronized void stop() {
-        starts -= 1;
-        if (starts <= 0) {
-            starts = 0;
-            locationManager.removeUpdates(this);
-        }
-    }
+    updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+  }
 
     public Location getLastLocation() {
         return lastLocation;
@@ -107,8 +99,8 @@ public class LocationHelper implements LocationListener {
 
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isSignificantlyNewer = timeDelta > Constants.TWO_MINUTES;
+        boolean isSignificantlyOlder = timeDelta < -Constants.TWO_MINUTES;
         boolean isNewer = timeDelta > 0;
 
         // If it's been more than two minutes since the current location, use the new location
