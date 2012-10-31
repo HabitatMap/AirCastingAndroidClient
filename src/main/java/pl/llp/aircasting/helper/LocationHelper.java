@@ -41,6 +41,7 @@ public class LocationHelper implements LocationListener
     private Location lastLocation;
 
   public synchronized void start() {
+    locationManager.removeUpdates(this);
     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     if(Constants.isDevMode())
     {
@@ -144,7 +145,7 @@ public class LocationHelper implements LocationListener
     }
 
     public boolean hasGPSFix() {
-        return lastLocation != null &&
-                lastLocation.getProvider().equals(LocationManager.GPS_PROVIDER);
+        return (lastLocation != null) &&
+            LocationManager.GPS_PROVIDER.equals(lastLocation.getProvider());
     }
 }

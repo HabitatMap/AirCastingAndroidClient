@@ -172,8 +172,6 @@ public class SessionManager
 
   public void stopSensors() {
     if (!sessionStarted) {
-      locationHelper.stop();
-
       audioReader.stop();
 
       recording = false;
@@ -349,7 +347,6 @@ public class SessionManager
   }
 
   private void cleanup() {
-    locationHelper.stop();
     sessionStarted = false;
     setSession(new Session());
     notificationHelper.hideRecordingNotification();

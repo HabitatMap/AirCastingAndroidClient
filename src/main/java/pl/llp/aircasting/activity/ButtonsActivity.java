@@ -73,6 +73,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         super.onResume();
 
         initialize();
+        locationHelper.start();
 
         updateButtons();
 
@@ -274,29 +275,43 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    private void startAirCasting()
+  private void startAirCasting()
+  {
+    locationHelper.start();
+    if (settingsHelper.areMapsDisabled())
     {
-      if (settingsHelper.areMapsDisabled() || locationHelper.getLastLocation() != null)
+      sessionManager.startSession();
+    }
+    else
+    {
+      if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
       {
-        sessionManager.startSession();
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
-        } else if (!locationHelper.hasGPSFix()) {
-            Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+        if (locationHelper.getLastLocation() == null)
+        {
+          AlertDialog.Builder builder = new AlertDialog.Builder(context);
+          builder.setMessage(R.string.cannot_record_session_due_to_location);
+          builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
         }
+        else
+        {
+          sessionManager.startSession();
 
-        if (!settingsHelper.hasCredentials()) {
+          if (!locationHelper.hasGPSFix())
+          {
+            Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+          }
+
+          if (!settingsHelper.hasCredentials()) {
             Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+          }
         }
       }
       else
       {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.cannot_record_session_due_to_location);
-        builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
+        Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
       }
     }
+  }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

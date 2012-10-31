@@ -255,7 +255,6 @@ public class SessionManagerTest {
         sessionManager.stopSensors();
 
         verify(sessionManager.audioReader).stop();
-        verify(sessionManager.locationHelper).stop();
         assertThat(sessionManager.isSessionStarted(), equalTo(false));
     }
 
@@ -264,7 +263,6 @@ public class SessionManagerTest {
         sessionManager.startSession();
         sessionManager.stopSensors();
 
-        verify(sessionManager.locationHelper, never()).stop();
         verify(sessionManager.audioReader, never()).stop();
         assertThat(sessionManager.isSessionStarted(), equalTo(true));
     }
@@ -286,7 +284,6 @@ public class SessionManagerTest {
         sessionManager.discardSession();
 
         verify(sessionManager.audioReader, never()).stop();
-        verify(sessionManager.locationHelper).stop();
         verify(sessionManager.sessionRepository, never()).save(Mockito.any(Session.class));
         assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
         assertThat(sessionManager.isSessionStarted(), equalTo(false));
@@ -303,7 +300,6 @@ public class SessionManagerTest {
         sessionManager.finishSession(listener);
 
         verify(sessionManager.audioReader, never()).stop();
-        verify(sessionManager.locationHelper).stop();
         verify(sessionManager.sessionRepository).save(Mockito.any(Session.class), eq(listener));
         assertThat(sessionManager.isSessionStarted(), equalTo(false));
     }
