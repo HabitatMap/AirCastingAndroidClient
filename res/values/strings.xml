@@ -203,11 +203,8 @@
   <string name="paired_sensors_label">Paired</string>
   <string name="pair_with_new_devices">Pair with new devices</string>
   <string name="session_sync_failed">Session sync failed, check your network connection</string>
-  <string name="disable_maps_description">Disabling maps allows you to record sessions without a GPS fix. Sessions
-    recorded when maps are disabled are saved to your Android device, but they are not saved to aircasting.org. As a
-    result, when signing out of the app these sessions will be erased. Email sessions as CSV files to prevent data loss.
-  </string>
-  <string name="cannot_record_session_due_to_location">Cannot record without a GPS fix. Either find some sky or go to
-    settings and "disable maps"
-  </string>
+  <string name="disable_maps_description">Allows you to record sessions without a GPS fix.</string>
+  <string name="cannot_record_session_due_to_location">Cannot record without a GPS fix. Either find some sky or go to settings and "disable maps"</string>
+
+
 </resources>

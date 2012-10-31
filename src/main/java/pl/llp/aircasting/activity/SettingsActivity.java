@@ -24,7 +24,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
-import pl.llp.aircasting.activity.settings.DisplayMapSettingsActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SensorManager;
 
@@ -47,7 +46,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
   public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
-  public static final String DISPLAY_MAP_KEY = "disable_maps";
 
   @Inject Application context;
 
@@ -115,11 +113,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     else if (preferenceKey.equals(BACKEND_SETTINGS_KEY))
     {
       startActivity(new Intent(this, BackendSettingsActivity.class));
-      return true;
-    }
-    else if (preferenceKey.equals(DISPLAY_MAP_KEY))
-    {
-      startActivity(new Intent(this, DisplayMapSettingsActivity.class));
       return true;
     }
     else
