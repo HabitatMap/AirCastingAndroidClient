@@ -26,6 +26,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.repository.db.DBConstants;
 import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.repository.db.WritableDatabaseTask;
 import pl.llp.aircasting.util.Constants;
@@ -538,16 +539,16 @@ public class SessionRepository
     });
   }
 
-  public void markRemovedForRemovalAsSubmitted()
+  public void deleteLocationless()
   {
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
     {
       @Override
       public Object execute(SQLiteDatabase writableDatabase)
       {
-        @Language("SQL")
-        String sql = "UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_SUBMITTED_FOR_REMOVAL + "=1 WHERE " + SESSION_MARKED_FOR_REMOVAL + "=1";
-        writableDatabase.execSQL(sql);
+        String condition = DBConstants.SESSION_LOCAL_ONLY + " = 1";
+        delete(condition, writableDatabase);
+        streams().deleteSubmitted(writableDatabase);
         return null;
       }
     });

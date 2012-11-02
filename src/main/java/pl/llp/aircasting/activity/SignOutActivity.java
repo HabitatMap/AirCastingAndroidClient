@@ -19,15 +19,16 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.repository.SessionRepository;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import com.google.inject.Inject;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -75,6 +76,7 @@ public class SignOutActivity extends DialogActivity implements View.OnClickListe
             protected Void doInBackground(Void... voids) {
                 settingsHelper.removeCredentials();
                 sessionRepository.deleteUploaded();
+                sessionRepository.deleteLocationless();
                 return null;
             }
 
