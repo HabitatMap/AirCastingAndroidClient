@@ -20,19 +20,15 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import com.google.inject.Inject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,18 +41,6 @@ public class SoundHelperTest
 {
   @Inject SoundHelper soundHelper;
   private final Sensor SENSOR = SimpleAudioReader.getSensor();
-
-  @Before
-  public void setup()
-  {
-    soundHelper.settingsHelper = mock(SettingsHelper.class);
-
-    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.VERY_HIGH)).thenReturn(60);
-    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.HIGH)).thenReturn(50);
-    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.MID)).thenReturn(30);
-    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.LOW)).thenReturn(10);
-    when(soundHelper.settingsHelper.getThreshold(SENSOR, MeasurementLevel.VERY_LOW)).thenReturn(-20);
-  }
 
   @Test
   public void shouldAdviseToDisplayAbsoluteAverageData()

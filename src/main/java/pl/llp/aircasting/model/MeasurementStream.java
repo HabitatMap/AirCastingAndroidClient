@@ -1,6 +1,5 @@
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.helper.SoundHelper;
 

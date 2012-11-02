@@ -1,7 +1,6 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 

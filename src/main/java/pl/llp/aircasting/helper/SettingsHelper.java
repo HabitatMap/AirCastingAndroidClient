@@ -19,9 +19,9 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.Sensor;
 
 import android.content.SharedPreferences;

@@ -21,12 +21,10 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SessionUpdateTask;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.api.data.UserInfo;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.service.SessionSyncer;
 import pl.llp.aircasting.util.http.HttpResult;
 
 import android.app.Application;
@@ -40,101 +38,82 @@ import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.util.http.Status.SUCCESS;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 11/29/11
- * Time: 12:38 PM
- */
-public class SignInActivity extends DialogActivity implements View.OnClickListener {
-    @InjectView(R.id.ok) Button ok;
+public class SignInActivity extends DialogActivity implements View.OnClickListener
+{
+  @InjectView(R.id.ok) Button ok;
 
-    @InjectView(R.id.login) EditText loginField;
-    @InjectView(R.id.password) EditText passwordField;
+  @InjectView(R.id.login) EditText loginField;
+  @InjectView(R.id.password) EditText passwordField;
 
-    @Inject UsersDriver userDriver;
-    @Inject SettingsHelper settingsHelper;
-    @Inject SessionSyncer syncer;
+  @Inject UsersDriver userDriver;
+  @Inject SettingsHelper settingsHelper;
 
-    @Inject Application context;
+  @Inject Application context;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.sign_in);
+    setContentView(R.layout.sign_in);
 
-        ok.setOnClickListener(this);
+    ok.setOnClickListener(this);
+  }
+
+  @Override
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.ok:
+        signIn();
+        break;
     }
+  }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ok:
-                signIn();
-                break;
+  private void signIn() {
+    //noinspection unchecked
+    new SimpleProgressTask<Void, Void, HttpResult<UserInfo>>(this) {
+
+      @Override
+      protected HttpResult<UserInfo> doInBackground(Void... voids) {
+        HttpResult<UserInfo> result = userDriver.connect(getLogin(), getPassword());
+
+        if (result.getStatus() == SUCCESS) {
+          settingsHelper.setAuthToken(result.getContent().getAuthentication_token());
+          settingsHelper.setUserLogin(result.getContent().getUsername());
         }
-    }
 
-    private void signIn() {
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, HttpResult<UserInfo>>(this) {
+        return result;
+      }
 
-            @Override
-            protected HttpResult<UserInfo> doInBackground(Void... voids) {
-                HttpResult<UserInfo> result = userDriver.connect(getLogin(), getPassword());
+      @Override
+      protected void onPostExecute(HttpResult<UserInfo> result) {
+        super.onPostExecute(result);
 
-                if (result.getStatus() == SUCCESS) {
-                    settingsHelper.setAuthToken(result.getContent().getAuthentication_token());
-                    settingsHelper.setUserLogin(result.getContent().getUsername());
-                }
+        switch (result.getStatus()) {
+          case ERROR:
+            Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show();
+            break;
+          case FAILURE:
+            Toast.makeText(context, R.string.login_error, Toast.LENGTH_LONG).show();
+            break;
+          default:
+            syncInBackground();
+            break;
+        }
+      }
 
-                return result;
-            }
+      private void syncInBackground()
+      {
+        Intents.triggerSync(context);
+        finish();
+      }
+    }.execute();
+  }
 
-            @Override
-            protected void onPostExecute(HttpResult<UserInfo> result) {
-                super.onPostExecute(result);
+  private String getLogin() {
+    return loginField.getText().toString();
+  }
 
-                switch (result.getStatus()) {
-                    case ERROR:
-                        Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show();
-                        break;
-                    case FAILURE:
-                        Toast.makeText(context, R.string.login_error, Toast.LENGTH_LONG).show();
-                        break;
-                    default:
-//                      syncInForeground();
-                      syncInBackground();
-                        break;
-                }
-            }
-
-          private void syncInForeground()
-          {
-            new SessionUpdateTask(SignInActivity.this, syncer)
-            {
-              @Override
-              protected void onPostExecute(Void aVoid)
-              {
-                finish();
-              }
-            }.execute();
-          }
-
-          private void syncInBackground()
-          {
-            Intents.triggerSync(context);
-            finish();
-          }
-        }.execute();
-    }
-
-    private String getLogin() {
-        return loginField.getText().toString();
-    }
-
-    public String getPassword() {
-        return passwordField.getText().toString();
-    }
+  public String getPassword() {
+    return passwordField.getText().toString();
+  }
 }

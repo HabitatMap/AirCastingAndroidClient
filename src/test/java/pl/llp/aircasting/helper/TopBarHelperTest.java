@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
 

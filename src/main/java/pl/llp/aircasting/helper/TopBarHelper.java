@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
 

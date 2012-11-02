@@ -37,10 +37,8 @@ public class GsonProvider implements Provider<Gson>
   // 2012-01-29T10:22:33+0200
   public static final String ISO_8601 = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-  @Inject
-  NoteAdapter noteAdapter;
-  @Inject
-  LocalDateAdapter localDateAdapter;
+  @Inject NoteAdapter noteAdapter;
+  @Inject LocalDateAdapter localDateAdapter;
 
   @Override
   public Gson get()

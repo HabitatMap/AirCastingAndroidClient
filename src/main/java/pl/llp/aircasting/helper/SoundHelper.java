@@ -19,25 +19,12 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
-
-import com.google.inject.Inject;
 
 public class SoundHelper
 {
   public static final double TOTALLY_QUIET = -80;
-
-  private static final MeasurementLevel[] MEASUREMENT_LEVELS = new MeasurementLevel[]{
-      MeasurementLevel.VERY_HIGH,
-      MeasurementLevel.HIGH,
-      MeasurementLevel.MID,
-      MeasurementLevel.LOW,
-      MeasurementLevel.VERY_LOW
-  };
-
-  @Inject
-  SettingsHelper settingsHelper;
 
   public MeasurementLevel level(Sensor sensor, double value)
   {

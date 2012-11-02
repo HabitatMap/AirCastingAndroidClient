@@ -1,4 +1,4 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.sensor;
 
 import pl.llp.aircasting.activity.extsens.SensorAdapter;
 

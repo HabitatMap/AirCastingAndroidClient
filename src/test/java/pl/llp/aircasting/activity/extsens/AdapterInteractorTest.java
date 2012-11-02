@@ -1,7 +1,7 @@
 package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 
 import android.view.View;
 import org.junit.Before;

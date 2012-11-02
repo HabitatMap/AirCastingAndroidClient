@@ -2,7 +2,7 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;

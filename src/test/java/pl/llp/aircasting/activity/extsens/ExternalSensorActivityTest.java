@@ -3,7 +3,7 @@ package pl.llp.aircasting.activity.extsens;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;

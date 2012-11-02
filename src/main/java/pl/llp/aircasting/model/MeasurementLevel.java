@@ -17,7 +17,7 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting;
+package pl.llp.aircasting.model;
 
 /**
  * Created by IntelliJ IDEA.

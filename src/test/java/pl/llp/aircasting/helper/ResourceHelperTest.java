@@ -1,6 +1,6 @@
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Sensor;
 

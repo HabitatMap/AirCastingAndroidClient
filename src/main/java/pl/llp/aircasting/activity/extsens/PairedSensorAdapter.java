@@ -1,6 +1,6 @@
 package pl.llp.aircasting.activity.extsens;
 
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;

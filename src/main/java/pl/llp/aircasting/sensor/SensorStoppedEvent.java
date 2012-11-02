@@ -1,7 +1,5 @@
 package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
-
 public class SensorStoppedEvent
 {
   private ExternalSensorDescriptor descriptor;

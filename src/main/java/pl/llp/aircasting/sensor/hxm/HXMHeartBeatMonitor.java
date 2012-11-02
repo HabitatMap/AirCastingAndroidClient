@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.hxm;
 
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.ReaderWorker;
 

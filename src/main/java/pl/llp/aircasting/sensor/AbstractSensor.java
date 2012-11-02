@@ -1,7 +1,5 @@
 package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
-
 import android.bluetooth.BluetoothAdapter;
 import com.google.common.eventbus.EventBus;
 

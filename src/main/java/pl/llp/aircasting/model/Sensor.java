@@ -1,9 +1,8 @@
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 
-import roboguice.util.Strings;
+import com.google.common.base.Strings;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -129,9 +128,9 @@ public class Sensor implements Serializable
 
   public boolean matches(Sensor sensor)
   {
-    return sensor != null && Strings.equals(sensor.getSensorName(), getSensorName()) && Strings
-        .equals(sensor.getMeasurementType(), getMeasurementType());
-
+    return sensor != null
+        && Strings.nullToEmpty(sensor.getSensorName()).equals(getSensorName())
+        && Strings.nullToEmpty(sensor.getMeasurementType()).equals(getMeasurementType());
   }
 
   public String getAddress()

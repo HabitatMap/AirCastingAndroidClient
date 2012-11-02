@@ -6,7 +6,7 @@ import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 

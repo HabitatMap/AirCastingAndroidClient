@@ -20,7 +20,7 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.MarkerSize;
-import pl.llp.aircasting.MeasurementLevel;
+import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.Sensor;
