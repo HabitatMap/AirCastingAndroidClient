@@ -50,9 +50,11 @@ import roboguice.inject.InjectResource;
 import roboguice.service.RoboIntentService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static com.google.common.collect.Iterables.find;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class SyncService extends RoboIntentService
 {
@@ -118,32 +120,41 @@ public class SyncService extends RoboIntentService
   private Iterable<Session> prepareSessions()
   {
     Iterable<Session> sessions = sessionRepository.all();
+    List<Session> result = newArrayList();
 
-    for (Session session : sessions) {
+    for (Session session : sessions)
+    {
       if(session.isLocationless())
       {
         continue;
       }
 
-      if (session.isMarkedForRemoval()) {
-        session.setSubmittedForRemoval(true);
-        sessionRepository.update(session);
-      }
-      else
+      markSubmittedForRemoval(session);
+      result.add(session);
+    }
+
+    return result;
+  }
+
+  private void markSubmittedForRemoval(Session session)
+  {
+    if (session.isMarkedForRemoval())
+    {
+      session.setSubmittedForRemoval(true);
+      sessionRepository.update(session);
+    }
+    else
+    {
+      Collection<MeasurementStream> streams = session.getMeasurementStreams();
+      for (MeasurementStream stream : streams)
       {
-        Collection<MeasurementStream> streams = session.getMeasurementStreams();
-        for (MeasurementStream stream : streams)
+        if (stream.isMarkedForRemoval())
         {
-          if(stream.isMarkedForRemoval())
-          {
-            stream.setSubmittedForRemoval(true);
-            sessionRepository.streams().update(stream);
-          }
+          stream.setSubmittedForRemoval(true);
+          sessionRepository.streams().update(stream);
         }
       }
     }
-
-    return sessions;
   }
 
   private boolean canUpload() {
@@ -155,10 +166,17 @@ public class SyncService extends RoboIntentService
         && settingsHelper.hasCredentials();
   }
 
-  private void uploadSessions(UUID[] uuids) {
-    for (UUID uuid : uuids) {
+  private void uploadSessions(UUID[] onServer)
+  {
+    for (UUID uuid : onServer)
+    {
       Session session = sessionRepository.loadFully(uuid);
-      if (session != null && !session.isMarkedForRemoval()) {
+      if (skipUpload(session))
+      {
+        continue;
+      }
+      else
+      {
         HttpResult<CreateSessionResponse> result = sessionDriver.create(session);
 
         if (result.getStatus() == Status.SUCCESS) {
@@ -170,7 +188,13 @@ public class SyncService extends RoboIntentService
     }
   }
 
-  private void updateSession(Session session, CreateSessionResponse sessionResponse) {
+  private boolean skipUpload(Session session)
+  {
+    return session == null || session.isMarkedForRemoval() || session.isLocationless();
+  }
+
+  private void updateSession(Session session, CreateSessionResponse sessionResponse)
+  {
     session.setLocation(sessionResponse.getLocation());
 
     for (CreateSessionResponse.Note responseNote : sessionResponse.getNotes()) {
