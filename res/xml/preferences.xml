@@ -78,10 +78,10 @@
                                          android:title="@string/show_graph_metadata"
           />
 
-  <android.preference.CheckBoxPreference android:key="disable_maps"
+  <android.preference.Preference android:key="disable_maps"
                                          android:title="@string/disable_maps"
                                          android:defaultValue="false"
-                                         android:summary="@string/disable_maps_description"
+
       />
 
 </PreferenceScreen>

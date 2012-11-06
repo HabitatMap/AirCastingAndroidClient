@@ -24,6 +24,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
+import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -119,7 +120,7 @@ public class SyncService extends RoboIntentService
 
   private Iterable<Session> prepareSessions()
   {
-    Iterable<Session> sessions = sessionRepository.all();
+    List<Session> sessions = sessionRepository.all();
     List<Session> result = newArrayList();
 
     for (Session session : sessions)
@@ -129,32 +130,57 @@ public class SyncService extends RoboIntentService
         continue;
       }
 
-      markSubmittedForRemoval(session);
+      if(session.isMarkedForRemoval())
+      {
+        DeleteSessionResponse response = sessionDriver.deleteSession(session).getContent();
+        if(response != null && response.isSuccess())
+        {
+          markSessionSubmittedForRemoval(session);
+        }
+      }
+      else
+      {
+        Collection<MeasurementStream> streams = session.getMeasurementStreams();
+        for (MeasurementStream stream : streams)
+        {
+          if(stream.isMarkedForRemoval())
+          {
+            DeleteSessionResponse response = sessionDriver.deleteStreams(session).getContent();
+            if(response != null && response.isSuccess())
+            {
+              markStreamsSubmittedForRemoval(session);
+            }
+          }
+        }
+      }
+
       result.add(session);
+    }
+    if(sessions.size() > result.size())
+    {
+      sessionRepository.deleteSubmitted();
     }
 
     return result;
   }
 
-  private void markSubmittedForRemoval(Session session)
+  private void markStreamsSubmittedForRemoval(Session session)
   {
-    if (session.isMarkedForRemoval())
+    Collection<MeasurementStream> streams = session.getMeasurementStreams();
+    for (MeasurementStream stream : streams)
     {
-      session.setSubmittedForRemoval(true);
-      sessionRepository.update(session);
-    }
-    else
-    {
-      Collection<MeasurementStream> streams = session.getMeasurementStreams();
-      for (MeasurementStream stream : streams)
+      if (stream.isMarkedForRemoval())
       {
-        if (stream.isMarkedForRemoval())
-        {
-          stream.setSubmittedForRemoval(true);
-          sessionRepository.streams().update(stream);
-        }
+        stream.setSubmittedForRemoval(true);
+        sessionRepository.streams().update(stream);
       }
     }
+  }
+
+  private void markSessionSubmittedForRemoval(Session session)
+  {
+    session.setSubmittedForRemoval(true);
+    sessionRepository.update(session);
   }
 
   private boolean canUpload() {

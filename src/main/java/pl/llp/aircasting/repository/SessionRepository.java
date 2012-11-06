@@ -290,12 +290,12 @@ public class SessionRepository
   }
 
   @API
-  public Iterable<Session> all()
+  public List<Session> all()
   {
-    return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Iterable<Session>>()
+    return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Session>>()
     {
       @Override
-      public Iterable<Session> execute(SQLiteDatabase readOnlyDatabase)
+      public List<Session> execute(SQLiteDatabase readOnlyDatabase)
       {
         List<Session> result = Lists.newArrayList();
         Cursor cursor = readOnlyDatabase

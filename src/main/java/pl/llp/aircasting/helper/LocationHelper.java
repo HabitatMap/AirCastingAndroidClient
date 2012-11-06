@@ -33,14 +33,16 @@ import com.google.inject.Singleton;
 @Singleton
 public class LocationHelper implements LocationListener
 {
-    public static final int ACCURACY_THRESHOLD = 200;
+  public static final int ACCURACY_THRESHOLD = 200;
 
-    @Inject LocationManager locationManager;
-    @Inject EventBus eventBus;
+  @Inject LocationManager locationManager;
+  @Inject EventBus eventBus;
 
-    private Location lastLocation;
+  private Location lastLocation;
+  private int starts;
 
-  public synchronized void start() {
+  public synchronized void start()
+  {
     locationManager.removeUpdates(this);
     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     if(Constants.isDevMode())
@@ -51,14 +53,25 @@ public class LocationHelper implements LocationListener
     updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
   }
 
-    public Location getLastLocation() {
-        return lastLocation;
+  public synchronized void stop()
+  {
+    starts -= 1;
+    if (starts <= 0) {
+      starts = 0;
+      locationManager.removeUpdates(this);
     }
+  }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        updateLocation(location);
-    }
+  public Location getLastLocation()
+  {
+    return lastLocation;
+  }
+
+  @Override
+  public void onLocationChanged(Location location)
+  {
+    updateLocation(location);
+  }
 
     private void updateLocation(Location location) {
         if (isBetterLocation(location, lastLocation)) {

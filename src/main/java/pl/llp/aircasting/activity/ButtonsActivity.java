@@ -93,6 +93,11 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             Intents.stopSensors(context);
         }
 
+        if(!sessionManager.isRecording())
+        {
+          locationHelper.stop();
+        }
+
         unregisterReceiver(syncBroadcastReceiver);
         eventBus.unregister(this);
     }

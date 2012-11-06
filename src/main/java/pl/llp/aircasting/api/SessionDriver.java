@@ -20,8 +20,10 @@
 package pl.llp.aircasting.api;
 
 import pl.llp.aircasting.api.data.CreateSessionResponse;
+import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.repository.SessionRepository;
@@ -37,15 +39,12 @@ import java.io.IOException;
 import static pl.llp.aircasting.util.http.HttpBuilder.error;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
 
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/24/11
- * Time: 3:59 PM
- */
-public class SessionDriver {
+public class SessionDriver
+{
     public static final String SESSION_KEY = "session";
     private static final String SESSIONS_PATH = "/api/sessions.json";
+    private static final String DELETE_SESSION_PATH = "/api/user/sessions/delete_session";
+    private static final String DELETE_SESSION_STREAMS_PATH = "/api/user/sessions/delete_session_streams";
     private static final String USER_SESSION_PATH = "/api/user/sessions/";
     public static final String COMPRESSION = "compression";
 
@@ -106,4 +105,55 @@ public class SessionDriver {
                 .from(USER_SESSION_PATH + id + ".json")
                 .into(Session.class);
     }
+
+  public HttpResult<DeleteSessionResponse> deleteSession(Session session)
+  {
+    Session copy = new Session();
+    copy.setUuid(session.getUUID());
+
+    try
+    {
+      String zipped = new String(gzip(copy));
+      PerformRequest builder = http()
+          .post()
+          .to(DELETE_SESSION_PATH)
+          .with(SESSION_KEY, zipped)
+          .with(COMPRESSION, "true");
+      return builder.into(DeleteSessionResponse.class);
+    }
+    catch (IOException e)
+    {
+      return error();
+    }
+  }
+
+  public HttpResult<DeleteSessionResponse> deleteStreams(Session session)
+  {
+    Session copy = new Session();
+    copy.setUuid(session.getUUID());
+    for (MeasurementStream stream : session.getMeasurementStreams())
+    {
+      if(stream.isMarkedForRemoval())
+      {
+        copy.add(stream);
+      }
+    }
+
+    try
+    {
+      String zipped = new String(gzip(copy));
+      PerformRequest builder = http()
+          .post()
+          .to(DELETE_SESSION_STREAMS_PATH)
+          .with(SESSION_KEY, zipped)
+          .with(COMPRESSION, "true");
+
+      return builder.into(DeleteSessionResponse.class);
+    }
+    catch (IOException e)
+    {
+      return error();
+    }
+  }
+
 }

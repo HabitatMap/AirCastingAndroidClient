@@ -24,6 +24,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
+import pl.llp.aircasting.activity.settings.DisableMapSettingsActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SensorManager;
 
@@ -46,6 +47,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
   public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
+  public static final String DISABLE_MAPS_KEY = "disable_maps";
 
   @Inject Application context;
 
@@ -94,30 +96,41 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   @Override
   public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
   {
-    String preferenceKey = preference.getKey();
-    if (preferenceKey.equals(ACCOUNT_KEY))
+    if (ACCOUNT_KEY.equals(preference.getKey()))
     {
       signInOrOut();
       return true;
     }
-    else if (preferenceKey.equals(EXTERNAL_SENSOR_KEY))
+    else if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, ExternalSensorActivity.class));
       return true;
     }
-    else if (preferenceKey.equals(MEASUREMENT_STREAMS_KEY))
+    else if (MEASUREMENT_STREAMS_KEY.equals(preference.getKey()))
     {
       Intents.startStreamsActivity(this);
       return true;
     }
-    else if (preferenceKey.equals(BACKEND_SETTINGS_KEY))
+    else if (BACKEND_SETTINGS_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, BackendSettingsActivity.class));
       return true;
     }
+    else if (DISABLE_MAPS_KEY.equals(preference.getKey()))
+    {
+      startActivity(new Intent(this, DisableMapSettingsActivity.class));
+      return true;
+    }
     else
     {
-      return super.onPreferenceTreeClick(preferenceScreen, preference);
+      if(DISABLE_MAPS_KEY.equals(preference.getKey()))
+      {
+        return true;
+      }
+      else
+      {
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+      }
     }
   }
 
