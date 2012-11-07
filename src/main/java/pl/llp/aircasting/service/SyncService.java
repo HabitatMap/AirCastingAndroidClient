@@ -137,6 +137,7 @@ public class SyncService extends RoboIntentService
         {
           markSessionSubmittedForRemoval(session);
         }
+        continue;
       }
       else
       {
