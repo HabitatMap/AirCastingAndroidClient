@@ -46,37 +46,43 @@ import java.io.IOException;
 
 public class ShareSessionActivity extends DialogActivity implements View.OnClickListener
 {
-    @InjectView(R.id.share_file) Button shareFile;
-    @InjectView(R.id.share_link) Button shareLink;
+  @InjectView(R.id.share_file) Button shareFile;
+  @InjectView(R.id.share_link) Button shareLink;
 
-    @InjectResource(R.string.share_title) String shareTitle;
-    @InjectResource(R.string.share_file) String shareChooserTitle;
-    @InjectResource(R.string.session_file_template) String shareText;
+  @InjectResource(R.string.share_title) String shareTitle;
+  @InjectResource(R.string.share_file) String shareChooserTitle;
+  @InjectResource(R.string.session_file_template) String shareText;
 
-    @Inject ShareHelper shareHelper;
-    @Inject SessionManager sessionManager;
-    @Inject CSVHelper csvHelper;
-    @Inject SessionRepository sessionRepository;
-    @Inject SettingsHelper settingsHelper;
+  @Inject ShareHelper shareHelper;
+  @Inject SessionManager sessionManager;
+  @Inject CSVHelper csvHelper;
+  @Inject SessionRepository sessionRepository;
+  @Inject SettingsHelper settingsHelper;
 
-    @Inject Application context;
+  @Inject Application context;
 
-    private Session session;
+  private Session session;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.share_session);
+    setContentView(R.layout.share_session);
 
-        shareFile.setOnClickListener(this);
-        shareLink.setOnClickListener(this);
-    }
+    shareFile.setOnClickListener(this);
+    shareLink.setOnClickListener(this);
+  }
 
   @Override
   protected void onResume()
   {
     super.onResume();
+    if (getIntent().hasExtra(Intents.SESSION_ID)) {
+      long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
+      session = sessionRepository.loadShallow(sessionId);
+    } else {
+      session = sessionManager.getSession();
+    }
     if(session.isLocationless())
     {
       shareLink.setVisibility(View.GONE);
@@ -88,88 +94,81 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
   }
 
   @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.share_link:
-                shareLink();
-                break;
-            case R.id.share_file:
-                shareFile();
-                break;
-        }
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.share_link:
+        shareLink();
+        break;
+      case R.id.share_file:
+        shareFile();
+        break;
     }
+  }
 
-    private void shareLink() {
-        if (getIntent().hasExtra(Intents.SESSION_ID)) {
-            long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
-            session = sessionRepository.loadShallow(sessionId);
+  private void shareLink() {
+    if (session.getLocation() != null) {
+      shareHelper.shareLink(this, session);
+    } else if (settingsHelper.hasCredentials()) {
+      Toast.makeText(context, R.string.session_not_uploaded, Toast.LENGTH_LONG).show();
+    } else {
+      Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+    }
+    finish();
+  }
+
+  private void shareFile() {
+    if (sessionManager.isSessionSaved()) {
+      session = sessionManager.getSession();
+      prepareAndShare();
+    } else {
+      loadSession();
+    }
+  }
+
+  private void prepareAndShare() {
+    //noinspection unchecked
+    new SimpleProgressTask<Void, Void, Uri>(this) {
+      @Override
+      protected Uri doInBackground(Void... voids) {
+        try {
+          return csvHelper.prepareCSV(session);
+        } catch (IOException e) {
+          Log.e(Constants.TAG, "Error while creating session CSV", e);
+          return null;
+        }
+      }
+
+      @Override
+      protected void onPostExecute(Uri uri) {
+        super.onPostExecute(uri);
+
+        if (uri == null) {
+          Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_SHORT).show();
         } else {
-            session = sessionManager.getSession();
+          Intents.shareCSV(ShareSessionActivity.this, uri, shareChooserTitle, shareTitle, shareText);
         }
 
-        if (session.getLocation() != null) {
-            shareHelper.shareLink(this, session);
-        } else if (settingsHelper.hasCredentials()) {
-            Toast.makeText(context, R.string.session_not_uploaded, Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-        }
         finish();
-    }
+      }
+    }.execute();
+  }
 
-    private void shareFile() {
-        if (sessionManager.isSessionSaved()) {
-            session = sessionManager.getSession();
-            prepareAndShare();
-        } else {
-            loadSession();
-        }
-    }
+  private void loadSession() {
+    long id = getIntent().getLongExtra(Intents.SESSION_ID, 0);
 
-    private void prepareAndShare() {
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Uri>(this) {
-            @Override
-            protected Uri doInBackground(Void... voids) {
-                try {
-                    return csvHelper.prepareCSV(session);
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "Error while creating session CSV", e);
-                    return null;
-                }
-            }
+    new OpenSessionTask(this) {
+      @Override
+      protected Session doInBackground(Long... ids) {
+        session = sessionRepository.loadFully(ids[0], this);
+        return session;
+      }
 
-            @Override
-            protected void onPostExecute(Uri uri) {
-                super.onPostExecute(uri);
+      @Override
+      protected void onPostExecute(Session session) {
+        super.onPostExecute(session);
 
-                if (uri == null) {
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_SHORT).show();
-                } else {
-                    Intents.shareCSV(ShareSessionActivity.this, uri, shareChooserTitle, shareTitle, shareText);
-                }
-
-                finish();
-            }
-        }.execute();
-    }
-
-    private void loadSession() {
-        long id = getIntent().getLongExtra(Intents.SESSION_ID, 0);
-
-        new OpenSessionTask(this) {
-            @Override
-            protected Session doInBackground(Long... ids) {
-                session = sessionRepository.loadFully(ids[0], this);
-                return session;
-            }
-
-            @Override
-            protected void onPostExecute(Session session) {
-                super.onPostExecute(session);
-
-                prepareAndShare();
-            }
-        }.execute(id);
-    }
+        prepareAndShare();
+      }
+    }.execute(id);
+  }
 }
