@@ -172,6 +172,7 @@ public class SessionManager
 
   public void stopSensors() {
     if (!sessionStarted) {
+      locationHelper.stop();
       audioReader.stop();
 
       recording = false;
@@ -302,6 +303,7 @@ public class SessionManager
   public void startSession()
   {
     setSession(new Session());
+    locationHelper.start();
     session.setStart(new Date());
     session.setLocationless(settingsHelper.areMapsDisabled());
     startSensors();
@@ -314,6 +316,7 @@ public class SessionManager
   {
     session.setEnd(new Date());
     sessionStarted = false;
+    locationHelper.stop();
     notificationHelper.hideRecordingNotification();
     eventBus.post(new SessionStoppedEvent());
   }
@@ -347,6 +350,7 @@ public class SessionManager
   }
 
   private void cleanup() {
+    locationHelper.stop();
     sessionStarted = false;
     setSession(new Session());
     notificationHelper.hideRecordingNotification();

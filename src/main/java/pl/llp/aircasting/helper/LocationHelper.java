@@ -43,14 +43,13 @@ public class LocationHelper implements LocationListener
 
   public synchronized void start()
   {
-    locationManager.removeUpdates(this);
     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     if(Constants.isDevMode())
     {
       locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
     }
-
     updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+    starts += 1;
   }
 
   public synchronized void stop()

@@ -93,10 +93,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             Intents.stopSensors(context);
         }
 
-        if(!sessionManager.isRecording())
-        {
-          locationHelper.stop();
-        }
+        locationHelper.stop();
 
         unregisterReceiver(syncBroadcastReceiver);
         eventBus.unregister(this);
@@ -270,6 +267,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void stopAirCasting() {
+      locationHelper.stop();
         if (sessionManager.getSession().isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
             sessionManager.discardSession();
@@ -282,7 +280,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
   private void startAirCasting()
   {
-    locationHelper.start();
     if (settingsHelper.areMapsDisabled())
     {
       sessionManager.startSession();
