@@ -99,7 +99,7 @@ public class SyncService extends RoboIntentService
 
   private void sync() throws SessionSyncException
   {
-    Iterable<Session> sessions = prepareSessions();
+    Iterable<Session> sessions = prepareSessions(sessionRepository.all());
 
     HttpResult<SyncResponse> result = syncDriver.sync(sessions);
     Status status = result.getStatus();
@@ -118,9 +118,8 @@ public class SyncService extends RoboIntentService
     }
   }
 
-  private Iterable<Session> prepareSessions()
+  List<Session> prepareSessions(List<Session> sessions)
   {
-    List<Session> sessions = sessionRepository.all();
     List<Session> result = newArrayList();
 
     for (Session session : sessions)
@@ -133,7 +132,7 @@ public class SyncService extends RoboIntentService
       if(session.isMarkedForRemoval())
       {
         DeleteSessionResponse response = sessionDriver.deleteSession(session).getContent();
-        if(response != null && response.isSuccess())
+        if(response != null && (response.isSuccess() || response.noSuchSession()))
         {
           markSessionSubmittedForRemoval(session);
         }
@@ -147,7 +146,7 @@ public class SyncService extends RoboIntentService
           if(stream.isMarkedForRemoval())
           {
             DeleteSessionResponse response = sessionDriver.deleteStreams(session).getContent();
-            if(response != null && response.isSuccess())
+            if(response != null && (response.isSuccess() || response.noSuchSession()))
             {
               markStreamsSubmittedForRemoval(session);
             }
