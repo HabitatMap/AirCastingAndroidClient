@@ -1,4 +1,4 @@
-package pl.llp.aircasting.service;
+package pl.llp.aircasting.sync;
 
 public class SessionSyncException extends RuntimeException
 {

@@ -1,4 +1,4 @@
-package pl.llp.aircasting.service;
+package pl.llp.aircasting.sync;
 
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;

@@ -271,6 +271,25 @@ public class SessionRepository
   }
 
   @API
+  public void markSessionForRemoval(UUID uuid)
+  {
+    final ContentValues values = new ContentValues();
+    values.put(SESSION_MARKED_FOR_REMOVAL, 1);
+
+    final String whereClause = SESSION_UUID + " = '" + uuid.toString() + "'";
+    dbAccessor.executeWritableTask(new WritableDatabaseTask<Void>()
+    {
+      @Override
+      public Void execute(SQLiteDatabase writableDatabase)
+      {
+        writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
+        return null;
+      }
+    });
+    logSessionDeletion(whereClause);
+  }
+
+  @API
   public void markSessionForRemoval(final long id)
   {
     final ContentValues values = new ContentValues();
@@ -396,7 +415,10 @@ public class SessionRepository
   public Session loadFully(UUID uuid)
   {
     Session session = loadShallow(uuid);
-    return fill(session, NoOp.progressListener());
+    if(session != null)
+      fill(session, NoOp.progressListener());
+
+    return session;
   }
 
   @API

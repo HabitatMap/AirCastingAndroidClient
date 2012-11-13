@@ -26,6 +26,7 @@ import java.util.UUID;
 public class SyncResponse {
     @Expose private UUID[] upload = new UUID[0];
     @Expose private long[] download = new long[0];
+    @Expose private UUID[] deleted = new UUID[0];
 
     public UUID[] getUpload() {
         return upload;
@@ -34,5 +35,10 @@ public class SyncResponse {
     public long[] getDownload() {
         return download;
     }
+
+  public UUID[] getDeleted()
+  {
+    return deleted;
+  }
 }
 

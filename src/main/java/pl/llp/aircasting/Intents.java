@@ -29,7 +29,7 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.IOIOService;
 import pl.llp.aircasting.service.SensorService;
-import pl.llp.aircasting.service.SyncService;
+import pl.llp.aircasting.sync.SyncService;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

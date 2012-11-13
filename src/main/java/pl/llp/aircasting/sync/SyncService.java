@@ -17,7 +17,7 @@
 
  You can contact the authors by email at <info@habitatmap.org>
  */
-package pl.llp.aircasting.service;
+package pl.llp.aircasting.sync;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -70,7 +70,8 @@ public class SyncService extends RoboIntentService
 
   @InjectResource(R.string.account_reminder) String accountReminder;
 
-  @Inject SessionTimeFixer sessionTimes;
+  @Inject
+  SessionTimeFixer sessionTimes;
 
   public SyncService() {
     super(SyncService.class.getSimpleName());
@@ -112,10 +113,26 @@ public class SyncService extends RoboIntentService
     if (syncResponse != null)
     {
       sessionRepository.deleteSubmitted();
-      uploadSessions(syncResponse.getUpload());
-
-      downloadSessions(syncResponse.getDownload());
+      UUID[] upload = syncResponse.getUpload();
+      UUID[] deleted = syncResponse.getDeleted();
+      long[] download = syncResponse.getDownload();
+      deleteMarked(deleted);
+      uploadSessions(upload);
+      downloadSessions(download);
     }
+  }
+
+  private void deleteMarked(UUID[] deleted)
+  {
+    if(deleted.length == 0)
+      return;
+
+    for (UUID uuid : deleted)
+    {
+      sessionRepository.markSessionForRemoval(uuid);
+    }
+    Intents.notifySyncUpdate(context);
+    sessionRepository.deleteSubmitted();
   }
 
   List<Session> prepareSessions(List<Session> sessions)
@@ -129,29 +146,10 @@ public class SyncService extends RoboIntentService
         continue;
       }
 
-      if(session.isMarkedForRemoval())
+      boolean ignoreSession = deletedAnything(session);
+      if (ignoreSession)
       {
-        DeleteSessionResponse response = sessionDriver.deleteSession(session).getContent();
-        if(response != null && (response.isSuccess() || response.noSuchSession()))
-        {
-          markSessionSubmittedForRemoval(session);
-        }
         continue;
-      }
-      else
-      {
-        Collection<MeasurementStream> streams = session.getMeasurementStreams();
-        for (MeasurementStream stream : streams)
-        {
-          if(stream.isMarkedForRemoval())
-          {
-            DeleteSessionResponse response = sessionDriver.deleteStreams(session).getContent();
-            if(response != null && (response.isSuccess() || response.noSuchSession()))
-            {
-              markStreamsSubmittedForRemoval(session);
-            }
-          }
-        }
       }
 
       result.add(session);
@@ -162,6 +160,35 @@ public class SyncService extends RoboIntentService
     }
 
     return result;
+  }
+
+  private boolean deletedAnything(Session session)
+  {
+    if(session.isMarkedForRemoval())
+    {
+      DeleteSessionResponse response = sessionDriver.deleteSession(session).getContent();
+      if(response != null && (response.isSuccess() || response.noSuchSession()))
+      {
+        markSessionSubmittedForRemoval(session);
+      }
+      return true;
+    }
+    else
+    {
+      Collection<MeasurementStream> streams = session.getMeasurementStreams();
+      for (MeasurementStream stream : streams)
+      {
+        if(stream.isMarkedForRemoval())
+        {
+          DeleteSessionResponse response = sessionDriver.deleteStreams(session).getContent();
+          if(response != null && (response.isSuccess() || response.noSuchSession()))
+          {
+            markStreamsSubmittedForRemoval(session);
+          }
+        }
+      }
+    }
+    return false;
   }
 
   private void markStreamsSubmittedForRemoval(Session session)
@@ -197,7 +224,7 @@ public class SyncService extends RoboIntentService
     for (UUID uuid : onServer)
     {
       Session session = sessionRepository.loadFully(uuid);
-      if (skipUpload(session))
+      if (session != null && skipUpload(session))
       {
         continue;
       }

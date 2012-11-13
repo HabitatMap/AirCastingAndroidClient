@@ -248,6 +248,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
         List<String> strings = CharStreams.readLines(reader);
         fullJson = Joiner.on("\n").join(strings);
         reader = new StringReader(fullJson);
+        Log.i(Constants.TAG, "Full http json: " + fullJson);
       }
 
       T output = gson.fromJson(reader, target);
