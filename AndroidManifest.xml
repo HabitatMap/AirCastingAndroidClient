@@ -96,7 +96,7 @@
     <!-- Services -->
     <service android:name=".service.SensorService"/>
 
-    <service android:name=".service.SyncService"/>
+    <service android:name=".sync.SyncService"/>
 
     <service android:name=".service.IOIOService"/>
 
