@@ -22,7 +22,8 @@
     <gson.version>2.2.2</gson.version>
     <guava.version>13.0.1</guava.version>
     <mockito-all.version>1.9.5</mockito-all.version>
-    <maven-dependency-plugin.version>2.5.1</maven-dependency-plugin.version>
+    <maven-dependency-plugin.version>2.6</maven-dependency-plugin.version>
+    <maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
   </properties>
 
   <dependencies>
@@ -132,13 +133,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.codeslap</groupId>
-      <artifactId>robolectric-sqlite</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
       <version>1.4</version>
@@ -241,7 +235,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
           <encoding>UTF-8</encoding>
           <target>1.6</target>
