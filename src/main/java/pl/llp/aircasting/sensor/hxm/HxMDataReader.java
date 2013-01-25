@@ -12,16 +12,23 @@ import java.io.InputStream;
 
 class HxMDataReader implements BluetoothSocketReader
 {
-  PacketReader packetReader = new PacketReader();
+  final PacketReader packetReader = new PacketReader();
+  final BluetoothSocket socket;
+  final String address;
+
   EventBus eventBus;
-
   boolean active;
-  String address;
 
-  public void read(BluetoothSocket socket) throws IOException
+  public HxMDataReader(BluetoothSocket socket)
+  {
+    this.socket = socket;
+    this.address = socket.getRemoteDevice().getAddress();
+  }
+
+  @Override
+  public void read() throws IOException
   {
     active = true;
-    address = socket.getRemoteDevice().getAddress();
 
     InputStream stream = socket.getInputStream();
     byte[] readBuffer = new byte[4096];
@@ -85,9 +92,9 @@ class HxMDataReader implements BluetoothSocketReader
 
     boolean validate(byte[] packet, int offset)
     {
-      return packet[(offset + 0)] == STX
-          && packet[(offset + 1)] == ID
-          && packet[(offset + 59)] == ETX;
+      return packet[offset]         == STX
+          && packet[(offset + 1)]   == ID
+          && packet[(offset + 59)]  == ETX;
     }
 
     void process(byte[] packet, int index)

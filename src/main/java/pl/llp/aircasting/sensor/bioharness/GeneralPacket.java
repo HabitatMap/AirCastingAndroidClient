@@ -14,7 +14,8 @@ public class GeneralPacket extends Packet
 
   public GeneralPacket(byte[] input, int offset)
   {
-    if(input.length - (input[offset + 2]) < 0)
+    byte length = input[offset + 2];
+    if((input.length - offset) - length < 0)
     {
       throw new RuntimeException("Not long enough");
     }
@@ -83,7 +84,16 @@ public class GeneralPacket extends Packet
     public static byte[] getRequest(Request request)
     {
       byte[] bytes = {2, 20, 1, 0, 0, 3};
-      bytes[3] = (byte) (request.isEnabled() ? 1 : 0);
+      if (request.isEnabled())
+      {
+        bytes[3] = (byte) 1;
+        bytes[4] = 94;
+      }
+      else
+      {
+        bytes[3] = (byte) 0;
+        bytes[4] = 0;
+      }
       return bytes;
     }
   }

@@ -4,6 +4,7 @@ import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -17,8 +18,20 @@ public class IOIOFakeSensor extends AbstractSensor
   }
 
   @Override
+  protected void startWorking()
+  {
+    // do nothing
+  }
+
+  @Override
+  protected void injectSocket(BluetoothSocket socket)
+  {
+    // do nothing
+  }
+
+  @Override
   protected void customStop()
   {
-
+    // do nothing
   }
 }

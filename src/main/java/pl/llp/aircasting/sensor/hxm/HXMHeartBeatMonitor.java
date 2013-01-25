@@ -1,16 +1,15 @@
 package pl.llp.aircasting.sensor.hxm;
 
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.ReaderWorker;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 
 public class HXMHeartBeatMonitor extends AbstractSensor
 {
-  private BluetoothDevice device;
   ReaderWorker readerWorker;
 
   public HXMHeartBeatMonitor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter)
@@ -18,15 +17,16 @@ public class HXMHeartBeatMonitor extends AbstractSensor
     super(descriptor, eventBus, adapter);
   }
 
-  public synchronized void start()
+  @Override
+  protected void startWorking()
   {
-    if (device == null || addressChanged(descriptor.getAddress()))
-    {
-      device = adapter.getRemoteDevice(descriptor.getAddress());
+    readerWorker.start();
+  }
 
-      readerWorker = new ReaderWorker(adapter, device, eventBus, new HxMDataReader());
-      readerWorker.start();
-    }
+  @Override
+  protected void injectSocket(BluetoothSocket socket)
+  {
+    readerWorker = new ReaderWorker(adapter, device, eventBus, new HxMDataReader(socket));
   }
 
   private boolean addressChanged(String address)
@@ -40,7 +40,6 @@ public class HXMHeartBeatMonitor extends AbstractSensor
     if (readerWorker != null)
     {
       readerWorker.stop();
-      device = null;
     }
   }
 }

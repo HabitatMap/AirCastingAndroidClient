@@ -39,7 +39,6 @@ public class PairedSensorAdapter extends SensorAdapter
     return remove;
   }
 
-  // call from somewhere
   public void connectionFailedWith(String address)
   {
     addressesToHide.remove(address);

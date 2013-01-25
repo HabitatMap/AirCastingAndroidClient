@@ -21,15 +21,20 @@ import java.io.Reader;
  */
 public class LineDataReader implements BluetoothSocketReader
 {
+  final BluetoothSocket socket;
+  final String address;
+
   ExternalSensorParser parser = new ExternalSensorParser();
   EventBus eventBus;
 
-  String address;
-
-  public void read(BluetoothSocket socket) throws IOException
+  public LineDataReader(BluetoothSocket socket, String address)
   {
-    address = socket.getRemoteDevice().getAddress();
+    this.socket = socket;
+    this.address = address;
+  }
 
+  public void read() throws IOException
+  {
     InputStream stream = socket.getInputStream();
     final Reader finalReader = new InputStreamReader(stream);
 
@@ -43,7 +48,7 @@ public class LineDataReader implements BluetoothSocketReader
     try
     {
       SensorEvent event = parser.parse(line);
-      event.setAddress(address);
+      event.setAddress(getAddress());
       eventBus.post(event);
     }
     catch (ParseException e)
@@ -86,5 +91,10 @@ public class LineDataReader implements BluetoothSocketReader
   public void setEventBus(EventBus eventBus)
   {
     this.eventBus = eventBus;
+  }
+
+  public String getAddress()
+  {
+    return address;
   }
 }

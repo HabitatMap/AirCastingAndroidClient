@@ -10,9 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
 public class LineReaderTest
@@ -22,7 +20,7 @@ public class LineReaderTest
   @Before
   public void setup() throws IOException
   {
-    reader = new LineDataReader();
+    reader = new LineDataReader(null, "123");
     reader.parser = mock(ExternalSensorParser.class);
     reader.eventBus = mock(EventBus.class);
   }

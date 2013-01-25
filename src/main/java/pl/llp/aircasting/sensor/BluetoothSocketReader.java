@@ -1,6 +1,5 @@
 package pl.llp.aircasting.sensor;
 
-import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.io.IOException;
  */
 public interface BluetoothSocketReader
 {
-  public void read(BluetoothSocket socket) throws IOException;
+  public void read() throws IOException;
 
   void setEventBus(EventBus eventBus);
 }

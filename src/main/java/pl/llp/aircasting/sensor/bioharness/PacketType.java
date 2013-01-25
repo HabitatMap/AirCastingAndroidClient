@@ -33,10 +33,25 @@ public enum PacketType
     if (input[index] == STX)
     {
       int messageId = input[index + 1];
+      PacketType packetType = decode(messageId);
+      if(packetType == PacketType.Invalid)
+      {
+        return packetAndLenght(PacketType.Invalid, 0);
+      }
+
+      if(packetType == Lifesign)
+      {
+        return packetAndLenght(Lifesign, 5);
+      }
+
       int length = input[index + 2];
+      if((index + length) > input.length)
+      {
+        return packetAndLenght(PacketType.Invalid, 0);
+      }
+
       if (input[index + 2 + length + 2] == ETX)
       {
-        PacketType packetType = decode(messageId);
         return packetAndLenght(packetType, length);
       }
     }

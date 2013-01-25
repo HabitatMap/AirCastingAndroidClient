@@ -1,16 +1,15 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.ReaderWorker;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 
 public class ExternalSensor extends AbstractSensor
 {
-  private BluetoothDevice device;
   ReaderWorker readerWorker;
 
   public ExternalSensor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter)
@@ -18,20 +17,19 @@ public class ExternalSensor extends AbstractSensor
     super(descriptor, eventBus, adapter);
   }
 
-  public synchronized void start()
+  @Override
+  protected void startWorking()
   {
-    if (device == null || addressChanged(descriptor.getAddress()))
-    {
-      device = adapter.getRemoteDevice(descriptor.getAddress());
-
-      readerWorker = new ReaderWorker(adapter, device, eventBus, new LineDataReader());
-      readerWorker.start();
-    }
+    ReaderWorker oldReaderWorker = readerWorker;
+    readerWorker.start();
+    oldReaderWorker.stop();
   }
 
-  private boolean addressChanged(String address)
+  @Override
+  protected void injectSocket(BluetoothSocket socket)
   {
-    return !device.getAddress().equals(address);
+    LineDataReader reader = new LineDataReader(socket, socket.getRemoteDevice().getAddress());
+    readerWorker = new ReaderWorker(adapter, device, eventBus, reader);
   }
 
   @Override
@@ -40,7 +38,6 @@ public class ExternalSensor extends AbstractSensor
     if(readerWorker != null)
     {
       readerWorker.stop();
-      device = null;
     }
   }
 }

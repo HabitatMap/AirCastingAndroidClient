@@ -5,11 +5,13 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.bioharness.BioharnessSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
 import pl.llp.aircasting.sensor.ioio.IOIOFakeSensor;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -18,12 +20,14 @@ import com.google.inject.Singleton;
 import com.google.inject.internal.Nullable;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
 public class ExternalSensors
 {
+  public static final String ZEPHYR_BIOHARNESS = "BH BHT";
   public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
   public static final String IOIO_DISPLAY_STRIP = "IOIO";
 
@@ -39,18 +43,32 @@ public class ExternalSensors
   {
     eventBus.register(this);
     Iterable<ExternalSensorDescriptor> descriptors = settings.knownSensors();
+
+    Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
     for (ExternalSensorDescriptor descriptor : descriptors)
     {
-      if(sensors.containsKey(descriptor.getAddress()))
+      if(isPaired(descriptor, bondedDevices))
       {
-
-      }
-      else
-      {
+        if (sensors.containsKey(descriptor.getAddress()))
+        {
+          continue;
+        }
         AbstractSensor sensor = createExternalSensor(descriptor);
         sensors.put(descriptor.getAddress(), sensor);
       }
     }
+  }
+
+  private boolean isPaired(ExternalSensorDescriptor descriptor, Set<BluetoothDevice> bondedDevices)
+  {
+    for (BluetoothDevice device : bondedDevices)
+    {
+      if(descriptor.getAddress().equals(device.getAddress()))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   private AbstractSensor createExternalSensor(ExternalSensorDescriptor descriptor)
@@ -59,6 +77,10 @@ public class ExternalSensors
     if(Strings.isNullOrEmpty(sensorName))
     {
       return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);
+    }
+    if(sensorName.startsWith(ZEPHYR_BIOHARNESS))
+    {
+      return new BioharnessSensor(descriptor, eventBus, bluetoothAdapter);
     }
     if(sensorName.startsWith(ZEPHYR_HEART_RATE_MONITOR))
     {
