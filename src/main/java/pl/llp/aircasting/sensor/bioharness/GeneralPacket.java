@@ -6,37 +6,23 @@ public class GeneralPacket extends Packet
   private final double respirationRate;
   private final double skinTemperature;
 
-  private final boolean heartRateReliable;
-  private final boolean heartRateVariablityReliable;
-  private final boolean skinTemperatureReliable;
-  private final boolean respirationRateReliable;
-  private final int heartRateVariability;
-
   public GeneralPacket(byte[] input, int offset)
   {
-    byte length = input[offset + 2];
-    if((input.length - offset) - length < 0)
+    byte dlc = input[offset + 2];
+    if(input.length - dlc < 0)
     {
       throw new RuntimeException("Not long enough");
     }
 
-    this.heartRate = input[13 + offset] << 8 + input[12 + offset];
-    this.respirationRate = (input[13 + offset] << 8 + input[12 + offset]) / 10.0d;
-    this.skinTemperature = (input[17 + offset] << 8 + input[16 + offset]) / 10.0d;
-    this.heartRateVariability = (input[39 + offset] << 8 + input[38 + offset]);
-
-    byte ls = input[offset + 59];
-    byte ms = input[offset + 60];
-
-    boolean hruf =  (ls & 1 << 4) < 1;
-    boolean rruf =  (ls & 1 << 5) < 1;
-    boolean stuf =  (ls & 1 << 6) < 1;
-    boolean hrvuf = (ms & 1 << 1) < 1;
-
-    this.heartRateReliable = hruf;
-    this.heartRateVariablityReliable = hrvuf;
-    this.skinTemperatureReliable = stuf;
-    this.respirationRateReliable = rruf;
+    int heartRateLS = input[offset + 12] & 0xFF;
+    int heartRateMS = input[offset + 13] & 0xFF;
+    this.heartRate = heartRateLS;
+    int respirationRateLS = input[14 + offset] & 0xFF;
+    int respirationRateMS = input[15 + offset] & 0xFF;
+    this.respirationRate = (respirationRateLS | respirationRateMS << 8) / 10.0d;
+    int skinTempLS = input[offset + 16] & 0xFF;
+    int skinTempMS = input[offset + 17] & 0xFF;
+    this.skinTemperature = (skinTempMS << 8 | skinTempLS) / 10.0d;
   }
 
   public int getHeartRate()
@@ -52,31 +38,6 @@ public class GeneralPacket extends Packet
   public double getSkinTemperature()
   {
     return skinTemperature;
-  }
-
-  public boolean isRespirationRateReliable()
-  {
-    return respirationRateReliable;
-  }
-
-  public boolean isSkinTemperatureReliable()
-  {
-    return skinTemperatureReliable;
-  }
-
-  public boolean isHeartRateVariabilityReliable()
-  {
-    return heartRateVariablityReliable;
-  }
-
-  public boolean isHeartRateReliable()
-  {
-    return heartRateReliable;
-  }
-
-  public int getHeartRateVariability()
-  {
-    return heartRateVariability;
   }
 
   static class EnablePacket
