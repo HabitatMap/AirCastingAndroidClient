@@ -286,31 +286,31 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
     else
     {
-      if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+      if (locationHelper.getLastLocation() == null)
       {
-        if (locationHelper.getLastLocation() == null)
-        {
-          AlertDialog.Builder builder = new AlertDialog.Builder(context);
-          builder.setMessage(R.string.cannot_record_session_due_to_location);
-          builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
-        }
-        else
-        {
-          sessionManager.startSession();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(R.string.cannot_record_session_due_to_location);
+        builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
+      }
+      else
+      {
+        sessionManager.startSession();
 
+        if (!settingsHelper.hasCredentials()) {
+          Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+        }
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
           if (!locationHelper.hasGPSFix())
           {
             Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
           }
-
-          if (!settingsHelper.hasCredentials()) {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-          }
         }
-      }
-      else
-      {
-        Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
+        else
+        {
+          Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
+        }
       }
     }
   }
