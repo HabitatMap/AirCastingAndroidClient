@@ -38,8 +38,8 @@ class BioharnessPacketReader
 
       switch (packetType)
       {
-        case GeneralPacket:
-          GeneralPacket packet = new GeneralPacket(data, offset);
+        case SummaryPacket:
+          SummaryPacket packet = new SummaryPacket(data, offset);
           postHeartRate(packet);
           postSkinTemperature(packet);
           postBreathing(packet);
@@ -54,7 +54,7 @@ class BioharnessPacketReader
     return 0;
   }
 
-  void postHeartRate(GeneralPacket packet)
+  void postHeartRate(SummaryPacket packet)
   {
     if(packet.isHeartRateReliable())
     {
@@ -70,17 +70,17 @@ class BioharnessPacketReader
     }
   }
 
-  void postBreathing(GeneralPacket packet)
+  void postBreathing(SummaryPacket packet)
   {
     if(packet.isRespirationRateReliable())
     {
       double respirationRate = packet.getRespirationRate();
-      SensorEvent event = buildBioharnessEvent("Breathing", "something", "breaths per minute", "bs", 5, 10, 20, 36, 40, respirationRate);
+      SensorEvent event = buildBioharnessEvent("Breathing", "BR", "breaths per minute", "bs", 5, 10, 20, 36, 40, respirationRate);
       eventBus.post(event);
     }
   }
 
-  void postSkinTemperature(GeneralPacket packet)
+  void postSkinTemperature(SummaryPacket packet)
   {
     if(packet.isSkinTemperatureReliable())
     {

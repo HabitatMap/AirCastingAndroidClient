@@ -8,6 +8,7 @@ public enum PacketType
   BreathingPacket(0x21),
   ECGPacket(0x22),
   Lifesign(0x23),
+  SummaryPacket(0x2B),
   Invalid(0x00, false),
   ;
 
@@ -75,6 +76,8 @@ public enum PacketType
         return PacketType.ECGPacket;
       case 0x23:
         return PacketType.Lifesign;
+      case 0x2B:
+        return PacketType.SummaryPacket;
     }
     return PacketType.Invalid;
   }
