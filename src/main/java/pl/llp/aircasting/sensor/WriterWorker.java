@@ -32,6 +32,7 @@ public class WriterWorker extends Worker
           {
             while(active.get())
             {
+              sleepFor(100);
               try
               {
                 socketWriter.writeCyclic();
@@ -47,6 +48,7 @@ public class WriterWorker extends Worker
               }
               catch (IOException e)
               {
+                considerStoppingOnFailure();
                 Log.e(Constants.TAG, "Error writing to writer!", e);
               }
             }
