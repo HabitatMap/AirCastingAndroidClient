@@ -123,14 +123,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     }
     else
     {
-      if(DISABLE_MAPS_KEY.equals(preference.getKey()))
-      {
-        return true;
-      }
-      else
-      {
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
-      }
+      return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
   }
 
