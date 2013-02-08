@@ -70,29 +70,24 @@ public class SummaryPacket extends Packet
     return heartRateVariability;
   }
 
-  public boolean isHeartRateVariablityReliable()
-  {
-    return heartRateVariablityReliable;
-  }
-
   public boolean isRespirationRateReliable()
   {
-    return respirationRateReliable;
+    return respirationRateReliable && respirationRate < 6000;
   }
 
   public boolean isSkinTemperatureReliable()
   {
-    return skinTemperatureReliable;
+    return skinTemperatureReliable && skinTemperature > -3000;
   }
 
   public boolean isHeartRateVariabilityReliable()
   {
-    return heartRateVariablityReliable;
+    return heartRateVariablityReliable && heartRateVariability < 65000;
   }
 
   public boolean isHeartRateReliable()
   {
-    return heartRateReliable;
+    return heartRateReliable && heartRate < 60000;
   }
 
   static class EnablePacket
