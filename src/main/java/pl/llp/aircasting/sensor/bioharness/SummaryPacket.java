@@ -6,11 +6,14 @@ public class SummaryPacket extends Packet
   private final double respirationRate;
   private final double skinTemperature;
   private final int heartRateVariability;
+  private final int coreTemperature;
+  private final int galvanicSkinResponse;
 
   private final boolean heartRateReliable;
   private final boolean heartRateVariablityReliable;
   private final boolean skinTemperatureReliable;
   private final boolean respirationRateReliable;
+
 
   public SummaryPacket(byte[] input, int offset)
   {
@@ -35,6 +38,14 @@ public class SummaryPacket extends Packet
     int heartRateVariabilityLS = input[offset + 38] & 0xFF;
     int heartRateVariabilityMS = input[offset + 39] & 0xFF;
     this.heartRateVariability = (heartRateVariabilityLS | (heartRateVariabilityMS << 8));
+
+    int coreTempLS = input[offset + 64] & 0xFF;
+    int coreTempMS = input[offset + 65] & 0xFF;
+    this.coreTemperature = (coreTempLS | (coreTempMS << 8));
+
+    int gsrLS = input[offset + 41] & 0xFF;
+    int gsrMS = input[offset + 42] & 0xFF;
+    this.galvanicSkinResponse = (gsrLS | (gsrMS << 8));
 
     byte ls = input[offset + 59];
     byte ms = input[offset + 60];
@@ -68,6 +79,16 @@ public class SummaryPacket extends Packet
   public int getHeartRateVariability()
   {
     return heartRateVariability;
+  }
+
+  public int getGalvanicSkinResponse()
+  {
+    return galvanicSkinResponse;
+  }
+
+  public int getCoreTemperature()
+  {
+    return coreTemperature;
   }
 
   public boolean isRespirationRateReliable()

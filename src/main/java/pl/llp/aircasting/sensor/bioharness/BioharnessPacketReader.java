@@ -43,6 +43,8 @@ class BioharnessPacketReader
           postHeartRate(packet);
           postSkinTemperature(packet);
           postBreathing(packet);
+          postCoreTemperature(packet);
+          postGSR(packet);
           break;
         case Lifesign:
 
@@ -52,6 +54,21 @@ class BioharnessPacketReader
       return offset + length;
     }
     return 0;
+  }
+
+  private void postGSR(SummaryPacket packet)
+  {
+    // Core Temperature;CT;degrees Celsius;C;33;35;37;39;41
+    int galvanicSkinResponse = packet.getGalvanicSkinResponse();
+    SensorEvent event = buildBioharnessEvent("Galvanic Skin Response", "GSR", "microsiemens", "uS", 0, 10, 100, 1000, 10000, galvanicSkinResponse);
+    eventBus.post(event);
+  }
+
+  private void postCoreTemperature(SummaryPacket packet)
+  {
+    int coreTemperature = packet.getCoreTemperature();
+    SensorEvent event = buildBioharnessEvent("Core Temperature", "CT", "degrees Celsius", "C", 33, 35, 37, 39, 41, coreTemperature);
+    eventBus.post(event);
   }
 
   void postHeartRate(SummaryPacket packet)
