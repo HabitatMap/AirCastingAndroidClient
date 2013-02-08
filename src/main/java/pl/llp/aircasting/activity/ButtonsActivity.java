@@ -65,6 +65,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     private boolean suppressTap = false;
     private boolean initialized = false;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+    SyncBroadcastReceiver registeredReceiver;
+
     @InjectView(R.id.zoom_in) Button zoomIn;
     @InjectView(R.id.zoom_out) Button zoomOut;
 
@@ -82,6 +84,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
+        registeredReceiver = syncBroadcastReceiver;
+
         eventBus.register(this);
     }
 
@@ -95,7 +99,11 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
         locationHelper.stop();
 
-        unregisterReceiver(syncBroadcastReceiver);
+        if(registeredReceiver != null)
+        {
+          unregisterReceiver(syncBroadcastReceiver);
+          registeredReceiver = null;
+        }
         eventBus.unregister(this);
     }
 
