@@ -2,9 +2,8 @@ package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.sensor.AbstractSensor;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.bioharness.BioharnessSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
@@ -31,12 +30,11 @@ public class ExternalSensors
   public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
   public static final String IOIO_DISPLAY_STRIP = "IOIO";
 
+  final Map<String, AbstractSensor> sensors = newHashMap();
+
   @Nullable @Inject BluetoothAdapter bluetoothAdapter;
   @Inject SettingsHelper settings;
   @Inject EventBus eventBus;
-  @Inject SessionManager sessionManager;
-
-  Map<String, AbstractSensor> sensors = newHashMap();
 
   @Inject
   public void init()

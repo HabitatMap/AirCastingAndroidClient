@@ -17,9 +17,11 @@ public class GeneralPacket extends Packet
     int heartRateLS = input[offset + 12] & 0xFF;
     int heartRateMS = input[offset + 13] & 0xFF;
     this.heartRate = heartRateLS;
+
     int respirationRateLS = input[14 + offset] & 0xFF;
     int respirationRateMS = input[15 + offset] & 0xFF;
     this.respirationRate = (respirationRateLS | respirationRateMS << 8) / 10.0d;
+
     int skinTempLS = input[offset + 16] & 0xFF;
     int skinTempMS = input[offset + 17] & 0xFF;
     this.skinTemperature = (skinTempMS << 8 | skinTempLS) / 10.0d;

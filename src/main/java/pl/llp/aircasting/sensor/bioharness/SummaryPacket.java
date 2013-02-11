@@ -6,7 +6,7 @@ public class SummaryPacket extends Packet
   private final double respirationRate;
   private final double skinTemperature;
   private final int heartRateVariability;
-  private final int coreTemperature;
+  private final double coreTemperature;
   private final int galvanicSkinResponse;
 
   private final boolean heartRateReliable;
@@ -41,7 +41,7 @@ public class SummaryPacket extends Packet
 
     int coreTempLS = input[offset + 64] & 0xFF;
     int coreTempMS = input[offset + 65] & 0xFF;
-    this.coreTemperature = (coreTempLS | (coreTempMS << 8));
+    this.coreTemperature = (coreTempLS | (coreTempMS << 8)) / 10.0d;
 
     int gsrLS = input[offset + 41] & 0xFF;
     int gsrMS = input[offset + 42] & 0xFF;
@@ -86,29 +86,44 @@ public class SummaryPacket extends Packet
     return galvanicSkinResponse;
   }
 
-  public int getCoreTemperature()
+  public double getCoreTemperature()
   {
     return coreTemperature;
   }
 
   public boolean isRespirationRateReliable()
   {
-    return respirationRateReliable && respirationRate < 6000;
+    return respirationRateReliable && inRange(respirationRate, 0,  70);
   }
 
   public boolean isSkinTemperatureReliable()
   {
-    return skinTemperatureReliable && skinTemperature > -3000;
+    return skinTemperatureReliable && inRange(skinTemperature, 0, 60);
   }
 
   public boolean isHeartRateVariabilityReliable()
   {
-    return heartRateVariablityReliable && heartRateVariability < 65000;
+    return heartRateVariablityReliable && inRange(heartRateVariability, 0, 30000);
   }
 
   public boolean isHeartRateReliable()
   {
-    return heartRateReliable && heartRate < 60000;
+    return heartRateReliable && inRange(heartRate, 0, 240);
+  }
+
+  private boolean inRange(double value, int lower, int upper)
+  {
+    return value < upper && value > lower;
+  }
+
+  public boolean isGSRReliable()
+  {
+    return inRange(galvanicSkinResponse, 0, 65534);
+  }
+
+  public boolean isCoreTemperatureReliable()
+  {
+    return inRange(coreTemperature, 32, 42);
   }
 
   static class EnablePacket

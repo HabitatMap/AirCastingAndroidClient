@@ -58,28 +58,33 @@ class BioharnessPacketReader
 
   private void postGSR(SummaryPacket packet)
   {
-    // Core Temperature;CT;degrees Celsius;C;33;35;37;39;41
-    int galvanicSkinResponse = packet.getGalvanicSkinResponse();
-    SensorEvent event = buildBioharnessEvent("Galvanic Skin Response", "GSR", "microsiemens", "uS", 0, 10, 100, 1000, 10000, galvanicSkinResponse);
-    eventBus.post(event);
+    if(packet.isGSRReliable())
+    {
+      int galvanicSkinResponse = packet.getGalvanicSkinResponse();
+      SensorEvent event = buildBioharnessEvent("Galvanic Skin Response", "GSR", "microsiemens", "uS", 0, 10, 100, 1000, 10000, galvanicSkinResponse);
+      eventBus.post(event);
+    }
   }
 
   private void postCoreTemperature(SummaryPacket packet)
   {
-    int coreTemperature = packet.getCoreTemperature();
-    SensorEvent event = buildBioharnessEvent("Core Temperature", "CT", "degrees Celsius", "C", 33, 35, 37, 39, 41, coreTemperature);
-    eventBus.post(event);
+    if(packet.isCoreTemperatureReliable())
+    {
+      double coreTemperature = packet.getCoreTemperature();
+      SensorEvent event = buildBioharnessEvent("Core Temperature", "CT", "degrees Celsius", "C", 33, 35, 37, 39, 41, coreTemperature);
+      eventBus.post(event);
+    }
   }
 
   void postHeartRate(SummaryPacket packet)
   {
-//    if(packet.isHeartRateReliable())
+    if(packet.isHeartRateReliable())
     {
       int heartRate = packet.getHeartRate();
       SensorEvent event = buildBioharnessEvent("Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, heartRate);
       eventBus.post(event);
     }
-//    if(packet.isHeartRateVariabilityReliable())
+    if(packet.isHeartRateVariabilityReliable())
     {
       int variability = packet.getHeartRateVariability();
       SensorEvent event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability);
@@ -89,7 +94,7 @@ class BioharnessPacketReader
 
   void postBreathing(SummaryPacket packet)
   {
-//    if(packet.isRespirationRateReliable())
+    if(packet.isRespirationRateReliable())
     {
       double respirationRate = packet.getRespirationRate();
       SensorEvent event = buildBioharnessEvent("Breathing Rate", "BR", "breaths per minute", "bpm", 0, 30, 60, 90, 120, respirationRate);
@@ -99,7 +104,7 @@ class BioharnessPacketReader
 
   void postSkinTemperature(SummaryPacket packet)
   {
-//    if(packet.isSkinTemperatureReliable())
+    if(packet.isSkinTemperatureReliable())
     {
       double skinTemperature = packet.getSkinTemperature();
       SensorEvent event = buildBioharnessEvent("Skin temperature", "ST", "Degrees Celsius", "C", 10, 20, 30, 40, 50, skinTemperature);
@@ -119,7 +124,7 @@ class BioharnessPacketReader
                                    double value
                                   )
   {
-    return new SensorEvent("BioHarness3", "BioHarness3", longName, shortName, unitLong, unitShort,
+    return new SensorEvent("BioHarness3", "BioHarness3-" + shortName, longName, shortName, unitLong, unitShort,
                            thresholdVeryLow,
                            thresholdLow,
                            thresholdMedium, thresholdHigh, thresholdVeryHigh, value);
