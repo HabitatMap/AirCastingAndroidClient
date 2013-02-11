@@ -335,8 +335,6 @@ public class SessionManager
     session.setCalibration(settingsHelper.getCalibration());
     session.setOffset60DB(settingsHelper.getOffset60DB());
 
-    session.setDataType(metadataHelper.getDataType());
-    session.setInstrument(metadataHelper.getInstrument());
     session.setOsVersion(metadataHelper.getOSVersion());
     session.setPhoneModel(metadataHelper.getPhoneModel());
 

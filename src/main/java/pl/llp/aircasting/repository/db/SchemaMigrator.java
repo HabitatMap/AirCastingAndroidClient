@@ -51,9 +51,6 @@ public class SchemaMigrator
 
       createStreamTable(db, 22);
       measurementsToStreams.migrate(db);
-
-      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);
-      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_AVG);
     }
 
     if (oldVersion < 25 && newVersion >= 25) {
@@ -82,18 +79,14 @@ public class SchemaMigrator
     {
       addColumn(db, SESSION_TABLE_NAME, SESSION_LOCAL_ONLY, Datatype.BOOLEAN);
     }
-  }
 
-  private void dropColumn(SQLiteDatabase db, String tableName, String column)
-  {
-    // do nothing
-    // sqlite doesn't allow for easy dropping of columns :(
-//    StringBuilder q = new StringBuilder(50);
-//
-//    q.append("ALTER TABLE ").append(tableName);
-//    q.append(" DROP COLUMN ").append(column);
-//
-//    db.execSQL(q.toString());
+//    sometime in the future
+//    {
+//      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);
+//      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_AVG);
+//      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);
+//      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_AVG);
+//    }
   }
 
   private void addColumn(SQLiteDatabase db, String tableName, String columnName, Datatype datatype) {

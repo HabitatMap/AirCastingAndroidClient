@@ -39,8 +39,7 @@ public interface DBConstants
   String SESSION_CALIBRATION = "Calibration";
   String SESSION_CONTRIBUTE = "Contribute";
   String SESSION_PHONE_MODEL = "PhoneModel";
-  String SESSION_INSTRUMENT = "Instrument";
-  String SESSION_DATA_TYPE = "DataType";
+
   String SESSION_OS_VERSION = "OSVersion";
   String SESSION_OFFSET_60_DB = "Offset60DB";
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
@@ -52,6 +51,10 @@ public interface DBConstants
   String DEPRECATED_SESSION_AVG = "Average";
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_PEAK = "Peak";
+  /** @deprecated belongs to streams */
+  String DEPRECATED_SESSION_INSTRUMENT = "Instrument";
+  /** @deprecated belongs to streams */
+  String DEPRECATED_SESSION_DATA_TYPE = "DataType";
 
   String MEASUREMENT_TABLE_NAME = "Measurements";
   String MEASUREMENT_ID = BaseColumns._ID;

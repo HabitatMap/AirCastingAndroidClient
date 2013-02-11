@@ -49,11 +49,11 @@ public class Session implements Serializable
   @Expose private String description;
   @Expose private int calibration;
   @Expose private boolean contribute;
+
   @Expose @SerializedName("os_version") private String osVersion;
-  @Expose @SerializedName("data_type") private String dataType;
-  @Expose private String instrument;
   @Expose @SerializedName("phone_model") private String phoneModel;
   @Expose @SerializedName("offset_60_db") private int offset60DB;
+
   @Expose private String location;
   @Expose @SerializedName("deleted") private boolean markedForRemoval;
 
@@ -194,16 +194,6 @@ public class Session implements Serializable
     return osVersion;
   }
 
-  public String getDataType()
-  {
-    return dataType;
-  }
-
-  public String getInstrument()
-  {
-    return instrument;
-  }
-
   public String getPhoneModel()
   {
     return phoneModel;
@@ -212,16 +202,6 @@ public class Session implements Serializable
   public void setOsVersion(String osVersion)
   {
     this.osVersion = osVersion;
-  }
-
-  public void setDataType(String dataType)
-  {
-    this.dataType = dataType;
-  }
-
-  public void setInstrument(String instrument)
-  {
-    this.instrument = instrument;
   }
 
   public void setPhoneModel(String phoneModel)

@@ -405,8 +405,6 @@ public class SessionManagerTest
     when(sessionManager.settingsHelper.getCalibration()).thenReturn(123);
     when(sessionManager.settingsHelper.getOffset60DB()).thenReturn(432);
     when(sessionManager.metadataHelper.getOSVersion()).thenReturn("1.1.1");
-    when(sessionManager.metadataHelper.getDataType()).thenReturn("volts");
-    when(sessionManager.metadataHelper.getInstrument()).thenReturn("hammer");
     when(sessionManager.metadataHelper.getPhoneModel()).thenReturn("very old");
 
     triggerMeasurement(100);
@@ -421,8 +419,6 @@ public class SessionManagerTest
         return session.getCalibration() == 123
             && session.getOffset60DB() == 432
             && "1.1.1".equals(session.getOSVersion())
-            && "volts".equals(session.getDataType())
-            && "hammer".equals(session.getInstrument())
             && "very old".equals(session.getPhoneModel());
       }
 
