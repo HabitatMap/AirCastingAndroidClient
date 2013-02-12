@@ -11,17 +11,6 @@ import static pl.llp.aircasting.repository.db.DBConstants.*;
 public class SchemaCreator
 {
   @Language("SQL")
-  private static final String CREATE_MEASUREMENT_TABLE = "create table " + MEASUREMENT_TABLE_NAME +
-      " (" + MEASUREMENT_ID + " integer primary key" +
-      ", " + MEASUREMENT_LATITUDE + " real" +
-      ", " + MEASUREMENT_LONGITUDE + " real" +
-      ", " + MEASUREMENT_VALUE + " real" +
-      ", " + MEASUREMENT_TIME + " integer" +
-      ", " + MEASUREMENT_STREAM_ID + " integer" +
-      ", " + MEASUREMENT_SESSION_ID + " integer" +
-      ")";
-
-  @Language("SQL")
   private static final String CREATE_NOTE_TABLE = "create table " + NOTE_TABLE_NAME + "(" +
       NOTE_SESSION_ID + " integer " +
       ", " + NOTE_LATITUDE + " real " +
@@ -35,9 +24,23 @@ public class SchemaCreator
   public void create(SQLiteDatabase db)
   {
     db.execSQL(sessionTable().asSQL(DBConstants.DB_VERSION));
-    db.execSQL(CREATE_MEASUREMENT_TABLE);
+    db.execSQL(measurementTable().asSQL(DB_VERSION));
     db.execSQL(streamTable().asSQL(DB_VERSION));
     db.execSQL(CREATE_NOTE_TABLE);
+  }
+
+  Table measurementTable()
+  {
+    Table table = new Table(MEASUREMENT_TABLE_NAME);
+    table.setPrimaryKey(new Column(MEASUREMENT_ID, Datatype.INTEGER));
+
+    table.addColumn(new Column(MEASUREMENT_LATITUDE, Datatype.REAL));
+    table.addColumn(new Column(MEASUREMENT_LONGITUDE, Datatype.REAL));
+    table.addColumn(new Column(MEASUREMENT_VALUE, Datatype.REAL));
+    table.addColumn(new Column(MEASUREMENT_TIME, Datatype.INTEGER));
+    table.addColumn(new Column(MEASUREMENT_STREAM_ID, Datatype.INTEGER));
+    table.addColumn(new Column(MEASUREMENT_SESSION_ID, Datatype.INTEGER));
+    return table;
   }
 
   Table streamTable()
