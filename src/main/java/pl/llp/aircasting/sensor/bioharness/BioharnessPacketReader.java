@@ -78,18 +78,30 @@ class BioharnessPacketReader
 
   void postHeartRate(SummaryPacket packet)
   {
+    SensorEvent event;
     if(packet.isHeartRateReliable())
     {
       int heartRate = packet.getHeartRate();
-      SensorEvent event = buildBioharnessEvent("Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, heartRate);
+      event = buildBioharnessEvent("Heart Rate", "HR", "beats per minute", "bpm", 40, 85, 130, 175, 220, heartRate);
       eventBus.post(event);
     }
     if(packet.isHeartRateVariabilityReliable())
     {
       int variability = packet.getHeartRateVariability();
-      SensorEvent event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability);
+      event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability);
       eventBus.post(event);
     }
+    if(packet.isECGReliable())
+    {
+      int ecgAmplitude = packet.getEcgAmplitude();
+      int ecgNoise = packet.getEcgNoise();
+
+      event = buildBioharnessEvent("ECG Amplitude", "ECGA", "microVolts", "uV", 0, 20000, 30000, 40000, 50000, ecgAmplitude);
+      eventBus.post(event);
+      event = buildBioharnessEvent("ECG Noise", "ECGN", "microVolts", "uV", 0, 20000, 30000, 40000, 50000, ecgNoise);
+      eventBus.post(event);
+    }
+
   }
 
   void postBreathing(SummaryPacket packet)
@@ -124,7 +136,7 @@ class BioharnessPacketReader
                                    double value
                                   )
   {
-    return new SensorEvent("BioHarness3", "BioHarness3-" + shortName, longName, shortName, unitLong, unitShort,
+    return new SensorEvent("BioHarness3", "BioHarness3:" + shortName, longName, shortName, unitLong, unitShort,
                            thresholdVeryLow,
                            thresholdLow,
                            thresholdMedium, thresholdHigh, thresholdVeryHigh, value);
