@@ -124,7 +124,7 @@ public class CSVHelper
 
 class SessionWriter
 {
-  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
   final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
   final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(GsonProvider.ISO_8601);
 
