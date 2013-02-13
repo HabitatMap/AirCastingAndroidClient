@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import org.intellij.lang.annotations.Language;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +24,6 @@ import static pl.llp.aircasting.repository.db.DBConstants.*;
 class MeasurementRepository
 {
   private ProgressListener progress = NoOp.progressListener();
-
-  @Language("SQL")
-  private static final String INSERT_MEASUREMENTS = "" +
-      "INSERT INTO " + MEASUREMENT_TABLE_NAME + "(" +
-      MEASUREMENT_STREAM_ID + ", " +
-      MEASUREMENT_SESSION_ID + ", " +
-      MEASUREMENT_TIME + ", " +
-      MEASUREMENT_LATITUDE + ", " +
-      MEASUREMENT_LONGITUDE + ", " +
-      MEASUREMENT_VALUE + ") " +
-      " VALUES(?, ?, ?, ?, ?, ?)";
-
 
   public MeasurementRepository(ProgressListener progressListener)
   {
