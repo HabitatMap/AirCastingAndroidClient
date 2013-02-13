@@ -74,14 +74,14 @@ public class Builder
         int thirdLs  = input[offset + index + 2]  & 0xF0;
         int thirdMs  = input[offset + index + 3]  & 0x3F;
         int third    = (thirdMs << 8  | thirdLs)   >> 4;
-        result[i] = second;
+        result[i] = third;
         i++;
         if(i == count) break;
 
         int fourthLs = input[offset + index + 3]  & 0xC0;
         int fourthMs = input[offset + index + 4]  & 0xFF;
-        int fourth   = (fourthMs << 8 | thirdLs)  >> 6;
-        result[i] = second;
+        int fourth   = (fourthMs << 8 | fourthLs) >> 6;
+        result[i] = fourth;
         i++;
         if(i == count) break;
       }

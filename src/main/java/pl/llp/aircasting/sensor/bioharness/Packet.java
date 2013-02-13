@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-abstract class Packet
+public abstract class Packet
 {
   enum Request
   {

@@ -61,7 +61,7 @@ public enum PacketType
           throw new RuntimeException("Not implemented yet");
         }
       },
-  RtoR(0x24)
+  RtoRPacket(0x24)
       {
         @Override
         public byte[] getRequest(Packet.Request request)
@@ -167,7 +167,7 @@ public enum PacketType
       case 0x23:
         return PacketType.Lifesign;
       case 0x24:
-        return RtoR;
+        return RtoRPacket;
       case 0x2B:
         return SummaryPacket;
     }

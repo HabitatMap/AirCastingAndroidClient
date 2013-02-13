@@ -39,16 +39,25 @@ class BioharnessPacketReader
       switch (packetType)
       {
         case SummaryPacket:
+        {
           SummaryPacket packet = new SummaryPacket(data, offset);
           postHeartRate(packet);
-          postSkinTemperature(packet);
           postBreathing(packet);
           postCoreTemperature(packet);
-          postGSR(packet);
           break;
-        case Lifesign:
-
+        }
+        case RtoRPacket:
+        {
+          RtoRPacket packet = new RtoRPacket(data, offset);
+          postRtoR(packet);
           break;
+        }
+        case ECGPacket:
+        {
+          ECGPacket packet = new ECGPacket(data, offset);
+          postECGWave(packet);
+          break;
+        }
       }
 
       return offset + length;
@@ -56,14 +65,38 @@ class BioharnessPacketReader
     return 0;
   }
 
-  private void postGSR(SummaryPacket packet)
+  private void postECGWave(ECGPacket packet)
   {
-    if(packet.isGSRReliable())
+    int[] samples = packet.getSamples();
+    long timeStamp = System.currentTimeMillis();
+    for (int i = 0; i < samples.length; i++)
     {
-      int galvanicSkinResponse = packet.getGalvanicSkinResponse();
-      SensorEvent event = buildBioharnessEvent("Galvanic Skin Response", "GSR", "microsiemens", "uS", 0, 10, 100, 1000, 10000, galvanicSkinResponse);
-      eventBus.post(event);
+      int value = samples[i];
+      postECGWaveEvent(value, timeStamp + i * 4);
     }
+  }
+
+  private void postRtoR(RtoRPacket packet)
+  {
+    int[] samples = packet.getSamples();
+    long timeStamp = System.currentTimeMillis();
+    for (int i = 0; i < samples.length; i++)
+    {
+      int value = samples[i];
+      postRtoREvent(value, timeStamp + i * 56);
+    }
+  }
+
+  private void postECGWaveEvent(int value, long timeStamp)
+  {
+    SensorEvent event = buildBioharnessEvent("ECG Wave", "ECG", "ecg wave units", "ecgs", 0, 10, 100, 1000, 25000, value, timeStamp);
+    eventBus.post(event);
+  }
+
+  private void postRtoREvent(int value, long timeStamp)
+  {
+    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "r to r units", "rtors", 0, 10, 100, 1000, 25000, value, timeStamp);
+    eventBus.post(event);
   }
 
   private void postCoreTemperature(SummaryPacket packet)
@@ -114,16 +147,6 @@ class BioharnessPacketReader
     }
   }
 
-  void postSkinTemperature(SummaryPacket packet)
-  {
-    if(packet.isSkinTemperatureReliable())
-    {
-      double skinTemperature = packet.getSkinTemperature();
-      SensorEvent event = buildBioharnessEvent("Skin temperature", "ST", "Degrees Celsius", "C", 10, 20, 30, 40, 50, skinTemperature);
-      eventBus.post(event);
-    }
-  }
-
   SensorEvent buildBioharnessEvent(String longName,
                                    String shortName,
                                    String unitLong,
@@ -140,5 +163,24 @@ class BioharnessPacketReader
                            thresholdVeryLow,
                            thresholdLow,
                            thresholdMedium, thresholdHigh, thresholdVeryHigh, value);
+  }
+
+  SensorEvent buildBioharnessEvent(String longName,
+                                   String shortName,
+                                   String unitLong,
+                                   String unitShort,
+                                   int thresholdVeryLow,
+                                   int thresholdLow,
+                                   int thresholdMedium,
+                                   int thresholdHigh,
+                                   int thresholdVeryHigh,
+                                   double value,
+                                   long timeStamp
+                                  )
+  {
+    return new SensorEvent("BioHarness3", "BioHarness3:" + shortName, longName, shortName, unitLong, unitShort,
+                           thresholdVeryLow,
+                           thresholdLow,
+                           thresholdMedium, thresholdHigh, thresholdVeryHigh, value, timeStamp);
   }
 }

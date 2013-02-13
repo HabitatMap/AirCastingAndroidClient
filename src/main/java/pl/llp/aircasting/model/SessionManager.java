@@ -201,7 +201,7 @@ public class SessionManager
       double latitude = location.getLatitude();
       double longitude = location.getLongitude();
 
-      Measurement measurement = new Measurement(latitude, longitude, value);
+      Measurement measurement = new Measurement(latitude, longitude, value, event.getDate());
       if (sessionStarted)
       {
         MeasurementStream stream = prepareStream(event);

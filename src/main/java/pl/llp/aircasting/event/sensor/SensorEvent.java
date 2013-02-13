@@ -2,6 +2,8 @@ package pl.llp.aircasting.event.sensor;
 
 import pl.llp.aircasting.event.AirCastingEvent;
 
+import java.util.Date;
+
 public class SensorEvent extends AirCastingEvent
 {
   private String packageName;
@@ -16,6 +18,8 @@ public class SensorEvent extends AirCastingEvent
   private int high;
   private int veryHigh;
   private double value;
+
+  private long creationTime = new Date().getTime();
 
   private String address = "none";
 
@@ -91,6 +95,25 @@ public class SensorEvent extends AirCastingEvent
     this.veryHigh = veryHigh;
     this.value = value;
     this.address = address;
+  }
+
+  public SensorEvent(String packageName, String sensorName, String measurementType,
+                     String shortType, String unit, String symbol,
+                     int veryLow, int low, int mid, int high, int veryHigh, double value, long timeStamp)
+  {
+    this.packageName = packageName;
+    this.sensorName = sensorName;
+    this.shortType = shortType;
+    this.unit = unit;
+    this.symbol = symbol;
+    this.measurementType = measurementType;
+    this.veryLow = veryLow;
+    this.low = low;
+    this.mid = mid;
+    this.high = high;
+    this.veryHigh = veryHigh;
+    this.value = value;
+    this.creationTime = timeStamp;
   }
 
   public SensorEvent(String packageName, String sensorName, String measurementType,
@@ -188,5 +211,10 @@ public class SensorEvent extends AirCastingEvent
   public String getAddress()
   {
     return address;
+  }
+
+  public Date getDate()
+  {
+    return new Date(creationTime);
   }
 }
