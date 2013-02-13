@@ -41,24 +41,5 @@ public class GeneralPacket extends Packet
   {
     return skinTemperature;
   }
-
-  static class EnablePacket
-  {
-    public static byte[] getRequest(Request request)
-    {
-      byte[] bytes = {2, 20, 1, 0, 0, 3};
-      if (request.isEnabled())
-      {
-        bytes[3] = (byte) 1;
-        bytes[4] = 94;
-      }
-      else
-      {
-        bytes[3] = (byte) 0;
-        bytes[4] = 0;
-      }
-      return bytes;
-    }
-  }
 }
 

@@ -3,16 +3,21 @@ package pl.llp.aircasting.sensor.bioharness;
 public class SummaryPacket extends Packet
 {
   private final int heartRate;
+  private final int heartRateVariability;
+  private final int galvanicSkinResponse;
   private final double respirationRate;
   private final double skinTemperature;
-  private final int heartRateVariability;
   private final double coreTemperature;
-  private final int galvanicSkinResponse;
 
   private final boolean heartRateReliable;
   private final boolean heartRateVariablityReliable;
   private final boolean skinTemperatureReliable;
   private final boolean respirationRateReliable;
+
+  private final int breathingWaveAmplitude;
+  private final int breathingWaveNoise;
+  private final int ecgAmplitude;
+  private final int ecgNoise;
 
 
   public SummaryPacket(byte[] input, int offset)
@@ -23,29 +28,19 @@ public class SummaryPacket extends Packet
       throw new RuntimeException("Not long enough");
     }
 
-    int heartRateLS = input[offset + 13] & 0xFF;
-    int heartRateMS = input[offset + 14] & 0xFF;
-    this.heartRate = heartRateLS | (heartRateMS << 8);
+    Builder builder = new Builder(input, offset);
 
-    int respirationRateLS = input[(offset + 15)] & 0xFF;
-    int respirationRateMS = input[(offset + 16)] & 0xFF;
-    this.respirationRate = (respirationRateLS | (respirationRateMS << 8)) / 10.0d;
+    this.heartRate = builder.intFromBytes().higher(14).lower(13).value();
+    this.respirationRate = builder.intFromBytes().higher(16).lower(15).value() / 10.0d;
+    this.skinTemperature = (builder.intFromBytes().higher(18).lower(17).value()) / 10.0d;
+    this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
+    this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
+    this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
 
-    int skinTempLS = input[offset + 17] & 0xFF;
-    int skinTempMS = input[offset + 18] & 0xFF;
-    this.skinTemperature = (skinTempMS << 8 | skinTempLS) / 10.0d;
-
-    int heartRateVariabilityLS = input[offset + 38] & 0xFF;
-    int heartRateVariabilityMS = input[offset + 39] & 0xFF;
-    this.heartRateVariability = (heartRateVariabilityLS | (heartRateVariabilityMS << 8));
-
-    int coreTempLS = input[offset + 64] & 0xFF;
-    int coreTempMS = input[offset + 65] & 0xFF;
-    this.coreTemperature = (coreTempLS | (coreTempMS << 8)) / 10.0d;
-
-    int gsrLS = input[offset + 41] & 0xFF;
-    int gsrMS = input[offset + 42] & 0xFF;
-    this.galvanicSkinResponse = (gsrLS | (gsrMS << 8));
+    this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
+    this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
+    this.ecgAmplitude = builder.intFromBytes().higher(34).lower(33).value();
+    this.ecgNoise = builder.intFromBytes().higher(36).lower(35).value();
 
     byte ls = input[offset + 59];
     byte ms = input[offset + 60];
@@ -126,18 +121,28 @@ public class SummaryPacket extends Packet
     return inRange(coreTemperature, 32, 42);
   }
 
-  static class EnablePacket
+  public boolean isECGReliable()
   {
-    public static byte[] getRequest(Request request)
-    {
-      byte[] bytes = { 2, -67, 2, 0, 0, 0, 3 };
-      if (request.isEnabled())
-      {
-        bytes[3] = (byte) 1;
-        bytes[5] = -60;
-      }
-      return bytes;
-    }
+    return inRange(ecgAmplitude, 0, 50000);
+  }
 
+  public int getBreathingWaveAmplitude()
+  {
+    return breathingWaveAmplitude;
+  }
+
+  public int getBreathingWaveNoise()
+  {
+    return breathingWaveNoise;
+  }
+
+  public int getEcgAmplitude()
+  {
+    return ecgAmplitude;
+  }
+
+  public int getEcgNoise()
+  {
+    return ecgNoise;
   }
 }
