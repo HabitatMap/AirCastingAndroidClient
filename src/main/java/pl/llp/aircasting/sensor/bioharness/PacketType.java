@@ -4,19 +4,109 @@ import pl.llp.aircasting.util.Pair;
 
 public enum PacketType
 {
-  GeneralPacket(0x20),
-  BreathingPacket(0x21),
-  ECGPacket(0x22),
-  Lifesign(0x23),
-  SummaryPacket(0x2B),
-  Invalid(0x00, false),
+  GeneralPacket(0x20)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          byte[] bytes = {2, 20, 1, 0, 0, 3};
+          if (request.isEnabled())
+          {
+            bytes[3] = (byte) 1;
+            bytes[4] = 94;
+          }
+          else
+          {
+            bytes[3] = (byte) 0;
+            bytes[4] = 0;
+          }
+          return bytes;
+        }
+      },
+  BreathingPacket(0x21)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          byte[] bytes = { 2, 21, 1, 0, 0, 3 };
+
+          if (request.isEnabled())
+          {
+            bytes[3] = 1;
+            bytes[4] = 94;
+          }
+          return bytes;
+        }
+      },
+  ECGPacket(0x22)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          byte[] bytes = { 2, 22, 1, 0, 0, 3 };
+
+          if (request.isEnabled())
+          {
+            bytes[3] = 1;
+            bytes[4] = 94;
+          }
+          return bytes;
+        }
+      },
+  Lifesign(0x23)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          throw new RuntimeException("Not implemented yet");
+        }
+      },
+  RtoR(0x24)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          byte[] bytes = { 2, 25, 1, 0, 0, 3 };
+
+          if (request.isEnabled())
+          {
+            bytes[3] = 1;
+            bytes[4] = 94;
+          }
+          return bytes;
+        }
+      },
+  SummaryPacket(0x2B)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          byte[] bytes = {2, -67, 2, 0, 0, 0, 3};
+          if (request.isEnabled())
+          {
+            bytes[3] = (byte) 1;
+            bytes[5] = -60;
+          }
+          return bytes;
+        }
+      },
+  Invalid(0x00, false)
+      {
+        @Override
+        public byte[] getRequest(Packet.Request request)
+        {
+          throw new RuntimeException("Should not be called");
+        }
+      },
   ;
 
   static final byte STX = 0x02;
   static final byte ETX = 0x03;
 
   private boolean valid = true;
-  private final int messageId;
+  public final int messageId;
+
+  public abstract byte[] getRequest(Packet.Request request);
 
   PacketType(int id)
   {
@@ -35,18 +125,18 @@ public enum PacketType
     {
       int messageId = input[index + 1];
       PacketType packetType = decode(messageId);
-      if(packetType == PacketType.Invalid)
+      if (packetType == PacketType.Invalid)
       {
         return packetAndLenght(PacketType.Invalid, 0);
       }
 
-      if(packetType == Lifesign)
+      if (packetType == Lifesign)
       {
         return packetAndLenght(Lifesign, 5);
       }
 
       int length = input[index + 2];
-      if((index + length) > input.length)
+      if ((index + length) > input.length)
       {
         return packetAndLenght(PacketType.Invalid, 0);
       }
@@ -76,8 +166,10 @@ public enum PacketType
         return PacketType.ECGPacket;
       case 0x23:
         return PacketType.Lifesign;
+      case 0x24:
+        return RtoR;
       case 0x2B:
-        return PacketType.SummaryPacket;
+        return SummaryPacket;
     }
     return PacketType.Invalid;
   }
@@ -85,22 +177,5 @@ public enum PacketType
   public boolean isValid()
   {
     return valid;
-  }
-
-  public static class BreathingPacket extends Packet
-  {
-    private final byte[] base;
-
-    BreathingPacket(byte[] input)
-    {
-      this.base = input;
-    }
-
-    public static byte[] getRequest(boolean enabled)
-    {
-      byte[] bytes = {PacketType.STX, 22, 1, 0, 0, PacketType.ETX};
-      bytes[3] = (byte) (enabled ? 1 : 0);
-      return bytes;
-    }
   }
 }
