@@ -40,6 +40,8 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.String.valueOf;
@@ -47,6 +49,7 @@ import static java.lang.String.valueOf;
 public class CSVHelper
 {
   // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
+  public static final String SESSION_ZIP_FILE = "session.zip";
   public static final String SESSION_TEMP_FILE = "session.csv";
 
   public Uri prepareCSV(Session session) throws IOException
@@ -58,9 +61,13 @@ public class CSVHelper
       File storage = Environment.getExternalStorageDirectory();
       File dir = new File(storage, "aircasting_sessions");
       dir.mkdirs();
-      File file = new File(dir, fileName(session.getTitle()));
+      String sessionName = fileName(session.getTitle());
+      File file = new File(dir, sessionName);
       outputStream = new FileOutputStream(file);
-      Writer writer = new OutputStreamWriter(outputStream);
+
+      ZipOutputStream zipped = new ZipOutputStream(outputStream);
+      zipped.putNextEntry(new ZipEntry("session.csv"));
+      Writer writer = new OutputStreamWriter(zipped);
 
       CsvWriter csvWriter = new CsvWriter(writer, ',');
 
@@ -113,7 +120,7 @@ public class CSVHelper
       }
     }
 
-    return result.length() > 0 ? result.append(".csv").toString() : SESSION_TEMP_FILE;
+    return result.length() > 0 ? result.append(".zip").toString() : SESSION_TEMP_FILE;
   }
 
   private SessionWriter write(Session session)

@@ -63,6 +63,7 @@ public final class Intents {
     public static final String MESSAGE = "message";
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String MIME_TEXT_CSV = "text/csv";
+    public static final String MIME_APPLICATION_ZIP = "application/zip";
     public static final String MIME_IMAGE_JPEG = "image/jpeg";
     public static final int REQUEST_ENABLE_BLUETOOTH = 5;
     public static final String EXTRA_SENSOR = "sensor";
@@ -136,9 +137,8 @@ public final class Intents {
     }
 
     public static void shareCSV(Activity context, Uri uri, String chooserTitle, String subject, String text) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType(MIME_TEXT_CSV);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType(MIME_APPLICATION_ZIP);
 
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.putExtra(Intent.EXTRA_TEXT, text);
