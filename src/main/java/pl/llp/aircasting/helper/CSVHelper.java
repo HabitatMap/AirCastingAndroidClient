@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.guice.GsonProvider;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
@@ -48,6 +47,7 @@ import static java.lang.String.valueOf;
 
 public class CSVHelper
 {
+  public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
   // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
   public static final String SESSION_ZIP_FILE = "session.zip";
   public static final String SESSION_TEMP_FILE = "session.csv";
@@ -70,19 +70,6 @@ public class CSVHelper
       Writer writer = new OutputStreamWriter(zipped);
 
       CsvWriter csvWriter = new CsvWriter(writer, ',');
-
-      csvWriter.write("sensor:model");
-      csvWriter.write("sensor:package");
-      csvWriter.write("sensor:capability");
-      csvWriter.write("Date");
-      csvWriter.write("Time");
-      csvWriter.write("Timestamp");
-      csvWriter.write("geo:lat");
-      csvWriter.write("geo:long");
-      csvWriter.write("sensor:units");
-      csvWriter.write("Value");
-      csvWriter.endRecord();
-
       write(session).toWriter(csvWriter);
 
       csvWriter.flush();
@@ -131,9 +118,7 @@ public class CSVHelper
 
 class SessionWriter
 {
-  final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
-  final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-  final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(GsonProvider.ISO_8601);
+  final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(CSVHelper.TIMESTAMP_FORMAT);
 
   Session session;
 
@@ -147,20 +132,51 @@ class SessionWriter
     Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     for (MeasurementStream stream : streams)
     {
+      writeSensorHeader(writer);
+      writeSensor(stream, writer);
+
+      writeMeasurementHeader(writer);
+
       for (Measurement measurement : stream.getMeasurements())
       {
-        writer.write(stream.getSensorName());
-        writer.write(stream.getPackageName());
-        writer.write(stream.getMeasurementType());
-        writer.write(DATE_FORMAT.format(measurement.getTime()));
-        writer.write(TIME_FORMAT.format(measurement.getTime()));
-        writer.write(TIMESTAMP_FORMAT.format(measurement.getTime()));
-        writer.write(valueOf(measurement.getLongitude()));
-        writer.write(valueOf(measurement.getLatitude()));
-        writer.write(valueOf(stream.getUnit()));
-        writer.write(valueOf(measurement.getValue()));
-        writer.endRecord();
+        writeMeasurement(writer, measurement);
       }
     }
+  }
+
+  private void writeMeasurementHeader(CsvWriter writer) throws IOException
+  {
+    writer.write("Timestamp");
+    writer.write("geo:lat");
+    writer.write("geo:long");
+    writer.write("Value");
+    writer.endRecord();
+  }
+
+  private void writeMeasurement(CsvWriter writer, Measurement measurement) throws IOException
+  {
+    writer.write(TIMESTAMP_FORMAT.format(measurement.getTime()));
+    writer.write(valueOf(measurement.getLongitude()));
+    writer.write(valueOf(measurement.getLatitude()));
+    writer.write(valueOf(measurement.getValue()));
+    writer.endRecord();
+  }
+
+  private void writeSensor(MeasurementStream stream, CsvWriter writer) throws IOException
+  {
+    writer.write(stream.getSensorName());
+    writer.write(stream.getPackageName());
+    writer.write(stream.getMeasurementType());
+    writer.write(valueOf(stream.getUnit()));
+    writer.endRecord();
+  }
+
+  private void writeSensorHeader(CsvWriter writer) throws IOException
+  {
+    writer.write("sensor:model");
+    writer.write("sensor:package");
+    writer.write("sensor:capability");
+    writer.write("sensor:units");
+    writer.endRecord();
   }
 }
