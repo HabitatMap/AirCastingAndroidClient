@@ -54,36 +54,39 @@ public class Builder
     {
       int[] result = new int[count];
 
-      int i = 0;
-      while(i < count)
+      int sampleNo = 0;
+      int localIndex = offset + index;
+      while(sampleNo < count)
       {
-        int firstLs  = input[offset + index]      & 0xFF;
-        int firstMs  = input[offset + index + 1]  & 0x03;
-        int first    = (firstMs << 8  | firstLs);
-        result[i] = first;
-        i++;
-        if(i == count) break;
+        int firstLs  = input[localIndex]      & 0xFF;
+        int firstMs  = input[localIndex + 1]  & 0x03;
+        int first    = ((firstMs << 8)  | firstLs);
+        result[sampleNo] = first;
+        sampleNo++;
+        if(sampleNo == count) break;
 
-        int secondLs = input[offset + index + 1]  & 0xFC;
-        int secondMs = input[offset + index + 2]  & 0xFC;
-        int second   = (secondMs << 8 | secondLs) >> 2;
-        result[i] = second;
-        i++;
-        if(i == count) break;
+        int secondLs = input[localIndex + 1]  & 0xFC;
+        int secondMs = input[localIndex + 2]  & 0x0F;
+        int second   = ((secondMs << 8) | secondLs) >> 2;
+        result[sampleNo] = second;
+        sampleNo++;
+        if(sampleNo == count) break;
 
-        int thirdLs  = input[offset + index + 2]  & 0xF0;
-        int thirdMs  = input[offset + index + 3]  & 0x3F;
-        int third    = (thirdMs << 8  | thirdLs)   >> 4;
-        result[i] = third;
-        i++;
-        if(i == count) break;
+        int thirdLs  = input[localIndex + 2]  & 0xF0;
+        int thirdMs  = input[localIndex + 3]  & 0x3F;
+        int third    = ((thirdMs << 8)  | thirdLs)   >> 4;
+        result[sampleNo] = third;
+        sampleNo++;
+        if(sampleNo == count) break;
 
-        int fourthLs = input[offset + index + 3]  & 0xC0;
-        int fourthMs = input[offset + index + 4]  & 0xFF;
-        int fourth   = (fourthMs << 8 | fourthLs) >> 6;
-        result[i] = fourth;
-        i++;
-        if(i == count) break;
+        int fourthLs = input[localIndex + 3]  & 0xC0;
+        int fourthMs = input[localIndex + 4]  & 0xFF;
+        int fourth   = ((fourthMs << 8) | fourthLs) >> 6;
+        result[sampleNo] = fourth;
+        sampleNo++;
+        if(sampleNo == count) break;
+
+        localIndex += 4;
       }
 
       return result;

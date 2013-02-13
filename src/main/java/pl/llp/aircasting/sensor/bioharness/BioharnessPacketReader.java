@@ -89,13 +89,13 @@ class BioharnessPacketReader
 
   private void postECGWaveEvent(int value, long timeStamp)
   {
-    SensorEvent event = buildBioharnessEvent("ECG Wave", "ECG", "ecg wave units", "ecgs", 0, 10, 100, 1000, 25000, value, timeStamp);
+    SensorEvent event = buildBioharnessEvent("ECG Wave", "ECG", "millivolts", "mV", 0, 300, 600, 900, 1200, value, timeStamp);
     eventBus.post(event);
   }
 
   private void postRtoREvent(int value, long timeStamp)
   {
-    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "r to r units", "rtors", 0, 10, 100, 1000, 25000, value, timeStamp);
+    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 0, 10, 100, 1000, 25000, value, timeStamp);
     eventBus.post(event);
   }
 
