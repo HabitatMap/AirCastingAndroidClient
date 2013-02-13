@@ -53,6 +53,7 @@ import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static pl.llp.aircasting.Intents.triggerSync;
 
@@ -84,6 +85,8 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     int noteIndex = -1;
     Note currentNote;
     int noteTotal;
+
+    final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
     @Override
     protected void onResume() {
@@ -147,14 +150,20 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
   private void updateGaugeFaces(final Sensor visibleSensor)
   {
-    runOnUiThread(new Runnable()
+    if(noUpdateInProgress.get())
     {
-      @Override
-      public void run()
+      noUpdateInProgress.set(false);
+      runOnUiThread(new Runnable()
       {
-        gaugeHelper.updateGauges(visibleSensor, gauges);
-      }
-    });
+        @Override
+        public void run()
+        {
+
+          gaugeHelper.updateGauges(visibleSensor, gauges);
+          noUpdateInProgress.set(true);
+        }
+      });
+    }
   }
 
   @Subscribe
