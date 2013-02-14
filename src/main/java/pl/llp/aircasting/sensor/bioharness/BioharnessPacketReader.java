@@ -94,7 +94,10 @@ class BioharnessPacketReader
     for (int i = 0; i < samples.length; i++)
     {
       int value = samples[i];
-      postRtoREvent(value, timeStamp + i * 56);
+      if(0 < value && value <= 3000)
+      {
+        postRtoREvent(value, timeStamp + i * 56);
+      }
     }
   }
 

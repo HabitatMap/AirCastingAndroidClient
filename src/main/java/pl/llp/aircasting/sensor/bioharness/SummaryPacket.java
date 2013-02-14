@@ -40,7 +40,7 @@ public class SummaryPacket extends Packet
     this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
     this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
     this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
-    this.activity = (builder.intFromBytes().higher(22).lower(21).value());
+    this.activity = (builder.intFromBytes().higher(22).lower(21).value()) / 100.0d;
 
     this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
     this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
