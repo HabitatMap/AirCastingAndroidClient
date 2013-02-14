@@ -9,6 +9,9 @@ public class SummaryPacket extends Packet
   private final double skinTemperature;
   private final double coreTemperature;
 
+  private final double activity;
+
+  private final boolean activityReliable;
   private final boolean heartRateReliable;
   private final boolean heartRateVariablityReliable;
   private final boolean skinTemperatureReliable;
@@ -18,6 +21,7 @@ public class SummaryPacket extends Packet
   private final int breathingWaveNoise;
   private final int ecgAmplitude;
   private final int ecgNoise;
+  ;
 
 
   public SummaryPacket(byte[] input, int offset)
@@ -36,6 +40,7 @@ public class SummaryPacket extends Packet
     this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
     this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
     this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
+    this.activity = (builder.intFromBytes().higher(22).lower(21).value()) / 100d;
 
     this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
     this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
@@ -48,8 +53,10 @@ public class SummaryPacket extends Packet
     boolean hruf =  (ls & 1 << 4) < 1;
     boolean rruf =  (ls & 1 << 5) < 1;
     boolean stuf =  (ls & 1 << 6) < 1;
+    boolean acuf =  (ls & 1 << 0) < 1;
     boolean hrvuf = (ms & 1 << 1) < 1;
 
+    this.activityReliable = acuf;
     this.heartRateReliable = hruf;
     this.heartRateVariablityReliable = hrvuf;
     this.skinTemperatureReliable = stuf;
@@ -108,7 +115,7 @@ public class SummaryPacket extends Packet
 
   private boolean inRange(double value, int lower, int upper)
   {
-    return value < upper && value > lower;
+    return value <= upper && value >= lower;
   }
 
   public boolean isGSRReliable()
@@ -144,5 +151,15 @@ public class SummaryPacket extends Packet
   public int getEcgNoise()
   {
     return ecgNoise;
+  }
+
+  public double getActivity()
+  {
+    return activity;
+  }
+
+  public boolean isActivityReliable()
+  {
+    return activityReliable && inRange(activity, 0, 16);
   }
 }
