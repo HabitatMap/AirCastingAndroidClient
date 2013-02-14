@@ -44,6 +44,7 @@ class BioharnessPacketReader
           postHeartRate(packet);
           postBreathing(packet);
           postCoreTemperature(packet);
+          postActivity(packet);
           break;
         }
         case RtoRPacket:
@@ -63,6 +64,16 @@ class BioharnessPacketReader
       return offset + length;
     }
     return 0;
+  }
+
+  private void postActivity(SummaryPacket packet)
+  {
+    if(packet.isActivityReliable())
+    {
+      double value = packet.getActivity();
+      SensorEvent event = buildBioharnessEvent("Activity", "ACT", "VMU", "vmu", 0, 4, 8, 12, 16, value);
+      eventBus.post(event);
+    }
   }
 
   private void postECGWave(ECGPacket packet)
@@ -124,17 +135,6 @@ class BioharnessPacketReader
       event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability);
       eventBus.post(event);
     }
-    if(packet.isECGReliable())
-    {
-      int ecgAmplitude = packet.getEcgAmplitude();
-      int ecgNoise = packet.getEcgNoise();
-
-      event = buildBioharnessEvent("ECG Amplitude", "ECGA", "microVolts", "uV", 0, 20000, 30000, 40000, 50000, ecgAmplitude);
-      eventBus.post(event);
-      event = buildBioharnessEvent("ECG Noise", "ECGN", "microVolts", "uV", 0, 20000, 30000, 40000, 50000, ecgNoise);
-      eventBus.post(event);
-    }
-
   }
 
   void postBreathing(SummaryPacket packet)
