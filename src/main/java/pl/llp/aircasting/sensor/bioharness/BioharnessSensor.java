@@ -42,7 +42,6 @@ public class BioharnessSensor extends AbstractSensor
     writerWorker.start();
     writerWorker.write(PacketType.SummaryPacket.getRequest(Packet.Request.ENABLED));
     writerWorker.write(PacketType.RtoRPacket.getRequest(Packet.Request.ENABLED));
-    writerWorker.write(PacketType.ECGPacket.getRequest(Packet.Request.ENABLED));
   }
 
   @Override
