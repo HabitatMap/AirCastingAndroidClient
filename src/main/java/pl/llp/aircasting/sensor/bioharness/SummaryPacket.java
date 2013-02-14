@@ -40,7 +40,7 @@ public class SummaryPacket extends Packet
     this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
     this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
     this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
-    this.activity = (builder.intFromBytes().higher(22).lower(21).value()) / 100d;
+    this.activity = (builder.intFromBytes().higher(22).lower(21).value());
 
     this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
     this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
@@ -53,7 +53,7 @@ public class SummaryPacket extends Packet
     boolean hruf =  (ls & 1 << 4) < 1;
     boolean rruf =  (ls & 1 << 5) < 1;
     boolean stuf =  (ls & 1 << 6) < 1;
-    boolean acuf =  (ls & 1 << 0) < 1;
+    boolean acuf =  (ms & 1 << 0) < 1;
     boolean hrvuf = (ms & 1 << 1) < 1;
 
     this.activityReliable = acuf;
