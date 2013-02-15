@@ -1,5 +1,9 @@
 package pl.llp.aircasting.sensor.bioharness;
 
+import pl.llp.aircasting.util.Constants;
+
+import android.util.Log;
+
 public class SummaryPacket extends Packet
 {
   private final int heartRate;
@@ -16,13 +20,12 @@ public class SummaryPacket extends Packet
   private final boolean heartRateVariablityReliable;
   private final boolean skinTemperatureReliable;
   private final boolean respirationRateReliable;
+  private final boolean coreTemperatureReliable;
 
   private final int breathingWaveAmplitude;
   private final int breathingWaveNoise;
   private final int ecgAmplitude;
   private final int ecgNoise;
-  ;
-
 
   public SummaryPacket(byte[] input, int offset)
   {
@@ -40,7 +43,7 @@ public class SummaryPacket extends Packet
     this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
     this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
     this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
-    this.activity = (builder.intFromBytes().higher(22).lower(21).value()) / 100.0d;
+    this.activity = (builder.intFromBytes().higher(22).lower(21).value());
 
     this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
     this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
@@ -55,12 +58,31 @@ public class SummaryPacket extends Packet
     boolean stuf =  (ls & 1 << 6) < 1;
     boolean acuf =  (ms & 1 << 0) < 1;
     boolean hrvuf = (ms & 1 << 1) < 1;
+    boolean ectuf = (ms & 1 << 2) < 1;
 
     this.activityReliable = acuf;
     this.heartRateReliable = hruf;
     this.heartRateVariablityReliable = hrvuf;
     this.skinTemperatureReliable = stuf;
     this.respirationRateReliable = rruf;
+    this.coreTemperatureReliable = ectuf;
+    if(Constants.isDevMode())
+    {
+      String msg = String.format("" +
+                                        "Activity: %b\n" +
+                                        "HR: %b\n" +
+                                        "HRA: %b\n" +
+                                        "Skin temp: %b\n" +
+                                        "Breathing rate: %b\n" +
+                                     "core temp: %b",
+                                 activityReliable,
+                                 heartRateReliable,
+                                 heartRateVariablityReliable,
+                                 skinTemperatureReliable,
+                                 respirationRateReliable,
+                                 coreTemperatureReliable);
+      Log.i(Constants.TAG, msg);
+    }
   }
 
   public int getHeartRate()
@@ -125,7 +147,7 @@ public class SummaryPacket extends Packet
 
   public boolean isCoreTemperatureReliable()
   {
-    return inRange(coreTemperature, 32, 42);
+    return coreTemperatureReliable && inRange(coreTemperature, 32, 42);
   }
 
   public boolean isECGReliable()
@@ -160,6 +182,6 @@ public class SummaryPacket extends Packet
 
   public boolean isActivityReliable()
   {
-    return activityReliable && inRange(activity, 0, 16);
+    return activityReliable && inRange(activity, 0, 1600);
   }
 }

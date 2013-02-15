@@ -71,7 +71,7 @@ class BioharnessPacketReader
     if(packet.isActivityReliable())
     {
       double value = packet.getActivity();
-      SensorEvent event = buildBioharnessEvent("Activity Level", "AL", "Vector Magnitude Units", "VMU", 0, 4, 8, 12, 16, value);
+      SensorEvent event = buildBioharnessEvent("Activity Level", "AL", "Vector Magnitude Units", "VMU", 0, 400, 800, 1200, 1600, value);
       eventBus.post(event);
     }
   }
