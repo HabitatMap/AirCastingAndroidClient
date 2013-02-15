@@ -27,6 +27,14 @@ public class SummaryPacket extends Packet
   private final int ecgAmplitude;
   private final int ecgNoise;
 
+  private final int verticalAccelerationMax;
+  private final int lateralAccelerationMax;
+  private final int sagittalAccelerationMax;
+  private final int verticalAccelerationMin;
+  private final int lateralAccelerationMin;
+  private final int sagittalAccelerationMin;
+  private final int peakAcceleration;
+
   public SummaryPacket(byte[] input, int offset)
   {
     byte dlc = input[offset + 2];
@@ -37,18 +45,26 @@ public class SummaryPacket extends Packet
 
     Builder builder = new Builder(input, offset);
 
-    this.heartRate = builder.intFromBytes().higher(14).lower(13).value();
-    this.respirationRate = builder.intFromBytes().higher(16).lower(15).value() / 10.0d;
-    this.skinTemperature = (builder.intFromBytes().higher(18).lower(17).value()) / 10.0d;
-    this.heartRateVariability = (builder.intFromBytes().higher(39).lower(38).value());
-    this.coreTemperature = (builder.intFromBytes().higher(65).lower(64).value()) / 10.0d;
-    this.galvanicSkinResponse = (builder.intFromBytes().higher(42).lower(41).value());
-    this.activity = (builder.intFromBytes().higher(22).lower(21).value());
+    this.heartRate = builder.intFromBytes().second(14).first(13).value();
+    this.respirationRate = builder.intFromBytes().second(16).first(15).value() / 10.0d;
+    this.skinTemperature = (builder.intFromBytes().second(18).first(17).value()) / 10.0d;
+    this.heartRateVariability = (builder.intFromBytes().second(39).first(38).value());
+    this.coreTemperature = (builder.intFromBytes().second(65).first(64).value()) / 10.0d;
+    this.galvanicSkinResponse = (builder.intFromBytes().second(42).first(41).value());
+    this.activity = (builder.intFromBytes().second(22).first(21).value());
 
-    this.breathingWaveAmplitude = builder.intFromBytes().higher(29).lower(28).value();
-    this.breathingWaveNoise = builder.intFromBytes().higher(31).lower(30).value();
-    this.ecgAmplitude = builder.intFromBytes().higher(34).lower(33).value();
-    this.ecgNoise = builder.intFromBytes().higher(36).lower(35).value();
+    this.peakAcceleration = (builder.intFromBytes().second(24).first(23).value());
+    this.verticalAccelerationMax = (builder.signedShortFromBytes().second(48).first(47).value());
+    this.lateralAccelerationMax = (builder.signedShortFromBytes().second(52).first(51).value());
+    this.sagittalAccelerationMax = (builder.signedShortFromBytes().second(56).first(55).value());
+    this.verticalAccelerationMin = (builder.signedShortFromBytes().second(46).first(45).value());
+    this.lateralAccelerationMin = (builder.signedShortFromBytes().second(50).first(39).value());
+    this.sagittalAccelerationMin = (builder.signedShortFromBytes().second(54).first(53).value());
+
+    this.breathingWaveAmplitude = builder.intFromBytes().second(29).first(28).value();
+    this.breathingWaveNoise = builder.intFromBytes().second(31).first(30).value();
+    this.ecgAmplitude = builder.intFromBytes().second(34).first(33).value();
+    this.ecgNoise = builder.intFromBytes().second(36).first(35).value();
 
     byte ls = input[offset + 59];
     byte ms = input[offset + 60];
@@ -69,11 +85,11 @@ public class SummaryPacket extends Packet
     if(Constants.isDevMode())
     {
       String msg = String.format("" +
-                                        "Activity: %b\n" +
-                                        "HR: %b\n" +
-                                        "HRA: %b\n" +
-                                        "Skin temp: %b\n" +
-                                        "Breathing rate: %b\n" +
+                                     "Activity: %b\n" +
+                                     "HR: %b\n" +
+                                     "HRA: %b\n" +
+                                     "Skin temp: %b\n" +
+                                     "Breathing rate: %b\n" +
                                      "core temp: %b",
                                  activityReliable,
                                  heartRateReliable,
@@ -183,5 +199,40 @@ public class SummaryPacket extends Packet
   public boolean isActivityReliable()
   {
     return activityReliable && inRange(activity, 0, 1600);
+  }
+
+  public int getVerticalAccelerationMax()
+  {
+    return verticalAccelerationMax;
+  }
+
+  public int getLateralAccelerationMax()
+  {
+    return lateralAccelerationMax;
+  }
+
+  public int getSagittalAccelerationMax()
+  {
+    return sagittalAccelerationMax;
+  }
+
+  public int getVerticalAccelerationMin()
+  {
+    return verticalAccelerationMin;
+  }
+
+  public int getLateralAccelerationMin()
+  {
+    return lateralAccelerationMin;
+  }
+
+  public int getSagittalAccelerationMin()
+  {
+    return sagittalAccelerationMin;
+  }
+
+  public int getPeakAcceleration()
+  {
+    return peakAcceleration;
   }
 }

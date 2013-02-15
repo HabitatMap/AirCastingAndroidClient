@@ -26,9 +26,46 @@ public class Builder
     return new Packed10Bytes(index);
   }
 
-  public NeedsHigher<Integer> intFromBytes()
+  public NeedsSecond<Integer> intFromBytes()
   {
     return new HighLowInt<Integer>();
+  }
+
+  public NeedsNumber<Integer> signedShortFromBytes()
+  {
+    return new SignedNumber<Integer>();
+  }
+
+  class SignedNumber<T> implements NeedsNumber<T>, NeedsSecond<T>, NeedsFirst<T>, Complete<T>
+  {
+    private int second;
+    private int first;
+
+    @Override
+    public NeedsFirst<T> second(int index)
+    {
+      this.second = index;
+      return this;
+    }
+
+    @Override
+    public Complete<T> first(int index)
+    {
+      this.first = index;
+      return this;
+    }
+
+    @Override
+    public T value()
+    {
+      int temp = (input[offset + second] & 0xFF);
+      temp = temp << 8;
+      temp |= (input[offset + first]   & 0xFF);
+
+      short s = (short) temp;
+      temp = s;
+      return (T) Integer.valueOf(temp);
+    }
   }
 
   class Packed10Bytes implements NeedsCount, CompleteMultiple
@@ -93,43 +130,49 @@ public class Builder
     }
   }
 
-  class HighLowInt<T> implements NeedsHigher<T>, NeedsLower<T>, Complete<T>
+  class HighLowInt<T> implements NeedsSecond<T>, NeedsFirst<T>, Complete<T>
   {
-    private int higher;
-    private int lower;
+    private int second;
+    private int first;
 
     @Override
-    public NeedsLower<T> higher(int index)
+    public NeedsFirst<T> second(int index)
     {
-      this.higher = index;
+      this.second = index;
       return this;
     }
 
     @Override
-    public Complete<T> lower(int index)
+    public Complete<T> first(int index)
     {
-      this.lower = index;
+      this.first = index;
       return this;
     }
 
     @Override
     public T value()
     {
-      int high =  input[offset + this.higher] & 0xFF;
-      int low =   input[offset + this.lower]  & 0xFF;
+      int high =  input[offset + this.second] & 0xFF;
+      int low =   input[offset + this.first]  & 0xFF;
       return (T) Integer.valueOf((high << 8) | low);
     }
   }
 }
 
-interface NeedsHigher<T>
+interface NeedsNumber<T>
 {
-  public NeedsLower<T> higher(int index);
+  NeedsFirst<T> second(int index);
+  Complete<T> first(int index);
 }
 
-interface NeedsLower<T>
+interface NeedsSecond<T>
 {
-  public Complete<T> lower(int index);
+  public NeedsFirst<T> second(int index);
+}
+
+interface NeedsFirst<T>
+{
+  public Complete<T> first(int index);
 }
 
 interface Complete<T>

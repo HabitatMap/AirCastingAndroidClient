@@ -10,7 +10,7 @@ public class RtoRPacket extends Packet
     for (int i = 0; i < samples.length; i++)
     {
       int index = i * 2;
-      samples[i] = builder.intFromBytes().higher(index + 1).lower(index).value();
+      samples[i] = builder.intFromBytes().second(index + 1).first(index).value();
     }
   }
 

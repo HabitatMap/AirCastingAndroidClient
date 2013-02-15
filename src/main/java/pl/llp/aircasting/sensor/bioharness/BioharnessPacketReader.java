@@ -45,6 +45,7 @@ class BioharnessPacketReader
           postBreathing(packet);
           postCoreTemperature(packet);
           postActivity(packet);
+          postAcceleration(packet);
           break;
         }
         case RtoRPacket:
@@ -64,6 +65,23 @@ class BioharnessPacketReader
       return offset + length;
     }
     return 0;
+  }
+
+  private void postAcceleration(SummaryPacket packet)
+  {
+    b("Saggittal Peak", "SMax", "g", "g", packet.getSagittalAccelerationMax());
+    b("Saggittal Min", "SMin", "g", "g", packet.getSagittalAccelerationMin());
+    b("Lateral Peak", "LMax", "g", "g", packet.getLateralAccelerationMax());
+    b("Lateral Min", "LMin", "g", "g", packet.getLateralAccelerationMin());
+    b("Vertical Peak", "VMax", "g", "g", packet.getVerticalAccelerationMax());
+    b("Vertical Min", "VMin", "g", "g", packet.getVerticalAccelerationMin());
+    b("Peak acceleration", "PAccel", "g", "g", packet.getPeakAcceleration());
+  }
+
+  private void b(String valueLongName, String valueShortName, String unitName, String unitShortName, int value)
+  {
+    SensorEvent event = buildBioharnessEvent(valueLongName, valueShortName, unitName, unitShortName, -16000, -8000, 0, 8000, 16000, value);
+    eventBus.post(event);
   }
 
   private void postActivity(SummaryPacket packet)
