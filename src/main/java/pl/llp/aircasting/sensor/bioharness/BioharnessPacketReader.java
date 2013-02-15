@@ -69,18 +69,18 @@ class BioharnessPacketReader
 
   private void postAcceleration(SummaryPacket packet)
   {
-    b("Saggittal Peak", "SMax", "g", "g", packet.getSagittalAccelerationMax());
-    b("Saggittal Min", "SMin", "g", "g", packet.getSagittalAccelerationMin());
-    b("Lateral Peak", "LMax", "g", "g", packet.getLateralAccelerationMax());
-    b("Lateral Min", "LMin", "g", "g", packet.getLateralAccelerationMin());
-    b("Vertical Peak", "VMax", "g", "g", packet.getVerticalAccelerationMax());
-    b("Vertical Min", "VMin", "g", "g", packet.getVerticalAccelerationMin());
-    b("Peak acceleration", "PAccel", "g", "g", packet.getPeakAcceleration());
+    b("Accel Max Y", "AccYMax", "g * 0.01", ".01g", packet.getSagittalAccelerationMax());
+    b("Accel Min Y", "AccYMin", "g * 0.01", ".01g", packet.getSagittalAccelerationMin());
+    b("Accel Max X", "AccXMax", "g * 0.01", ".01g", packet.getLateralAccelerationMax());
+    b("Accel Min X", "AccXMin", "g * 0.01", ".01g", packet.getLateralAccelerationMin());
+    b("Accel Max Z", "AccZMax", "g * 0.01", ".01g", packet.getVerticalAccelerationMax());
+    b("Accel Min Z", "AccZMin", "g * 0.01", ".01g", packet.getVerticalAccelerationMin());
+    b("Accel Peak",  "AccPeak", "g * 0.01", ".01g", packet.getPeakAcceleration());
   }
 
   private void b(String valueLongName, String valueShortName, String unitName, String unitShortName, int value)
   {
-    SensorEvent event = buildBioharnessEvent(valueLongName, valueShortName, unitName, unitShortName, -16000, -8000, 0, 8000, 16000, value);
+    SensorEvent event = buildBioharnessEvent(valueLongName, valueShortName, unitName, unitShortName, -1600, -800, 0, 800, 1600, value);
     eventBus.post(event);
   }
 
