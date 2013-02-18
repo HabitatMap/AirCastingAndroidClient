@@ -69,7 +69,7 @@ class BioharnessPacketReader
 
   private void postAcceleration(SummaryPacket packet)
   {
-    SensorEvent event = buildBioharnessEvent("Peak Acceleration", "PkA", "standard gravity", "(.01g)", 0, 400, 800, 1200, 1600, packet.getPeakAcceleration());
+    SensorEvent event = buildBioharnessEvent("Peak Acceleration", "PkA", "standard gravity", ".01g", 0, 400, 800, 1200, 1600, packet.getPeakAcceleration());
     eventBus.post(event);
   }
 
@@ -117,7 +117,7 @@ class BioharnessPacketReader
 
   private void postRtoREvent(int value, long timeStamp)
   {
-    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 0, 400, 800, 1200, 2000, value, timeStamp);
+    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 400, 800, 1200, 1600, 2000, value, timeStamp);
     eventBus.post(event);
   }
 
