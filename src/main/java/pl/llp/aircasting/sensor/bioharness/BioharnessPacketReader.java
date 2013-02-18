@@ -117,7 +117,7 @@ class BioharnessPacketReader
 
   private void postRtoREvent(int value, long timeStamp)
   {
-    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 0, 10, 100, 1000, 25000, value, timeStamp);
+    SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 0, 400, 800, 1200, 2000, value, timeStamp);
     eventBus.post(event);
   }
 
