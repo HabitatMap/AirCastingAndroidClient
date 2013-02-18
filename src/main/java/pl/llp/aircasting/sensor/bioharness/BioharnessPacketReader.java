@@ -103,7 +103,8 @@ class BioharnessPacketReader
       int value = samples[i];
       if(0 < value && value <= 3000)
       {
-        postRtoREvent(value, timeStamp + i * 56);
+        int absValue = Math.abs(value);
+        postRtoREvent(absValue, timeStamp + i * 56);
       }
     }
   }

@@ -9,8 +9,8 @@ public class RtoRPacket extends Packet
     Builder builder = new Builder(input, offset);
     for (int i = 0; i < samples.length; i++)
     {
-      int index = i * 2;
-      samples[i] = builder.intFromBytes().second(index + 1).first(index).value();
+      int index = 12 + i * 2;
+      samples[i] = builder.signedShortFromBytes().second(index + 1).first(index).value();
     }
   }
 
