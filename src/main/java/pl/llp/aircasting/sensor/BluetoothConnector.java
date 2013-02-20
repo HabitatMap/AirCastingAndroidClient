@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
@@ -115,7 +115,7 @@ public class BluetoothConnector
       long difference = currentTime - connectionFailingSince;
       if(difference > MAX_CONNECTION_FAILURE_TIME)
       {
-        eventBus.post(new ConnectionUnsuccesfulEvent(device));
+        eventBus.post(new ConnectionUnsuccessfulEvent(device));
         stop();
       }
     }

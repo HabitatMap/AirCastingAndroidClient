@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 import com.google.common.eventbus.EventBus;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ReaderWorker extends Worker
@@ -55,7 +56,7 @@ public class ReaderWorker extends Worker
     {
       reader.read();
     }
-    catch (Exception e)
+    catch (IOException e)
     {
       considerStoppingOnFailure();
       status = Status.CONNECTION_INTERRUPTED;
@@ -75,7 +76,7 @@ public class ReaderWorker extends Worker
   @Override
   public void handlePersistentFailure()
   {
-    eventBus.post(new ConnectionUnsuccesfulEvent(device));
+    eventBus.post(new ConnectionUnsuccessfulEvent(device));
   }
 
   @Override

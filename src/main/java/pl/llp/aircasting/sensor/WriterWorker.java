@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothDevice;
@@ -87,7 +87,7 @@ public class WriterWorker extends Worker
 
   public void handlePersistentFailure()
   {
-    eventBus.post(new ConnectionUnsuccesfulEvent(device));
+    eventBus.post(new ConnectionUnsuccessfulEvent(device));
   }
 
   private void sleepFor(long sleepTime)

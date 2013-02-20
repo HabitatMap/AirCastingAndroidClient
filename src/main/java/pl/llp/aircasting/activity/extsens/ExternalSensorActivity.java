@@ -3,7 +3,7 @@ package pl.llp.aircasting.activity.extsens;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DialogActivity;
-import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -131,7 +131,7 @@ public class ExternalSensorActivity extends DialogActivity
   }
 
   @Subscribe
-  public void onEvent(ConnectionUnsuccesfulEvent event)
+  public void onEvent(ConnectionUnsuccessfulEvent event)
   {
     disconnectFrom(new ExternalSensorDescriptor(event.getDevice()));
   }

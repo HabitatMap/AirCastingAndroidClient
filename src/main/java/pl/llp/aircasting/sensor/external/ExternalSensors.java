@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.event.ConnectionUnsuccesfulEvent;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -124,7 +124,7 @@ public class ExternalSensors
   }
 
   @Subscribe
-  public void onEvent(ConnectionUnsuccesfulEvent event)
+  public void onEvent(ConnectionUnsuccessfulEvent event)
   {
     disconnect(event.getDevice().getAddress());
   }
