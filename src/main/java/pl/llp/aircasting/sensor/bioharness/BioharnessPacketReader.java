@@ -67,22 +67,6 @@ class BioharnessPacketReader
     return 0;
   }
 
-  private void postAcceleration(SummaryPacket packet)
-  {
-    SensorEvent event = buildBioharnessEvent("Peak Acceleration", "PkA", "standard gravity", ".01g", 0, 400, 800, 1200, 1600, packet.getPeakAcceleration());
-    eventBus.post(event);
-  }
-
-  private void postActivity(SummaryPacket packet)
-  {
-    if(packet.isActivityReliable())
-    {
-      double value = packet.getActivity();
-      SensorEvent event = buildBioharnessEvent("Activity Level", "AL", "Vector Magnitude Units", "VMU", 0, 400, 800, 1200, 1600, value);
-      eventBus.post(event);
-    }
-  }
-
   private void postECGWave(ECGPacket packet)
   {
     int[] samples = packet.getSamples();
@@ -127,6 +111,22 @@ class BioharnessPacketReader
     {
       double coreTemperature = packet.getCoreTemperature();
       SensorEvent event = buildBioharnessEvent("Core Temperature", "CT", "degrees Celsius", "C", 33, 35, 37, 39, 41, coreTemperature);
+      eventBus.post(event);
+    }
+  }
+
+  private void postAcceleration(SummaryPacket packet)
+  {
+    SensorEvent event = buildBioharnessEvent("Peak Acceleration", "PkA", "standard gravity", ".01g", 0, 400, 800, 1200, 1600, packet.getPeakAcceleration());
+    eventBus.post(event);
+  }
+
+  private void postActivity(SummaryPacket packet)
+  {
+    if(packet.isActivityReliable())
+    {
+      double value = packet.getActivity();
+      SensorEvent event = buildBioharnessEvent("Activity Level", "AL", "Vector Magnitude Units", "VMU", 0, 400, 800, 1200, 1600, value);
       eventBus.post(event);
     }
   }

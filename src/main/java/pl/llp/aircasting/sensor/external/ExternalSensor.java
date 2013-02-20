@@ -20,9 +20,7 @@ public class ExternalSensor extends AbstractSensor
   @Override
   protected void startWorking()
   {
-    ReaderWorker oldReaderWorker = readerWorker;
     readerWorker.start();
-    oldReaderWorker.stop();
   }
 
   @Override

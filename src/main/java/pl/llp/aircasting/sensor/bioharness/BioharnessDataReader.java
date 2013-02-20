@@ -28,29 +28,24 @@ public class BioharnessDataReader implements BluetoothSocketReader
   @Override
   public void read() throws IOException
   {
-    active = true;
-
     InputStream stream = socket.getInputStream();
     byte[] readBuffer = new byte[4096];
 
-    while (active)
+    int bytesRead = stream.read(readBuffer);
+    if (bytesRead > 0)
     {
-      int bytesRead = stream.read(readBuffer);
-      if (bytesRead > 0)
+      bos.write(readBuffer, 0, bytesRead);
+      int processed = reader.tryReading(bos);
+      if(processed > 0)
       {
-        bos.write(readBuffer, 0, bytesRead);
-        int processed = reader.tryReading(bos);
-        if(processed > 0)
-        {
-          byte[] bytes = bos.toByteArray();
-          bos = new ByteArrayOutputStream();
-          bos.write(bytes, processed, bytes.length - processed);
-        }
+        byte[] bytes = bos.toByteArray();
+        bos = new ByteArrayOutputStream();
+        bos.write(bytes, processed, bytes.length - processed);
       }
-      else
-      {
-        sleepFor(100);
-      }
+    }
+    else
+    {
+      sleepFor(100);
     }
   }
 

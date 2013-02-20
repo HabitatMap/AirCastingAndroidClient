@@ -65,7 +65,7 @@ public class LineDataReader implements BluetoothSocketReader
         public boolean processLine(String line) throws IOException
         {
           process(line);
-          return true;
+          return !Thread.interrupted();
         }
 
         @Override
