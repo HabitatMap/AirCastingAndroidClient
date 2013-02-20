@@ -20,13 +20,14 @@
 package pl.llp.aircasting.guice;
 
 import pl.llp.aircasting.api.gson.LocalDateAdapter;
+import pl.llp.aircasting.api.gson.MeasurementAdapter;
 import pl.llp.aircasting.api.gson.NoteAdapter;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import java.lang.reflect.Modifier;
@@ -35,10 +36,11 @@ import java.util.Date;
 public class GsonProvider implements Provider<Gson>
 {
   // 2012-01-29T10:22:33+0200
-  public static final String ISO_8601 = "yyyy-MM-dd'T'HH:mm:ssZ";
+  public static final String ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
-  @Inject NoteAdapter noteAdapter;
-  @Inject LocalDateAdapter localDateAdapter;
+  NoteAdapter noteAdapter = new NoteAdapter();
+  LocalDateAdapter localDateAdapter = new LocalDateAdapter();
+  MeasurementAdapter measurementAdapter = new MeasurementAdapter();
 
   @Override
   public Gson get()
@@ -51,6 +53,7 @@ public class GsonProvider implements Provider<Gson>
         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
         .registerTypeAdapter(Date.class, localDateAdapter)
         .registerTypeAdapter(Note.class, noteAdapter)
+        .registerTypeAdapter(Measurement.class, measurementAdapter)
         .create();
   }
 }

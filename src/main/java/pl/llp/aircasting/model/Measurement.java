@@ -39,21 +39,18 @@ public class Measurement
   private transient Long seconds;
 
   public Measurement(double value) {
-    this.value = value;
+    this(0, 0, value);
   }
 
   public Measurement(double latitude, double longitude, double value) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.value = value;
-    time = new Date();
+    this(latitude, longitude, value, new Date());
   }
 
   public Measurement(double latitude, double longitude, double value, Date time) {
     this.latitude = latitude;
     this.longitude = longitude;
     this.value = value;
-    this.time = time;
+    setTime(time);
   }
 
   public Measurement() {
@@ -122,13 +119,13 @@ public class Measurement
                 '}';
     }
 
-    public Date getTime() {
-        return time;
-    }
+  public Date getTime() {
+    return time;
+  }
 
-    public void setTime(Date time) {
-        this.time = time;
-    }
+  public void setTime(Date time) {
+    this.time = time;
+  }
 
   public int getTimeZoneOffsetMinutes()
   {
@@ -167,5 +164,10 @@ public class Measurement
         return start <= measurement.getTime().getTime() && measurement.getTime().getTime() <= end;
       }
     };
+  }
+
+  public int getMilliseconds()
+  {
+    return (int) (time.getTime() % Constants.MILLIS_IN_SECOND);
   }
 }
