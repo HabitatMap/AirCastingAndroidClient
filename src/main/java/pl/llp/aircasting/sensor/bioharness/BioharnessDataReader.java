@@ -9,12 +9,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static pl.llp.aircasting.sensor.BluetoothConnector.sleepFor;
+
 public class BioharnessDataReader implements BluetoothSocketReader
 {
   private final BluetoothSocket socket;
   private EventBus eventBus;
-
-  boolean active;
 
   BioharnessPacketReader reader;
   ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -54,16 +54,4 @@ public class BioharnessDataReader implements BluetoothSocketReader
   {
     this.eventBus = eventBus;
   }
-
-  private void sleepFor(long sleepTime)
-   {
-     try
-     {
-       Thread.sleep(sleepTime);
-     }
-     catch (InterruptedException ignore)
-     {
-
-     }
-   }
 }

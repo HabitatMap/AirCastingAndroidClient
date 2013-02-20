@@ -67,7 +67,7 @@ public class BluetoothConnector
     return socket;
   }
 
-  private void sleepFor(long sleepTime)
+  public static void sleepFor(long sleepTime)
   {
     try
     {

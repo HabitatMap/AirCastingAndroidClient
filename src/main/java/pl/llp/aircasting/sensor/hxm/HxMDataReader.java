@@ -10,14 +10,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static pl.llp.aircasting.sensor.BluetoothConnector.sleepFor;
+
 class HxMDataReader implements BluetoothSocketReader
 {
-  final PacketReader packetReader = new PacketReader();
+  final PacketReader reader = new PacketReader();
   final BluetoothSocket socket;
   final String address;
 
   EventBus eventBus;
-  boolean active;
+  ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
   public HxMDataReader(BluetoothSocket socket)
   {
@@ -28,20 +30,24 @@ class HxMDataReader implements BluetoothSocketReader
   @Override
   public void read() throws IOException
   {
-    active = true;
-
     InputStream stream = socket.getInputStream();
     byte[] readBuffer = new byte[4096];
 
-    while (active)
+    int bytesRead = stream.read(readBuffer);
+    if (bytesRead > 0)
     {
-      int bytesRead = stream.read(readBuffer);
-      if (bytesRead > 0)
+      bos.write(readBuffer, 0, bytesRead);
+      int processed = reader.tryReading(bos);
+      if(processed > 0)
       {
-        byte[] data = new byte[bytesRead];
-        System.arraycopy(readBuffer, 0, data, 0, bytesRead);
-        packetReader.tryReading(data);
+        byte[] bytes = bos.toByteArray();
+        bos = new ByteArrayOutputStream();
+        bos.write(bytes, processed, bytes.length - processed);
       }
+    }
+    else
+    {
+      sleepFor(100);
     }
   }
 
@@ -51,25 +57,18 @@ class HxMDataReader implements BluetoothSocketReader
     int ETX = 0x03;
     int ID = 0x26;
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-    public void tryReading(byte[] input)
+    public Integer tryReading(ByteArrayOutputStream input)
     {
-      writeBytesToBuffer(bos, input);
-      if (bos.size() > 59)
+      if (input.size() > 59)
       {
-        byte[] bytes = bos.toByteArray();
+        byte[] bytes = input.toByteArray();
         int index = 0;
         while (bytes.length - index > 59)
         {
           if (validate(bytes, index))
           {
             process(bytes, index);
-            bos = new ByteArrayOutputStream();
-            int from = index + 60;
-            int len = bytes.length - from;
-            bos.write(bytes, from, len);
-            return;
+            return index + 60;
           }
           else
           {
@@ -77,17 +76,7 @@ class HxMDataReader implements BluetoothSocketReader
           }
         }
       }
-    }
-
-    private void writeBytesToBuffer(ByteArrayOutputStream bos, byte[] bytes)
-    {
-      try
-      {
-        bos.write(bytes);
-      }
-      catch (IOException ignored)
-      {
-      }
+      return 0;
     }
 
     boolean validate(byte[] packet, int offset)
@@ -114,10 +103,5 @@ class HxMDataReader implements BluetoothSocketReader
   public void setEventBus(EventBus eventBus)
   {
     this.eventBus = eventBus;
-  }
-
-  public void stop()
-  {
-    active = false;
   }
 }
