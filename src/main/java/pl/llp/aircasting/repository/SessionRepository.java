@@ -412,7 +412,9 @@ public class SessionRepository
   {
     Session session = loadShallow(uuid);
     if(session != null)
+    {
       fill(session, NoOp.progressListener());
+    }
 
     return session;
   }
@@ -421,11 +423,20 @@ public class SessionRepository
   public Session loadFully(long id, ProgressListener progressListener)
   {
     Session session = loadShallow(id);
-    return fill(session, progressListener);
+    if(session != null)
+    {
+      fill(session, progressListener);
+    }
+    return session;
   }
 
   private Session fill(final Session session, ProgressListener progressListener)
   {
+    if(session == null)
+    {
+      return session;
+    }
+
     final Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
     final MeasurementRepository r = new MeasurementRepository(progressListener);
 
