@@ -34,6 +34,7 @@ public class SummaryPacket extends Packet
   private final int lateralAccelerationMin;
   private final int sagittalAccelerationMin;
   private final int peakAcceleration;
+  private final long timeStamp;
 
   public SummaryPacket(byte[] input, int offset)
   {
@@ -45,6 +46,7 @@ public class SummaryPacket extends Packet
 
     Builder builder = new Builder(input, offset);
 
+    this.timeStamp = builder.intFromBytes().fourth(11).third(10).second(9).first(8).value();
     this.heartRate = builder.intFromBytes().second(14).first(13).value();
     this.respirationRate = builder.intFromBytes().second(16).first(15).value() / 10.0d;
     this.skinTemperature = (builder.intFromBytes().second(18).first(17).value()) / 10.0d;
@@ -54,12 +56,12 @@ public class SummaryPacket extends Packet
     this.activity = (builder.intFromBytes().second(22).first(21).value());
 
     this.peakAcceleration = (builder.intFromBytes().second(24).first(23).value());
-    this.verticalAccelerationMax = (builder.signedShortFromBytes().second(48).first(47).value());
-    this.lateralAccelerationMax = (builder.signedShortFromBytes().second(52).first(51).value());
-    this.sagittalAccelerationMax = (builder.signedShortFromBytes().second(56).first(55).value());
-    this.verticalAccelerationMin = (builder.signedShortFromBytes().second(46).first(45).value());
-    this.lateralAccelerationMin = (builder.signedShortFromBytes().second(50).first(39).value());
-    this.sagittalAccelerationMin = (builder.signedShortFromBytes().second(54).first(53).value());
+    this.verticalAccelerationMax = (builder.shortFromBytes().second(48).first(47).value());
+    this.lateralAccelerationMax = (builder.shortFromBytes().second(52).first(51).value());
+    this.sagittalAccelerationMax = (builder.shortFromBytes().second(56).first(55).value());
+    this.verticalAccelerationMin = (builder.shortFromBytes().second(46).first(45).value());
+    this.lateralAccelerationMin = (builder.shortFromBytes().second(50).first(39).value());
+    this.sagittalAccelerationMin = (builder.shortFromBytes().second(54).first(53).value());
 
     this.breathingWaveAmplitude = builder.intFromBytes().second(29).first(28).value();
     this.breathingWaveNoise = builder.intFromBytes().second(31).first(30).value();
@@ -234,5 +236,10 @@ public class SummaryPacket extends Packet
   public int getPeakAcceleration()
   {
     return peakAcceleration;
+  }
+
+  public long getTimeStamp()
+  {
+    return timeStamp;
   }
 }

@@ -14,17 +14,10 @@ public class GeneralPacket extends Packet
       throw new RuntimeException("Not long enough");
     }
 
-    int heartRateLS = input[offset + 12] & 0xFF;
-    int heartRateMS = input[offset + 13] & 0xFF;
-    this.heartRate = heartRateLS;
-
-    int respirationRateLS = input[14 + offset] & 0xFF;
-    int respirationRateMS = input[15 + offset] & 0xFF;
-    this.respirationRate = (respirationRateLS | respirationRateMS << 8) / 10.0d;
-
-    int skinTempLS = input[offset + 16] & 0xFF;
-    int skinTempMS = input[offset + 17] & 0xFF;
-    this.skinTemperature = (skinTempMS << 8 | skinTempLS) / 10.0d;
+    Builder builder = new Builder(input, offset);
+    this.heartRate = builder.intFromBytes().second(13).first(12).value();
+    this.respirationRate = builder.intFromBytes().second(15).first(14).value();
+    this.skinTemperature = builder.intFromBytes().second(17).first(16).value();
   }
 
   public int getHeartRate()

@@ -1,6 +1,7 @@
 package pl.llp.aircasting.sensor.bioharness;
 
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.sensor.TimestampTracker;
 import pl.llp.aircasting.util.Pair;
 
 import com.google.common.eventbus.EventBus;
@@ -9,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 
 class BioharnessPacketReader
 {
+  private final TimestampTracker timestampTracker = new TimestampTracker();
   private final EventBus eventBus;
 
   public BioharnessPacketReader(EventBus eventBus)
@@ -41,7 +43,8 @@ class BioharnessPacketReader
         case SummaryPacket:
         {
           SummaryPacket packet = new SummaryPacket(data, offset);
-          postHeartRate(packet);
+          long timeStamp = timestampTracker.getLocalTimestamp(packet.getTimeStamp());
+          postHeartRate(packet, timeStamp);
           postBreathing(packet);
           postCoreTemperature(packet);
           postActivity(packet);
@@ -51,13 +54,12 @@ class BioharnessPacketReader
         case RtoRPacket:
         {
           RtoRPacket packet = new RtoRPacket(data, offset);
-          postRtoR(packet);
+          long timeStamp = timestampTracker.getLocalTimestamp(packet.getTimeStamp());
+          postRtoR(packet, timeStamp);
           break;
         }
         case ECGPacket:
         {
-          ECGPacket packet = new ECGPacket(data, offset);
-          postECGWave(packet);
           break;
         }
       }
@@ -67,21 +69,9 @@ class BioharnessPacketReader
     return 0;
   }
 
-  private void postECGWave(ECGPacket packet)
+  private void postRtoR(RtoRPacket packet, long timeStamp)
   {
     int[] samples = packet.getSamples();
-    long timeStamp = System.currentTimeMillis();
-    for (int i = 0; i < samples.length; i++)
-    {
-      int value = samples[i];
-      postECGWaveEvent(value, timeStamp + i * 4);
-    }
-  }
-
-  private void postRtoR(RtoRPacket packet)
-  {
-    int[] samples = packet.getSamples();
-    long timeStamp = System.currentTimeMillis();
     for (int i = 0; i < samples.length; i++)
     {
       int value = samples[i];
@@ -91,12 +81,6 @@ class BioharnessPacketReader
         postRtoREvent(absValue, timeStamp + i * 56);
       }
     }
-  }
-
-  private void postECGWaveEvent(int value, long timeStamp)
-  {
-    SensorEvent event = buildBioharnessEvent("ECG Wave", "ECG", "millivolts", "mV", 0, 300, 600, 900, 1200, value, timeStamp);
-    eventBus.post(event);
   }
 
   private void postRtoREvent(int value, long timeStamp)
@@ -131,7 +115,7 @@ class BioharnessPacketReader
     }
   }
 
-  void postHeartRate(SummaryPacket packet)
+  void postHeartRate(SummaryPacket packet, long timestamp)
   {
     SensorEvent event;
     if(packet.isHeartRateReliable())
@@ -143,7 +127,7 @@ class BioharnessPacketReader
     if(packet.isHeartRateVariabilityReliable())
     {
       int variability = packet.getHeartRateVariability();
-      event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability);
+      event = buildBioharnessEvent("Heart Rate Variability", "HRV", "milliseconds", "ms", 0, 70, 140, 210, 280, variability, timestamp);
       eventBus.post(event);
     }
   }

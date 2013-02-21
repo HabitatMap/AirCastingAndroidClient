@@ -16,54 +16,76 @@ public class Builder
     return new Builder(array, offset);
   }
 
-  public int singleByteValue(int index)
-  {
-    return input[offset + index] & 0xFF;
-  }
-
   public NeedsCount packed10byteInts(int index)
   {
     return new Packed10Bytes(index);
   }
 
-  public NeedsSecond<Integer> intFromBytes()
+  public NeedsNumber<Integer> intFromBytes()
   {
-    return new HighLowInt<Integer>();
+    return new IntFromBytes<Integer>();
   }
 
-  public NeedsNumber<Integer> signedShortFromBytes()
+  public NeedsSecond<Short> shortFromBytes()
   {
-    return new SignedNumber<Integer>();
+    return new IntFromBytes<Short>();
   }
 
-  class SignedNumber<T> implements NeedsNumber<T>, NeedsSecond<T>, NeedsFirst<T>, Complete<T>
+  class IntFromBytes<T> implements NeedsNumber<T>, NeedsThird<T>, NeedsSecond<T>, NeedsFirst<T>, Complete<T>
   {
-    private int second;
-    private int first;
+    int[] indexes = new int[4];
+    boolean[] indexesSet = new boolean[4];
+
+    @Override
+    public NeedsThird<T> fourth(int index)
+    {
+      indexes[3] = index;
+      indexesSet[3] = true;
+      return this;
+    }
+
+    @Override
+    public NeedsSecond<T> third(int index)
+    {
+      indexes[2] = index;
+      indexesSet[2] = true;
+      return this;
+    }
 
     @Override
     public NeedsFirst<T> second(int index)
     {
-      this.second = index;
+      indexes[1] = index;
+      indexesSet[1] = true;
       return this;
     }
 
     @Override
     public Complete<T> first(int index)
     {
-      this.first = index;
+      indexes[0] = index;
+      indexesSet[0] = true;
       return this;
     }
 
     @Override
     public T value()
     {
-      int temp = (input[offset + second] & 0xFF);
-      temp = temp << 8;
-      temp |= (input[offset + first]   & 0xFF);
+      int temp = 0;
 
-      short s = (short) temp;
-      temp = s;
+      for (int i = indexesSet.length - 1; i > 0; i--)
+      {
+        boolean set = indexesSet[i];
+        if(set)
+        {
+          int index = indexes[i];
+          temp |= (input[offset + index] & 0xFF);
+        }
+       temp = temp << 8;
+      }
+      int index = indexes[0];
+      temp |= (input[offset + index] & 0xFF);
+
       return (T) Integer.valueOf(temp);
     }
   }
@@ -129,40 +151,19 @@ public class Builder
       return result;
     }
   }
-
-  class HighLowInt<T> implements NeedsSecond<T>, NeedsFirst<T>, Complete<T>
-  {
-    private int second;
-    private int first;
-
-    @Override
-    public NeedsFirst<T> second(int index)
-    {
-      this.second = index;
-      return this;
-    }
-
-    @Override
-    public Complete<T> first(int index)
-    {
-      this.first = index;
-      return this;
-    }
-
-    @Override
-    public T value()
-    {
-      int high =  input[offset + this.second] & 0xFF;
-      int low =   input[offset + this.first]  & 0xFF;
-      return (T) Integer.valueOf((high << 8) | low);
-    }
-  }
 }
 
 interface NeedsNumber<T>
 {
+  NeedsThird<T> fourth(int index);
+  NeedsSecond<T> third(int index);
   NeedsFirst<T> second(int index);
   Complete<T> first(int index);
+}
+
+interface NeedsThird<T>
+{
+  public NeedsSecond<T> third(int index);
 }
 
 interface NeedsSecond<T>
