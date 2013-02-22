@@ -15,9 +15,9 @@ public class GeneralPacket extends Packet
     }
 
     Builder builder = new Builder(input, offset);
-    this.heartRate = builder.intFromBytes().second(13).first(12).value();
-    this.respirationRate = builder.intFromBytes().second(15).first(14).value();
-    this.skinTemperature = builder.intFromBytes().second(17).first(16).value();
+    this.heartRate = builder.fromBytes().second(13).first(12).value();
+    this.respirationRate = builder.fromBytes().second(15).first(14).value();
+    this.skinTemperature = builder.fromBytes().second(17).first(16).value();
   }
 
   public int getHeartRate()

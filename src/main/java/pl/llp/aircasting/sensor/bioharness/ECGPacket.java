@@ -11,7 +11,7 @@ public class ECGPacket
   {
     Builder reader = builder(input, offset);
 
-    this.timeStamp = reader.intFromBytes().fourth(11).third(10).second(9).first(8).value();
+    this.timeStamp = reader.fromBytes().fourth(11).third(10).second(9).first(8).value();
     NeedsCount builder = reader.packed10byteInts(12);
     samples = builder.samples(63).ints();
   }

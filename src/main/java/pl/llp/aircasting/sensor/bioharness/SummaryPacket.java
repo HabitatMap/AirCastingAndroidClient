@@ -46,27 +46,27 @@ public class SummaryPacket extends Packet
 
     Builder builder = new Builder(input, offset);
 
-    this.timeStamp = builder.intFromBytes().fourth(11).third(10).second(9).first(8).value();
-    this.heartRate = builder.intFromBytes().second(14).first(13).value();
-    this.respirationRate = builder.intFromBytes().second(16).first(15).value() / 10.0d;
-    this.skinTemperature = (builder.intFromBytes().second(18).first(17).value()) / 10.0d;
-    this.heartRateVariability = (builder.intFromBytes().second(39).first(38).value());
-    this.coreTemperature = (builder.intFromBytes().second(65).first(64).value()) / 10.0d;
-    this.galvanicSkinResponse = (builder.intFromBytes().second(42).first(41).value());
-    this.activity = (builder.intFromBytes().second(22).first(21).value());
+    this.timeStamp = builder.fromBytes().fourth(11).third(10).second(9).first(8).value();
+    this.heartRate = builder.fromBytes().second(14).first(13).value();
+    this.respirationRate = builder.fromBytes().second(16).first(15).value() / 10.0d;
+    this.skinTemperature = (builder.fromBytes().second(18).first(17).value()) / 10.0d;
+    this.heartRateVariability = (builder.fromBytes().second(39).first(38).value());
+    this.coreTemperature = (builder.fromBytes().second(65).first(64).value()) / 10.0d;
+    this.galvanicSkinResponse = (builder.fromBytes().second(42).first(41).value());
+    this.activity = (builder.fromBytes().second(22).first(21).value());
 
-    this.peakAcceleration = (builder.intFromBytes().second(24).first(23).value());
-    this.verticalAccelerationMax = (builder.shortFromBytes().second(48).first(47).value());
-    this.lateralAccelerationMax = (builder.shortFromBytes().second(52).first(51).value());
-    this.sagittalAccelerationMax = (builder.shortFromBytes().second(56).first(55).value());
-    this.verticalAccelerationMin = (builder.shortFromBytes().second(46).first(45).value());
-    this.lateralAccelerationMin = (builder.shortFromBytes().second(50).first(39).value());
-    this.sagittalAccelerationMin = (builder.shortFromBytes().second(54).first(53).value());
+    this.peakAcceleration = (builder.signedFromTwoBytes().second(24).first(23).value());
+    this.verticalAccelerationMax = (builder.signedFromTwoBytes().second(48).first(47).value());
+    this.lateralAccelerationMax = (builder.signedFromTwoBytes().second(52).first(51).value());
+    this.sagittalAccelerationMax = (builder.signedFromTwoBytes().second(56).first(55).value());
+    this.verticalAccelerationMin = (builder.signedFromTwoBytes().second(46).first(45).value());
+    this.lateralAccelerationMin = (builder.signedFromTwoBytes().second(50).first(39).value());
+    this.sagittalAccelerationMin = (builder.signedFromTwoBytes().second(54).first(53).value());
 
-    this.breathingWaveAmplitude = builder.intFromBytes().second(29).first(28).value();
-    this.breathingWaveNoise = builder.intFromBytes().second(31).first(30).value();
-    this.ecgAmplitude = builder.intFromBytes().second(34).first(33).value();
-    this.ecgNoise = builder.intFromBytes().second(36).first(35).value();
+    this.breathingWaveAmplitude = builder.fromBytes().second(29).first(28).value();
+    this.breathingWaveNoise = builder.fromBytes().second(31).first(30).value();
+    this.ecgAmplitude = builder.fromBytes().second(34).first(33).value();
+    this.ecgNoise = builder.fromBytes().second(36).first(35).value();
 
     byte ls = input[offset + 59];
     byte ms = input[offset + 60];

@@ -9,11 +9,11 @@ public class RtoRPacket extends Packet
   {
     Builder builder = new Builder(input, offset);
 
-    this.timeStamp = builder.intFromBytes().fourth(11).third(10).second(9).first(8).value();
+    this.timeStamp = builder.fromBytes().fourth(11).third(10).second(9).first(8).value();
     for (int i = 0; i < samples.length; i++)
     {
       int index = 12 + i * 2;
-      samples[i] = builder.shortFromBytes().second(index + 1).first(index).value();
+      samples[i] = builder.signedFromTwoBytes().second(index + 1).first(index).value();
     }
   }
 

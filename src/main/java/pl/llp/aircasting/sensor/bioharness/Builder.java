@@ -21,14 +21,14 @@ public class Builder
     return new Packed10Bytes(index);
   }
 
-  public NeedsNumber<Integer> intFromBytes()
+  public NeedsNumber<Integer> fromBytes()
   {
     return new IntFromBytes<Integer>();
   }
 
-  public NeedsSecond<Short> shortFromBytes()
+  public NeedsSecond<Integer> signedFromTwoBytes()
   {
-    return new IntFromBytes<Short>();
+    return new SignedNumber<Integer>();
   }
 
   class IntFromBytes<T> implements NeedsNumber<T>, NeedsThird<T>, NeedsSecond<T>, NeedsFirst<T>, Complete<T>
@@ -89,6 +89,38 @@ public class Builder
       return (T) Integer.valueOf(temp);
     }
   }
+
+  class SignedNumber<T> implements NeedsSecond<T>, NeedsFirst<T>, Complete<T>
+    {
+      private int second;
+      private int first;
+
+      @Override
+      public NeedsFirst<T> second(int index)
+      {
+        this.second = index;
+        return this;
+      }
+
+      @Override
+      public Complete<T> first(int index)
+      {
+        this.first = index;
+        return this;
+      }
+
+      @Override
+      public T value()
+      {
+        int temp = (input[offset + second] & 0xFF);
+        temp = temp << 8;
+        temp |= (input[offset + first]   & 0xFF);
+
+        short s = (short) temp;
+        temp = s;
+        return (T) Integer.valueOf(temp);
+      }
+    }
 
   class Packed10Bytes implements NeedsCount, CompleteMultiple
   {
