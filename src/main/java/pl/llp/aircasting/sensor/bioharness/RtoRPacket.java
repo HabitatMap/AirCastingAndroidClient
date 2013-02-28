@@ -1,5 +1,11 @@
 package pl.llp.aircasting.sensor.bioharness;
 
+import pl.llp.aircasting.util.Constants;
+
+import android.util.Log;
+
+import java.util.Arrays;
+
 public class RtoRPacket extends Packet
 {
   private final int timeStamp;
@@ -14,6 +20,11 @@ public class RtoRPacket extends Packet
     {
       int index = 12 + i * 2;
       samples[i] = builder.signedFromTwoBytes().second(index + 1).first(index).value();
+    }
+    if(Constants.isDevMode())
+    {
+      Log.e(Constants.TAG, "R-to-R samples:   " + Arrays.toString(samples));
+      Log.e(Constants.TAG, "R-to-R timestamp: " + timeStamp);
     }
   }
 

@@ -8,7 +8,7 @@ import com.google.common.eventbus.EventBus;
 
 import java.io.ByteArrayOutputStream;
 
-class BioharnessPacketReader
+public class BioharnessPacketReader
 {
   private final TimestampTracker timestampTracker = new TimestampTracker();
   private final EventBus eventBus;
@@ -69,21 +69,23 @@ class BioharnessPacketReader
     return 0;
   }
 
-  private void postRtoR(RtoRPacket packet, long timeStamp)
+  void postRtoR(RtoRPacket packet, long timeStamp)
   {
     int[] samples = packet.getSamples();
+    int previous = Integer.MIN_VALUE;
     for (int i = 0; i < samples.length; i++)
     {
       int value = samples[i];
-      if(0 < value && value <= 3000)
+      int absValue = Math.abs(value);
+      if(0 < absValue && absValue <= 3000 && absValue != previous)
       {
-        int absValue = Math.abs(value);
         postRtoREvent(absValue, timeStamp + i * 56);
       }
+      previous = absValue;
     }
   }
 
-  private void postRtoREvent(int value, long timeStamp)
+  void postRtoREvent(int value, long timeStamp)
   {
     SensorEvent event = buildBioharnessEvent("R to R", "RTR", "milliseconds", "ms", 400, 800, 1200, 1600, 2000, value, timeStamp);
     eventBus.post(event);
