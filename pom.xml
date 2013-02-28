@@ -381,13 +381,13 @@
 
   <distributionManagement>
     <repository>
-      <id>releases</id>
+      <id>javallp-releases</id>
       <url>http://java.llp.pl/nexus/content/repositories/releases/</url>
       <name>Releases</name>
     </repository>
 
     <snapshotRepository>
-      <id>snapshots</id>
+      <id>javallp-snapshots</id>
       <url>http://java.llp.pl/nexus/content/repositories/snapshots/</url>
       <name>Snapshots</name>
     </snapshotRepository>
