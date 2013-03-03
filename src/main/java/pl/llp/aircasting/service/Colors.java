@@ -7,8 +7,8 @@ enum Colors
 {
   RED(1000, 0, 0),
   GREEN(0, 1000, 0),
-  YELLOW(1000, 300, 0),
-  ORANGE(1000, 100, 0),
+  YELLOW(700, 1000, 0),
+  ORANGE(1000, 700, 0),
   BLACK(0, 0, 0);
 
   private int red;
