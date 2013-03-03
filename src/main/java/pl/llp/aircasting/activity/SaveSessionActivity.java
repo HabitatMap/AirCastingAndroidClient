@@ -20,14 +20,12 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.activity.task.SaveSessionTask;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.repository.ProgressListener;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -78,7 +76,15 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
         Session session = sessionManager.getSession();
         if(session.isLocationless())
         {
-          new SaveSessionTask(this).execute();
+          new SaveSessionTask(this, sessionManager)
+          {
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+              dialog.dismiss();
+              finish();
+            }
+          }.execute();
         }
         else
         {
@@ -97,40 +103,5 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     sessionManager.setTitle(sessionTitle.getText().toString());
     sessionManager.setTags(sessionTags.getText().toString());
     sessionManager.setDescription(sessionDescription.getText().toString());
-  }
-
-  private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements ProgressListener
-  {
-    public SaveSessionTask(ActivityWithProgress context)
-    {
-      super(context, ProgressDialog.STYLE_SPINNER);
-    }
-
-    @Override
-    protected Void doInBackground(Void... voids)
-    {
-      sessionManager.finishSession(this);
-
-      return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid)
-    {
-      dialog.dismiss();
-      finish();
-    }
-
-    @Override
-    public void onSizeCalculated(final int workSize)
-    {
-
-    }
-
-    @Override
-    public void onProgress(final int progress)
-    {
-
-    }
   }
 }

@@ -20,12 +20,10 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.activity.task.SaveSessionTask;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.repository.ProgressListener;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -83,41 +81,14 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
   private void saveSession()
   {
     //noinspection unchecked
-    new SaveSessionTask(this).execute();
-  }
-
-  private class SaveSessionTask extends SimpleProgressTask<Void, Void, Void> implements ProgressListener
-  {
-    public SaveSessionTask(ActivityWithProgress context)
+    new SaveSessionTask(this, sessionManager)
     {
-      super(context, ProgressDialog.STYLE_SPINNER);
-    }
-
-    @Override
-    protected Void doInBackground(Void... voids)
-    {
-      sessionManager.finishSession(this);
-
-      return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid)
-    {
-      dialog.dismiss();
-      finish();
-    }
-
-    @Override
-    public void onSizeCalculated(final int workSize)
-    {
-
-    }
-
-    @Override
-    public void onProgress(final int progress)
-    {
-
-    }
+      @Override
+      protected void onPostExecute(Void aVoid)
+      {
+        dialog.dismiss();
+        finish();
+      }
+    }.execute();
   }
 }

@@ -82,18 +82,8 @@ public class SensorEvent extends AirCastingEvent
                      String shortType, String unit, String symbol,
                      int veryLow, int low, int mid, int high, int veryHigh, double value, String address)
   {
-    this.packageName = packageName;
-    this.sensorName = sensorName;
-    this.shortType = shortType;
-    this.unit = unit;
-    this.symbol = symbol;
-    this.measurementType = measurementType;
-    this.veryLow = veryLow;
-    this.low = low;
-    this.mid = mid;
-    this.high = high;
-    this.veryHigh = veryHigh;
-    this.value = value;
+    this(packageName, sensorName, measurementType, shortType, unit, symbol,
+             veryLow, low, mid, high, veryHigh, value);
     this.address = address;
   }
 
@@ -101,18 +91,8 @@ public class SensorEvent extends AirCastingEvent
                      String shortType, String unit, String symbol,
                      int veryLow, int low, int mid, int high, int veryHigh, double value, long timeStamp)
   {
-    this.packageName = packageName;
-    this.sensorName = sensorName;
-    this.shortType = shortType;
-    this.unit = unit;
-    this.symbol = symbol;
-    this.measurementType = measurementType;
-    this.veryLow = veryLow;
-    this.low = low;
-    this.mid = mid;
-    this.high = high;
-    this.veryHigh = veryHigh;
-    this.value = value;
+    this(packageName, sensorName, measurementType, shortType, unit, symbol,
+         veryLow, low, mid, high, veryHigh, value);
     this.creationTime = timeStamp;
   }
 
