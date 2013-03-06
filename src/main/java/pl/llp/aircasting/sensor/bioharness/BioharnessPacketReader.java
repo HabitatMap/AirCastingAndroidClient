@@ -204,7 +204,7 @@ class RtoRPacketReader
     for (int i = 0; i < samples.length; i++)
     {
       int value = samples[i];
-      if (0 < value && value <= 3000)
+      if (-3000 <= value && value <= 3000)
       {
         if(repeatedTracker.isNew(value))
         {
