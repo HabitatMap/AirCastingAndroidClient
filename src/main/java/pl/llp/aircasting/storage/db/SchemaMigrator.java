@@ -84,7 +84,6 @@ public class SchemaMigrator
     {
       addColumn(db, SESSION_TABLE_NAME, SESSION_INCOMPLETE, Datatype.BOOLEAN);
     }
-
 //    sometime in the future
 //    {
 //      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);
