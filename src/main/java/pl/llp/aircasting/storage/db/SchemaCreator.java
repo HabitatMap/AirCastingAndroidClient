@@ -90,6 +90,7 @@ public class SchemaCreator
     table.addColumn(new Column(SESSION_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN, 21));
     table.addColumn(new Column(SESSION_CALIBRATED, Datatype.BOOLEAN, 26));
     table.addColumn(new Column(SESSION_LOCAL_ONLY, Datatype.BOOLEAN, 29));
+    table.addColumn(new Column(SESSION_INCOMPLETE, Datatype.BOOLEAN, 30));
 
     return table;
   }

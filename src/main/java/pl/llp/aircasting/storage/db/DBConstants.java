@@ -61,10 +61,6 @@ public interface DBConstants
   String DEPRECATED_SESSION_AVG = "Average";
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_PEAK = "Peak";
-  /** @deprecated belongs to streams */
-  String DEPRECATED_SESSION_INSTRUMENT = "Instrument";
-  /** @deprecated belongs to streams */
-  String DEPRECATED_SESSION_DATA_TYPE = "DataType";
 
   String MEASUREMENT_TABLE_NAME = "Measurements";
   String MEASUREMENT_ID = BaseColumns._ID;
