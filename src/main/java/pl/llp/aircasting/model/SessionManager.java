@@ -127,7 +127,7 @@ public class SessionManager
   }
 
   public void updateSession(Session session) {
-    this.session.updateHeader(session);
+    this.session.copyHeader(session);
     sessionRepository.update(this.session);
   }
 
