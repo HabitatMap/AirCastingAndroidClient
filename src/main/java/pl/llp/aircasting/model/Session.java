@@ -61,7 +61,7 @@ public class Session implements Serializable
   @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
-  private Long id = null;
+  private volatile Long id = null;
   private boolean submittedForRemoval = false;
 
   private boolean locationless = false;
@@ -125,13 +125,6 @@ public class Session implements Serializable
   public Long getId()
   {
     return id;
-  }
-
-  public void copyHeader(@NotNull Session from)
-  {
-    this.title = from.getTitle();
-    this.tags = from.getTags();
-    this.description = from.getDescription();
   }
 
   public List<Note> getNotes()
