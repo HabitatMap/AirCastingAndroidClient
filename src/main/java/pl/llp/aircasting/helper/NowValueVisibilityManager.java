@@ -8,14 +8,13 @@ import com.google.inject.Inject;
 /**
  * Created by ags on 02/04/2013 at 20:52
  */
-public class NowValueVisibilityRuler
+public class NowValueVisibilityManager
 {
   @Inject SessionManager sessionManager;
 
   int getVisibility()
   {
-    boolean recording = sessionManager.isRecording();
-    boolean shouldDisplay = recording || !sessionManager.isSessionSaved();
+    boolean shouldDisplay = sessionManager.isRecording() || !sessionManager.isSessionSaved();
     int visibility = shouldDisplay ? View.VISIBLE : View.GONE;
     return visibility;
   }

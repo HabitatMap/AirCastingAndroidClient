@@ -33,7 +33,7 @@ public class GaugeHelper
   @InjectResource(R.string.now_label_template) String nowLabel;
   @InjectResource(R.string.peak_label_template) String peakLabel;
 
-  @Inject NowValueVisibilityRuler nowManager;
+  @Inject NowValueVisibilityManager nowManager;
 
   /**
    * Update a set of now/avg/peak gauges
