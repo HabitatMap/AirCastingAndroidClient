@@ -7,6 +7,7 @@ import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
@@ -242,18 +243,24 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    protected void updateButtons() {
-        if (sessionManager.isSessionSaved()) {
-            setButton(contextButtonLeft, R.layout.context_button_edit);
-            setButton(contextButtonCenter, R.layout.context_button_share);
-        } else if (sessionManager.isSessionStarted()) {
-            setButton(contextButtonLeft, R.layout.context_button_stop);
-            setButton(contextButtonRight, R.layout.context_button_note);
-        } else if (!sessionManager.isSessionSaved()) {
-            setButton(contextButtonLeft, R.layout.context_button_record);
-            setButton(contextButtonRight, R.layout.context_button_placeholder);
-        }
+  protected void updateButtons()
+  {
+    if (sessionManager.isSessionStarted())
+    {
+      setButton(contextButtonLeft, R.layout.context_button_stop);
+      setButton(contextButtonRight, R.layout.context_button_note);
     }
+    else if (sessionManager.isSessionSaved())
+    {
+      setButton(contextButtonLeft, R.layout.context_button_edit);
+      setButton(contextButtonCenter, R.layout.context_button_share);
+    }
+    else
+    {
+      setButton(contextButtonLeft, R.layout.context_button_record);
+      setButton(contextButtonRight, R.layout.context_button_placeholder);
+    }
+  }
 
     protected void setButton(FrameLayout layout, int id) {
         layout.removeAllViews();
@@ -276,12 +283,15 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     private void stopAirCasting() {
       locationHelper.stop();
-        if (sessionManager.getSession().isEmpty()) {
+      Session session = sessionManager.getSession();
+      Long sessionId = session.getId();
+      if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
-            sessionManager.discardSession();
+            sessionManager.discardSession(sessionId);
         } else {
             sessionManager.stopSession();
             Intent intent = new Intent(this, SaveSessionActivity.class);
+            intent.putExtra(Intents.SESSION_ID, sessionId);
             startActivityForResult(intent, Intents.SAVE_DIALOG);
         }
     }
@@ -327,6 +337,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Intents.SAVE_DIALOG:
+
                 startActivity(new Intent(getApplicationContext(), SoundTraceActivity.class));
                 break;
             default:
