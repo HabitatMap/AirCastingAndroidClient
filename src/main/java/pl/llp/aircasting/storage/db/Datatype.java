@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 /**
  * Created by ags on 10/07/12 at 14:12

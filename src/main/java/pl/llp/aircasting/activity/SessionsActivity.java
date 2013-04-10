@@ -37,9 +37,9 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionLoadedEvent;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.repository.SensorRepository;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
+import pl.llp.aircasting.storage.repository.SensorRepository;
+import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.storage.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.util.SyncState;
 
 import android.app.Application;

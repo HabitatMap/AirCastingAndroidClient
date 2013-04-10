@@ -21,7 +21,7 @@ package pl.llp.aircasting.activity.task;
 
 import pl.llp.aircasting.activity.ActivityWithProgress;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.ProgressListener;
+import pl.llp.aircasting.storage.ProgressListener;
 
 import android.app.ProgressDialog;
 

@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import org.intellij.lang.annotations.Language;
@@ -6,7 +6,7 @@ import org.intellij.lang.annotations.Language;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class SchemaCreator
 {

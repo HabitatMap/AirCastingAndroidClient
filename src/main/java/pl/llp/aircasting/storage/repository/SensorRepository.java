@@ -1,9 +1,9 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.DBConstants;
-import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
+import pl.llp.aircasting.storage.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.DBConstants;
+import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,8 +12,8 @@ import com.google.inject.Inject;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.repository.DBHelper.getInt;
-import static pl.llp.aircasting.repository.DBHelper.getString;
+import static pl.llp.aircasting.storage.DBHelper.getInt;
+import static pl.llp.aircasting.storage.DBHelper.getString;
 
 public class SensorRepository implements DBConstants
 {

@@ -27,8 +27,8 @@ import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.repository.ProgressListener;
-import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 

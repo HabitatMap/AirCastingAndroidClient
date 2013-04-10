@@ -17,13 +17,13 @@
 
  You can contact the authors by email at <info@habitatmap.org>
  */
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class SchemaMigrator
 {

@@ -4,8 +4,7 @@ import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.RepositoryException;
-import pl.llp.aircasting.sync.SessionTimeFixer;
+import pl.llp.aircasting.storage.RepositoryException;
 
 import org.junit.Test;
 

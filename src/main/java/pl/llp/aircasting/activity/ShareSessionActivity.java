@@ -28,7 +28,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ShareHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;

@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 import java.util.List;
 

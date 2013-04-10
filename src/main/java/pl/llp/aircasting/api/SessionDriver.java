@@ -26,7 +26,7 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.SessionRepository;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;

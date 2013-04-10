@@ -3,8 +3,7 @@ package pl.llp.aircasting.sync;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.sync.SyncService;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.http.HttpResult;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;

@@ -1,6 +1,6 @@
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.repository.ProgressListener;
+import pl.llp.aircasting.storage.ProgressListener;
 
 import android.content.DialogInterface;
 

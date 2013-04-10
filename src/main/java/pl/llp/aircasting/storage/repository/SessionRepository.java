@@ -17,7 +17,7 @@
 
  You can contact the authors by email at <info@habitatmap.org>
  */
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
@@ -25,10 +25,11 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.DBConstants;
-import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
-import pl.llp.aircasting.repository.db.WritableDatabaseTask;
+import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.DBConstants;
+import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
+import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -48,8 +49,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.repository.DBHelper.*;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.DBHelper.*;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class SessionRepository
 {

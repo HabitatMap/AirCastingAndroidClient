@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -10,8 +10,8 @@ import org.intellij.lang.annotations.Language;
 
 import java.util.Date;
 
-import static pl.llp.aircasting.repository.DBHelper.getDate;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.DBHelper.getDate;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class MeasurementToStreamMigrator
 {

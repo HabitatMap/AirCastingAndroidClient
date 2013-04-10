@@ -1,7 +1,7 @@
-package pl.llp.aircasting.repository.db;
+package pl.llp.aircasting.storage.db;
 
 import pl.llp.aircasting.helper.CalibrationHelper;
-import pl.llp.aircasting.repository.ProgressListener;
+import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.Cursor;
@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteStatement;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class UncalibratedMeasurementCalibrator
 {

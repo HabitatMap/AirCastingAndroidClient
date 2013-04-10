@@ -1,8 +1,9 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.AirCastingDB;
+import pl.llp.aircasting.storage.repository.StreamRepository;
 
 import android.database.sqlite.SQLiteDatabase;
 import com.google.inject.Inject;

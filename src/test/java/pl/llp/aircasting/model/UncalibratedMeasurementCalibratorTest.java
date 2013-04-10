@@ -2,10 +2,10 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.helper.NoOp;
-import pl.llp.aircasting.repository.ProgressListener;
-import pl.llp.aircasting.repository.SessionRepository;
-import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.UncalibratedMeasurementCalibrator;
+import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.storage.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 
 import java.util.UUID;
 
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 @RunWith(InjectedTestRunner.class)
 public class UncalibratedMeasurementCalibratorTest

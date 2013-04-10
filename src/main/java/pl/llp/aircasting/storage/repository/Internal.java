@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,8 +1,9 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
@@ -16,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static pl.llp.aircasting.repository.DBHelper.getDate;
-import static pl.llp.aircasting.repository.DBHelper.getDouble;
-import static pl.llp.aircasting.repository.DBHelper.getLong;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.DBHelper.getDate;
+import static pl.llp.aircasting.storage.DBHelper.getDouble;
+import static pl.llp.aircasting.storage.DBHelper.getLong;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 class MeasurementRepository
 {

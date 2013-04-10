@@ -1,9 +1,9 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage.repository;
 
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.repository.db.AirCastingDB;
-import pl.llp.aircasting.repository.db.ReadOnlyDatabaseTask;
+import pl.llp.aircasting.storage.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -13,11 +13,11 @@ import com.google.inject.Inject;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static pl.llp.aircasting.repository.DBHelper.getDate;
-import static pl.llp.aircasting.repository.DBHelper.getDouble;
-import static pl.llp.aircasting.repository.DBHelper.getInt;
-import static pl.llp.aircasting.repository.DBHelper.getString;
-import static pl.llp.aircasting.repository.db.DBConstants.*;
+import static pl.llp.aircasting.storage.DBHelper.getDate;
+import static pl.llp.aircasting.storage.DBHelper.getDouble;
+import static pl.llp.aircasting.storage.DBHelper.getInt;
+import static pl.llp.aircasting.storage.DBHelper.getString;
+import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class NoteRepository
 {

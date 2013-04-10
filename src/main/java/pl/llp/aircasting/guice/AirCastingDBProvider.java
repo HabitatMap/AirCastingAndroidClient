@@ -19,7 +19,7 @@
  */
 package pl.llp.aircasting.guice;
 
-import pl.llp.aircasting.repository.db.AirCastingDB;
+import pl.llp.aircasting.storage.db.AirCastingDB;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
