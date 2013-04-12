@@ -33,6 +33,7 @@ public class GaugeHelper
   @InjectResource(R.string.now_label_template) String nowLabel;
   @InjectResource(R.string.peak_label_template) String peakLabel;
 
+  @Inject NowValueVisibilityRuler nowManager;
 
   /**
    * Update a set of now/avg/peak gauges
@@ -42,7 +43,8 @@ public class GaugeHelper
    */
   public void updateGauges(Sensor sensor, View view)
   {
-    updateVisibility(view);
+    View nowContainer = view.findViewById(R.id.now_container);
+    nowContainer.setVisibility(nowManager.getVisibility());
 
     int now = (int) sessionManager.getNow(sensor);
     updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
@@ -79,13 +81,6 @@ public class GaugeHelper
       displayInactiveGauge(view.findViewById(R.id.avg_gauge), MarkerSize.SMALL);
       displayInactiveGauge(view.findViewById(R.id.peak_gauge), MarkerSize.SMALL);
     }
-  }
-
-  private void updateVisibility(View view)
-  {
-    View nowContainer = view.findViewById(R.id.now_container);
-
-    nowContainer.setVisibility(sessionManager.isSessionSaved() ? View.GONE : View.VISIBLE);
   }
 
   private void updateLabel(TextView view, String label, float size)
