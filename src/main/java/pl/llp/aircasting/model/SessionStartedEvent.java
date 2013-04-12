@@ -5,4 +5,15 @@ package pl.llp.aircasting.model;
  */
 public class SessionStartedEvent
 {
+  private final Session session;
+
+  public SessionStartedEvent(Session session)
+  {
+    this.session = session;
+  }
+
+  public Session getSession()
+  {
+    return session;
+  }
 }

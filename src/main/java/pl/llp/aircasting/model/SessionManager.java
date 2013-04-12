@@ -309,7 +309,7 @@ public class SessionManager
     startSensors();
     sessionStarted = true;
     notificationHelper.showRecordingNotification();
-    eventBus.post(new SessionStartedEvent());
+    eventBus.post(new SessionStartedEvent(getSession()));
   }
 
   public void stopSession()
@@ -318,7 +318,7 @@ public class SessionManager
     sessionStarted = false;
     locationHelper.stop();
     notificationHelper.hideRecordingNotification();
-    eventBus.post(new SessionStoppedEvent());
+    eventBus.post(new SessionStoppedEvent(getSession()));
   }
 
   public void finishSession(ProgressListener progressListener) {

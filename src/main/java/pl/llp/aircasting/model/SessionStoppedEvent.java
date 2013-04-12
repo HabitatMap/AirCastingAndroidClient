@@ -5,4 +5,15 @@ package pl.llp.aircasting.model;
  */
 public class SessionStoppedEvent
 {
+  private final Session session;
+
+  public SessionStoppedEvent(Session session)
+  {
+    this.session = session;
+  }
+
+  public Session getSession()
+  {
+    return session;
+  }
 }

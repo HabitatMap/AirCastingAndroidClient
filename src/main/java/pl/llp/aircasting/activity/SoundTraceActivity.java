@@ -65,7 +65,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
         updateGauges();
       }
     }
-    eventBus.post(new SessionStoppedEvent());
+    eventBus.post(new SessionStoppedEvent(sessionManager.getSession()));
     refreshDetector = detectMapIdle(mapView, REFRESH_OVERLAY_TIMEOUT, this);
 
     if (!sessionManager.isSessionSaved()) {
