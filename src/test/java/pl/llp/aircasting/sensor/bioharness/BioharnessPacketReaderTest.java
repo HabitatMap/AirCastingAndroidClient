@@ -34,6 +34,6 @@ public class BioharnessPacketReaderTest
       reader.postRtoR(packet, 1);
 
       // then
-      verify(reader, times(3)).postRtoREvent(anyInt(), anyInt());
+      verify(reader, times(3)).postRtoREvent(anyInt(), anyLong());
   }
 }
