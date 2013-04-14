@@ -1,15 +1,15 @@
-package pl.llp.aircasting.model.events;
+package pl.llp.aircasting.activity.events;
 
 import pl.llp.aircasting.model.Session;
 
 /**
- * Created by ags on 08/08/12 at 19:43
+ * Created by ags on 08/08/12 at 19:42
  */
-public class SessionStoppedEvent
+public class SessionStartedEvent
 {
   private final Session session;
 
-  public SessionStoppedEvent(Session session)
+  public SessionStartedEvent(Session session)
   {
     this.session = session;
   }

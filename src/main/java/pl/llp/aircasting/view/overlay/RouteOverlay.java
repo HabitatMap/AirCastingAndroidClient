@@ -19,11 +19,11 @@
  */
 package pl.llp.aircasting.view.overlay;
 
+import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.activity.events.SessionStartedEvent;
+import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.model.events.SessionLoadedEvent;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.model.events.SessionStartedEvent;
-import pl.llp.aircasting.model.events.SessionStoppedEvent;
 import pl.llp.aircasting.util.map.PathSmoother;
 
 import android.graphics.Canvas;

@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.TimestampTracker;
 import pl.llp.aircasting.util.Pair;
 

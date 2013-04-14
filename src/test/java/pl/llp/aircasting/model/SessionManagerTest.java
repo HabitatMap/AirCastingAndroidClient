@@ -21,16 +21,16 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.storage.ProgressListener;
-import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 
 import android.location.Location;
 import android.location.LocationManager;

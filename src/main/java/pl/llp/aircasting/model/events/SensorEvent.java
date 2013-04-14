@@ -1,4 +1,4 @@
-package pl.llp.aircasting.event.sensor;
+package pl.llp.aircasting.model.events;
 
 import pl.llp.aircasting.event.AirCastingEvent;
 

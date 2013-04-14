@@ -1,6 +1,6 @@
 package pl.llp.aircasting;
 
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;

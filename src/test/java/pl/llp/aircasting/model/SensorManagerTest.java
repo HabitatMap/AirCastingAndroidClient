@@ -2,9 +2,9 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;

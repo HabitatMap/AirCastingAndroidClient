@@ -2,7 +2,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;

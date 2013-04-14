@@ -22,7 +22,7 @@ package pl.llp.aircasting.sensor.builtin;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 

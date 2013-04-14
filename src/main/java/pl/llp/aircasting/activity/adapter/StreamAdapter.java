@@ -3,7 +3,7 @@ package pl.llp.aircasting.activity.adapter;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.NoOp;

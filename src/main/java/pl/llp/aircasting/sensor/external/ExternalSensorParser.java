@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 public class ExternalSensorParser
 {

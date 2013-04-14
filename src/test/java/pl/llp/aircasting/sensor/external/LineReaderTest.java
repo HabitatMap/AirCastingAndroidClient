@@ -1,7 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 import com.google.common.eventbus.EventBus;
 import org.junit.Before;

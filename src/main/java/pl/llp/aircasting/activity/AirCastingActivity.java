@@ -21,12 +21,12 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.GaugeHelper;

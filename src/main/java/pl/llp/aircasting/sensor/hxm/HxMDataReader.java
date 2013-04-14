@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.hxm;
 
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.BluetoothSocketReader;
 
 import android.bluetooth.BluetoothSocket;

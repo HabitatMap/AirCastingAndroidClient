@@ -20,14 +20,14 @@
 package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.events.MeasurementEvent;
 
 import com.google.inject.Inject;
 import org.junit.Before;

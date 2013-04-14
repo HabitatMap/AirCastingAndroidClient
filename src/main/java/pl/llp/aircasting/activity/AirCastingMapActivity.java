@@ -20,6 +20,25 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.event.sensor.LocationEvent;
+import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.view.AirCastingMapView;
+import pl.llp.aircasting.view.MapIdleDetector;
+import pl.llp.aircasting.view.overlay.LocationOverlay;
+import pl.llp.aircasting.view.overlay.NoteOverlay;
+import pl.llp.aircasting.view.overlay.RouteOverlay;
+import pl.llp.aircasting.view.overlay.TraceOverlay;
+import pl.llp.aircasting.view.presenter.MeasurementPresenter;
+
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,25 +51,6 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.sensor.LocationEvent;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.session.NoteCreatedEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
-import pl.llp.aircasting.event.ui.DoubleTapEvent;
-import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.view.AirCastingMapView;
-import pl.llp.aircasting.view.MapIdleDetector;
-import pl.llp.aircasting.view.overlay.LocationOverlay;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
-import pl.llp.aircasting.view.overlay.RouteOverlay;
-import pl.llp.aircasting.view.overlay.TraceOverlay;
-import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 

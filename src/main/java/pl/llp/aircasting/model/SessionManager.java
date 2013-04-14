@@ -20,20 +20,20 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.event.sensor.MeasurementEvent;
-import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionStartedEvent;
+import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
-import pl.llp.aircasting.event.session.SessionChangeEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.events.SessionStartedEvent;
-import pl.llp.aircasting.model.events.SessionStoppedEvent;
-import pl.llp.aircasting.storage.ProgressListener;
-import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
