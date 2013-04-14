@@ -1,8 +1,7 @@
 package pl.llp.aircasting.api.gson;
 
-import pl.llp.aircasting.util.Constants;
+import pl.llp.aircasting.android.Logger;
 
-import android.util.Log;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -26,7 +25,7 @@ public class LocalDateAdapter implements JsonDeserializer<Date>, JsonSerializer<
         try {
             return localFormat.parse(element.getAsString());
         } catch (ParseException e) {
-            Log.e(Constants.TAG, "", e);
+            Logger.e("Problem parsing date", e);
             throw new JsonParseException(e);
         }
     }

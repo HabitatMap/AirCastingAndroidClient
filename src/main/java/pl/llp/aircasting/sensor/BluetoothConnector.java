@@ -1,12 +1,12 @@
 package pl.llp.aircasting.sensor;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class BluetoothConnector
       catch (Exception e)
       {
         considerStoppingOnFailure();
-        Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
+        Logger.w("Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
         sleepFor(Constants.THREE_SECONDS);
         socket = null;
       }
@@ -135,7 +135,7 @@ public class BluetoothConnector
       catch (Exception e)
       {
         considerStoppingOnFailure();
-        Log.w(Constants.TAG, "Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
+        Logger.w("Couldn't connect to device [" + device.getName() + ", " + device.getAddress() + "]", e);
         sleepFor(Constants.THREE_SECONDS);
       }
     }

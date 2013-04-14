@@ -1,18 +1,17 @@
 package pl.llp.aircasting.storage.repository;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
-import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
@@ -140,12 +139,12 @@ public class StreamRepository
       Stopwatch s = new Stopwatch().start();
       oneToSave.setSessionId(sessionId);
       long streamId = saveOne(oneToSave, sessionId, writableDatabase);
-      Log.d(Constants.TAG, "Saving stream took: " + s.elapsedMillis());
+      Logger.d("Saving stream took: " + s.elapsedMillis());
 
       s.reset().start();
       List<Measurement> measurementsToSave = oneToSave.getMeasurements();
       measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
-      Log.d(Constants.TAG, "Saving " + measurementsToSave.size() + " measurements took: " + s.elapsedMillis());
+      Logger.d("Saving " + measurementsToSave.size() + " measurements took: " + s.elapsedMillis());
     }
   }
 
@@ -161,7 +160,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(Constants.TAG, "Unable to mark stream [" + stream.getId() + "] from session [" + sessionId + "] to be deleted", e);
+      Logger.e("Unable to mark stream [" + stream.getId() + "] from session [" + sessionId + "] to be deleted", e);
     }
   }
 
@@ -182,7 +181,7 @@ public class StreamRepository
         }
         catch(SQLException e)
         {
-          Log.e(Constants.TAG, "Error updating stream [" + stream.getId() + "]", e);
+          Logger.e("Error updating stream [" + stream.getId() + "]", e);
         }
         return null;
       }
@@ -198,7 +197,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(Constants.TAG, "Error deleting measurements from stream [" + streamId + "]", e);
+      Logger.e("Error deleting measurements from stream [" + streamId + "]", e);
     }
   }
 
@@ -221,7 +220,7 @@ public class StreamRepository
     }
     catch (SQLException e)
     {
-      Log.e(Constants.TAG, "Error deleting streams submitted to be deleted", e);
+      Logger.e("Error deleting streams submitted to be deleted", e);
     }
   }
 

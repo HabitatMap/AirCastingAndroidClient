@@ -1,11 +1,10 @@
 package pl.llp.aircasting.sensor.external;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.BluetoothSocketReader;
-import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.CharStreams;
 import com.google.common.io.InputSupplier;
@@ -53,7 +52,7 @@ public class LineDataReader implements BluetoothSocketReader
     }
     catch (ParseException e)
     {
-      Log.e(Constants.TAG, "External sensor error", e);
+      Logger.e("External sensor error", e);
     }
   }
 

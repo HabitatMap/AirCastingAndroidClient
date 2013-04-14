@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.storage.repository;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -30,13 +31,11 @@ import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
-import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
@@ -138,7 +137,7 @@ public class SessionRepository
         c = readOnlyDatabase.rawQuery("select count(*) from " + MEASUREMENT_TABLE_NAME + " WHERE " + MEASUREMENT_SESSION_ID + "=" + session.getId(), null);
         c.moveToFirst();
         long aLong = c.getLong(0);
-        Log.d(Constants.TAG, "Actually written " + aLong);
+        Logger.d("Actually written " + aLong);
         c.close();
         return null;
       }
@@ -404,7 +403,7 @@ public class SessionRepository
     }
     catch (SQLException e)
     {
-      Log.e(Constants.TAG, "Error deleting session [ " + sessionId + " ]", e);
+      Logger.e("Error deleting session [ " + sessionId + " ]", e);
     }
   }
 
@@ -491,7 +490,7 @@ public class SessionRepository
         }
         catch (SQLException e)
         {
-          Log.e(Constants.TAG, "Error updating session [ " + session.getId() + " ]", e);
+          Logger.e("Error updating session [ " + session.getId() + " ]", e);
         }
         return null;
       }
@@ -514,11 +513,11 @@ public class SessionRepository
           String string = c.getString(0);
           String string1 = c.getString(1);
           String string2 = c.getString(2);
-          Log.d(Constants.TAG, "Session " + string + ", marked " + string1 + ", submitted " + string2);
+          Logger.d("Session " + string + ", marked " + string1 + ", submitted " + string2);
         }
         else
         {
-          Log.e(Constants.TAG, "Session [" + whereClause + "] not found in database");
+          Logger.e("Session [" + whereClause + "] not found in database");
         }
         return "";
       }

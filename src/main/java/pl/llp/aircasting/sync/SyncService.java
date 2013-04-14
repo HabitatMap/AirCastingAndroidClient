@@ -21,6 +21,7 @@ package pl.llp.aircasting.sync;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
@@ -33,7 +34,6 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.RepositoryException;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.SyncState;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
@@ -42,7 +42,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.eventbus.EventBus;
@@ -275,7 +274,7 @@ public class SyncService extends RoboIntentService
         Session session = result.getContent();
         if (session == null)
         {
-          Log.w(Constants.TAG, "Session [" + id + "] couldn't ");
+          Logger.w("Session [" + id + "] couldn't ");
         }
         else
         {
@@ -286,7 +285,7 @@ public class SyncService extends RoboIntentService
           }
           catch (RepositoryException e)
           {
-            Log.e(Constants.TAG, "Error saving session [" + id + "]", e);
+            Logger.e("Error saving session [" + id + "]", e);
           }
         }
       }

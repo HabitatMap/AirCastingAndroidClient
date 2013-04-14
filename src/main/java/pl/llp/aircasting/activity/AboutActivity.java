@@ -21,8 +21,8 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
-import pl.llp.aircasting.util.Constants;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -177,7 +176,7 @@ public class AboutActivity extends RoboActivity
 
             return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(Constants.TAG, "Error while fetching app version", e);
+            Logger.e("Error while fetching app version", e);
             return "?";
         }
     }

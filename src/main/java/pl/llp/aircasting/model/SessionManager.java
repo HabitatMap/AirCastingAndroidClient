@@ -23,6 +23,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
@@ -40,7 +41,6 @@ import android.app.Application;
 import android.location.Location;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -402,7 +402,7 @@ public class SessionManager
     MeasurementStream stream = getMeasurementStream(sensorName);
     if(stream == null)
     {
-      Log.w(Constants.TAG, "No stream for sensor [" + sensorName + "]");
+      Logger.w("No stream for sensor [" + sensorName + "]");
       return;
     }
     sessionRepository.deleteStream(session, stream);

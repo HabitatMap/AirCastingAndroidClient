@@ -21,17 +21,16 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -137,7 +136,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
             photoPath = Intents.takePhoto(this);
         } catch (IOException e) {
             Toast.makeText(context, R.string.storage_error, Toast.LENGTH_LONG).show();
-            Log.e(Constants.TAG, "Error while attaching a photo", e);
+            Logger.e("Error while attaching a photo", e);
         }
     }
 

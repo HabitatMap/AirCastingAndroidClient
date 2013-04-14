@@ -1,16 +1,18 @@
 package pl.llp.aircasting.util;
 
-import android.util.Log;
+import pl.llp.aircasting.android.Logger;
+
+import java.util.concurrent.TimeUnit;
 
 public class Constants
 {
   public static final int MILLIS_IN_SECOND = 1000;
 
-  public static final int ONE_SECOND = MILLIS_IN_SECOND;
-  public static final int THREE_SECONDS = 3 * MILLIS_IN_SECOND;
+  public static final long ONE_SECOND = TimeUnit.SECONDS.toMillis(1);
+  public static final long THREE_SECONDS = TimeUnit.SECONDS.toMillis(3);
 
-  public static final long ONE_MINUTE = 60 * ONE_SECOND;
-  public static final long TWO_MINUTES = 2 * ONE_MINUTE;
+  public static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
+  public static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
 
   public static final String TAG = "AirCasting";
 
@@ -33,7 +35,7 @@ public class Constants
   {
     if(logDbPerformance())
     {
-      Log.v(Constants.TAG, message);
+      Logger.i(message);
     }
   }
 
@@ -41,7 +43,7 @@ public class Constants
   {
     if(logGraphPerformance())
     {
-      Log.i(Constants.TAG, message);
+      Logger.i(message);
     }
   }
 }

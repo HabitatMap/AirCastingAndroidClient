@@ -19,10 +19,9 @@
  */
 package pl.llp.aircasting.api.gson;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.util.Constants;
 
-import android.util.Log;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -54,7 +53,7 @@ public class NoteAdapter implements JsonDeserializer<Note>, JsonSerializer<Note>
     }
     catch (Exception e)
     {
-      Log.w(Constants.TAG, "Error deserializing note " + object, e);
+      Logger.w("Error deserializing note " + object, e);
     }
 
     return note;

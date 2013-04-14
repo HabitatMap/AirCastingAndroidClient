@@ -19,10 +19,10 @@
 */
 package pl.llp.aircasting.util.http;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.util.Constants;
 
-import android.util.Log;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
@@ -191,7 +191,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
 
             return doRequest(get, target);
         } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Couldn't create path", e);
+            Logger.e("Couldn't create path", e);
             return error();
         }
     }
@@ -207,10 +207,10 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
 
             return doRequest(post, target);
         } catch (UnsupportedEncodingException e) {
-            Log.e(Constants.TAG, "Couldn't process parameters", e);
+            Logger.e("Couldn't process parameters", e);
             return error();
         } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Couldn't create path", e);
+            Logger.e("Couldn't create path", e);
             return error();
         }
     }
@@ -248,7 +248,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
         List<String> strings = CharStreams.readLines(reader);
         fullJson = Joiner.on("\n").join(strings);
         reader = new StringReader(fullJson);
-        Log.i(Constants.TAG, "Full http json: " + fullJson);
+        Logger.i("Full http json: " + fullJson);
       }
 
       T output = gson.fromJson(reader, target);
@@ -257,7 +257,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
     }
     catch (Exception e)
     {
-      Log.e(Constants.TAG, "Http request failed", e);
+      Logger.e("Http request failed", e);
       result.setStatus(Status.ERROR);
 
       return result;

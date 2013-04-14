@@ -1,11 +1,10 @@
 package pl.llp.aircasting.sensor;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 
 import java.io.IOException;
@@ -60,7 +59,7 @@ public class ReaderWorker extends Worker
     {
       considerStoppingOnFailure();
       status = Status.CONNECTION_INTERRUPTED;
-      Log.w(Constants.TAG, "Bluetooth communication failure - mostly likely end of stream", e);
+      Logger.w("Bluetooth communication failure - mostly likely end of stream", e);
     }
   }
 

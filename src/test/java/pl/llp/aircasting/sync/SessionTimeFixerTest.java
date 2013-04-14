@@ -4,7 +4,6 @@ import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.storage.RepositoryException;
 
 import org.junit.Test;
 
@@ -13,6 +12,7 @@ import java.util.Date;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * Created by ags on 12/07/12 at 12:20
@@ -61,7 +61,7 @@ public class SessionTimeFixerTest
     assertEquals(m2.getTime(), session.getEnd());
   }
 
-  @Test(expected = RepositoryException.class)
+  @Test(expected = SessionSyncException.class)
   public void should_setComplainAboutNullDatesInSession() throws Exception
   {
     // given
@@ -75,5 +75,6 @@ public class SessionTimeFixerTest
     fixer.fixStartEndTimeFromMeasurements(session);
 
     // then
+    fail("Exception should have been thrown");
   }
 }

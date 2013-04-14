@@ -1,8 +1,7 @@
 package pl.llp.aircasting.sensor.bioharness;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.util.Constants;
-
-import android.util.Log;
 
 public class SummaryPacket extends Packet
 {
@@ -99,7 +98,7 @@ public class SummaryPacket extends Packet
                                  skinTemperatureReliable,
                                  respirationRateReliable,
                                  coreTemperatureReliable);
-      Log.i(Constants.TAG, msg);
+      Logger.d(msg);
     }
   }
 

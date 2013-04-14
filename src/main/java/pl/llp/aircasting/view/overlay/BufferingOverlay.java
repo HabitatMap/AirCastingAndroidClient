@@ -20,15 +20,14 @@
 package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.SessionManager;
-import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.bitmap.BitmapHolder;
 import pl.llp.aircasting.util.map.ProjectionClone;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
-import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -60,7 +59,7 @@ public abstract class BufferingOverlay<UpdateData> extends Overlay
     if(bitmap.isRecycled())
     {
       String msg = "Trying to draw [" + mapView.getWidth() + ", " + mapView.getHeight() + "] with a recycled bitmap ";
-      Log.e(Constants.TAG, msg);
+      Logger.e(msg);
       return;
     }
 

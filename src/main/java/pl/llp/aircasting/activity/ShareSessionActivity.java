@@ -23,18 +23,17 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.CSVHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ShareHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -133,7 +132,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         try {
           return csvHelper.prepareCSV(session);
         } catch (IOException e) {
-          Log.e(Constants.TAG, "Error while creating session CSV", e);
+          Logger.e("Error while creating session CSV", e);
           return null;
         }
       }

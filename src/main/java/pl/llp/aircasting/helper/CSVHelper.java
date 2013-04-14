@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
@@ -26,7 +27,6 @@ import pl.llp.aircasting.util.Constants;
 
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import com.csvreader.CsvWriter;
 import com.google.common.base.Strings;
 
@@ -78,7 +78,7 @@ public class CSVHelper
       Uri uri = Uri.fromFile(file);
       if(Constants.isDevMode())
       {
-        Log.i(Constants.TAG, "File path [" + uri + "]");
+        Logger.i("File path [" + uri + "]");
       }
       return uri;
     }
@@ -107,7 +107,7 @@ public class CSVHelper
       }
     }
 
-    return result.length() > 0 ? result.append(".zip").toString() : SESSION_TEMP_FILE;
+    return result.length() > 0 ? result.append(".zip").toString() : SESSION_ZIP_FILE;
   }
 
   private SessionWriter write(Session session)

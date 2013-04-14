@@ -1,10 +1,9 @@
 package pl.llp.aircasting.sensor;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class WriterWorker extends Worker
               catch (IOException e)
               {
                 considerStoppingOnFailure();
-                Log.e(Constants.TAG, "Error writing to writer!", e);
+                Logger.e("Error writing to writer!", e);
               }
             }
           }

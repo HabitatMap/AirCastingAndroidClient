@@ -1,16 +1,15 @@
 package pl.llp.aircasting.storage.repository;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.ProgressListener;
-import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +103,7 @@ class MeasurementRepository
     }
     catch (SQLException e)
     {
-      Log.e(Constants.TAG, "Error removing measurements from stream [" + streamId + "]", e);
+      Logger.e("Error removing measurements from stream [" + streamId + "]", e);
     }
   }
 }
