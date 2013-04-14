@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model.events;
 
 import pl.llp.aircasting.event.AirCastingEvent;
+import pl.llp.aircasting.model.MeasurementStream;
 
 import java.util.Date;
 
@@ -196,5 +197,18 @@ public class SensorEvent extends AirCastingEvent
   public Date getDate()
   {
     return new Date(creationTime);
+  }
+
+  public MeasurementStream stream()
+  {
+    return new MeasurementStream(this.getPackageName(),
+         this.getSensorName(),
+         this.getMeasurementType(), this.getShortType(), this.getUnit(), this.getSymbol(),
+         this.getVeryLow(),
+         this.getLow(),
+         this.getMid(),
+         this.getHigh(),
+         this.getVeryHigh(),
+         this.getAddress());
   }
 }

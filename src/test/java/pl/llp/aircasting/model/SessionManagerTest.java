@@ -121,7 +121,7 @@ public class SessionManagerTest
 
     triggerMeasurement();
 
-    MeasurementStream expected = new MeasurementStream(lastEvent);
+    MeasurementStream expected = lastEvent.stream();
     Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
     assertThat(streams, hasItem(expected));
   }
@@ -146,7 +146,7 @@ public class SessionManagerTest
     SensorEvent event = new SensorEvent("CERN", "LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
     sessionManager.onEvent(event);
 
-    MeasurementStream expected = new MeasurementStream(event);
+    MeasurementStream expected = event.stream();
     assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
   }
 

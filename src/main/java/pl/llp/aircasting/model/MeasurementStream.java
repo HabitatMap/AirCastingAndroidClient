@@ -1,7 +1,5 @@
 package pl.llp.aircasting.model;
 
-import pl.llp.aircasting.model.events.SensorEvent;
-
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -78,19 +76,6 @@ public class MeasurementStream implements Serializable
          sensor.getThreshold(MeasurementLevel.HIGH),
          sensor.getThreshold(MeasurementLevel.VERY_HIGH),
          "none");
-  }
-
-  public MeasurementStream(SensorEvent evt)
-  {
-    this(evt.getPackageName(),
-         evt.getSensorName(),
-         evt.getMeasurementType(), evt.getShortType(), evt.getUnit(), evt.getSymbol(),
-         evt.getVeryLow(),
-         evt.getLow(),
-         evt.getMid(),
-         evt.getHigh(),
-         evt.getVeryHigh(),
-         evt.getAddress());
   }
 
   public MeasurementStream(

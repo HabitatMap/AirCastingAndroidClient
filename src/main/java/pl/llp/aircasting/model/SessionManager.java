@@ -231,7 +231,7 @@ public class SessionManager
     String sensorName = event.getSensorName();
 
     if (!session.hasStream(sensorName)) {
-      MeasurementStream stream = new MeasurementStream(event);
+      MeasurementStream stream = event.stream();
       session.add(stream);
     }
 
