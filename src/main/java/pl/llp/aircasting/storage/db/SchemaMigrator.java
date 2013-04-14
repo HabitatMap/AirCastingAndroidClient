@@ -80,6 +80,11 @@ public class SchemaMigrator
       addColumn(db, SESSION_TABLE_NAME, SESSION_LOCAL_ONLY, Datatype.BOOLEAN);
     }
 
+    if(oldVersion < 30 && newVersion >= 30)
+    {
+      addColumn(db, SESSION_TABLE_NAME, SESSION_INCOMPLETE, Datatype.BOOLEAN);
+    }
+
 //    sometime in the future
 //    {
 //      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);

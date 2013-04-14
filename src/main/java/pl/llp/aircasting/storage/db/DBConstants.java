@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 29;
+  int DB_VERSION = 30;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -35,6 +35,9 @@ public interface DBConstants
   String SESSION_START = "Start";
   String SESSION_END = "End";
   String SESSION_UUID = "UUID";
+  /**
+   * Location on the server (unique url component)
+   **/
   String SESSION_LOCATION = "Location";
   String SESSION_CALIBRATION = "Calibration";
   String SESSION_CONTRIBUTE = "Contribute";
@@ -45,7 +48,14 @@ public interface DBConstants
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
   String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
   String SESSION_CALIBRATED = "is_calibrated";
+  /**
+   * recorded without location
+   **/
   String SESSION_LOCAL_ONLY = "local_only";
+  /**
+   * in progress (part of continuous session tracking)
+   **/
+  String SESSION_INCOMPLETE = "incomplete";
 
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_AVG = "Average";
