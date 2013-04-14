@@ -1,7 +1,6 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.helper.SoundHelper;
 
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
@@ -173,7 +172,7 @@ public class MeasurementStream implements Serializable
   }
 
   private double calculatePeak() {
-    double newPeak = SoundHelper.TOTALLY_QUIET;
+    double newPeak = Integer.MIN_VALUE;
     for (Measurement measurement : measurements) {
       if (measurement.getValue() > newPeak) {
         newPeak = measurement.getValue();

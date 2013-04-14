@@ -24,8 +24,6 @@ import pl.llp.aircasting.model.Sensor;
 
 public class SoundHelper
 {
-  public static final double TOTALLY_QUIET = -80;
-
   public MeasurementLevel level(Sensor sensor, double value)
   {
     return sensor.level(value);
