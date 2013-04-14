@@ -1,4 +1,4 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.model.events;
 
 /**
  * Created by ags on 08/08/12 at 19:52

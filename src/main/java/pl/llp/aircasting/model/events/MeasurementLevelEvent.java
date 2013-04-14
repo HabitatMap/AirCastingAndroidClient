@@ -1,4 +1,7 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.model.events;
+
+import pl.llp.aircasting.model.MeasurementLevel;
+import pl.llp.aircasting.model.Sensor;
 
 /**
  * Created by ags on 06/08/12 at 16:01

@@ -28,6 +28,8 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.events.SessionStartedEvent;
+import pl.llp.aircasting.model.events.SessionStoppedEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;

@@ -34,7 +34,7 @@ import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionLoadedEvent;
+import pl.llp.aircasting.model.events.SessionLoadedEvent;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.storage.repository.SensorRepository;

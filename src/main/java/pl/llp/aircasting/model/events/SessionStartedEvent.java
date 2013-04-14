@@ -1,4 +1,6 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.model.events;
+
+import pl.llp.aircasting.model.Session;
 
 /**
  * Created by ags on 08/08/12 at 19:42
