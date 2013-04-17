@@ -29,8 +29,9 @@
 
         <p>
             Using the AirCasting Android app, AirCasters can record, map, and share: sound levels recorded by their phone microphone;
-            temperature, humidity, carbon monoxide (CO) and nitrogen dioxide (NO2) gas concentrations recorded by the Arduino-powered AirCasting Air Monitor; and
-            Heart rate measurements recorded by the Zephyr HxM
+            temperature, humidity, carbon monoxide (CO) and nitrogen dioxide (NO2) gas concentrations recorded by the Arduino-powered AirCasting Air Monitor;
+            heart rate, heart rate variability, R to R, breathing rate, activity level, peak acceleration and core temperature measurements
+            recorded by the Zephyr BioHarness 3; and heart rate measurements recorded by the Zephyr HxM.
         </p>
 
         <p>
@@ -59,6 +60,13 @@
         Connect the <a href="http://www.zephyr-technology.com/products/fitness">Zephyr HxM</a> heart rate monitor to the AirCasting app and measure how your heart rate responds to your activity level, location, and exposure to noise and air pollution.
         </p>
         ]]>
+  </string>
+
+  <string name="monitor_heartrate_bioharness">Monitor Your Heart, Breathing &amp; Activity</string>
+  <string name="monitor_heartrate_bioharness_content">
+    <![CDATA[
+        Connect the Zephyr BioHarness 3 to the AirCasting app to monitor your heart rate, heart rate variability, R to R, breathing rate, activity level, peak acceleration, and core temperature.
+    ]]>
   </string>
 
   <string name="aircasting_luminescence">AirCasting Luminescence</string>
@@ -247,7 +255,7 @@
   <string name="about_thanks_content">
     <![CDATA[
         <p>
-        To <a href="http://www.lunarlogicpolska.com">Lunar Logic Polska</a> for coding the AirCasting website and app;
+        To <a href="mailto:andrzej@grzesik.it">Andrzej Grzesik</a> and <a href="http://www.lunarlogicpolska.com">Lunar Logic Polska</a> for coding the AirCasting website and app;
         to <a href="http://www.citytech.cuny.edu/academics/deptsites/cetech/faculty/heng.html">Dr. Iem Heng</a> and Raymond Yap for designing, programming, assembling and testing the AirCasting Air Monitor and AirCasting Luminescence electronics;
         to <a href="http://www.citytech.cuny.edu/academics/deptsites/metech/faculty/zhang.html">Dr. Andy Zhang</a> for designing and printing the AirCasting Air Monitor casings;
         to <a href="http://www.sonomatech.com/staff.cfm?uemployeeid=8">Tim Dye</a> for big ideas and constructive feedback;
