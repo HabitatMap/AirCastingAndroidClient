@@ -36,7 +36,7 @@ public class CSVHelperTest
     // when
 
     // then
-    assertEquals(CSVHelper.SESSION_TEMP_FILE, s);
+    assertEquals(CSVHelper.SESSION_FALLBACK_FILE, s);
   }
 
   @Test
@@ -48,6 +48,6 @@ public class CSVHelperTest
     // when
 
     // then
-    assertEquals(CSVHelper.SESSION_TEMP_FILE, s);
+    assertEquals(CSVHelper.SESSION_FALLBACK_FILE, s);
   }
 }
