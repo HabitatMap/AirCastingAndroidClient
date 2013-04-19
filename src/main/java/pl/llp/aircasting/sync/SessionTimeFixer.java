@@ -3,7 +3,6 @@ package pl.llp.aircasting.sync;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.storage.RepositoryException;
 
 import java.util.Date;
 import java.util.List;
@@ -93,7 +92,7 @@ public class SessionTimeFixer
     if (start == null || end == null)
     {
       String message = "Session [" + session.getId() + "] has incorrect start/end date [" + start + "/" + end + "]";
-      throw new RepositoryException(message);
+      throw new SessionSyncException(message);
     }
 
     session.setStart(new Date(start.getTime()));
