@@ -24,7 +24,7 @@ public class CSVHelperTest
     // when
 
     // then
-    assertEquals("az_az09-asd.zip", s);
+    assertEquals("az_az09-asd", s);
   }
 
   @Test

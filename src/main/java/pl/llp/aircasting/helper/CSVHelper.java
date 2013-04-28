@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Environment;
 import com.csvreader.CsvWriter;
 import com.google.common.base.Strings;
+import com.google.common.io.Closer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,29 +43,34 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.google.common.io.Closeables.closeQuietly;
 import static java.lang.String.valueOf;
 
 public class CSVHelper
 {
   public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
   // Gmail app hack - it requires all file attachments to begin with /mnt/sdcard
-  public static final String SESSION_ZIP_FILE = "session.zip";
-  public static final String SESSION_FALLBACK_FILE = "session.csv";
+  public static final String SESSION_ZIP_FILE = "aircasting_session_archive";
+  public static final String SESSION_FALLBACK_FILE = "session_data";
+  private static final int MINIMUM_SESSION_NAME_LENGTH = 2;
+
+  private final String ZIP_EXTENSION = ".zip";
+  private final String CSV_EXTENSION = ".csv";
+
+
+  final Closer closer = Closer.create();
 
   public Uri prepareCSV(Session session) throws IOException
   {
-    OutputStream outputStream = null;
-
     try
     {
       File storage = Environment.getExternalStorageDirectory();
       File dir = new File(storage, "aircasting_sessions");
       dir.mkdirs();
-      File file = new File(dir, SESSION_ZIP_FILE);
-      outputStream = new FileOutputStream(file);
+      File file = new File(dir, fileName(session.getTitle() + ZIP_EXTENSION));
+      OutputStream outputStream = new FileOutputStream(file);
+      closer.register(outputStream);
       ZipOutputStream zippedOutputStream = new ZipOutputStream(outputStream);
-      zippedOutputStream.putNextEntry(new ZipEntry(fileName(session.getTitle())));
+      zippedOutputStream.putNextEntry(new ZipEntry(fileName(session.getTitle()) + CSV_EXTENSION));
 
       Writer writer = new OutputStreamWriter(zippedOutputStream);
 
@@ -83,7 +89,7 @@ public class CSVHelper
     }
     finally
     {
-      closeQuietly(outputStream);
+      closer.close();
     }
   }
 
@@ -106,7 +112,7 @@ public class CSVHelper
       }
     }
 
-    return result.length() > 0 ? result.append(".zip").toString() : SESSION_FALLBACK_FILE;
+    return result.length() > MINIMUM_SESSION_NAME_LENGTH ? result.toString() : SESSION_FALLBACK_FILE;
   }
 
   private SessionWriter write(Session session)
