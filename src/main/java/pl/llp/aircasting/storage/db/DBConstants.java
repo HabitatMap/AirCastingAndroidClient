@@ -42,7 +42,6 @@ public interface DBConstants
   String SESSION_CALIBRATION = "Calibration";
   String SESSION_CONTRIBUTE = "Contribute";
   String SESSION_PHONE_MODEL = "PhoneModel";
-  String SESSION_INCOMPLETE = "incomplete";
 
   String SESSION_OS_VERSION = "OSVersion";
   String SESSION_OFFSET_60_DB = "Offset60DB";
