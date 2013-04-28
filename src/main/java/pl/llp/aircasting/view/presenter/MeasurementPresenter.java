@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.view.presenter;
 
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -73,6 +74,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
   private List<Listener> listeners = newArrayList();
 
+  @Inject private ApplicationState state;
+
   @Inject
   public void init()
   {
@@ -88,7 +91,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   private void onMeasurement(MeasurementEvent event)
   {
-    if (sessionManager.isSessionSaved()) return;
+    if (!state.recording().isRecording()) return;
     if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
 
     Measurement measurement = event.getMeasurement();
@@ -260,20 +263,23 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public synchronized List<Measurement> getTimelineView()
   {
-    if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
+    if (state.recording().isShowingASession())
     {
       prepareTimelineView();
       return timelineView;
     }
     else
     {
-      return new ArrayList<Measurement>();
+      return newArrayList();
     }
   }
 
-  protected synchronized CopyOnWriteArrayList<Measurement> prepareTimelineView()
+  protected synchronized void prepareTimelineView()
   {
-    if (!timelineView.isEmpty()) return null;
+    if (!timelineView.isEmpty())
+    {
+      return;
+    }
     Stopwatch stopwatch = new Stopwatch().start();
 
     final List<Measurement> measurements = getFullView();
@@ -292,7 +298,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     measurementsSize = measurements.size();
 
     Constants.logGraphPerformance("prepareTimelineView for [" + timelineView.size() + "] took " + stopwatch.elapsedMillis());
-    return timelineView;
   }
 
   public void registerListener(Listener listener)
@@ -367,7 +372,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public List<Measurement> getFullView()
   {
-    if (sessionManager.isSessionSaved() || sessionManager.isSessionStarted())
+    if (!state.recording().isJustShowingCurrentValues())
     {
       fullView = prepareFullView();
     }

@@ -19,14 +19,13 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SaveSessionTask;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -47,6 +46,10 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   @Inject SettingsHelper settingsHelper;
   @Inject MetadataHelper metadataHelper;
 
+  @Inject ApplicationState state;
+
+  private long sessionId;
+
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
@@ -57,6 +60,19 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
 
     saveButton.setOnClickListener(this);
     discardButton.setOnClickListener(this);
+  }
+
+  @Override
+  protected void onResume()
+  {
+    super.onResume();
+    if(!getIntent().hasExtra(Intents.SESSION_ID))
+    {
+      throw new RuntimeException("Should have arrived here with a session id");
+    }
+
+    sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
+    state.saving().markCurrentlySaving(sessionId);
   }
 
   @Override
@@ -72,36 +88,35 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     switch (view.getId())
     {
       case R.id.save_button:
-        fillSessionDetails();
+      {
+        fillSessionDetails(sessionId);
         Session session = sessionManager.getSession();
         if(session.isLocationless())
         {
-          new SaveSessionTask(this, sessionManager)
-          {
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-              dialog.dismiss();
-              finish();
-            }
-          }.execute();
+          sessionManager.finishSession(sessionId);
         }
         else
         {
-          startActivity(new Intent(this, ContributeActivity.class));
+          Intents.contribute(this, sessionId);
         }
         break;
+      }
       case R.id.discard_button:
-        sessionManager.discardSession();
+      {
+        sessionManager.discardSession(sessionId);
         break;
+      }
     }
     finish();
   }
 
-  private void fillSessionDetails()
+  private void fillSessionDetails(long sessionId)
   {
-    sessionManager.setTitle(sessionTitle.getText().toString());
-    sessionManager.setTags(sessionTags.getText().toString());
-    sessionManager.setDescription(sessionDescription.getText().toString());
+    String title = sessionTitle.getText().toString();
+    String tags = sessionTags.getText().toString();
+    String description = sessionDescription.getText().toString();
+    sessionManager.setTitleTagsDescription(sessionId, title, tags, description);
   }
 }
+
+

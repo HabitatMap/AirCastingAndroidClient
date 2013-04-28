@@ -20,11 +20,11 @@
 package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 
 import android.app.Application;
 import android.os.Bundle;

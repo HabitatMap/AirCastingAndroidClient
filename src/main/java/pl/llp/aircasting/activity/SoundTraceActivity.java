@@ -68,7 +68,7 @@ public class SoundTraceActivity extends AirCastingMapActivity implements MapIdle
     eventBus.post(new SessionStoppedEvent(sessionManager.getSession()));
     refreshDetector = detectMapIdle(mapView, REFRESH_OVERLAY_TIMEOUT, this);
 
-    if (!sessionManager.isSessionSaved()) {
+    if (!sessionManager.isRecording()) {
       MapCenterer centerer = new MapCenterer();
       centerDetector = detectMapIdle(mapView, RECENTER_TIMEOUT, centerer);
     }

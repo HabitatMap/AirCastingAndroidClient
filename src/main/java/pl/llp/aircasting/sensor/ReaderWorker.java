@@ -40,7 +40,7 @@ public class ReaderWorker extends Worker
             }
           }
     }, String.format("Reader [%s, %s]", device.getName(), device.getAddress()));
-    reader.setEventBus(eventBus);
+    reader.setBus(eventBus);
   }
 
   public void customStart()

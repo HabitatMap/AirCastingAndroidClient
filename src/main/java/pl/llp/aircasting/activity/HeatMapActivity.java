@@ -23,7 +23,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.AveragesDriver;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.model.internal.Region;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.view.MapIdleDetector;
 import pl.llp.aircasting.view.overlay.HeatMapOverlay;

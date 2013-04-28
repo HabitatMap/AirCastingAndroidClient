@@ -12,9 +12,7 @@ import java.util.ArrayList;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
+import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(InjectedTestRunner.class)
 public class MeasurementStreamTest
@@ -36,48 +34,48 @@ public class MeasurementStreamTest
 
     @Test
     public void should_not_be_empty_with_measurements() {
-        assertThat(stream.isEmpty(), equalTo(false));
+        assertThat(stream.isEmpty()).isFalse();
     }
 
     @Test
     public void should_be_empty_without_measurements() {
         MeasurementStream stream = event.stream();
-        assertThat(stream.isEmpty(), equalTo(true));
+        assertThat(stream.isEmpty()).isTrue();
     }
 
     @Test
     public void shouldStoreMeasurements() {
-        assertThat(stream.getMeasurements(), hasItem(equalTo(measurement)));
+        assertThat(stream.getMeasurements()).contains(measurement);
     }
 
     @Test
     public void shouldStoreSensorName() {
-        assertThat(stream.getSensorName(), equalTo(event.getSensorName()));
+      assertThat(stream.getSensorName()).isEqualTo(event.getSensorName());
     }
 
     @Test
     public void shouldStoreMeasurementType() {
-        assertThat(stream.getMeasurementType(), equalTo(event.getMeasurementType()));
+      assertThat(stream.getMeasurementType()).isEqualTo(event.getMeasurementType());
     }
 
     @Test
     public void shouldStoreUnit() {
-        assertThat(stream.getUnit(), equalTo(event.getUnit()));
+        assertThat(stream.getUnit()).isEqualTo(event.getUnit());
     }
 
     @Test
     public void shouldStoreSymbol() {
-        assertThat(stream.getSymbol(), equalTo(event.getSymbol()));
+        assertThat(stream.getSymbol()).isEqualTo(event.getSymbol());
     }
 
     @Test
     public void shouldProvideAnAverage() {
-        assertThat(stream.getAvg(), equalTo(0.5));
+        assertThat(stream.getAvg()).isEqualTo(0.5);
     }
 
     @Test
     public void shouldProvidePeak() {
-        assertThat(stream.getPeak(), equalTo(1.0));
+        assertThat(stream.getPeak()).isEqualTo(1.0);
     }
 
     @Test
@@ -85,7 +83,7 @@ public class MeasurementStreamTest
         ArrayList<Measurement> measurements = newArrayList(new Measurement(10), new Measurement(20));
         stream.setMeasurements(measurements);
 
-        assertThat(stream.getAvg(), equalTo(15.0));
+        assertThat(stream.getAvg()).isEqualTo(15.0);
     }
 
     @Test

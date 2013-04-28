@@ -11,5 +11,5 @@ public interface BluetoothSocketReader
 {
   public void read() throws IOException;
 
-  void setEventBus(EventBus eventBus);
+  void setBus(EventBus eventBus);
 }

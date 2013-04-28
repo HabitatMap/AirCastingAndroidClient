@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static pl.llp.aircasting.model.internal.MeasurementLevel.*;
+
 public class MeasurementStream implements Serializable
 {
   @Expose @SerializedName("measurements")
@@ -70,11 +72,11 @@ public class MeasurementStream implements Serializable
          sensor.getShortType(),
          sensor.getUnit(),
          sensor.getSymbol(),
-         sensor.getThreshold(MeasurementLevel.VERY_LOW),
-         sensor.getThreshold(MeasurementLevel.MID),
-         sensor.getThreshold(MeasurementLevel.LOW),
-         sensor.getThreshold(MeasurementLevel.HIGH),
-         sensor.getThreshold(MeasurementLevel.VERY_HIGH),
+         sensor.getThreshold(VERY_LOW),
+         sensor.getThreshold(MID),
+         sensor.getThreshold(LOW),
+         sensor.getThreshold(HIGH),
+         sensor.getThreshold(VERY_HIGH),
          "none");
   }
 

@@ -1,10 +1,13 @@
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -33,11 +36,13 @@ public class SensorManager
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
 
+  @Inject ApplicationState state;
+
   final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
   private Sensor visibleSensor = AUDIO_SENSOR;
   private volatile Map<SensorName, Sensor> sensors = newConcurrentMap();
-  private Set<Sensor> disabled = newHashSet();
+  private volatile Set<Sensor> disabled = newHashSet();
 
   @Inject
   public void init()
@@ -48,6 +53,12 @@ public class SensorManager
   @Subscribe
   public void onEvent(SensorEvent event)
   {
+    if(state.recording().isShowingOldSession())
+    {
+      return;
+    }
+
+    // IOIO
     Sensor visibleSensor = getVisibleSensor();
     if (visibleSensor != null && visibleSensor.matches(getSensorByName(event.getSensorName())))
     {
@@ -63,11 +74,13 @@ public class SensorManager
       }
       eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
     }
+    // end of IOIO
 
-    if (sessionManager.isSessionSaved() || sensors.containsKey(SensorName.from(event.getSensorName())))
+    if(sensors.containsKey(SensorName.from(event.getSensorName())))
     {
       return;
     }
+
     if(externalSensors.knows(event.getAddress()))
     {
       Sensor sensor = new Sensor(event);
@@ -83,7 +96,8 @@ public class SensorManager
   }
 
   @Subscribe
-  public void onEvent(ViewStreamEvent event) {
+  public void onEvent(ViewStreamEvent event)
+  {
     String sensorName = event.getSensor().getSensorName();
     visibleSensor = sensors.get(SensorName.from(sensorName));
     if(visibleSensor == null) visibleSensor = AUDIO_SENSOR;
@@ -109,7 +123,8 @@ public class SensorManager
 
   public Sensor getSensorByName(String name) {
     SensorName sensorName = SensorName.from(name);
-    return sensors.get(sensorName);
+    Sensor sensor = sensors.get(sensorName);
+    return sensor;
   }
 
   /**
@@ -131,8 +146,9 @@ public class SensorManager
     }
 
     sensors = newConcurrentMap();
+    Session session = event.getSession();
 
-    for (MeasurementStream stream : sessionManager.getMeasurementStreams())
+    for (MeasurementStream stream : session.getMeasurementStreams())
     {
       if (stream.isMarkedForRemoval())
       {
@@ -147,7 +163,7 @@ public class SensorManager
     }
   }
 
-  public boolean hasRunningSession()
+  public boolean isSessionBeingRecorded()
   {
     return sessionManager.isSessionStarted();
   }
@@ -159,7 +175,7 @@ public class SensorManager
     sessionManager.deleteSensorStream(sensor);
   }
 
-  public boolean hasBackingSession()
+  public boolean isSessionBeingViewed()
   {
     return sessionManager.isSessionSaved();
   }

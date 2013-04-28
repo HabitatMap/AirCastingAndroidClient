@@ -100,7 +100,7 @@ class HxMDataReader implements BluetoothSocketReader
     }
   }
 
-  public void setEventBus(EventBus eventBus)
+  public void setBus(EventBus eventBus)
   {
     this.eventBus = eventBus;
   }

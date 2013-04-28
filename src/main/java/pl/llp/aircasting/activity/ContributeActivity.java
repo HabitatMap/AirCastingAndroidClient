@@ -19,8 +19,8 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SaveSessionTask;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-public class ContributeActivity extends DialogActivity implements View.OnClickListener
+public class ContributeActivity extends DialogActivity
 {
   @Inject SessionManager sessionManager;
   @Inject Context context;
@@ -57,18 +57,33 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.contribute);
+    if(!getIntent().hasExtra(Intents.SESSION_ID))
+    {
+      throw new RuntimeException("Should have arrived here with a session id");
+    }
 
-    yes.setOnClickListener(this);
-    no.setOnClickListener(this);
-  }
+    final long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
 
-  @Override
-  public void onClick(View view)
-  {
-    boolean contribute = view.getId() == R.id.yes;
-    sessionManager.setContribute(contribute);
-
-    saveSession();
+    yes.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        sessionManager.setContribute(sessionId, true);
+        saveSession(sessionId);
+        finish();
+      }
+    });
+    no.setOnClickListener(new View.OnClickListener()
+    {
+      @Override
+      public void onClick(View v)
+      {
+        sessionManager.setContribute(sessionId, false);
+        saveSession(sessionId);
+        finish();
+      }
+    });
   }
 
   @Override
@@ -78,17 +93,9 @@ public class ContributeActivity extends DialogActivity implements View.OnClickLi
     finish();
   }
 
-  private void saveSession()
+  private void saveSession(long sessionId)
   {
     //noinspection unchecked
-    new SaveSessionTask(this, sessionManager)
-    {
-      @Override
-      protected void onPostExecute(Void aVoid)
-      {
-        dialog.dismiss();
-        finish();
-      }
-    }.execute();
+    sessionManager.finishSession(sessionId);
   }
 }

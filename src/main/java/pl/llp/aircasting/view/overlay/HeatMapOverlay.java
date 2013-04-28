@@ -21,7 +21,7 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
-import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.model.internal.Region;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 

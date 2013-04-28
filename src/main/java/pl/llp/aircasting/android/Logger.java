@@ -38,4 +38,9 @@ public class Logger
   {
     Log.d(TAG, message);
   }
+
+  public static void d(String message, Throwable throwable)
+  {
+    Log.d(TAG, message, throwable);
+  }
 }

@@ -3,7 +3,6 @@ package pl.llp.aircasting.activity.adapter;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
-import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.NoOp;
@@ -11,6 +10,7 @@ import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -142,12 +142,12 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       recordButton.setBackgroundResource(R.drawable.recording_inactive);
     }
 
-    if (sensorManager.hasRunningSession())
+    if (sensorManager.isSessionBeingRecorded())
     {
       deleteButton.setVisibility(View.GONE);
       recordButton.setVisibility(View.VISIBLE);
     }
-    else if(sensorManager.hasBackingSession())
+    else if(sensorManager.isSessionBeingViewed())
     {
       deleteButton.setVisibility(View.VISIBLE);
       recordButton.setVisibility(View.GONE);

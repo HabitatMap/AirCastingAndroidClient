@@ -21,8 +21,7 @@ import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class NoteRepository
 {
-  @Inject
-  AirCastingDB dbAccessor;
+  @Inject AirCastingDB dbAccessor;
 
   @Internal
   void save(Iterable<Note> notes, long sessionId, SQLiteDatabase writableDb)
@@ -81,10 +80,10 @@ public class NoteRepository
   }
 
   @Internal
-  void delete(Session session, Note note, SQLiteDatabase writableDb)
+  void delete(long sessionId, long noteNumber, SQLiteDatabase writableDb)
   {
-    writableDb.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + session.getId() +
-        " AND " + NOTE_NUMBER + " = " + note.getNumber(), null);
+    writableDb.delete(NOTE_TABLE_NAME, NOTE_SESSION_ID + " = " + sessionId + " " +
+        "AND " + NOTE_NUMBER + " = " + noteNumber, null);
   }
 }
 

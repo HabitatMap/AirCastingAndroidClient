@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -20,7 +19,6 @@ import roboguice.inject.InjectResource;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.google.common.collect.Iterables.indexOf;
 import static java.util.Collections.sort;
 
 public class SelectSensorHelper {
@@ -72,13 +70,9 @@ public class SelectSensorHelper {
     }).toArray(new String[]{});
   }
 
-  private int selectedSensorIndex(List<Sensor> sensors) {
-    return indexOf(sensors, new Predicate<Sensor>() {
-      @Override
-      public boolean apply(@Nullable Sensor input) {
-        return input.equals(sensorManager.getVisibleSensor());
-      }
-    });
+  private int selectedSensorIndex(List<Sensor> sensors)
+  {
+    return sensors.indexOf(sensorManager.getVisibleSensor());
   }
 
   private List<Sensor> sortedSensors() {

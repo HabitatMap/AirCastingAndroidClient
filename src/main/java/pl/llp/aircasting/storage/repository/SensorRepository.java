@@ -26,6 +26,7 @@ public class SensorRepository implements DBConstants
 
   @Inject AirCastingDB airCastingDB;
 
+  @API
   public List<Sensor> getAll() {
 
     return airCastingDB.executeReadOnlyTask(readSensorsTask());

@@ -19,7 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
-import pl.llp.aircasting.model.MeasurementLevel;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.ScrollEvent;

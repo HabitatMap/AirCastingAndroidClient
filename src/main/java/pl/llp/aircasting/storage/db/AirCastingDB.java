@@ -76,7 +76,7 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
     database.beginTransaction();
     try
     {
-      result = measureExecution(task, database);
+      result = catchError(task, database);
       database.setTransactionSuccessful();
     }
     finally
@@ -91,8 +91,20 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
   {
     SQLiteDatabase database = getDatabase();
 
-    T result;
-    result = measureExecution(task, database);
+    return catchError(task, database);
+  }
+
+  private <T> T catchError(DatabaseTask<T> task, SQLiteDatabase database)
+  {
+    T result = null;
+    try
+    {
+      result = measureExecution(task, database);
+    }
+    catch (Exception e)
+    {
+      Log.e(Constants.TAG, "Something bad happened", e);
+    }
 
     return result;
   }

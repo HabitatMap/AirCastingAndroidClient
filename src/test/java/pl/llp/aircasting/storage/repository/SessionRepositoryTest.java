@@ -4,7 +4,6 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.db.AirCastingDB;
-import pl.llp.aircasting.storage.repository.SessionRepository;
 
 import com.google.inject.Inject;
 import org.hamcrest.core.IsNull;
@@ -17,8 +16,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(InjectedTestRunner.class)
 public class SessionRepositoryTest
 {
-  @Inject
-  AirCastingDB acdb;
+  @Inject AirCastingDB acdb;
   @Inject SessionRepository sessions;
 
   private Session session;

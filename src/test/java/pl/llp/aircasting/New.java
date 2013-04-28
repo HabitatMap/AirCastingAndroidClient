@@ -1,14 +1,18 @@
 package pl.llp.aircasting;
 
-import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.events.SensorEvent;
 
 import java.util.Date;
 import java.util.Random;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by ags on 29/06/12 at 18:32
@@ -59,5 +63,14 @@ public class New
   public static Measurement measurement(int value)
   {
     return new Measurement(0, 0, value);
+  }
+
+  public static MetadataHelper metadataHelper()
+  {
+    MetadataHelper metadataHelper = mock(MetadataHelper.class);
+
+    when(metadataHelper.getPhoneModel()).thenReturn("byePhone");
+
+    return metadataHelper;
   }
 }

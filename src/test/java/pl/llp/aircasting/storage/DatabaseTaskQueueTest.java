@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.mockito.Mockito.mock;
-import static pl.llp.aircasting.repository.DatabaseTaskQueueAssertions.assertThat;
+import static pl.llp.aircasting.storage.DatabaseTaskQueueAssertions.assertThat;
 
 /**
  * Created by ags on 24/03/2013 at 22:35

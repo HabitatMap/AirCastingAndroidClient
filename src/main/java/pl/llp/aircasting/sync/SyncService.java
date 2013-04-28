@@ -32,7 +32,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.storage.RepositoryException;
+import pl.llp.aircasting.storage.repository.RepositoryException;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
 import pl.llp.aircasting.util.http.HttpResult;
@@ -99,7 +99,7 @@ public class SyncService extends RoboIntentService
 
   private void sync() throws SessionSyncException
   {
-    Iterable<Session> sessions = prepareSessions(sessionRepository.all());
+    Iterable<Session> sessions = prepareSessions(sessionRepository.allCompleteSessions());
 
     HttpResult<SyncResponse> result = syncDriver.sync(sessions);
     Status status = result.getStatus();
@@ -198,7 +198,7 @@ public class SyncService extends RoboIntentService
       if (stream.isMarkedForRemoval())
       {
         stream.setSubmittedForRemoval(true);
-        sessionRepository.streams().update(stream);
+        sessionRepository.updateStream(stream);
       }
     }
   }

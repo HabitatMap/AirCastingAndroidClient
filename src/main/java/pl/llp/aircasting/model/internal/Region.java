@@ -17,7 +17,7 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.model.internal;
 
 import com.google.gson.annotations.Expose;
 
@@ -27,7 +27,8 @@ import com.google.gson.annotations.Expose;
  * Date: 11/3/11
  * Time: 11:57 AM
  */
-public class Region {
+public class Region
+{
     @Expose private double north;
     @Expose private double south;
     @Expose private double east;

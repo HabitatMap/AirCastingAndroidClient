@@ -20,7 +20,7 @@
 package pl.llp.aircasting.api;
 
 import com.google.gson.reflect.TypeToken;
-import pl.llp.aircasting.model.Region;
+import pl.llp.aircasting.model.internal.Region;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.util.http.HttpResult;
 

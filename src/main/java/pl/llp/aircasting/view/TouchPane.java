@@ -19,6 +19,11 @@
 */
 package pl.llp.aircasting.view;
 
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.ScrollEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
+import pl.llp.aircasting.guice.AirCastingApplication;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -27,10 +32,6 @@ import android.view.View;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import pl.llp.aircasting.event.ui.DoubleTapEvent;
-import pl.llp.aircasting.event.ui.ScrollEvent;
-import pl.llp.aircasting.event.ui.TapEvent;
-import pl.llp.aircasting.guice.AirCastingApplication;
 
 /**
  * Created by IntelliJ IDEA.

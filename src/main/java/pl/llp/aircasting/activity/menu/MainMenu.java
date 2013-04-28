@@ -24,6 +24,7 @@ import pl.llp.aircasting.activity.AboutActivity;
 import pl.llp.aircasting.activity.SessionsActivity;
 import pl.llp.aircasting.activity.SettingsActivity;
 import pl.llp.aircasting.activity.SoundTraceActivity;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
 import android.app.Activity;
@@ -54,7 +55,9 @@ public class MainMenu
       case R.id.aircasting:
         if (sessionManager.isSessionSaved())
         {
-          sessionManager.discardSession();
+          Session session = sessionManager.getSession();
+          Long sessionId = session.getId();
+          sessionManager.discardSession(sessionId);
         }
         Intent intent = new Intent(context, SoundTraceActivity.class);
         intent.putExtra("startingAircasting", true);

@@ -367,7 +367,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
   private void startSessionView() {
     Intent intent = new Intent(context, SoundTraceActivity.class);
-    eventBus.post(new SessionLoadedEvent());
+    eventBus.post(new SessionLoadedEvent(sessionManager.getSession()));
     startActivity(intent);
   }
 

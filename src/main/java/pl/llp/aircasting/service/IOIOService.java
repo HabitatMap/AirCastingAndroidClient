@@ -1,12 +1,12 @@
 package pl.llp.aircasting.service;
 
-import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.SoundHelper;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.events.MeasurementLevelEvent;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 
 import android.content.Intent;
 import android.os.IBinder;

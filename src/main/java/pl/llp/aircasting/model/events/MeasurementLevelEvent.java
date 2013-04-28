@@ -1,6 +1,6 @@
 package pl.llp.aircasting.model.events;
 
-import pl.llp.aircasting.model.MeasurementLevel;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
 
 /**

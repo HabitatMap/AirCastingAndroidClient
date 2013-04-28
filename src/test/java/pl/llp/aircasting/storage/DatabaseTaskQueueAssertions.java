@@ -1,4 +1,4 @@
-package pl.llp.aircasting.repository;
+package pl.llp.aircasting.storage;
 
 import org.fest.assertions.Assertions;
 import org.junit.Before;

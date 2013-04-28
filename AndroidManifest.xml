@@ -57,6 +57,8 @@
 
     <activity android:label="@string/session_details" android:name=".activity.SaveSessionActivity" android:theme="@style/Dialog"/>
 
+    <activity android:label="@string/session_details" android:name=".activity.SaveOrDiscardRestoredSessionActivity" android:theme="@style/Dialog"/>
+
     <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".activity.SettingsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
@@ -95,6 +97,8 @@
 
     <!-- Services -->
     <service android:name=".service.SensorService"/>
+
+    <service android:name=".storage.DatabaseWriterService"/>
 
     <service android:name=".sync.SyncService"/>
 

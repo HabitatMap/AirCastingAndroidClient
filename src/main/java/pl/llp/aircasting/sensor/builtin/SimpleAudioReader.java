@@ -19,11 +19,13 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
-import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.util.Constants;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -69,7 +71,8 @@ public class SimpleAudioReader extends AudioReader.Listener
     audioReader.startReader(SAMPLE_RATE, block, this);
   }
 
-  public void stop() {
+  public void stop()
+  {
     audioReader.stopReader();
   }
 
@@ -80,6 +83,10 @@ public class SimpleAudioReader extends AudioReader.Listener
       double calibrated = calibrationHelper.calibrate(power);
       SensorEvent event = new SensorEvent(SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                                           VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
+      if(Constants.isDevMode())
+      {
+        Logger.d(event.toString());
+      }
       eventBus.post(event);
     }
   }

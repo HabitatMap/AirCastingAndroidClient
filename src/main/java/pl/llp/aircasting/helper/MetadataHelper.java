@@ -20,6 +20,7 @@
 package pl.llp.aircasting.helper;
 
 import android.os.Build;
+import com.google.common.base.Strings;
 import com.google.inject.Singleton;
 
 @Singleton
@@ -32,6 +33,6 @@ public class MetadataHelper
 
   public String getPhoneModel()
   {
-    return Build.MODEL.replace(' ', '-');
+    return Strings.nullToEmpty(Build.MODEL).replace(' ', '-');
   }
 }

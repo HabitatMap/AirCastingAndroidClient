@@ -1,4 +1,4 @@
-package pl.llp.aircasting.model;
+package pl.llp.aircasting.model.internal;
 
 /**
  * Created by ags on 31/07/12 at 16:54

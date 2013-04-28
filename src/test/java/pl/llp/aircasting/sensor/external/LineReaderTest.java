@@ -10,7 +10,9 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(InjectedTestRunner.class)
 public class LineReaderTest
@@ -26,7 +28,7 @@ public class LineReaderTest
   }
 
   @Test
-  public void shouldReadInputAndGenerateEvents() throws IOException, pl.llp.aircasting.sensor.external.ParseException
+  public void shouldReadInputAndGenerateEvents() throws ParseException
   {
     SensorEvent event1 = mock(SensorEvent.class);
     doReturn(event1).when(reader.parser).parse("Reading 1");

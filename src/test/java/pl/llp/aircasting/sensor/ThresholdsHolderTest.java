@@ -1,30 +1,33 @@
-package pl.llp.aircasting.helper;
+package pl.llp.aircasting.sensor;
 
-import pl.llp.aircasting.model.MeasurementLevel;
+import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
 
+import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static org.junit.Assert.assertEquals;
 
-public class ResourceHelperTest
+@RunWith(InjectedTestRunner.class)
+public class ThresholdsHolderTest
 {
-  ResourceHelper helper;
+  @Inject ThresholdsHolder holder;
   Sensor sensor;
 
   @Before
   public void setUp() throws Exception
   {
-    helper = new ResourceHelper();
     sensor = New.sensor();
 
     HashMap<MeasurementLevel, Integer> objectObjectHashMap = newHashMap();
-    helper.thresholds.put(sensor, objectObjectHashMap);
+    holder.thresholds.put(sensor, objectObjectHashMap);
     for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
       objectObjectHashMap.put(level, sensor.getThreshold(level));
     }
@@ -37,7 +40,7 @@ public class ResourceHelperTest
     int threshold = sensor.getThreshold(MeasurementLevel.LOW);
 
     // when
-    MeasurementLevel level = helper.getLevel(sensor, threshold + 0.01);
+    MeasurementLevel level = holder.getLevel(sensor, threshold + 0.01);
 
     // then
     assertEquals(MeasurementLevel.LOW, level);
@@ -50,7 +53,7 @@ public class ResourceHelperTest
     int threshold = sensor.getThreshold(MeasurementLevel.LOW);
 
     // when
-    MeasurementLevel level = helper.getLevel(sensor, threshold);
+    MeasurementLevel level = holder.getLevel(sensor, threshold);
 
     // then
     assertEquals(MeasurementLevel.LOW, level);

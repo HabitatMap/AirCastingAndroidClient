@@ -19,14 +19,15 @@
 */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Session;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.Session;
 import roboguice.inject.InjectView;
 
 /**
@@ -35,7 +36,8 @@ import roboguice.inject.InjectView;
  * Date: 10/19/11
  * Time: 3:18 PM
  */
-public class EditSessionActivity extends DialogActivity implements View.OnClickListener {
+public class EditSessionActivity extends DialogActivity implements View.OnClickListener
+{
     @InjectView(R.id.save_button) Button saveButton;
     @InjectView(R.id.discard_button) Button discardButton;
 

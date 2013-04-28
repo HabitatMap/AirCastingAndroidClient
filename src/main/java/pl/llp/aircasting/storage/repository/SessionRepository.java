@@ -38,7 +38,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,63 +52,18 @@ import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class SessionRepository
 {
-  @Language("SQL")
-  private static final String SESSIONS_BY_SENSOR_QUERY =
-      "SELECT " + SESSION_TABLE_NAME + ".*" +
-          " FROM " + SESSION_TABLE_NAME +
-          " JOIN " + STREAM_TABLE_NAME +
-          " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_TABLE_NAME + "." + STREAM_SESSION_ID +
-          " WHERE " + STREAM_SENSOR_NAME + " = ?" +
-          " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0" +
-          " ORDER BY " + SESSION_START + " DESC";
-
   @Inject AirCastingDB dbAccessor;
 
   @Inject NoteRepository notes;
-  @Inject StreamRepository streams;
+  @Inject StreamDAO streams;
+
+  @Inject SessionDAO sessionDAO;
+  @Inject SessionTrackerDAO trackedSessionsDAO;
 
   @API
-  public Session save(@NotNull Session session)
+  public Session save(@NotNull final Session session)
   {
-    save(session, NoOp.progressListener());
-    return session;
-  }
-
-  @API
-  public void deleteNote(final Session session, final Note note)
-  {
-    dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
-    {
-      @Override
-      public Object execute(SQLiteDatabase writableDatabase)
-      {
-        notes.delete(session, note, writableDatabase);
-        return null;
-      }
-    });
-  }
-
-  @API
-  public void save(@NotNull final Session session, ProgressListener progressListener)
-  {
-    setupProgressListener(session, progressListener);
-
-    final ContentValues values = new ContentValues();
-
-    prepareHeader(session, values);
-
-    values.put(SESSION_START, session.getStart().getTime());
-    values.put(SESSION_END, session.getEnd().getTime());
-    values.put(SESSION_UUID, session.getUUID().toString());
-    values.put(SESSION_CALIBRATION, session.getCalibration());
-    values.put(SESSION_CONTRIBUTE, session.getContribute());
-    values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-    values.put(SESSION_OS_VERSION, session.getOSVersion());
-    values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
-    values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval() ? 1 : 0);
-    values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval() ? 1 : 0);
-    values.put(SESSION_CALIBRATED, 1);
-    values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
+    final ContentValues values = sessionDAO.asValues(session);
 
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
     {
@@ -142,21 +96,8 @@ public class SessionRepository
         return null;
       }
     });
-  }
 
-  private void setupProgressListener(Session session, ProgressListener progressListener)
-  {
-    if (progressListener == null) {
-      return;
-    }
-
-    int size = 0;
-    Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
-    for (MeasurementStream stream : streams) {
-      size += stream.getMeasurements().size();
-    }
-
-    progressListener.onSizeCalculated(size);
+    return session;
   }
 
   private void prepareHeader(Session session, ContentValues values) {
@@ -169,22 +110,7 @@ public class SessionRepository
   public Session loadShallow(Cursor cursor) {
     Session session = new Session();
 
-    session.setId(getLong(cursor, SESSION_ID));
-    session.setTitle(getString(cursor, SESSION_TITLE));
-    session.setDescription(getString(cursor, SESSION_DESCRIPTION));
-    session.setTags(getString(cursor, SESSION_TAGS));
-    session.setStart(getDate(cursor, SESSION_START));
-    session.setEnd(getDate(cursor, SESSION_END));
-    session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
-    session.setLocation(getString(cursor, SESSION_LOCATION));
-    session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
-    session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
-    session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
-    session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
-    session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
-    session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
-    session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
-    session.setLocationless(getBool(cursor, SESSION_LOCAL_ONLY));
+    sessionDAO.loadDetails(cursor, session);
 
     List<Note> loadedNotes = notes.load(session);
     session.addAll(loadedNotes);
@@ -206,6 +132,19 @@ public class SessionRepository
     }
 
     return session;
+  }
+
+  @API
+  public List<Session> loadShallow(List<Long> sessionIds)
+  {
+    List<Session> result = newArrayList();
+
+    for (Long sessionId : sessionIds)
+    {
+      result.add(loadShallow(sessionId));
+    }
+
+    return result;
   }
 
   @API
@@ -305,7 +244,7 @@ public class SessionRepository
   }
 
   @API
-  public List<Session> all()
+  public List<Session> allCompleteSessions()
   {
     return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Session>>()
     {
@@ -314,7 +253,7 @@ public class SessionRepository
       {
         List<Session> result = Lists.newArrayList();
         Cursor cursor = readOnlyDatabase
-            .query(SESSION_TABLE_NAME, null, null, null, null, null, SESSION_START + " DESC");
+            .query(SESSION_TABLE_NAME, null, DBConstants.SESSION_INCOMPLETE + " = 0", null, null, null, SESSION_START + " DESC");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast())
@@ -334,16 +273,7 @@ public class SessionRepository
   @Internal
   Cursor notDeletedCursor(@Nullable Sensor sensor, SQLiteDatabase readOnlyDatabase)
   {
-    Cursor result;
-    if (sensor == null)
-    {
-      result = readOnlyDatabase.query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0", null, null, null, SESSION_START + " DESC");
-    }
-    else
-    {
-      result = readOnlyDatabase.rawQuery(SESSIONS_BY_SENSOR_QUERY, new String[]{sensor.getSensorName()});
-    }
-    return result;
+    return sessionDAO.notDeletedCursor(sensor, readOnlyDatabase);
   }
 
   @API
@@ -438,7 +368,7 @@ public class SessionRepository
     }
 
     final Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
-    final MeasurementRepository r = new MeasurementRepository(progressListener);
+    final MeasurementDAO r = new MeasurementDAO(progressListener);
 
     return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>()
     {
@@ -539,7 +469,7 @@ public class SessionRepository
   }
 
   @API
-  public StreamRepository streams()
+  public StreamDAO streams()
   {
     return streams;
   }
@@ -581,6 +511,54 @@ public class SessionRepository
         return null;
       }
     });
+  }
+
+  public void deleteCompletely(final long sessionId)
+  {
+    dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>()
+    {
+      @Override
+      public Object execute(SQLiteDatabase writableDatabase)
+      {
+        String condition = SESSION_ID + " = " + sessionId;
+        delete(condition, writableDatabase);
+        streams().deleteSubmitted(writableDatabase);
+        return null;
+      }
+    });
+  }
+
+  public List<Session> unfinishedSessions()
+  {
+    return trackedSessionsDAO.unfinishedSessions();
+  }
+
+  public WritableDatabaseTask<Void> addStreamTask(final MeasurementStream stream, final Session session)
+  {
+    WritableDatabaseTask<Void> writableDatabaseTask = new WritableDatabaseTask<Void>()
+    {
+      @Override
+      public Void execute(SQLiteDatabase writableDatabase)
+      {
+        ContentValues values = StreamDAO.values(stream);
+        values.put(STREAM_SESSION_ID, session.getId());
+        long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
+        stream.setId(streamId);
+        stream.setSessionId(session.getId());
+        return null;
+      }
+    };
+    return writableDatabaseTask;
+  }
+
+  public void updateStream(MeasurementStream stream)
+  {
+    streams().update(stream);
+  }
+
+  public void complete(long sessionId)
+  {
+    trackedSessionsDAO.complete(sessionId);
   }
 }
 

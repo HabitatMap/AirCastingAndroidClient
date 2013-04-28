@@ -87,7 +87,8 @@ public class LineDataReader implements BluetoothSocketReader
       };
     }
 
-  public void setEventBus(EventBus eventBus)
+  @Override
+  public void setBus(EventBus eventBus)
   {
     this.eventBus = eventBus;
   }

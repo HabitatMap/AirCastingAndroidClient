@@ -1,5 +1,7 @@
 package pl.llp.aircasting.model;
 
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+
 import pl.llp.aircasting.model.events.SensorEvent;
 
 import com.google.common.base.Strings;

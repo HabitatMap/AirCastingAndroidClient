@@ -20,29 +20,16 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.MarkerSize;
-import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.sensor.ThresholdsHolder;
 
 import android.graphics.drawable.Drawable;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.inject.InjectResource;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.google.common.collect.Maps.newHashMap;
-
-/**
- * Created by IntelliJ IDEA.
- * User: obrok
- * Date: 10/17/11
- * Time: 12:54 PM
- */
 @Singleton
 public class ResourceHelper
 {
@@ -86,29 +73,7 @@ public class ResourceHelper
 
   @InjectResource(R.color.gps_route) int gpsRoute;
 
-  @Inject SettingsHelper settings;
-  @Inject EventBus eventBus;
-
-  Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
-
-  @Inject
-  public void init()
-  {
-    eventBus.register(this);
-  }
-
-  @Subscribe
-  public void onEvent(ThresholdSetEvent event)
-  {
-    Sensor sensor = event.getSensor();
-
-    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
-    if(levels == null)
-    {
-      levels = initLevels(sensor);
-    }
-    levels.put(event.getLevel(), event.getValue());
-  }
+  @Inject ThresholdsHolder thresholds;
 
   public Drawable getGauge(Sensor sensor, MarkerSize size, double value) {
     switch (getLevel(sensor, value)) {
@@ -175,31 +140,7 @@ public class ResourceHelper
 
   public MeasurementLevel getLevel(Sensor sensor, double value)
   {
-    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
-    if(levels == null)
-    {
-      levels = initLevels(sensor);
-    }
-
-    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
-      if (value >= levels.get(level))
-      {
-        return level;
-      }
-    }
-    return MeasurementLevel.TOO_LOW;
-  }
-
-  private HashMap<MeasurementLevel, Integer> initLevels(Sensor sensor)
-  {
-    HashMap<MeasurementLevel, Integer> values = new HashMap<MeasurementLevel, Integer>();
-    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS)
-    {
-      int threshold = settings.getThreshold(sensor, level);
-      values.put(level, threshold);
-    }
-    thresholds.put(sensor, values);
-    return values;
+    return thresholds.getLevel(sensor, value);
   }
 
   public Drawable getBulletAbsolute(Sensor sensor, double value)

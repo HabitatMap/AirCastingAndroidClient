@@ -50,7 +50,7 @@ public class BioharnessDataReader implements BluetoothSocketReader
   }
 
   @Override
-  public void setEventBus(EventBus eventBus)
+  public void setBus(EventBus eventBus)
   {
     this.eventBus = eventBus;
   }

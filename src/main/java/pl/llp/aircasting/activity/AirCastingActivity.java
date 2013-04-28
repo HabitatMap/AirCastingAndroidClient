@@ -24,8 +24,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
-import pl.llp.aircasting.model.events.MeasurementEvent;
-import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.FormatHelper;
@@ -38,9 +36,13 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -53,6 +55,7 @@ import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 import java.text.NumberFormat;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static pl.llp.aircasting.Intents.triggerSync;
@@ -80,6 +83,9 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
 
+    @Inject UnfinishedSessionChecker checker;
+    @Inject ApplicationState state;
+
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
     int noteIndex = -1;
@@ -88,7 +94,10 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
     final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
-    @Override
+  private long lastChecked = 0;
+  public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
+
+  @Override
     protected void onResume() {
         super.onResume();
 
@@ -100,9 +109,40 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         updateKeepScreenOn();
         topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
         Intents.startIOIO(context);
+        Intents.startDatabaseWriterService(context);
+
+        checkForUnfinishedSessions();
     }
 
-    private void initialize() {
+    private void checkForUnfinishedSessions()
+    {
+      if (shouldCheckForUnfinishedSessions())
+      {
+        new AsyncTask<Void, Void, Void>(){
+          @Override
+          protected Void doInBackground(Void... voids)
+          {
+            checker.check(AirCastingActivity.this);
+            lastChecked = System.currentTimeMillis();
+            return null;
+          }
+        }.execute();
+      }
+    }
+
+  private boolean shouldCheckForUnfinishedSessions()
+  {
+    if(sessionManager.isRecording())
+      return false;
+
+    if(state.saving().isSaving())
+      return false;
+
+    long timeout = System.currentTimeMillis() - lastChecked;
+    return timeout > DELTA;
+  }
+
+  private void initialize() {
         if (!initialized) {
             zoomOut.setOnClickListener(this);
             zoomIn.setOnClickListener(this);
@@ -209,9 +249,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
             case Intents.EDIT_SESSION:
                 if (resultCode == R.id.save_button) {
                     Session session = Intents.editSessionResult(data);
-
                     sessionManager.updateSession(session);
-                    Intents.triggerSync(context);
                 }
                 break;
             default:
@@ -307,7 +345,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
             @Override
             protected Void doInBackground(Void... voids) {
                 if (sessionManager.isSessionSaved()) {
-                    sessionManager.saveChanges();
+                    sessionManager.updateNote(currentNote);
                     triggerSync(context);
                 }
                 return null;

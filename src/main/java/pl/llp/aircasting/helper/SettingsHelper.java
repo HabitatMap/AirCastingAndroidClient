@@ -19,10 +19,10 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.model.MeasurementLevel;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Strings;

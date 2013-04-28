@@ -1,4 +1,4 @@
-package pl.llp.aircasting.storage;
+package pl.llp.aircasting.storage.repository;
 
 public class RepositoryException extends RuntimeException
 {

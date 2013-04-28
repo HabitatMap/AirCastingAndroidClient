@@ -116,7 +116,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
   }
 
   private void shareFile() {
-    if (sessionManager.isSessionSaved()) {
+    if (sessionManager.isRecording()) {
       session = sessionManager.getSession();
       prepareAndShare();
     } else {

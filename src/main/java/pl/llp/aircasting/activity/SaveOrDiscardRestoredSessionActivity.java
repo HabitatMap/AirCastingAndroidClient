@@ -2,7 +2,6 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.task.SaveSessionTask;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
@@ -15,9 +14,6 @@ import android.widget.EditText;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-/**
- * Created by ags on 11/04/2013 at 12:02
- */
 public class SaveOrDiscardRestoredSessionActivity extends DialogActivity implements View.OnClickListener
 {
   @InjectView(R.id.save_button) Button saveButton;
@@ -30,6 +26,8 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject MetadataHelper metadataHelper;
+
+  @Inject ApplicationState state;
 
   private long sessionId;
 
@@ -55,6 +53,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
     }
 
     sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
+    state.saving().markCurrentlySaving(sessionId);
   }
 
   @Override
@@ -75,15 +74,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
         Session session = sessionManager.getSession();
         if(session.isLocationless())
         {
-          new SaveSessionTask(this, sessionManager)
-          {
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-              dialog.dismiss();
-              finish();
-            }
-          }.execute();
+          sessionManager.finishSession(sessionId);
         }
         else
         {
@@ -100,7 +91,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
     finish();
   }
 
-  private void fillSessionDetails(Long sessionId)
+  private void fillSessionDetails(long sessionId)
   {
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();

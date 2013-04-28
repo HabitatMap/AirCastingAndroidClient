@@ -23,8 +23,6 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -53,7 +51,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
@@ -72,7 +69,6 @@ public class SessionManagerTest
   {
     sessionManager.locationHelper = mock(LocationHelper.class);
     sessionManager.audioReader = mock(SimpleAudioReader.class);
-    sessionManager.metadataHelper = mock(MetadataHelper.class);
     sessionManager.externalSensors = mock(ExternalSensors.class);
     sessionManager.eventBus = mock(EventBus.class);
     sessionManager.sensorManager = mock(SensorManager.class);
@@ -123,6 +119,7 @@ public class SessionManagerTest
 
     MeasurementStream expected = lastEvent.stream();
     Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
+
     assertThat(streams, hasItem(expected));
   }
 
@@ -207,18 +204,19 @@ public class SessionManagerTest
   @Test
   public void shouldStoreMeasurements()
   {
-    sessionManager.sessionStarted = true;
+    sessionManager.startSession();
 
     triggerMeasurement(22);
 
     Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
-    assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements(), hasItem(equalTo(expected)));
+    org.fest.assertions.Assertions.assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements())
+                       .contains(expected);
   }
 
   @Test
   public void measurements_withoutLocation_should_get_a_fake()
   {
-    sessionManager.sessionStarted = true;
+    sessionManager.startSession();
     sessionManager.session.setLocationless(true);
     when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
@@ -231,7 +229,7 @@ public class SessionManagerTest
   @Test
   public void shouldSkipMeasurementsFromDisabledStreams()
   {
-    sessionManager.sessionStarted = true;
+    sessionManager.state.recording().startRecording();
     when(sensor.isEnabled()).thenReturn(false);
 
     triggerMeasurement();
@@ -255,7 +253,6 @@ public class SessionManagerTest
     verify(sessionManager.locationHelper).start();
     verify(sessionManager.audioReader).start();
     verify(sessionManager.externalSensors).start();
-    assertThat(sessionManager.isRecording(), equalTo(true));
   }
 
   @Test
@@ -266,7 +263,6 @@ public class SessionManagerTest
 
     verify(sessionManager.locationHelper, atMost(1)).start();
     verify(sessionManager.audioReader, atMost(1)).start();
-    assertThat(sessionManager.isRecording(), equalTo(true));
   }
 
   @Test
@@ -305,6 +301,7 @@ public class SessionManagerTest
   public void shouldDiscardASession()
   {
     sessionManager.startSession();
+    sessionManager.getSession().setId(1234);
 
     triggerMeasurement(13.5);
     sessionManager.discardSession();
@@ -320,20 +317,19 @@ public class SessionManagerTest
   @Test
   public void shouldStopASession()
   {
-    ProgressListener listener = mock(ProgressListener.class);
-
     triggerMeasurement(11);
-    sessionManager.finishSession(listener);
+    sessionManager.finishSession(0);
 
     verify(sessionManager.audioReader, never()).stop();
     verify(sessionManager.locationHelper).stop();
-    verify(sessionManager.sessionRepository).save(Mockito.any(Session.class), eq(listener));
+    verify(sessionManager.sessionRepository).save(Mockito.any(Session.class));
     assertThat(sessionManager.isSessionStarted(), equalTo(false));
   }
 
   @Test
   public void shouldNotifyListenersOnSessionClobber()
   {
+    sessionManager.getSession().setId(1234);
     sessionManager.discardSession();
 
     verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
@@ -371,12 +367,38 @@ public class SessionManagerTest
   }
 
   @Test
+  public void startSession_should_be_indicated_in_recording_state() throws Exception
+  {
+    // given
+
+    // when
+    sessionManager.startSession();
+
+    // then
+    org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isTrue();
+  }
+
+  @Test
+  public void stopSession_should_changeRecordingState() throws Exception
+  {
+      // given
+      sessionManager.startSession();
+
+      // when
+      sessionManager.stopSession();
+
+      // then
+    org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isFalse();
+  }
+
+  @Ignore("needs to check if finishing creates a proper task")
+  @Test
   public void shouldSetSessionEnd()
   {
     sessionManager.startSession();
     triggerMeasurement();
 
-    sessionManager.finishSession(null);
+    sessionManager.finishSession(0);
 
     verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
@@ -393,22 +415,15 @@ public class SessionManagerTest
       {
         description.appendText("Session with end set");
       }
-    }), Mockito.<ProgressListener>any());
+    }));
   }
 
-  @Ignore("Needs a redo")
+  @Ignore("needs to check if finishing creates a proper task")
   @Test
   public void shouldSaveAdditionalData()
   {
-    sessionManager.settingsHelper = mock(SettingsHelper.class);
-    sessionManager.metadataHelper = mock(MetadataHelper.class);
-    when(sessionManager.settingsHelper.getCalibration()).thenReturn(123);
-    when(sessionManager.settingsHelper.getOffset60DB()).thenReturn(432);
-    when(sessionManager.metadataHelper.getOSVersion()).thenReturn("1.1.1");
-    when(sessionManager.metadataHelper.getPhoneModel()).thenReturn("very old");
-
     triggerMeasurement(100);
-    sessionManager.finishSession(null);
+    sessionManager.finishSession(0);
 
     verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
@@ -427,7 +442,7 @@ public class SessionManagerTest
       {
         description.appendText("Session with additional data set");
       }
-    }), Mockito.any(ProgressListener.class));
+    }));
   }
 
   @Test
@@ -445,11 +460,11 @@ public class SessionManagerTest
   public void afterDeletingNotesShouldHaveNewNumbers()
   {
     sessionManager.startSession();
-    Note note1 = sessionManager.makeANote(null, null, null);
-    Note note2 = sessionManager.makeANote(null, null, null);
+    Note note1 = sessionManager.makeANote(null, "Note1", null);
+    Note note2 = sessionManager.makeANote(null, "Note2", null);
 
     sessionManager.deleteNote(note1);
-    Note note3 = sessionManager.makeANote(null, null, null);
+    Note note3 = sessionManager.makeANote(null, "Note3", null);
 
     assertThat(note3.getNumber(), not(equalTo(note2.getNumber())));
   }
@@ -458,13 +473,12 @@ public class SessionManagerTest
   public void shouldMarkNotesToBeDeletedForSavedSessions()
   {
     sessionManager.session = mock(Session.class);
-    when(sessionManager.session.isSaved()).thenReturn(true);
+    when(sessionManager.session.getId()).thenReturn(1234L);
     Note note = new Note(null, null, location, null, 10);
 
     sessionManager.deleteNote(note);
 
     verify(sessionManager.session).deleteNote(note);
-    verify(sessionManager.sessionRepository).deleteNote(sessionManager.session, note);
   }
 
   @Test

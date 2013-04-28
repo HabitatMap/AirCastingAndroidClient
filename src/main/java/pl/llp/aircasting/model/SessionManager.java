@@ -20,32 +20,37 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
+import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.storage.db.DBConstants;
+import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.util.Constants;
+import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import android.app.Application;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -65,10 +70,9 @@ public class SessionManager
   @Inject EventBus eventBus;
 
   @Inject SessionRepository sessionRepository;
+  @Inject DatabaseTaskQueue dbQueue;
 
-  @Inject SettingsHelper settingsHelper;
   @Inject LocationHelper locationHelper;
-  @Inject MetadataHelper metadataHelper;
   @Inject NotificationHelper notificationHelper;
 
   @Inject Application applicationContext;
@@ -78,12 +82,12 @@ public class SessionManager
   @NotNull Session session = new Session();
 
   @Inject ExternalSensors externalSensors;
+  @Inject ContinuousTracker tracker;
+
+  @Inject ApplicationState state;
 
   private Map<String, Double> recentMeasurements = newHashMap();
 
-  boolean sessionStarted = false;
-
-  private boolean recording;
   private boolean paused;
 
   @Inject
@@ -107,10 +111,11 @@ public class SessionManager
     return session;
   }
 
-  public void loadSession(long id, @NotNull ProgressListener listener)
+  public void loadSession(long sessionId, @NotNull ProgressListener listener)
   {
     Preconditions.checkNotNull(listener);
-    Session newSession = sessionRepository.loadFully(id, listener);
+    Session newSession = sessionRepository.loadFully(sessionId, listener);
+    state.recording().startShowingOldSession();
     setSession(newSession);
   }
 
@@ -118,29 +123,26 @@ public class SessionManager
   {
     Preconditions.checkNotNull(session, "Cannot set null session");
     this.session = session;
-    notifyNewSession();
+    notifyNewSession(session);
   }
 
   public boolean isSessionSaved()
   {
-    return session.isSaved();
+    return state.recording().isShowingOldSession();
   }
 
-  public void updateSession(Session session) {
-    this.session.copyHeader(session);
-    sessionRepository.update(this.session);
+  public void updateSession(Session from) {
+    Preconditions.checkNotNull(from.getId(), "Unsaved session?");
+    setTitleTagsDescription(from.getId(), from.getTitle(),
+                            from.getTags(),
+                            from.getDescription());
   }
 
   public Note makeANote(Date date, String text, String picturePath) {
     Note note = new Note(date, text, locationHelper.getLastLocation(), picturePath);
-    session.add(note);
 
-    notifyNote(note);
+    tracker.addNote(note);
     return note;
-  }
-
-  private void notifyNote(Note note) {
-    eventBus.post(new NoteCreatedEvent(note));
   }
 
   public Iterable<Note> getNotes() {
@@ -148,18 +150,20 @@ public class SessionManager
   }
 
   public void startSensors() {
-    if (!recording) {
+    if (!state.sensors().started())
+    {
       locationHelper.start();
 
       audioReader.start();
       externalSensors.start();
-
-      recording = true;
+      state.sensors().start();
     }
   }
 
-  public synchronized void pauseSession() {
-    if (recording) {
+  public synchronized void pauseSession()
+  {
+    if (state.recording().isRecording())
+    {
       paused = true;
       audioReader.stop();
     }
@@ -172,21 +176,24 @@ public class SessionManager
     }
   }
 
-  public void stopSensors() {
-    if (!sessionStarted) {
-      locationHelper.stop();
-      audioReader.stop();
-
-      recording = false;
+  public void stopSensors()
+  {
+    if (state.recording().isRecording())
+    {
+      return;
     }
+    locationHelper.stop();
+    audioReader.stop();
+    state.sensors().stop();
   }
 
-  public boolean isRecording() {
-    return recording;
+  public boolean isRecording()
+  {
+    return state.recording().isRecording();
   }
 
-  public void setContribute(boolean value) {
-    session.setContribute(value);
+  public void setContribute(long sessionId, boolean shouldContribute) {
+    tracker.setContribute(sessionId, shouldContribute);
   }
 
   @Subscribe
@@ -204,12 +211,11 @@ public class SessionManager
       double longitude = location.getLongitude();
 
       Measurement measurement = new Measurement(latitude, longitude, value, event.getDate());
-      if (sessionStarted)
+      if (state.recording().isRecording())
       {
         MeasurementStream stream = prepareStream(event);
-        stream.add(measurement);
+        tracker.addMeasurement(stream, measurement);
       }
-
       eventBus.post(new MeasurementEvent(measurement, sensor));
     }
   }
@@ -232,7 +238,7 @@ public class SessionManager
 
     if (!session.hasStream(sensorName)) {
       MeasurementStream stream = event.stream();
-      session.add(stream);
+      tracker.addStream(stream);
     }
 
     MeasurementStream stream = session.getStream(sensorName);
@@ -248,15 +254,9 @@ public class SessionManager
     return session.getNotes().get(i);
   }
 
-  public void saveChanges() {
-    sessionRepository.update(session);
-  }
-
-  public void deleteNote(Note note) {
-    if (session.isSaved()) {
-      sessionRepository.deleteNote(session, note);
-    }
-    session.deleteNote(note);
+  public void deleteNote(Note note)
+  {
+    tracker.deleteNote(session, note);
   }
 
   public int getNoteCount() {
@@ -275,20 +275,17 @@ public class SessionManager
     return session.getStream(sensorName);
   }
 
-  public void discardSession() {
+  @VisibleForTesting
+  void discardSession()
+  {
+    Long sessionId = getSession().getId();
+    discardSession(sessionId);
+  }
+
+  public void discardSession(long sessionId)
+  {
+    tracker.discard(sessionId);
     cleanup();
-  }
-
-  public void setTitle(String text) {
-    session.setTitle(text);
-  }
-
-  public void setTags(String text) {
-    session.setTags(text);
-  }
-
-  public void setDescription(String text) {
-    session.setDescription(text);
   }
 
   public synchronized double getNow(Sensor sensor) {
@@ -298,66 +295,54 @@ public class SessionManager
     return recentMeasurements.get(sensor.getSensorName());
   }
 
-  private void notifyNewSession() {
-    eventBus.post(new SessionChangeEvent());
+  private void notifyNewSession(Session session) {
+    eventBus.post(new SessionChangeEvent(session));
   }
 
   public void startSession()
   {
     setSession(new Session());
     locationHelper.start();
-    session.setStart(new Date());
-    session.setLocationless(settingsHelper.areMapsDisabled());
     startSensors();
-    sessionStarted = true;
+    state.recording().startRecording();
     notificationHelper.showRecordingNotification();
     eventBus.post(new SessionStartedEvent(getSession()));
+    tracker.startTracking(getSession());
   }
 
   public void stopSession()
   {
-    session.setEnd(new Date());
-    sessionStarted = false;
+    tracker.stopTracking(getSession());
     locationHelper.stop();
+    state.recording().stopRecording();
     notificationHelper.hideRecordingNotification();
     eventBus.post(new SessionStoppedEvent(getSession()));
   }
 
-  public void finishSession(ProgressListener progressListener) {
+  public void finishSession(long sessionId) {
     synchronized (this) {
-      fillInDetails();
-
-      sessionRepository.save(session, progressListener);
+      tracker.complete(sessionId);
       Intents.triggerSync(applicationContext);
     }
     cleanup();
   }
 
-  private void fillInDetails() {
-    session.setCalibration(settingsHelper.getCalibration());
-    session.setOffset60DB(settingsHelper.getOffset60DB());
-
-    session.setOsVersion(metadataHelper.getOSVersion());
-    session.setPhoneModel(metadataHelper.getPhoneModel());
-
-    session.setEnd(new Date());
-  }
-
   public void deleteSession()
   {
-    sessionRepository.markSessionForRemoval(session.getId());
-    discardSession();
+    Long sessionId = session.getId();
+    sessionRepository.markSessionForRemoval(sessionId);
+    discardSession(sessionId);
   }
 
   private void cleanup() {
     locationHelper.stop();
-    sessionStarted = false;
+    state.recording().stopRecording();
     setSession(new Session());
     notificationHelper.hideRecordingNotification();
   }
 
   public boolean isSessionStarted() {
-    return sessionStarted;
+    return state.recording().isRecording();
   }
 
   public double getAvg(Sensor sensor) {
@@ -412,5 +397,29 @@ public class SessionManager
   public boolean isLocationless()
   {
     return session.isLocationless();
+  }
+
+  public void setTitleTagsDescription(long sessionId, String title, String tags, String description)
+  {
+    tracker.setTitle(sessionId, title);
+    tracker.setTags(sessionId, tags);
+    tracker.setDescription(sessionId, description);
+  }
+
+  public void updateNote(final Note currentNote)
+  {
+    dbQueue.add(new WritableDatabaseTask<Void>()
+    {
+      @Override
+      public Void execute(SQLiteDatabase writableDatabase)
+      {
+        ContentValues values = new ContentValues();
+        values.put(DBConstants.NOTE_TEXT, currentNote.getText());
+        @Language("SQLite")
+        String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + session.getId();
+        writableDatabase.update(DBConstants.NOTE_TABLE_NAME, values, whereClause, null);
+        return null;
+      }
+    });
   }
 }

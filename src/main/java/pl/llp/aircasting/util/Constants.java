@@ -18,7 +18,7 @@ public class Constants
 
   public static boolean isDevMode()
   {
-    return false;
+    return true;
   }
 
   public static boolean logDbPerformance()
