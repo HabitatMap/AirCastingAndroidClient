@@ -239,7 +239,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
 
   @Subscribe
   public void onEvent(ViewStreamEvent event) {
-    topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+    topBarHelper.updateTopBar(event.getSensor(), topBar);
     updateGauges();
   }
 

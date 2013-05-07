@@ -22,7 +22,6 @@ package pl.llp.aircasting.model;
 import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -121,13 +120,6 @@ public class Session implements Serializable
   public Long getId()
   {
     return id;
-  }
-
-  public void copyHeader(@NotNull Session from)
-  {
-    this.title = from.getTitle();
-    this.tags = from.getTags();
-    this.description = from.getDescription();
   }
 
   public List<Note> getNotes()

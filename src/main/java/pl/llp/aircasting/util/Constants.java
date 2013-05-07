@@ -1,7 +1,5 @@
 package pl.llp.aircasting.util;
 
-import pl.llp.aircasting.android.Logger;
-
 import java.util.concurrent.TimeUnit;
 
 public class Constants
@@ -15,10 +13,13 @@ public class Constants
   public static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
 
   public static final String TAG = "AirCasting";
+  public static final String PERFORMANCE_TAG = "AirCasting/Performance";
+  public static final String DB_PERFORMANCE_TAG = "AirCasting/Performance/Db";
+  public static final String SENSORS_TAG = "AirCasting/Sensors";
 
   public static boolean isDevMode()
   {
-    return true;
+    return false;
   }
 
   public static boolean logDbPerformance()
@@ -29,21 +30,5 @@ public class Constants
   public static boolean logGraphPerformance()
   {
     return false;
-  }
-
-  public static void logDbPerformance(String message)
-  {
-    if(logDbPerformance())
-    {
-      Logger.i(message);
-    }
-  }
-
-  public static void logGraphPerformance(String message)
-  {
-    if(logGraphPerformance())
-    {
-      Logger.i(message);
-    }
   }
 }

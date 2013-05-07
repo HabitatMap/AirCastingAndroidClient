@@ -20,15 +20,18 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,24 +42,48 @@ import static org.junit.Assert.assertThat;
 @RunWith(InjectedTestRunner.class)
 public class SoundHelperTest
 {
+  public static final int VALUE_TOO_LOUD = 101;
+  public static final int VALUE_TOO_QUIET = -21;
   @Inject SoundHelper soundHelper;
+  @Inject EventBus bus;
   private final Sensor SENSOR = SimpleAudioReader.getSensor();
 
-  @Test
-  public void shouldAdviseToDisplayAbsoluteAverageData()
+  @Before
+  public void setUp() throws Exception
   {
-    assertThat(soundHelper.shouldDisplay(SENSOR, 45), equalTo(true));
+    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS)
+    {
+      bus.post(new ThresholdSetEvent(SENSOR, level, SENSOR.getThreshold(level)));
+    }
   }
 
   @Test
-  public void shouldNotAdviseToDisplayAbsoluteTooLoudData()
+  public void shouldnot_advise_displaying_normal_values()
   {
-    assertThat(soundHelper.shouldDisplay(SENSOR, 101), equalTo(false));
+    assertThat(soundHelper.shouldDisplay(SENSOR, 45)).isTrue();
+  }
+
+  @Test
+  public void should_not_advise_displaying_too_loud_data()
+  {
+    assertThat(soundHelper.shouldDisplay(SENSOR, VALUE_TOO_LOUD)).isFalse();
   }
 
   @Test
   public void shouldNotAdviseToDisplayAbsoluteTooQuietData()
   {
-    assertThat(soundHelper.shouldDisplay(SENSOR, -21), equalTo(false));
+    assertThat(soundHelper.shouldDisplay(SENSOR, VALUE_TOO_QUIET)).isFalse();
+  }
+
+  @Test
+  public void should_display_once_thresholds_have_been_changed() throws Exception
+  {
+    // given
+
+    // when
+    bus.post(new ThresholdSetEvent(SENSOR, MeasurementLevel.VERY_HIGH, VALUE_TOO_LOUD + 1));
+
+    // then
+    assertThat(soundHelper.shouldDisplay(SENSOR, VALUE_TOO_LOUD)).isTrue();
   }
 }

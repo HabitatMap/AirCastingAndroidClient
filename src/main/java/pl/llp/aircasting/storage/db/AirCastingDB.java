@@ -1,5 +1,6 @@
 package pl.llp.aircasting.storage.db;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.Context;
@@ -114,7 +115,7 @@ public class AirCastingDB extends SQLiteOpenHelper implements DBConstants
     Stopwatch stopwatch = new Stopwatch().start();
     T result = task.execute(database);
 
-    Constants.logDbPerformance("Database task took: " + stopwatch.elapsedMillis());
+    Logger.logDbPerformance("Database task took: " + stopwatch.elapsedMillis());
     return result;
   }
 }

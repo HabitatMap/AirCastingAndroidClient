@@ -19,16 +19,17 @@
  */
 package pl.llp.aircasting.view;
 
-import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.AirCastingActivity;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.util.Constants;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.sensor.ThresholdsHolder;
 import pl.llp.aircasting.util.Search;
 import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
@@ -44,6 +45,7 @@ import android.view.View;
 import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -55,10 +57,9 @@ public class NoisePlot extends View
   public static final int OPAQUE = 255;
   private static final double CLICK_RADIUS = 50;
 
-  private Paint paint = new Paint();
-
   private AirCastingActivity activity;
   private SettingsHelper settingsHelper;
+  private ThresholdsHolder thresholds;
 
   private ArrayList<Measurement> measurements = new ArrayList<Measurement>();
   private ArrayList<Note> notes;
@@ -84,9 +85,10 @@ public class NoisePlot extends View
     super(context, attrs, defStyle);
   }
 
-  public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ResourceHelper resourceHelper) {
+  public void initialize(AirCastingActivity activity, SettingsHelper settingsHelper, ThresholdsHolder thresholds, ResourceHelper resourceHelper) {
     this.activity = activity;
     this.settingsHelper = settingsHelper;
+    this.thresholds = thresholds;
     this.resourceHelper = resourceHelper;
   }
 
@@ -103,10 +105,11 @@ public class NoisePlot extends View
   {
     Stopwatch stopwatch = new Stopwatch().start();
 
-    bottom = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
-    top = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
+    bottom = thresholds.getValue(sensor, MeasurementLevel.VERY_LOW);
+    top = thresholds.getValue(sensor, MeasurementLevel.VERY_HIGH);
 
-    drawBackground(canvas);
+    Paint paint = new Paint();
+    drawBackground(canvas, paint);
 
     if (!measurements.isEmpty()) {
       measurements = aggregator.smoothenSamplesToReduceCount(newArrayList(measurements), 1000);
@@ -121,12 +124,12 @@ public class NoisePlot extends View
         Point place = place(measurement);
         path.lineTo(place.x, place.y);
       }
-      Constants.logGraphPerformance("onDraw to path creation took " + stopwatch.elapsedMillis());
+      Logger.logGraphPerformance("onDraw to path creation took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-      initializePaint();
+      initializePaint(paint);
 
       canvas.drawPath(path, paint);
-      Constants.logGraphPerformance("onDraw to path draw took " + stopwatch.elapsedMillis());
+      Logger.logGraphPerformance("onDraw to path draw took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
       for (Note note : notes) {
         drawNote(canvas, note);
@@ -135,7 +138,7 @@ public class NoisePlot extends View
       if(settingsHelper.showGraphMetadata())
       {
         String message = "[" +  measurements.size() + "] pts";
-        String message2 = "drawing took " + stopwatch.elapsedMillis();
+        String message2 = "drawing took " + stopwatch.elapsed(TimeUnit.MILLISECONDS);
         long textSize = getResources().getDimensionPixelSize(R.dimen.debugFontSize);
         Paint textPaint = new Paint();
         textPaint.setColor(Color.WHITE);
@@ -202,7 +205,8 @@ public class NoisePlot extends View
     return measurements.get(index);
   }
 
-  private void initializePaint() {
+  private void initializePaint(Paint paint)
+  {
     paint.setColor(Color.WHITE);
     paint.setAlpha(OPAQUE);
     paint.setStrokeWidth(3);
@@ -212,7 +216,7 @@ public class NoisePlot extends View
     paint.setAntiAlias(true);
   }
 
-  private void drawBackground(Canvas canvas) {
+  private void drawBackground(Canvas canvas, Paint paint) {
     // Make the NoisePlot play nicely with Layout preview
     if (resourceHelper == null || settingsHelper == null) return;
 

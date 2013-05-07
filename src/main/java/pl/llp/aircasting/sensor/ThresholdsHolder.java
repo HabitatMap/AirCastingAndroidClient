@@ -37,11 +37,7 @@ public class ThresholdsHolder
   {
     Sensor sensor = event.getSensor();
 
-    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
-    if(levels == null)
-    {
-      levels = initLevels(sensor);
-    }
+    Map<MeasurementLevel, Integer> levels = getValues(sensor);
     levels.put(event.getLevel(), event.getValue());
   }
 
@@ -59,11 +55,7 @@ public class ThresholdsHolder
 
   public MeasurementLevel getLevel(Sensor sensor, double value)
   {
-    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
-    if(levels == null)
-    {
-      levels = initLevels(sensor);
-    }
+    Map<MeasurementLevel, Integer> levels = getValues(sensor);
 
     for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
       if (value >= levels.get(level))
@@ -72,5 +64,20 @@ public class ThresholdsHolder
       }
     }
     return MeasurementLevel.TOO_LOW;
+  }
+
+  private Map<MeasurementLevel, Integer> getValues(Sensor sensor)
+  {
+    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
+    if(levels == null)
+    {
+      levels = initLevels(sensor);
+    }
+    return levels;
+  }
+
+  public int getValue(Sensor sensor, MeasurementLevel level)
+  {
+    return getValues(sensor).get(level);
   }
 }

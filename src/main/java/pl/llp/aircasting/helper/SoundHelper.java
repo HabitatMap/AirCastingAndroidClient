@@ -19,11 +19,16 @@
  */
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.sensor.ThresholdsHolder;
+
+import com.google.inject.Inject;
 
 public class SoundHelper
 {
+  @Inject ThresholdsHolder thresholds;
+
   public MeasurementLevel level(Sensor sensor, double value)
   {
     return sensor.level(value);
@@ -31,7 +36,7 @@ public class SoundHelper
 
   public boolean shouldDisplay(Sensor sensor, double value)
   {
-    MeasurementLevel measurementLevel = level(sensor, value);
+    MeasurementLevel measurementLevel = thresholds.getLevel(sensor, value);
     return measurementLevel != MeasurementLevel.VERY_HIGH && measurementLevel != MeasurementLevel.TOO_LOW;
   }
 }

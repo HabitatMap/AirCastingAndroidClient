@@ -7,11 +7,13 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.storage.DBHelper.*;
@@ -139,12 +142,12 @@ public class StreamRepository
       Stopwatch s = new Stopwatch().start();
       oneToSave.setSessionId(sessionId);
       long streamId = saveOne(oneToSave, sessionId, writableDatabase);
-      Logger.d("Saving stream took: " + s.elapsedMillis());
+      Log.d(Constants.PERFORMANCE_TAG, "Saving stream took: " + s.elapsed(TimeUnit.MILLISECONDS));
 
       s.reset().start();
       List<Measurement> measurementsToSave = oneToSave.getMeasurements();
       measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
-      Logger.d("Saving " + measurementsToSave.size() + " measurements took: " + s.elapsedMillis());
+      Log.d(Constants.PERFORMANCE_TAG, "Saving " + measurementsToSave.size() + " measurements took: " + s.elapsed(TimeUnit.MILLISECONDS));
     }
   }
 
@@ -233,7 +236,7 @@ public class StreamRepository
       public Void execute(SQLiteDatabase writableDatabase)
       {
         @Language("SQL")
-        String sql = "UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SUBMITTED_FOR_REMOVAL + "=1 WHERE " + STREAM_MARKED_FOR_REMOVAL + "=1";
+        String sql = "UPDATE " + STREAM_TABLE_NAME + " SET " + STREAM_SUBMITTED_FOR_REMOVAL + "= 1 WHERE " + STREAM_MARKED_FOR_REMOVAL + "=1";
         writableDatabase.execSQL(sql);
         return null;
       }

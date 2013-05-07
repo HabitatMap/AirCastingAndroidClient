@@ -1,5 +1,7 @@
 package pl.llp.aircasting.android;
 
+import pl.llp.aircasting.util.Constants;
+
 import android.util.Log;
 
 import static pl.llp.aircasting.util.Constants.TAG;
@@ -42,5 +44,21 @@ public class Logger
   public static void d(String message, Throwable throwable)
   {
     Log.d(TAG, message, throwable);
+  }
+
+  public static void logGraphPerformance(String message)
+  {
+    if(Constants.logGraphPerformance())
+    {
+      Log.i(Constants.PERFORMANCE_TAG, message);
+    }
+  }
+
+  public static void logDbPerformance(String message)
+  {
+    if(Constants.logDbPerformance())
+    {
+      Log.i(Constants.DB_PERFORMANCE_TAG, message);
+    }
   }
 }

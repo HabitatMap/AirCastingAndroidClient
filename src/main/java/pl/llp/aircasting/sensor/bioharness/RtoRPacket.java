@@ -1,7 +1,8 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.util.Constants;
+
+import android.util.Log;
 
 import java.util.Arrays;
 
@@ -22,8 +23,8 @@ public class RtoRPacket extends Packet
     }
     if(Constants.isDevMode())
     {
-      Logger.d("R-to-R samples:   " + Arrays.toString(samples));
-      Logger.d("R-to-R timestamp: " + timeStamp);
+      Log.d(Constants.SENSORS_TAG, "R-to-R samples:   " + Arrays.toString(samples));
+      Log.d(Constants.SENSORS_TAG, "R-to-R timestamp: " + timeStamp);
     }
   }
 

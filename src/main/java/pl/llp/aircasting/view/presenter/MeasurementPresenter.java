@@ -21,6 +21,7 @@ package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
@@ -28,7 +29,6 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
-import pl.llp.aircasting.util.Constants;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Function;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -99,7 +100,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     prepareFullView();
     updateFullView(measurement);
 
-    if (timelineView != null && anchor == 0)
+    if (anchor == 0)
     {
       updateTimelineView();
     }
@@ -121,7 +122,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         timelineView.remove(timelineView.size() - 1);
       }
       timelineView.add(measurement);
-      Constants.logGraphPerformance("updateTimelineView step 0 took " + stopwatch.elapsedMillis());
+      Logger.logGraphPerformance("updateTimelineView step 0 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
     else
     {
@@ -131,12 +132,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       {
         timelineView.remove(0);
       }
-      Constants.logGraphPerformance("updateTimelineView step 1 took " + stopwatch.elapsedMillis());
+      Logger.logGraphPerformance("updateTimelineView step 1 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
       measurementsSize += 1;
       timelineView.add(measurement);
     }
 
-    Constants.logGraphPerformance("updateTimelineView step n took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("updateTimelineView step n took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
   }
 
   private void updateFullView(Measurement measurement)
@@ -223,12 +224,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
           }
         });
 
-    Constants.logGraphPerformance("prepareFullView step 1 took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("prepareFullView step 1 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-    ArrayList<Long> times = newArrayList(forAveraging.keySet());
+    ArrayList <Long> times = newArrayList(forAveraging.keySet());
     sort(times);
 
-    Constants.logGraphPerformance("prepareFullView step 2 took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("prepareFullView step 2 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     List<Measurement> timeboxedMeasurements = newLinkedList();
     for (Long time : times)
     {
@@ -236,10 +237,10 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
       timeboxedMeasurements.add(average(chunk));
     }
 
-    Constants.logGraphPerformance("prepareFullView step 3 took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("prepareFullView step 3 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
 
-    Constants.logGraphPerformance("prepareFullView step n took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("prepareFullView step n took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     fullView = result;
     return result;
   }
@@ -297,7 +298,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     timelineView.addAll(measurementsMap.subMap(lastMeasurementTime - visibleMilliseconds, lastMeasurementTime + 1).values());
     measurementsSize = measurements.size();
 
-    Constants.logGraphPerformance("prepareTimelineView for [" + timelineView.size() + "] took " + stopwatch.elapsedMillis());
+    Logger.logGraphPerformance("prepareTimelineView for [" + timelineView.size() + "] took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
   }
 
   public void registerListener(Listener listener)
@@ -372,13 +373,13 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public List<Measurement> getFullView()
   {
-    if (!state.recording().isJustShowingCurrentValues())
+    if (state.recording().isJustShowingCurrentValues())
     {
-      fullView = prepareFullView();
+      fullView = newCopyOnWriteArrayList();
     }
     else
     {
-      fullView = newCopyOnWriteArrayList();
+      fullView = prepareFullView();
     }
     return fullView;
   }

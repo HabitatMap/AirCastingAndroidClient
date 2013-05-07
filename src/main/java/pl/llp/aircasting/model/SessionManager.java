@@ -306,8 +306,8 @@ public class SessionManager
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
-    tracker.startTracking(getSession());
     eventBus.post(new SessionStartedEvent(getSession()));
+    tracker.startTracking(getSession());
   }
 
   public void stopSession()
