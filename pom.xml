@@ -378,8 +378,8 @@
   </profiles>
 
   <scm>
-    <connection>scm:git:git@github.com:LunarLogicPolska/AirCastingAndroidClient.git</connection>
-    <url>scm:git:git@github.com:LunarLogicPolska/AirCastingAndroidClient.git</url>
+    <connection>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</connection>
+    <url>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</url>
     <tag>HEAD</tag>
   </scm>
 
