@@ -26,9 +26,11 @@ import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Function;
@@ -77,6 +79,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   @Inject private ApplicationState state;
 
+  private Sensor sensor = SimpleAudioReader.getSensor();
+
   @Inject
   public void init()
   {
@@ -93,7 +97,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private void onMeasurement(MeasurementEvent event)
   {
     if (!state.recording().isRecording()) return;
-    if (!event.getSensor().equals(sensorManager.getVisibleSensor())) return;
+    if (!event.getSensor().equals(this.sensor)) return;
 
     Measurement measurement = event.getMeasurement();
 
@@ -178,12 +182,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Subscribe
   public synchronized void onEvent(SessionChangeEvent event)
   {
+    this.sensor = sensorManager.getVisibleSensor();
     reset();
   }
 
   @Subscribe
   public synchronized void onEvent(ViewStreamEvent event)
   {
+    this.sensor = event.getSensor();
     reset();
   }
 
@@ -202,8 +208,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     Stopwatch stopwatch = new Stopwatch().start();
 
-    String visibleSensor = sensorManager.getVisibleSensor().getSensorName();
-    MeasurementStream stream = sessionManager.getMeasurementStream(visibleSensor);
+    String sensorName = sensor.getSensorName();
+    MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
     Iterable<Measurement> measurements;
     if (stream == null)
     {

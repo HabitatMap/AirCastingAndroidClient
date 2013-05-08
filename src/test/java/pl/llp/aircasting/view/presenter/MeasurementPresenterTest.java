@@ -22,6 +22,7 @@ package pl.llp.aircasting.view.presenter;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -71,6 +72,7 @@ public class MeasurementPresenterTest
 
     presenter.sensorManager = mock(SensorManager.class);
     when(presenter.sensorManager.getVisibleSensor()).thenReturn(sensor);
+    presenter.onEvent(new ViewStreamEvent(sensor));
 
     stream = mock(MeasurementStream.class);
     when(stream.getMeasurements()).thenReturn(measurements);

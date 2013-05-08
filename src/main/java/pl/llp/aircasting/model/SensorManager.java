@@ -40,7 +40,7 @@ public class SensorManager
 
   final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
-  private Sensor visibleSensor = AUDIO_SENSOR;
+  private volatile Sensor visibleSensor = AUDIO_SENSOR;
   private volatile Map<SensorName, Sensor> sensors = newConcurrentMap();
   private volatile Set<Sensor> disabled = newHashSet();
 
