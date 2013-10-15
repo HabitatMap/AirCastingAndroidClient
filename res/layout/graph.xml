@@ -18,106 +18,111 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@android:color/background_light"
-        >
-
-    <TextView style="@style/Wrap"
-              android:text="00:00:00"
-              android:layout_alignParentBottom="true"
-              android:id="@+id/graph_begin_time"
-              android:textColor="@android:color/black"
-            />
-
-    <TextView style="@style/Wrap"
-              android:text="00:00:00"
-              android:layout_alignParentBottom="true"
-              android:layout_alignParentRight="true"
-              android:id="@+id/graph_end_time"
-              android:textColor="@android:color/black"
-            />
-
-    <pl.llp.aircasting.view.NoisePlot android:layout_width="fill_parent"
-                                      android:layout_height="fill_parent"
-                                      android:layout_weight="1"
-                                      android:layout_marginTop="32dp"
-                                      android:layout_above="@id/graph_begin_time"
-                                      android:id="@+id/noise_graph"
-            />
-
-    <ImageView android:layout_height="fill_parent"
-               android:layout_width="6dp"
-               android:background="@drawable/white_gradient_left"
-               android:layout_alignTop="@id/noise_graph"
-               android:layout_alignLeft="@id/noise_graph"
-               android:layout_alignBottom="@id/noise_graph"
-               android:visibility="gone"
-               android:id="@+id/suggest_scroll_left"
-            />
-
-    <ImageView android:layout_height="fill_parent"
-               android:layout_width="6dp"
-               android:background="@drawable/white_gradient_right"
-               android:layout_alignTop="@id/noise_graph"
-               android:layout_alignRight="@id/noise_graph"
-               android:layout_alignBottom="@id/noise_graph"
-               android:visibility="gone"
-               android:id="@+id/suggest_scroll_right"
-            />
-
-    <TextView style="@style/Wrap"
-              android:textColor="@android:color/white"
-              android:layout_alignTop="@id/noise_graph"
-              android:id="@+id/graph_top_db"
-              android:layout_marginLeft="2dp"
-            />
-
-    <TextView style="@style/Wrap"
-              android:layout_alignBottom="@id/noise_graph"
-              android:textColor="@android:color/white"
-              android:id="@+id/graph_bottom_db"
-              android:layout_marginLeft="2dp"
-            />
-
-    <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
-                                      android:layout_width="fill_parent"
-                                      android:id="@+id/touch_pane"
-            />
-
-    <include layout="@layout/gauges"/>
-
-    <include layout="@layout/note_viewer"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="fill_parent"
+              android:layout_width="fill_parent"
+              android:orientation="vertical">
 
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:id="@+id/buttons"
+                    android:layout_weight="1"
+                    android:background="@android:color/background_light"
             >
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_alignParentLeft="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_trace"
-                     android:id="@+id/trace_button"
+        <TextView style="@style/Wrap"
+                  android:text="00:00:00"
+                  android:layout_alignParentBottom="true"
+                  android:id="@+id/graph_begin_time"
+                  android:textColor="@android:color/black"
                 />
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_alignParentRight="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginRight="5dp"
-                     android:background="@drawable/right_sensor"
-                     android:id="@+id/streams_button"
+        <TextView style="@style/Wrap"
+                  android:text="00:00:00"
+                  android:layout_alignParentBottom="true"
+                  android:layout_alignParentRight="true"
+                  android:id="@+id/graph_end_time"
+                  android:textColor="@android:color/black"
                 />
 
-        <include layout="@layout/context_buttons"/>
+        <pl.llp.aircasting.view.NoisePlot android:layout_width="fill_parent"
+                                          android:layout_height="fill_parent"
+                                          android:layout_weight="1"
+                                          android:layout_marginTop="32dp"
+                                          android:layout_above="@id/graph_begin_time"
+                                          android:id="@+id/noise_graph"
+                />
+
+        <ImageView android:layout_height="fill_parent"
+                   android:layout_width="6dp"
+                   android:background="@drawable/white_gradient_left"
+                   android:layout_alignTop="@id/noise_graph"
+                   android:layout_alignLeft="@id/noise_graph"
+                   android:layout_alignBottom="@id/noise_graph"
+                   android:visibility="gone"
+                   android:id="@+id/suggest_scroll_left"
+                />
+
+        <ImageView android:layout_height="fill_parent"
+                   android:layout_width="6dp"
+                   android:background="@drawable/white_gradient_right"
+                   android:layout_alignTop="@id/noise_graph"
+                   android:layout_alignRight="@id/noise_graph"
+                   android:layout_alignBottom="@id/noise_graph"
+                   android:visibility="gone"
+                   android:id="@+id/suggest_scroll_right"
+                />
+
+        <TextView style="@style/Wrap"
+                  android:textColor="@android:color/white"
+                  android:layout_alignTop="@id/noise_graph"
+                  android:id="@+id/graph_top_db"
+                  android:layout_marginLeft="2dp"
+                />
+
+        <TextView style="@style/Wrap"
+                  android:layout_alignBottom="@id/noise_graph"
+                  android:textColor="@android:color/white"
+                  android:id="@+id/graph_bottom_db"
+                  android:layout_marginLeft="2dp"
+                />
+
+        <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
+                                          android:layout_width="fill_parent"
+                                          android:id="@+id/touch_pane"
+                />
+
+        <include layout="@layout/gauges"/>
+
+        <include layout="@layout/note_viewer"/>
+
+        <RelativeLayout android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:id="@+id/buttons"
+                >
+
+            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentLeft="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginLeft="5dp"
+                         android:background="@drawable/left_trace"
+                         android:id="@+id/trace_button"
+                    />
+
+            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentRight="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginRight="5dp"
+                         android:background="@drawable/right_sensor"
+                         android:id="@+id/streams_button"
+                    />
+
+        </RelativeLayout>
 
     </RelativeLayout>
+    <include layout="@layout/context_buttons"/>
 
-</RelativeLayout>
+</LinearLayout>
