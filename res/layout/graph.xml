@@ -29,26 +29,10 @@
                     android:background="@android:color/background_light"
             >
 
-        <TextView style="@style/Wrap"
-                  android:text="00:00:00"
-                  android:layout_alignParentBottom="true"
-                  android:id="@+id/graph_begin_time"
-                  android:textColor="@android:color/black"
-                />
-
-        <TextView style="@style/Wrap"
-                  android:text="00:00:00"
-                  android:layout_alignParentBottom="true"
-                  android:layout_alignParentRight="true"
-                  android:id="@+id/graph_end_time"
-                  android:textColor="@android:color/black"
-                />
-
         <pl.llp.aircasting.view.NoisePlot android:layout_width="fill_parent"
                                           android:layout_height="fill_parent"
                                           android:layout_weight="1"
                                           android:layout_marginTop="32dp"
-                                          android:layout_above="@id/graph_begin_time"
                                           android:id="@+id/noise_graph"
                 />
 
@@ -62,6 +46,20 @@
                    android:id="@+id/suggest_scroll_left"
                 />
 
+        <TextView style="@style/Wrap"
+                  android:text="00:00:00"
+                  android:layout_alignBottom="@id/noise_graph"
+                  android:id="@+id/graph_begin_time"
+                  android:textColor="@android:color/white"
+                />
+
+        <TextView style="@style/Wrap"
+                  android:text="00:00:00"
+                  android:layout_alignBottom="@id/noise_graph"
+                  android:layout_alignRight="@id/noise_graph"
+                  android:id="@+id/graph_end_time"
+                  android:textColor="@android:color/white"
+                />
         <ImageView android:layout_height="fill_parent"
                    android:layout_width="6dp"
                    android:background="@drawable/white_gradient_right"
@@ -98,6 +96,7 @@
         <RelativeLayout android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:id="@+id/buttons"
+                        android:layout_above="@id/graph_end_time"
                 >
 
             <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
@@ -119,6 +118,8 @@
                          android:background="@drawable/right_sensor"
                          android:id="@+id/streams_button"
                     />
+
+            <include layout="@layout/zoom_buttons"/>
 
         </RelativeLayout>
 
