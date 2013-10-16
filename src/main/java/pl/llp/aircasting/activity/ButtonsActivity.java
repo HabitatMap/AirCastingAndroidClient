@@ -36,15 +36,13 @@ import roboguice.inject.InjectView;
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
-public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements Animation.AnimationListener, View.OnClickListener {
+public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
     public static final String SHOW_BUTTONS = "showButtons";
 
     @Inject Context context;
     @Inject EventBus eventBus;
 
     // It seems it's impossible to inject these in the tests
-    @Nullable @InjectResource(R.anim.fade_out) Animation fadeOut;
-    @Nullable @InjectResource(R.anim.fade_in) Animation fadeIn;
     @InjectView(R.id.buttons) View buttons;
 
     @Nullable @InjectView(R.id.heat_map_button) ImageButton heatMapButton;
@@ -116,8 +114,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     private void initialize() {
         if (!initialized) {
-            fadeIn.setAnimationListener(this);
-            fadeOut.setAnimationListener(this);
 
             if (showButtons) {
                 buttons.setVisibility(View.VISIBLE);
@@ -150,14 +146,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     protected boolean showButtons = true;
 
-    protected void toggleButtons() {
-        if (buttons.getVisibility() == View.VISIBLE) {
-            hideButtons();
-        } else {
-            showButtons();
-        }
-    }
-
     /**
      * The next tap will not change the state of the toggleable
      * buttons. Use this if clicking something makes the toggleable
@@ -165,33 +153,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
      */
     public void suppressNextTap() {
         suppressTap = true;
-    }
-
-    private void hideButtons() {
-        buttons.startAnimation(fadeOut);
-        showButtons = false;
-    }
-
-    private void showButtons() {
-        buttons.startAnimation(fadeIn);
-        showButtons = true;
-    }
-
-    @Override
-    public void onAnimationStart(Animation animation) {
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-        if (buttons.getVisibility() == View.VISIBLE) {
-            buttons.setVisibility(View.GONE);
-        } else {
-            buttons.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
     }
 
     @Override
@@ -238,8 +199,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     public void onEvent(TapEvent event) {
         if (suppressTap) {
             suppressTap = false;
-        } else {
-            toggleButtons();
         }
     }
 
