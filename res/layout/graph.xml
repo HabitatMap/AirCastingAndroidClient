@@ -21,7 +21,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_height="fill_parent"
               android:layout_width="fill_parent"
-              android:orientation="vertical">
+              android:orientation="vertical" >
 
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -60,6 +60,7 @@
                   android:id="@+id/graph_end_time"
                   android:textColor="@android:color/white"
                 />
+
         <ImageView android:layout_height="fill_parent"
                    android:layout_width="6dp"
                    android:background="@drawable/white_gradient_right"
@@ -68,20 +69,6 @@
                    android:layout_alignBottom="@id/noise_graph"
                    android:visibility="gone"
                    android:id="@+id/suggest_scroll_right"
-                />
-
-        <TextView style="@style/Wrap"
-                  android:textColor="@android:color/white"
-                  android:layout_alignTop="@id/noise_graph"
-                  android:id="@+id/graph_top_db"
-                  android:layout_marginLeft="2dp"
-                />
-
-        <TextView style="@style/Wrap"
-                  android:layout_alignBottom="@id/noise_graph"
-                  android:textColor="@android:color/white"
-                  android:id="@+id/graph_bottom_db"
-                  android:layout_marginLeft="2dp"
                 />
 
         <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
@@ -95,8 +82,8 @@
 
         <RelativeLayout android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:id="@+id/buttons"
                         android:layout_above="@id/graph_end_time"
+                        android:id="@+id/buttons"
                 >
 
             <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
@@ -122,8 +109,6 @@
             <include layout="@layout/zoom_buttons"/>
 
         </RelativeLayout>
-
     </RelativeLayout>
     <include layout="@layout/context_buttons"/>
-
 </LinearLayout>

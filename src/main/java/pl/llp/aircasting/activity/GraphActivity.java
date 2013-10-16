@@ -26,7 +26,6 @@ import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.ThresholdsHolder;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
@@ -49,8 +48,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     @InjectView(R.id.graph_begin_time) TextView graphBegin;
     @InjectView(R.id.graph_end_time) TextView graphEnd;
-    @InjectView(R.id.graph_top_db) TextView graphTop;
-    @InjectView(R.id.graph_bottom_db) TextView graphBottom;
 
     @InjectView(R.id.suggest_scroll_left) View scrollLeft;
     @InjectView(R.id.suggest_scroll_right) View scrollRight;
@@ -100,12 +97,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
   }
 
   private void updateLabels(ArrayList<Measurement> measurements) {
-    Sensor sensor = sensorManager.getVisibleSensor();
-    int high = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_HIGH);
-    int low = settingsHelper.getThreshold(sensor, MeasurementLevel.VERY_LOW);
-    graphTop.setText(high + " " + sensor.getSymbol());
-    graphBottom.setText(low + " " + sensor.getSymbol());
-
     if (!measurements.isEmpty()) {
       graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
       graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
