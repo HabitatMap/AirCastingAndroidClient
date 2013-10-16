@@ -52,24 +52,4 @@
         </FrameLayout>
     </LinearLayout>
 
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical"
-                  android:gravity="center"
-            >
-
-        <Button android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/plus"
-                android:id="@+id/zoom_in"
-                />
-
-        <Button android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/minus"
-                android:id="@+id/zoom_out"
-                />
-
-    </LinearLayout>
-
 </LinearLayout>

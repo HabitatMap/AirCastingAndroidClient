@@ -31,9 +31,6 @@ public class StreamsActivity extends ButtonsActivity {
 
         adapter = adapterFactory.getAdapter(this);
         listView.setAdapter(adapter);
-
-        zoomIn.setVisibility(View.INVISIBLE);
-        zoomOut.setVisibility(View.INVISIBLE);
     }
 
     @Override

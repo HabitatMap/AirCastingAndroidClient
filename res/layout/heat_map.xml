@@ -18,45 +18,51 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@android:color/background_light"
-        >
-
-    <include layout="@layout/map"/>
-
-    <include layout="@layout/gauges"/>
-
-    <include layout="@layout/note_viewer"/>
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_height="fill_parent"
+              android:layout_width="fill_parent"
+          >
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:id="@+id/buttons"
+                    android:layout_weight="1"
+                    android:background="@android:color/background_light"
             >
 
-        <include layout="@layout/context_buttons"/>
+        <include layout="@layout/map"/>
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_alignParentLeft="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_sensor"
-                     android:id="@+id/streams_button"
-                />
+        <include layout="@layout/gauges"/>
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_alignParentRight="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginRight="5dp"
-                     android:background="@drawable/right_trace"
-                     android:id="@+id/trace_button"
-                />
+        <include layout="@layout/note_viewer"/>
+
+        <RelativeLayout android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:id="@+id/buttons"
+                >
+
+            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentLeft="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginLeft="5dp"
+                         android:background="@drawable/left_sensor"
+                         android:id="@+id/streams_button"
+                    />
+
+            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentRight="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginRight="5dp"
+                         android:background="@drawable/right_trace"
+                         android:id="@+id/trace_button"
+                    />
+
+            <include layout="@layout/zoom_buttons" />
+        </RelativeLayout>
     </RelativeLayout>
+    <include layout="@layout/context_buttons"/>
 
-</RelativeLayout>
+</LinearLayout>

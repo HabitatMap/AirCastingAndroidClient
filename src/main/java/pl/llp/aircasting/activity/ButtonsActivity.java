@@ -68,8 +68,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
-    @InjectView(R.id.zoom_in) Button zoomIn;
-    @InjectView(R.id.zoom_out) Button zoomOut;
+    @Nullable @InjectView(R.id.zoom_in) Button zoomIn;
+    @Nullable @InjectView(R.id.zoom_out) Button zoomOut;
 
     @Override
     protected void onResume() {
