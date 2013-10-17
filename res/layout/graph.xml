@@ -49,6 +49,7 @@
         <TextView style="@style/Wrap"
                   android:text="00:00:00"
                   android:layout_alignBottom="@id/noise_graph"
+                  android:layout_marginLeft="5dp"
                   android:id="@+id/graph_begin_time"
                   android:textColor="@android:color/white"
                 />
@@ -57,6 +58,7 @@
                   android:text="00:00:00"
                   android:layout_alignBottom="@id/noise_graph"
                   android:layout_alignRight="@id/noise_graph"
+                  android:layout_marginRight="5dp"
                   android:id="@+id/graph_end_time"
                   android:textColor="@android:color/white"
                 />
