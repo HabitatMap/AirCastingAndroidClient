@@ -72,7 +72,7 @@ public class SplashActivity extends Activity {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                startActivity(new Intent(getApplication(), SoundTraceActivity.class));
+                startActivity(new Intent(getApplication(), StreamsActivity.class));
             }
         }.execute();
     }
