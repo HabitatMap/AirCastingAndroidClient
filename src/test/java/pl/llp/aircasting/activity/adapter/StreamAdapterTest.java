@@ -33,7 +33,7 @@ public class StreamAdapterTest {
     @Before
     public void setup() {
         adapter = new StreamAdapter(mock(ButtonsActivity.class), new ArrayList<Map<String, Object>>(),
-                mock(EventBus.class), mock(GaugeHelper.class), mock(TopBarHelper.class), mock(SensorManager.class), mock(SessionManager.class));
+                mock(EventBus.class), mock(GaugeHelper.class), mock(SensorManager.class), mock(SessionManager.class));
 
         sensor = mock(Sensor.class);
 
@@ -60,7 +60,6 @@ public class StreamAdapterTest {
         when(view.getId()).thenReturn(R.id.record_stream);
 
         adapter.onClick(view);
-
         verify(adapter.sensorManager).toggleSensor(sensor);
     }
 

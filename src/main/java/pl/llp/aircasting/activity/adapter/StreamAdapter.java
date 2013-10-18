@@ -31,7 +31,8 @@ import static java.util.Collections.sort;
 
 public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 {
-  public static final String TITLE = "title";
+  public static final String QUANTITY = "quantity";
+  public static final String SENSOR_NAME = "sensorName";
   public static final String VERY_LOW = "veryLow";
   public static final String LOW = "low";
   public static final String MID = "mid";
@@ -39,17 +40,17 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
   public static final String VERY_HIGH = "veryHigh";
 
   private static final String[] FROM = new String[]{
-      TITLE, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+      QUANTITY, SENSOR_NAME,VERY_LOW, LOW, MID, HIGH, VERY_HIGH
   };
   private static final int[] TO = new int[]{
-      R.id.title, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
+      R.id.quantity, R.id.sensor_name, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
   };
 
   private static final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
     @Override
     public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
-      String rightTitle = right.get(TITLE).toString();
-      String leftTitle = left.get(TITLE).toString();
+      String rightTitle = right.get(QUANTITY).toString();
+      String leftTitle = left.get(QUANTITY).toString();
       return leftTitle.compareTo(rightTitle);
     }
   };
@@ -58,7 +59,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
   SessionManager sessionManager;
   SensorManager sensorManager;
 
-  TopBarHelper topBarHelper;
   GaugeHelper gaugeHelper;
   ButtonsActivity context;
   EventBus eventBus;
@@ -68,13 +68,12 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
 
   public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                       GaugeHelper gaugeHelper, TopBarHelper topBarHelper, SensorManager sensorManager, SessionManager sessionManager) {
+                       GaugeHelper gaugeHelper, SensorManager sensorManager, SessionManager sessionManager) {
     super(context, data, R.layout.stream, FROM, TO);
     this.data = data;
     this.eventBus = eventBus;
     this.context = context;
     this.gaugeHelper = gaugeHelper;
-    this.topBarHelper = topBarHelper;
     this.sensorManager = sensorManager;
     this.sessionManager = sessionManager;
   }
@@ -111,7 +110,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     Sensor sensor = (Sensor) state.get(SENSOR);
 
     gaugeHelper.updateGauges(sensor, view);
-    topBarHelper.updateTopBar(sensor, view);
 
     initializeButtons(view, sensor);
     view.setClickable(true);
@@ -168,9 +166,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       viewButton.setBackgroundResource(R.drawable.viewing_inactive);
     }
 
-    View topBar = view.findViewById(R.id.top_bar);
-    topBar.setTag(sensor);
-    topBar.setOnClickListener(this);
   }
 
   private void update() {
@@ -180,7 +175,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     for (Sensor sensor : sensors) {
       Map<String, Object> map = prepareItem(sensor);
 
-      map.put(TITLE, sensor.toString());
+      map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
+      map.put(SENSOR_NAME, sensor.getSensorName());
       map.put(SENSOR, sensor);
 
       data.add(map);

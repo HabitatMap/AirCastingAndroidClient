@@ -2,40 +2,43 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 style="@style/Wide"
+                android:layout_weight="0.3"
                 android:background="@android:drawable/dialog_frame"
        >
 
     <TextView
-              android:id="@+id/title"
-              android:textStyle="bold"
-              android:textColor="@android:color/white"
-              android:layout_alignParentTop="true"
-              android:gravity="center"
-              android:layout_height="wrap_content"
-              android:layout_width="fill_parent"
-              android:lines="2"
-              android:text="Sample but very long text"
+            android:id="@+id/quantity"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:text="Sample but very long text"
             />
+
+    <TextView
+        android:id="@+id/sensor_name"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/quantity"
+        android:text="Sample but long text"
+        />
 
     <include layout="@layout/gauge_faces"
              android:layout_height="wrap_content"
              android:layout_width="wrap_content"
-             android:layout_below="@id/title"
+             android:layout_below="@id/sensor_name"
              android:layout_centerHorizontal="true"
-            />
-
-
-    <include layout="@layout/top_bar"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_below="@id/gauge_container"
-             android:id="@+id/top_bar"
             />
 
     <ImageButton style="@style/Wrap"
                android:contentDescription="@string/delete_button_description"
                android:background="@drawable/delete"
-               android:layout_below="@+id/title"
+               android:layout_below="@+id/sensor_name"
                android:layout_margin="1dp"
                android:layout_alignParentLeft="true"
                android:id="@+id/delete_stream"
@@ -43,7 +46,7 @@
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/recording_active"
                  android:contentDescription="@string/record_button_description"
-                 android:layout_below="@+id/title"
+                 android:layout_below="@+id/sensor_name"
                  android:layout_margin="1dp"
                  android:layout_alignParentLeft="true"
                  android:id="@+id/record_stream"
@@ -52,7 +55,7 @@
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/viewing_inactive"
                  android:contentDescription="@string/view_button_description"
-                 android:layout_below="@+id/title"
+                 android:layout_below="@+id/sensor_name"
                  android:layout_margin="1dp"
                  android:layout_alignParentRight="true"
                  android:id="@+id/view_stream"

@@ -20,10 +20,9 @@ public class StreamAdapterFactory
   @Inject GaugeHelper gaugeHelper;
   @Inject SessionManager sessionManager;
   @Inject SensorManager sensorManager;
-  @Inject TopBarHelper topBarHelper;
 
   public StreamAdapter getAdapter(ButtonsActivity context) {
     return new StreamAdapter(context, new ArrayList<Map<String, Object>>(), eventBus,
-                             gaugeHelper, topBarHelper, sensorManager, sessionManager);
+                             gaugeHelper, sensorManager, sessionManager);
   }
 }

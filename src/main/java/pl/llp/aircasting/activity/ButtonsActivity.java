@@ -42,10 +42,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     // It seems it's impossible to inject these in the tests
     @InjectView(R.id.buttons) View buttons;
 
-    @Nullable @InjectView(R.id.heat_map_button) ImageButton heatMapButton;
-    @Nullable @InjectView(R.id.streams_button) ImageButton streamsButton;
-    @Nullable @InjectView(R.id.graph_button) ImageButton graphButton;
-    @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;
+    @Nullable @InjectView(R.id.heat_map_button) View heatMapButton;
+    @Nullable @InjectView(R.id.streams_button) View streamsButton;
+    @Nullable @InjectView(R.id.graph_button) View graphButton;
+    @Nullable @InjectView(R.id.trace_button) View traceButton;
 
     @InjectView(R.id.context_buttons) ViewGroup contextButtons;
 
