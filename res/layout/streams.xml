@@ -1,41 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                style="@style/Fill"
-        >
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/Fill"
-              android:id="@android:id/list"
-              android:background="@android:color/white"
-              android:cacheColorHint="@android:color/white"
-              android:divider="@android:color/white"
-              android:dividerHeight="0dp"
-            />
+              android:orientation="vertical"
+              >
 
-    <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"
-                                      android:layout_height="fill_parent"
-                                      android:id="@+id/touch_pane"
-            />
-
-    <RelativeLayout style="@style/Fill"
-                    android:id="@+id/buttons"
+    <RelativeLayout android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
             >
-        <include layout="@layout/context_buttons"/>
-
-        <ImageButton style="@style/Wrap"
-                     android:layout_alignParentLeft="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginLeft="5dp"
-                     android:background="@drawable/left_charts"
-                     android:id="@+id/graph_button"
+        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+                  style="@style/Fill"
+                  android:id="@android:id/list"
+                  android:background="@android:color/white"
+                  android:cacheColorHint="@android:color/white"
+                  android:divider="@android:color/white"
+                  android:dividerHeight="0dp"
                 />
 
-        <ImageButton style="@style/Wrap"
-                     android:layout_alignParentRight="true"
-                     android:layout_centerVertical="true"
-                     android:layout_marginRight="5dp"
-                     android:background="@drawable/right_heat_map"
-                     android:id="@+id/heat_map_button"
+        <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"
+                                          android:layout_height="fill_parent"
+                                          android:id="@+id/touch_pane"
                 />
+
+        <RelativeLayout style="@style/Fill"
+                        android:id="@+id/buttons"
+                >
+
+            <ImageButton style="@style/Wrap"
+                         android:layout_alignParentLeft="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginLeft="5dp"
+                         android:background="@drawable/left_charts"
+                         android:id="@+id/graph_button"
+                    />
+
+            <ImageButton style="@style/Wrap"
+                         android:layout_alignParentRight="true"
+                         android:layout_centerVertical="true"
+                         android:layout_marginRight="5dp"
+                         android:background="@drawable/right_heat_map"
+                         android:id="@+id/heat_map_button"
+                    />
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+
+    <include layout="@layout/context_buttons"/>
+
+</LinearLayout>
