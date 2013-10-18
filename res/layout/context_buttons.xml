@@ -23,34 +23,11 @@
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:layout_alignParentBottom="true"
-              android:padding="5dp"
+              android:gravity="center_horizontal"
               android:background="#3F3F3F"
+              android:id="@+id/context_buttons"
+              android:paddingBottom="2dp"
+              android:paddingTop="2dp"
         >
-
-    <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="fill_parent"
-                  android:layout_weight="2"
-                  android:gravity="center"
-            >
-        <FrameLayout style="@style/Wrap"
-                     android:id="@+id/context_button_left"
-                >
-            <include layout="@layout/context_button_placeholder"/>
-        </FrameLayout>
-
-        <FrameLayout style="@style/Wrap"
-                     android:id="@+id/context_button_center"
-                     android:layout_marginLeft="5dp"
-                     android:layout_marginRight="5dp"
-                >
-            <include layout="@layout/context_button_placeholder"/>
-        </FrameLayout>
-
-        <FrameLayout style="@style/Wrap"
-                     android:id="@+id/context_button_right"
-                >
-            <include layout="@layout/context_button_placeholder"/>
-        </FrameLayout>
-    </LinearLayout>
 
 </LinearLayout>

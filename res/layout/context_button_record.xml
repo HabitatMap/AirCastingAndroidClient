@@ -21,11 +21,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/Wrap"
-              android:layout_weight="1"
               android:orientation="vertical"
               android:textColor="@android:color/white"
               android:gravity="center"
               android:id="@+id/toggle_aircasting"
+              android:layout_margin="3dp"
         >
 
     <ImageView android:layout_width="40dp"
@@ -33,6 +33,8 @@
                android:src="@drawable/record"
             />
     <TextView style="@style/Wrap"
+              android:minWidth="80dp"
+              android:gravity="center_horizontal"
               android:text="@string/record_session"
               android:textColor="@android:color/white"
             />

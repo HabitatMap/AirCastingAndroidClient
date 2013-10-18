@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
@@ -16,10 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -50,9 +47,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Nullable @InjectView(R.id.graph_button) ImageButton graphButton;
     @Nullable @InjectView(R.id.trace_button) ImageButton traceButton;
 
-    @InjectView(R.id.context_button_center) FrameLayout contextButtonCenter;
-    @InjectView(R.id.context_button_right) FrameLayout contextButtonRight;
-    @InjectView(R.id.context_button_left) FrameLayout contextButtonLeft;
+    @InjectView(R.id.context_buttons) ViewGroup contextButtons;
 
     @Inject LocationManager locationManager;
     @Inject SessionManager sessionManager;
@@ -204,30 +199,37 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
   protected void updateButtons()
   {
+
+    clearButtons();
     if (sessionManager.isSessionStarted())
     {
-      setButton(contextButtonLeft, R.layout.context_button_stop);
-      setButton(contextButtonRight, R.layout.context_button_note);
+      addButton(R.layout.context_button_stop);
+      addButton(R.layout.context_button_note);
     }
     else if (sessionManager.isSessionSaved())
     {
-      setButton(contextButtonLeft, R.layout.context_button_edit);
-      setButton(contextButtonCenter, R.layout.context_button_share);
+      addButton(R.layout.context_button_edit);
+      addButton(R.layout.context_button_share);
     }
     else
     {
-      setButton(contextButtonLeft, R.layout.context_button_record);
-      setButton(contextButtonRight, R.layout.context_button_placeholder);
+      addButton(R.layout.context_button_record);
+      addButton(R.layout.context_button_placeholder);
     }
+    addContextSpecificButtons();
   }
 
-    protected void setButton(FrameLayout layout, int id) {
-        layout.removeAllViews();
+    protected void addContextSpecificButtons() {
+    }
 
-        View view = layoutInflater.inflate(id, null);
+    protected void clearButtons() {
+        contextButtons.removeAllViews();
+    }
+
+    protected void addButton(int id) {
+        View view = layoutInflater.inflate(id, contextButtons, false);
         view.setOnClickListener(this);
-
-        layout.addView(view);
+        contextButtons.addView(view);
     }
 
     private synchronized void toggleAirCasting() {

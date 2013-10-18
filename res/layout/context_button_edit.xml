@@ -21,11 +21,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/Wrap"
-              android:layout_weight="1"
               android:orientation="vertical"
               android:textColor="@android:color/white"
               android:gravity="center"
               android:id="@+id/edit"
+              android:layout_margin="3dp"
         >
 
     <ImageView android:layout_width="40dp"
@@ -34,6 +34,8 @@
             />
     <TextView style="@style/Wrap"
               android:text="@string/edit"
+              android:minWidth="80dp"
+              android:gravity="center_horizontal"
               android:textColor="@android:color/white"
             />
 

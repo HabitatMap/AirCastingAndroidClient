@@ -191,19 +191,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         if (!initialized) {
             showSession();
 
-            addLocationControls();
-
             mapView.getOverlays().add(noteOverlay);
 
             initialized = true;
         }
     }
 
-    private void addLocationControls() {
+    @Override
+    protected void addContextSpecificButtons() {
         if (!sessionManager.isSessionSaved()) {
             mapView.getOverlays().add(locationOverlay);
 
-            setButton(contextButtonCenter, R.layout.context_button_locate);
+            addButton(R.layout.context_button_locate);
         }
     }
 
