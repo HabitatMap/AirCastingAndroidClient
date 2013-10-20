@@ -147,4 +147,25 @@
         <item name="android:textStyle">bold</item>
         <item name="android:padding">0dp</item>
     </style>
+
+    <style name="ContextButton"
+           parent="Wrap"
+           >
+        <item name="android:orientation">vertical</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">3dp</item>
+    </style>
+
+    <style name="ContextButtonImage">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
+    <style name="ContextButtonLabel"
+           parent="Wrap">
+        <item name="android:minWidth">80dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/Wrap"
-              android:orientation="vertical"
-              android:textColor="@android:color/white"
-              android:gravity="center"
+              style="@style/ContextButton"
               android:id="@+id/toggle_heat_map_button"
-              android:layout_margin="3dp"
         >
 
-    <ImageView android:layout_width="40dp"
-               android:layout_height="40dp"
+    <ImageView style="@style/ContextButtonImage"
                android:src="@drawable/crowdmap_inactive"
             />
-    <TextView style="@style/Wrap"
+    <TextView style="@style/ContextButtonLabel"
               android:text="@string/crowdmap"
-              android:minWidth="80dp"
-              android:gravity="center_horizontal"
-              android:textColor="@android:color/white"
             />
 
 </LinearLayout>
