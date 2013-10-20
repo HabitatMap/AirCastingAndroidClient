@@ -20,10 +20,7 @@
 package pl.llp.aircasting.activity.menu;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.AboutActivity;
-import pl.llp.aircasting.activity.SessionsActivity;
-import pl.llp.aircasting.activity.SettingsActivity;
-import pl.llp.aircasting.activity.SoundTraceActivity;
+import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -59,7 +56,7 @@ public class MainMenu
           Long sessionId = session.getId();
           sessionManager.discardSession(sessionId);
         }
-        Intent intent = new Intent(context, SoundTraceActivity.class);
+        Intent intent = new Intent(context, StreamsActivity.class);
         intent.putExtra("startingAircasting", true);
         activity.startActivity(intent);
         break;

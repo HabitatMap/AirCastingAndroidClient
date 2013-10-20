@@ -88,26 +88,6 @@
                         android:id="@+id/buttons"
                 >
 
-            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_alignParentLeft="true"
-                         android:layout_centerVertical="true"
-                         android:layout_marginLeft="5dp"
-                         android:background="@drawable/left_trace"
-                         android:id="@+id/trace_button"
-                    />
-
-            <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_alignParentRight="true"
-                         android:layout_centerVertical="true"
-                         android:layout_marginRight="5dp"
-                         android:background="@drawable/right_sensor"
-                         android:id="@+id/streams_button"
-                    />
-
             <include layout="@layout/zoom_buttons"/>
 
         </RelativeLayout>

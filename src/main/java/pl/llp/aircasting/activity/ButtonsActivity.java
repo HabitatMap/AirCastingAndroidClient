@@ -43,9 +43,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @InjectView(R.id.buttons) View buttons;
 
     @Nullable @InjectView(R.id.heat_map_button) View heatMapButton;
-    @Nullable @InjectView(R.id.streams_button) View streamsButton;
     @Nullable @InjectView(R.id.graph_button) View graphButton;
-    @Nullable @InjectView(R.id.trace_button) View traceButton;
 
     @InjectView(R.id.context_buttons) ViewGroup contextButtons;
 
@@ -117,9 +115,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             }
 
             if (graphButton != null) graphButton.setOnClickListener(this);
-            if (traceButton != null) traceButton.setOnClickListener(this);
             if (heatMapButton != null) heatMapButton.setOnClickListener(this);
-            if (streamsButton != null) streamsButton.setOnClickListener(this);
 
             initialized = true;
         }
@@ -159,14 +155,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             case R.id.graph_button:
                 startActivity(new Intent(context, GraphActivity.class));
                 break;
-            case R.id.trace_button:
-                startActivity(new Intent(context, SoundTraceActivity.class));
-                break;
             case R.id.heat_map_button:
                 startActivity(new Intent(context, HeatMapActivity.class));
-                break;
-            case R.id.streams_button:
-                startActivity(new Intent(context, StreamsActivity.class));
                 break;
             case R.id.toggle_aircasting:
                 toggleAirCasting();
@@ -301,8 +291,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Intents.SAVE_DIALOG:
-
-                startActivity(new Intent(getApplicationContext(), SoundTraceActivity.class));
+                startActivity(new Intent(getApplicationContext(), StreamsActivity.class));
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
