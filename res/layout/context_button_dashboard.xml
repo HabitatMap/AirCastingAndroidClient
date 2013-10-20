@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/ContextButton"
+              android:id="@+id/back_to_dashboard"
+        >
+
+    <ImageView style="@style/ContextButtonImage"
+               android:src="@drawable/dashboard"
+            />
+    <TextView style="@style/ContextButtonLabel"
+              android:text="@string/dashboard"
+            />
+
+</LinearLayout>

@@ -100,6 +100,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
         } else {
             addButton(R.layout.context_button_crowdmap_inactive);
         }
+        addButton(R.layout.context_button_dashboard);
     }
 
     @Override

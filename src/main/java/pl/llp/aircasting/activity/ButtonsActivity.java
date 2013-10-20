@@ -153,6 +153,9 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.back_to_dashboard:
+                finish();
+                break;
             case R.id.graph_button:
                 startActivity(new Intent(context, GraphActivity.class));
                 break;

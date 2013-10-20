@@ -76,6 +76,11 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         measurementPresenter.unregisterListener(this);
     }
 
+    @Override
+    protected void addContextSpecificButtons() {
+        addButton(R.layout.context_button_dashboard);
+    }
+
   private void refresh() {
     runOnUiThread(new Runnable() {
       @Override
