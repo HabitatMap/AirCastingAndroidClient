@@ -19,6 +19,7 @@
 */
 package pl.llp.aircasting.activity;
 
+import android.view.View;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.AveragesDriver;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
@@ -56,6 +57,7 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
     @Inject ConnectivityManager connectivityManager;
 
     private boolean soundTraceComplete = true;
+    private boolean heatMapVisible = false;
     private int requestsOutstanding = 0;
     private AsyncTask<Void, Void, Void> refreshTask;
     private MapIdleDetector heatMapDetector;
@@ -67,9 +69,37 @@ public class HeatMapActivity extends AirCastingMapActivity implements MapIdleDet
         super.onCreate(savedInstanceState);
         setContentView(R.layout.heat_map);
 
-        mapView.getOverlays().add(heatMapOverlay);
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
+    }
+
+    private void toggleHeatMapVisibility() {
+        if (heatMapVisible) {
+            heatMapVisible = false;
+            mapView.getOverlays().remove(heatMapOverlay);
+        } else {
+            heatMapVisible = true;
+            mapView.getOverlays().add(heatMapOverlay);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.toggle_heat_map_button) {
+            toggleHeatMapVisibility();
+            updateButtons();
+        }
+        super.onClick(view);
+    }
+
+    @Override
+    protected void addContextSpecificButtons() {
+        super.addContextSpecificButtons();
+        if (heatMapVisible) {
+            addButton(R.layout.context_button_crowdmap_active);
+        } else {
+            addButton(R.layout.context_button_crowdmap_inactive);
+        }
     }
 
     @Override

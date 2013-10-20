@@ -209,4 +209,5 @@
   <string name="center_map">Center map</string>
   <string name="record_session">Record session</string>
   <string name="stop_recording">Stop recording</string>
+  <string name="crowdmap">CrowdMap</string>
 </resources>
