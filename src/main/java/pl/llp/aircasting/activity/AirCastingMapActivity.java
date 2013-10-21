@@ -1,62 +1,67 @@
 /**
+    AirCasting - Share your Air!
+    Copyright (C) 2011-2012 HabitatMap, Inc.
 
- AirCasting - Share your Air!
- Copyright (C) 2011-2012 HabitatMap, Inc.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- You can contact the authors by email at <info@habitatmap.org>
- */
+    You can contact the authors by email at <info@habitatmap.org>
+*/
 package pl.llp.aircasting.activity;
 
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
-import pl.llp.aircasting.event.sensor.LocationEvent;
-import pl.llp.aircasting.model.events.MeasurementEvent;
-import pl.llp.aircasting.event.session.NoteCreatedEvent;
-import pl.llp.aircasting.event.ui.DoubleTapEvent;
-import pl.llp.aircasting.helper.LocationConversionHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.view.AirCastingMapView;
-import pl.llp.aircasting.view.MapIdleDetector;
-import pl.llp.aircasting.view.overlay.LocationOverlay;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
-import pl.llp.aircasting.view.overlay.RouteOverlay;
-import pl.llp.aircasting.view.overlay.TraceOverlay;
-import pl.llp.aircasting.view.presenter.MeasurementPresenter;
-
-import android.location.Location;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.api.AveragesDriver;
+import pl.llp.aircasting.event.sensor.LocationEvent;
+import pl.llp.aircasting.event.session.NoteCreatedEvent;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.internal.Region;
+import pl.llp.aircasting.util.http.HttpResult;
+import pl.llp.aircasting.view.AirCastingMapView;
+import pl.llp.aircasting.view.MapIdleDetector;
+import pl.llp.aircasting.view.overlay.*;
+
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.widget.Toast;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.Projection;
 import com.google.inject.Inject;
+import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.File;
 import java.util.List;
 
+import static java.lang.Math.min;
 import static pl.llp.aircasting.helper.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
@@ -64,32 +69,47 @@ import static pl.llp.aircasting.view.MapIdleDetector.detectMapIdle;
 /**
  * Created by IntelliJ IDEA.
  * User: obrok
- * Date: 10/20/11
- * Time: 3:35 PM
+ * Date: 10/17/11
+ * Time: 5:04 PM
  */
-public class AirCastingMapActivity extends AirCastingActivity implements MeasurementPresenter.Listener {
-    @InjectView(R.id.mapview) AirCastingMapView mapView;
+public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener {
 
+    @InjectView(R.id.mapview) AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
-
+    @Inject HeatMapOverlay heatMapOverlay;
+    @Inject AveragesDriver averagesDriver;
+    @Inject ConnectivityManager connectivityManager;
     @Inject NoteOverlay noteOverlay;
     @Inject LocationOverlay locationOverlay;
     @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
-
     @Inject RouteOverlay routeOverlay;
 
-    boolean initialized = false;
-    Measurement lastMeasurement;
+    public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
+    public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
+
+    private boolean soundTraceComplete = true;
+    private boolean heatMapVisible = false;
+    private int requestsOutstanding = 0;
+    private AsyncTask<Void, Void, Void> refreshTask;
+    private MapIdleDetector heatMapDetector;
+    private MapIdleDetector soundTraceDetector;
+    private HeatMapUpdater updater;
+    private boolean initialized = false;
+    private Measurement lastMeasurement;
     private boolean zoomToSession = true;
-    MapIdleDetector routeRefreshDetector;
+    private MapIdleDetector routeRefreshDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         noteOverlay.setContext(this);
+
+        setContentView(R.layout.heat_map);
+
+        mapView.getOverlays().add(routeOverlay);
+        mapView.getOverlays().add(traceOverlay);
     }
 
     @Override
@@ -99,23 +119,94 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         zoomToSession = false;
     }
 
+    private void toggleHeatMapVisibility() {
+        if (heatMapVisible) {
+            heatMapVisible = false;
+            mapView.getOverlays().remove(heatMapOverlay);
+        } else {
+            heatMapVisible = true;
+            mapView.getOverlays().add(heatMapOverlay);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.toggle_heat_map_button:
+                toggleHeatMapVisibility();
+                updateButtons();
+                break;
+            case R.id.zoom_in:
+                mapView.getController().zoomIn();
+                break;
+            case R.id.zoom_out:
+                mapView.getController().zoomOut();
+                break;
+            case R.id.locate:
+                centerMap();
+                break;
+            case R.id.view_photo:
+                Intents.viewPhoto(this, photoUri());
+                break;
+            default:
+                super.onClick(view);
+        }
+    }
+
+    private Uri photoUri() {
+        if (photoHelper.photoExistsLocally(currentNote)) {
+            File file = new File(currentNote.getPhotoPath());
+            return Uri.fromFile(file);
+        } else {
+            return Uri.parse(currentNote.getPhotoPath());
+        }
+    }
+
+    @Override
+    protected void addContextSpecificButtons() {
+        if (!sessionManager.isSessionSaved()) {
+            mapView.getOverlays().add(locationOverlay);
+
+            addButton(R.layout.context_button_locate);
+        }
+
+        if (heatMapVisible) {
+            addButton(R.layout.context_button_crowdmap_active);
+        } else {
+            addButton(R.layout.context_button_crowdmap_inactive);
+        }
+
+        addButton(R.layout.context_button_dashboard);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
 
         initialize();
-
         refreshNotes();
-
         spinnerAnimation.start();
-
         initializeMap();
-
         measurementPresenter.registerListener(this);
-
         initializeRouteOverlay();
-
         traceOverlay.startDrawing();
+
+        checkConnection();
+
+        updater = new HeatMapUpdater();
+        heatMapDetector = detectMapIdle(mapView, HEAT_MAP_UPDATE_TIMEOUT, updater);
+        soundTraceDetector = detectMapIdle(mapView, SOUND_TRACE_UPDATE_TIMEOUT, this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        measurementPresenter.unregisterListener(this);
+        routeRefreshDetector.stop();
+        traceOverlay.stopDrawing(mapView);
+        heatMapDetector.stop();
+        soundTraceDetector.stop();
     }
 
     private void initializeRouteOverlay() {
@@ -148,15 +239,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
     private boolean shouldShowRoute() {
         return settingsHelper.isShowRoute() &&
                 (sessionManager.isRecording() || sessionManager.isSessionSaved());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        measurementPresenter.unregisterListener(this);
-        routeRefreshDetector.stop();
-        traceOverlay.stopDrawing(mapView);
     }
 
     private void initializeMap() {
@@ -197,15 +279,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
-    @Override
-    protected void addContextSpecificButtons() {
-        if (!sessionManager.isSessionSaved()) {
-            mapView.getOverlays().add(locationOverlay);
-
-            addButton(R.layout.context_button_locate);
-        }
-    }
-
     private void showSession() {
         if (sessionManager.isSessionSaved() && zoomToSession) {
             LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSession());
@@ -223,19 +296,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         }
     }
 
-    @Subscribe
-    @Override
-    public void onEvent(MeasurementEvent event) {
-        super.onEvent(event);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mapView.invalidate();
-            }
-        });
-    }
-
     public void noteClicked(OverlayItem item, int index) {
         suppressNextTap();
 
@@ -244,33 +304,21 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
         noteClicked(index);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.zoom_in:
-                mapView.getController().zoomIn();
-                break;
-            case R.id.zoom_out:
-                mapView.getController().zoomOut();
-                break;
-            case R.id.locate:
-                centerMap();
-                break;
-            case R.id.view_photo:
-                Intents.viewPhoto(this, photoUri());
-                break;
-            default:
-                super.onClick(view);
-        }
-    }
 
-    private Uri photoUri() {
-        if (photoHelper.photoExistsLocally(currentNote)) {
-            File file = new File(currentNote.getPhotoPath());
-            return Uri.fromFile(file);
-        } else {
-            return Uri.parse(currentNote.getPhotoPath());
-        }
+    @Subscribe
+    @Override
+    public void onEvent(ViewStreamEvent event) {
+        super.onEvent(event);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mapView.invalidate();
+            }
+        });
+
+        updater.onMapIdle();
+        onMapIdle();
     }
 
     @Override
@@ -342,5 +390,116 @@ public class AirCastingMapActivity extends AirCastingActivity implements Measure
                 mapView.invalidate();
             }
         });
+    }
+
+    private void checkConnection() {
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo == null || !activeNetworkInfo.isConnectedOrConnecting()) {
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void refresh() {
+        boolean complete = (requestsOutstanding == 0) && soundTraceComplete;
+        if (complete) {
+            stopSpinner();
+        } else {
+            startSpinner();
+        }
+        if (!complete) mapView.invalidate();
+    }
+
+    @Override
+    public void onMapIdle() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshSoundTrace();
+            }
+        });
+    }
+
+    private void refreshSoundTrace() {
+        if (refreshTask != null && refreshTask.getStatus() != AsyncTask.Status.FINISHED) return;
+
+        //noinspection unchecked
+        refreshTask = new UpdateSoundTraceTask().execute();
+    }
+
+    class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
+        public static final int MAP_BUFFER_SIZE = 3;
+
+        @Override
+        protected void onPreExecute() {
+            requestsOutstanding += 1;
+            refresh();
+        }
+
+        @Override
+        protected HttpResult<Iterable<Region>> doInBackground(Void... voids) {
+            Projection projection = mapView.getProjection();
+
+            // We want to download data that's off screen so the user can see something while panning
+            GeoPoint northWest = projection.fromPixels(-mapView.getWidth(), -mapView.getHeight());
+            GeoPoint southEast = projection.fromPixels(2 * mapView.getWidth(), 2 * mapView.getHeight());
+
+            Location northWestLoc = LocationConversionHelper.location(northWest);
+            Location southEastLoc = LocationConversionHelper.location(southEast);
+
+            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
+            if (size < 1) size = 1;
+
+            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
+            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
+
+            return averagesDriver.index(sensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+                    southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
+        }
+
+        @Override
+        protected void onPostExecute(HttpResult<Iterable<Region>> regions) {
+            requestsOutstanding -= 1;
+
+            if (regions.getContent() != null) {
+                heatMapOverlay.setRegions(regions.getContent());
+            }
+
+            mapView.invalidate();
+            refresh();
+        }
+    }
+
+    class UpdateSoundTraceTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            soundTraceComplete = false;
+            refresh();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            traceOverlay.refresh(mapView);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            soundTraceComplete = true;
+            mapView.invalidate();
+            refresh();
+        }
+    }
+
+    private class HeatMapUpdater implements MapIdleDetector.MapIdleListener {
+        @Override
+        public void onMapIdle() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //noinspection unchecked
+                    new HeatMapDownloader().execute();
+                }
+            });
+        }
     }
 }

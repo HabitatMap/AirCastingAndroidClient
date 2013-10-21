@@ -41,7 +41,8 @@ import static org.mockito.Mockito.when;
 @RunWith(InjectedTestRunner.class)
 public class AirCastingActivityEditSessionTest {
 
-    @Inject AirCastingMapActivity activity;
+    @Inject
+    AirCastingMapActivity activity;
     private Session session;
     private Intent data;
 

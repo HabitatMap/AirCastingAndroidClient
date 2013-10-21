@@ -17,16 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.animation.Animation;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 /**
@@ -156,7 +152,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 startActivity(new Intent(context, GraphActivity.class));
                 break;
             case R.id.heat_map_button:
-                startActivity(new Intent(context, HeatMapActivity.class));
+                startActivity(new Intent(context, AirCastingMapActivity.class));
                 break;
             case R.id.toggle_aircasting:
                 toggleAirCasting();
