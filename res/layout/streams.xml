@@ -41,13 +41,13 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
             >
-        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        <GridView xmlns:android="http://schemas.android.com/apk/res/android"
                   style="@style/Fill"
-                  android:id="@android:id/list"
-                  android:background="@android:color/white"
-                  android:cacheColorHint="@android:color/white"
-                  android:divider="@android:color/white"
-                  android:dividerHeight="0dp"
+                  android:id="@+id/sensors_grid"
+                  android:numColumns="2"
+                  android:stretchMode="columnWidth"
+                  android:verticalSpacing="5dp"
+                  android:horizontalSpacing="5dp"
                 />
 
         <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"

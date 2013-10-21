@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.ListView;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -19,7 +20,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
 
-    @InjectView(android.R.id.list) ListView listView;
+    @InjectView(R.id.sensors_grid) GridView gridView;
 
     StreamAdapter adapter;
 
@@ -30,7 +31,7 @@ public class StreamsActivity extends ButtonsActivity {
         setContentView(R.layout.streams);
 
         adapter = adapterFactory.getAdapter(this);
-        listView.setAdapter(adapter);
+        gridView.setAdapter(adapter);
     }
 
     @Override
@@ -53,6 +54,6 @@ public class StreamsActivity extends ButtonsActivity {
 
     @Subscribe
     public void onEvent(MotionEvent event) {
-        listView.dispatchTouchEvent(event);
+        gridView.dispatchTouchEvent(event);
     }
 }
