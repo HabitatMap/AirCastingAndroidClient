@@ -59,6 +59,7 @@ public class ResourceHelper
   @InjectResource(R.color.orange) int orange;
   @InjectResource(R.color.yellow) int yellow;
   @InjectResource(R.color.red) int red;
+  @InjectResource(R.color.gray) int gray;
 
   @InjectResource(R.color.graph_green) int graphGreen;
   @InjectResource(R.color.graph_orange) int graphOrange;
