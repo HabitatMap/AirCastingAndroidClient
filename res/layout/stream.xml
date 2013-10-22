@@ -2,14 +2,25 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 style="@style/Wide"
-                android:background="#3F3F3F"
+                android:background="@color/green"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
        >
+
+    <TextView
+            style="@style/Wide"
+            android:id="@+id/now"
+            android:textSize="40sp"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:text="20"
+            />
 
     <TextView
             android:id="@+id/quantity"
             android:textStyle="bold"
             android:textColor="@android:color/white"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/now"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
@@ -27,30 +38,6 @@
         android:text="Sample but long text"
         />
 
-    <include layout="@layout/gauge_faces"
-             android:layout_height="wrap_content"
-             android:layout_width="wrap_content"
-             android:layout_below="@id/sensor_name"
-             android:layout_centerHorizontal="true"
-            />
-
-    <ImageButton style="@style/Wrap"
-               android:contentDescription="@string/delete_button_description"
-               android:background="@drawable/delete"
-               android:layout_below="@+id/sensor_name"
-               android:layout_margin="1dp"
-               android:layout_alignParentLeft="true"
-               android:id="@+id/delete_stream"
-          />
-    <ImageButton style="@style/Wrap"
-                 android:background="@drawable/recording_active"
-                 android:contentDescription="@string/record_button_description"
-                 android:layout_below="@+id/sensor_name"
-                 android:layout_margin="1dp"
-                 android:layout_alignParentLeft="true"
-                 android:id="@+id/record_stream"
-        />
-                 <!--android:visibility="invisible"-->
     <ImageButton style="@style/Wrap"
                  android:background="@drawable/viewing_inactive"
                  android:contentDescription="@string/view_button_description"
@@ -58,5 +45,29 @@
                  android:layout_margin="1dp"
                  android:layout_alignParentRight="true"
                  android:id="@+id/view_stream"
+                 android:visibility="gone"
             />
+
+    <ImageButton
+               android:layout_width="20dp"
+               android:layout_height="20dp"
+               android:contentDescription="@string/delete_button_description"
+               android:background="@drawable/delete"
+               android:layout_margin="1dp"
+               android:layout_centerHorizontal="true"
+               android:layout_below="@id/view_stream"
+               android:id="@+id/delete_stream"
+               android:visibility="gone"
+          />
+
+    <ImageButton style="@style/Wrap"
+                 android:background="@drawable/recording_active"
+                 android:contentDescription="@string/record_button_description"
+                 android:layout_below="@+id/sensor_name"
+                 android:layout_margin="1dp"
+                 android:layout_alignParentLeft="true"
+                 android:id="@+id/record_stream"
+                 android:visibility="gone"
+        />
+
 </RelativeLayout>
