@@ -52,11 +52,14 @@ public class StreamViewHelper {
             setBackground(sensor, avgView, avg);
             setBackground(sensor, peakView, peak);
 
-            avgView.setVisibility(View.VISIBLE);
-            peakView.setVisibility(View.VISIBLE);
         } else {
-            avgView.setVisibility(View.GONE);
-            peakView.setVisibility(View.GONE);
+            avgTextView.setText("--");
+            peakTextView.setText("--");
+
+            nowView.setBackgroundColor(resourceHelper.gray);
+            avgView.setBackgroundColor(resourceHelper.gray);
+            peakView.setBackgroundColor(resourceHelper.gray);
+
         }
     }
 
