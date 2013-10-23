@@ -6,6 +6,10 @@
         >
 
     <ImageView style="@style/ContextButtonImage"
+               android:layout_height="32dp"
+               android:layout_width="32dp"
+               android:layout_marginBottom="4dp"
+               android:layout_marginTop="-1dp"
                android:src="@drawable/dashboard"
             />
     <TextView style="@style/ContextButtonLabel"

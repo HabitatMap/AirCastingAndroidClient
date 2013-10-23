@@ -24,7 +24,7 @@
               android:layout_height="wrap_content"
               android:layout_alignParentBottom="true"
               android:gravity="center_horizontal"
-              android:background="#3F3F3F"
+              android:background="#0BB8F4"
               android:id="@+id/context_buttons"
               android:paddingBottom="2dp"
               android:paddingTop="2dp"

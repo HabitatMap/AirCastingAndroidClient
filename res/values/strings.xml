@@ -60,7 +60,7 @@
   <string name="edit_session">Edit session</string>
   <string name="heat_map_density">Crowd Map resolution</string>
   <string name="loud_threshold">Loud sounds (dB)</string>
-  <string name="make_a_note">Make a note</string>
+  <string name="make_a_note">Make Note</string>
   <string name="satellite_view">Satellite map</string>
   <string name="save_session">Save session</string>
   <string name="very_loud_threshold">Very loud sounds (dB)</string>
@@ -206,9 +206,9 @@
   <string name="disable_maps_description">Allows you to record sessions without a GPS fix. Sessions recorded when maps are disabled are saved to your Android device, but they are not saved to aircasting.org. As a result, when signing out of the app these sessions will be erased.  Email sessions as CSV files to prevent data loss.</string>
   <string name="cannot_record_session_due_to_location">Cannot record without a GPS fix. Either find some sky or go to settings and "disable maps"</string>
 
-  <string name="center_map">Center map</string>
-  <string name="record_session">Record session</string>
-  <string name="stop_recording">Stop recording</string>
+  <string name="center_map">Center Map</string>
+  <string name="record_session">Start Recording</string>
+  <string name="stop_recording">Stop Recording</string>
   <string name="crowdmap">CrowdMap</string>
   <string name="dashboard">Dashboard</string>
 </resources>

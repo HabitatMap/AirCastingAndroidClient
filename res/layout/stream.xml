@@ -2,13 +2,13 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 style="@style/Wide"
+                android:layout_margin="0dp"
     >
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     style="@style/Wide"
                     android:background="@color/green"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="10dp"
+                    android:paddingBottom="3dp"
                     android:id="@+id/now_pane"
            >
 
@@ -68,6 +68,7 @@
     <LinearLayout style="@style/Wide"
                   android:orientation="horizontal"
                   android:layout_below="@id/now_pane"
+                  android:layout_marginTop="2dp"
                   android:id="@+id/session_stats"
         >
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -75,8 +76,7 @@
                         android:layout_width="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/yellow"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
+                        android:layout_marginRight="1dp"
                         android:id="@+id/avg_pane"
                 >
 
@@ -106,8 +106,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/red"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="1dp"
                         android:id="@+id/peak_pane"
             >
 
