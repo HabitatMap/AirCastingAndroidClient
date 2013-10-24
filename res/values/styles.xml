@@ -24,6 +24,14 @@
         <item name="android:windowBackground">@drawable/panel_background</item>
     </style>
 
+    <style name="AirCastingTheme"
+           parent="android:Theme.NoTitleBar"
+           >
+        <item name="android:panelFullBackground">@android:color/black</item>
+        <item name="android:panelBackground">@android:color/black</item>
+        <item name="android:panelColorBackground">@android:color/black</item>
+    </style>
+
     <style name="DialogMain"
            parent="Wide">
         <item name="android:orientation">vertical</item>

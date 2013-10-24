@@ -41,16 +41,16 @@
     <uses-library android:name="com.google.android.maps"/>
 
     <!-- Activities -->
-    <activity android:label="@string/app_name" android:name=".activity.SplashActivity" android:noHistory="true" android:theme="@android:style/Theme.NoTitleBar">
+    <activity android:label="@string/app_name" android:name=".activity.SplashActivity" android:noHistory="true" android:theme="@style/AirCastingTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 
-    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@style/AirCastingTheme"/>
 
-    <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@style/AirCastingTheme"/>
 
     <activity android:label="@string/session_details" android:name=".activity.SaveSessionActivity" android:theme="@style/Dialog"/>
 
@@ -58,13 +58,13 @@
 
     <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.SettingsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme"/>
 
     <activity android:label="@string/session_options" android:name=".activity.OpenSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.AirCastingMapActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme"/>
 
-    <activity android:name=".activity.AboutActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:name=".activity.AboutActivity" android:theme="@style/AirCastingTheme"/>
 
     <activity android:label="@string/make_a_note" android:name=".activity.MakeANoteActivity" android:theme="@style/Dialog"/>
 
@@ -86,7 +86,7 @@
 
     <activity android:label="@string/external_devices" android:name=".activity.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@android:style/Theme.NoTitleBar"/>
+    <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@style/AirCastingTheme"/>
 
     <activity android:label="@string/backend_settings" android:name=".activity.settings.BackendSettingsActivity" android:theme="@style/Dialog"/>
 
