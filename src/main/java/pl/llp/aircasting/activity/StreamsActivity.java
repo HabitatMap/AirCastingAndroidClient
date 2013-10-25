@@ -36,11 +36,6 @@ public class StreamsActivity extends ButtonsActivity {
 
         setContentView(R.layout.streams);
 
-        ViewGroup container = (ViewGroup) findViewById(R.id.streams_container);
-        View area = layoutInflater.inflate(R.layout.streams_top_bar, container, false);
-        container.addView(area);
-        gridView.addSpecialArea(area);
-
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
 
@@ -53,6 +48,41 @@ public class StreamsActivity extends ButtonsActivity {
                 return false;
             }
         });
+
+        SensorsGridView.OnDragListener graphListener = new SensorsGridView.OnDragListener() {
+            @Override
+            public void onEnter() {
+                findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.transparent));
+            }
+
+            @Override
+            public void onLeave() {
+                findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
+            }
+
+            @Override
+            public void onDrop() {
+            }
+        };
+
+        SensorsGridView.OnDragListener mapListener = new SensorsGridView.OnDragListener() {
+            @Override
+            public void onEnter() {
+                findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.transparent));
+            }
+
+            @Override
+            public void onLeave() {
+                findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
+            }
+
+            @Override
+            public void onDrop() {
+            }
+        };
+
+        gridView.registerListenArea(findViewById(R.id.graph_button), graphListener);
+        gridView.registerListenArea(findViewById(R.id.heat_map_button), mapListener);
     }
 
     @Override

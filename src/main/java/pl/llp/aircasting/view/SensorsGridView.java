@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +32,7 @@ public class SensorsGridView extends GridView {
     private BitmapDrawable mHoverView;
     private View mCurrentItemView;
     private boolean mDragEnabled = false;
-    List<View> specialAreas;
+    List<ListenArea> listenAreas;
 
     public SensorsGridView(Context context) {
         super(context);
@@ -49,12 +50,24 @@ public class SensorsGridView extends GridView {
     }
 
     private void init() {
-        specialAreas = new ArrayList<View>();
+        listenAreas = new ArrayList<ListenArea>();
         reset();
     }
 
-    public void addSpecialArea(View view) {
-        specialAreas.add(view);
+    private void notifyMove(int x, int y) {
+        for (ListenArea listenArea : listenAreas) {
+            listenArea.onMove(x, y);
+        }
+    }
+
+    private void notifyDrop(int x, int y) {
+        for (ListenArea listenArea : listenAreas) {
+            listenArea.onDrop(x, y);
+        }
+    }
+
+    public void registerListenArea(View view, OnDragListener listener) {
+        listenAreas.add(new ListenArea(view, listener));
     }
 
     public boolean isDragEnabled() {
@@ -88,6 +101,11 @@ public class SensorsGridView extends GridView {
                 mDownY = (int) event.getY();
 
                 int position = pointToPosition(mDownX, mDownY);
+
+                if (position == INVALID_POSITION) {
+                    return false;
+                }
+
                 int num = position - getFirstVisiblePosition();
 
                 mCurrentItemView = getChildAt(num);
@@ -95,10 +113,6 @@ public class SensorsGridView extends GridView {
 
                 if (!isDragEnabled()) {
                     return super.dispatchTouchEvent(event);
-                }
-
-                if (mCurrentItemView == null) {
-                    return false;
                 }
 
                 mCurrentItemView.setVisibility(GONE);
@@ -118,12 +132,14 @@ public class SensorsGridView extends GridView {
                     mCurrentItemView.setVisibility(GONE);
                     mCellCurrentBounds.offsetTo(mCellOriginalBounds.left + deltaX, mCellOriginalBounds.top + deltaY);
                     mHoverView.setBounds(mCellCurrentBounds);
+                    notifyMove(eventX, eventY);
                     invalidate();
                 }
                 break;
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                notifyDrop((int) event.getX(), (int) event.getY());
                 disableDrag();
                 reset();
                 break;
@@ -134,9 +150,6 @@ public class SensorsGridView extends GridView {
     @Override
     public void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        for (View view : specialAreas) {
-            view.draw(canvas);
-        }
         if (isDragEnabled() && mHoverView != null) {
             mHoverView.draw(canvas);
         }
@@ -171,5 +184,47 @@ public class SensorsGridView extends GridView {
         drawable.setBounds(mCellCurrentBounds);
 
         mHoverView = drawable;
+    }
+
+    public static abstract class OnDragListener {
+        public abstract void onEnter();
+
+        public abstract void onLeave();
+
+        public abstract void onDrop();
+    }
+
+    public static class ListenArea {
+        private View view;
+        private OnDragListener listener;
+        private boolean entered;
+
+        public ListenArea(View view, OnDragListener listener) {
+            entered = false;
+            this.view = view;
+            this.listener = listener;
+        }
+
+        private boolean isPointInside(int x, int y) {
+            return (x >= view.getLeft() && x <= view.getLeft() + view.getWidth() &&
+                    y >= view.getTop() && y <= view.getTop() + view.getHeight());
+        }
+
+        public void onMove(int x, int y) {
+            if (isPointInside(x, y) && !entered) {
+                entered = true;
+                listener.onEnter();
+            } else if (!isPointInside(x, y) && entered) {
+                entered = false;
+                listener.onLeave();
+            }
+        }
+
+        public void onDrop(int x, int y) {
+            listener.onLeave();
+            if (isPointInside(x, y)) {
+                listener.onDrop();
+            }
+        }
     }
 }

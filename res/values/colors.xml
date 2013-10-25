@@ -47,4 +47,5 @@
     <color name="splash_background">#009ddb</color>
 
     <color name="gps_route">#007bf2</color>
+    <color name="bar_blue">#0BB8F4</color>
 </resources>
