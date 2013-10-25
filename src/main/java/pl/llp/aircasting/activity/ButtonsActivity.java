@@ -35,9 +35,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Inject Context context;
     @Inject EventBus eventBus;
 
-    // It seems it's impossible to inject these in the tests
-    @InjectView(R.id.buttons) View buttons;
-
     @Nullable @InjectView(R.id.heat_map_button) View heatMapButton;
     @Nullable @InjectView(R.id.graph_button) View graphButton;
 
@@ -103,13 +100,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     private void initialize() {
         if (!initialized) {
-
-            if (showButtons) {
-                buttons.setVisibility(View.VISIBLE);
-            } else {
-                buttons.setVisibility(View.GONE);
-            }
-
             if (graphButton != null) graphButton.setOnClickListener(this);
             if (heatMapButton != null) heatMapButton.setOnClickListener(this);
 

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/Fill"
               android:background="#C7ECF9"
-              android:orientation="vertical"
+              android:id="@+id/streams_container"
               >
 
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="fill_parent"
                   android:layout_height="40dp"
                   android:id="@+id/buttons"
-                  >
+                  android:layout_alignParentTop="true"
+            >
         <TextView android:layout_width="0dp"
                   android:layout_height="fill_parent"
                   android:layout_weight="1"
@@ -36,19 +37,22 @@
                   android:id="@+id/heat_map_button"
                 />
     </LinearLayout>
-
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
+                    android:layout_above="@id/context_buttons"
             >
-        <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        <pl.llp.aircasting.view.SensorsGridView xmlns:android="http://schemas.android.com/apk/res/android"
                   style="@style/Fill"
                   android:id="@+id/sensors_grid"
                   android:numColumns="2"
                   android:padding="-6dp"
+                  android:paddingTop="40dp"
                   android:stretchMode="columnWidth"
                   android:verticalSpacing="4dp"
                   android:horizontalSpacing="4dp"
+                  android:fadingEdge="none"
+                  android:fadingEdgeLength="0dp"
                 />
 
         <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"
@@ -60,4 +64,4 @@
 
     <include layout="@layout/context_buttons"/>
 
-</LinearLayout>
+</RelativeLayout>

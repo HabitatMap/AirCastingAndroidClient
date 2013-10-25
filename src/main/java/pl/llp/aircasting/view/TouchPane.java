@@ -20,6 +20,7 @@
 package pl.llp.aircasting.view;
 
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.guice.AirCastingApplication;
@@ -115,6 +116,7 @@ public class TouchPane extends View implements GestureDetector.OnDoubleTapListen
 
     @Override
     public void onLongPress(MotionEvent event) {
+        eventBus.post(new LongClickEvent(event));
     }
 
     @Override
