@@ -212,6 +212,6 @@
   <string name="crowdmap">CrowdMap</string>
   <string name="dashboard">Dashboard</string>
 
-    <string name="drag_to_graph_stream">Drag and drop rectangles to graph</string>
-    <string name="drag_to_map_stream">Drag and drop rectangles to map</string>
+    <string name="drag_to_graph_stream">Long press then drag &amp; drop sensor tiles to graph.</string>
+    <string name="drag_to_map_stream">Long press then drag &amp; drop sensor tiles to map.</string>
 </resources>
