@@ -55,18 +55,6 @@ public class StreamsActivity extends ButtonsActivity {
 
         SensorsGridView.OnDragListener graphListener = new SensorsGridView.OnDragListener() {
             @Override
-            public void onEnter(View view) {
-                findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.transparent));
-                gridView.toggleDisplaySize();
-            }
-
-            @Override
-            public void onLeave(View view) {
-                findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
-                gridView.toggleDisplaySize();
-            }
-
-            @Override
             public void onDrop(View view) {
                 eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
                 startActivity(new Intent(StreamsActivity.this, GraphActivity.class));
@@ -74,18 +62,6 @@ public class StreamsActivity extends ButtonsActivity {
         };
 
         SensorsGridView.OnDragListener mapListener = new SensorsGridView.OnDragListener() {
-            @Override
-            public void onEnter(View view) {
-                findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.transparent));
-                gridView.toggleDisplaySize();
-            }
-
-            @Override
-            public void onLeave(View view) {
-                findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
-                gridView.toggleDisplaySize();
-            }
-
             @Override
             public void onDrop(View view) {
                 eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));

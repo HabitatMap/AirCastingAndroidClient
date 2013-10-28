@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.BitmapViewHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,32 +30,14 @@ public class SensorsGridView extends GridView {
 
     private int mDownX;
     private int mDownY;
-    private Rect mCellOriginalBounds;
-    private Rect mCellCurrentBounds;
-    private Rect mCellHalfOriginalBounds;
-    private Rect mCellHalfCurrentBounds;
-    private Drawable mHoverView;
-    private Drawable mHoverViewHalfSize;
+    private BitmapViewHelper mBitmapViewHelper;
     private View mCurrentItemView;
-    private boolean mDisplayHalfSize = false;
     private boolean mDragEnabled = false;
     List<ListenArea> listenAreas;
 
     public SensorsGridView(Context context) {
         super(context);
         init();
-    }
-
-    public void displayFullSize() {
-        mDisplayHalfSize = false;
-    }
-
-    public void displayHalfSize() {
-        mDisplayHalfSize = true;
-    }
-
-    public void toggleDisplaySize() {
-        mDisplayHalfSize = !mDisplayHalfSize;
     }
 
     public SensorsGridView(Context context, AttributeSet attrs) {
@@ -65,6 +48,15 @@ public class SensorsGridView extends GridView {
     public SensorsGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
+    }
+
+    private boolean isInListenArea() {
+        for (ListenArea listenArea : listenAreas) {
+            if (listenArea.isEntered()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void init() {
@@ -138,7 +130,7 @@ public class SensorsGridView extends GridView {
                 int num = position - getFirstVisiblePosition();
 
                 mCurrentItemView = getChildAt(num);
-                setHoverView(mCurrentItemView);
+                mBitmapViewHelper = new BitmapViewHelper(getResources(), mCurrentItemView, mDownX, mDownY);
 
                 if (!isDragEnabled()) {
                     notifyMotionEvent(event);
@@ -160,12 +152,9 @@ public class SensorsGridView extends GridView {
                     deltaX = eventX - mDownX,
                     deltaY = eventY - mDownY;
 
-                if (mHoverView != null) {
+                if (mBitmapViewHelper != null) {
                     mCurrentItemView.setVisibility(GONE);
-                    mCellCurrentBounds.offsetTo(mCellOriginalBounds.left + deltaX, mCellOriginalBounds.top + deltaY);
-                    mCellHalfCurrentBounds.offsetTo(mCellHalfOriginalBounds.left + deltaX, mCellHalfOriginalBounds.top + deltaY);
-                    mHoverView.setBounds(mCellCurrentBounds);
-                    mHoverViewHalfSize.setBounds(mCellHalfCurrentBounds);
+                    mBitmapViewHelper.move(deltaX, deltaY);
                     notifyMove(eventX, eventY);
                     invalidate();
                 }
@@ -189,13 +178,8 @@ public class SensorsGridView extends GridView {
     @Override
     public void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (isDragEnabled() && mHoverView != null) {
-            Log.d("TADAM", String.valueOf(mDisplayHalfSize));
-            if (mDisplayHalfSize) {
-                mHoverViewHalfSize.draw(canvas);
-            } else {
-                mHoverView.draw(canvas);
-            }
+        if (isDragEnabled() && mBitmapViewHelper != null) {
+            mBitmapViewHelper.draw(canvas, isInListenArea());
         }
     }
 
@@ -205,40 +189,18 @@ public class SensorsGridView extends GridView {
         }
 
         mCurrentItemView = null;
-        mHoverView = null;
-        mCellCurrentBounds = null;
-        mCellOriginalBounds = null;
-        mDisplayHalfSize = false;
-    }
-
-    private void setHoverView(View view) {
-        int w = view.getWidth(),
-            h = view.getHeight();
-
-        Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        view.draw(c);
-        Bitmap hb = Bitmap.createScaledBitmap(b, w / 2, h / 2, false);
-
-        mHoverView = new BitmapDrawable(getResources(), b);
-        mHoverViewHalfSize = new BitmapDrawable(getResources(), hb);
-
-        mCellOriginalBounds = new Rect(mDownX - w / 2, mDownY - h / 2, mDownX + w / 2, mDownY + h / 2);
-        mCellCurrentBounds = new Rect(mCellOriginalBounds);
-
-        mCellHalfOriginalBounds = new Rect(mDownX - w / 4, mDownY - h / 4, mDownX + w / 4, mDownY + h / 4);
-        mCellHalfCurrentBounds = new Rect(mCellHalfOriginalBounds);
-
-        mHoverView.setBounds(mCellCurrentBounds);
-        mHoverViewHalfSize.setBounds(mCellHalfCurrentBounds);
+        mBitmapViewHelper = null;
     }
 
     public static abstract class OnDragListener {
-        public abstract void onEnter(View view);
+        public void onEnter(View view) {
+        }
 
-        public abstract void onLeave(View view);
+        public void onLeave(View view) {
+        }
 
-        public abstract void onDrop(View view);
+        public void onDrop(View view) {
+        }
     }
 
     public static class ListenArea {
@@ -257,6 +219,10 @@ public class SensorsGridView extends GridView {
                     y >= view.getTop() && y <= view.getTop() + view.getHeight());
         }
 
+        public boolean isEntered() {
+            return entered;
+        }
+
         public void onMove(int x, int y, View view) {
             if (isPointInside(x, y) && !entered) {
                 entered = true;
@@ -269,6 +235,7 @@ public class SensorsGridView extends GridView {
 
         public void onDrop(int x, int y, View view) {
             listener.onLeave(view);
+            entered = false;
             if (isPointInside(x, y)) {
                 listener.onDrop(view);
             }
