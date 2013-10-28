@@ -57,11 +57,13 @@ public class StreamsActivity extends ButtonsActivity {
             @Override
             public void onEnter(View view) {
                 findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.transparent));
+                gridView.toggleDisplaySize();
             }
 
             @Override
             public void onLeave(View view) {
                 findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
+                gridView.toggleDisplaySize();
             }
 
             @Override
@@ -75,11 +77,13 @@ public class StreamsActivity extends ButtonsActivity {
             @Override
             public void onEnter(View view) {
                 findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.transparent));
+                gridView.toggleDisplaySize();
             }
 
             @Override
             public void onLeave(View view) {
                 findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
+                gridView.toggleDisplaySize();
             }
 
             @Override
