@@ -56,13 +56,13 @@ public class SensorsGridView extends GridView {
 
     private void notifyMove(int x, int y) {
         for (ListenArea listenArea : listenAreas) {
-            listenArea.onMove(x, y);
+            listenArea.onMove(x, y, mCurrentItemView);
         }
     }
 
     private void notifyDrop(int x, int y) {
         for (ListenArea listenArea : listenAreas) {
-            listenArea.onDrop(x, y);
+            listenArea.onDrop(x, y, mCurrentItemView);
         }
     }
 
@@ -103,7 +103,7 @@ public class SensorsGridView extends GridView {
                 int position = pointToPosition(mDownX, mDownY);
 
                 if (position == INVALID_POSITION) {
-                    return false;
+                    return super.dispatchTouchEvent(event);
                 }
 
                 int num = position - getFirstVisiblePosition();
@@ -139,6 +139,10 @@ public class SensorsGridView extends GridView {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                if (!isDragEnabled()) {
+                    return super.dispatchTouchEvent(event);
+                }
+
                 notifyDrop((int) event.getX(), (int) event.getY());
                 disableDrag();
                 reset();
@@ -187,11 +191,11 @@ public class SensorsGridView extends GridView {
     }
 
     public static abstract class OnDragListener {
-        public abstract void onEnter();
+        public abstract void onEnter(View view);
 
-        public abstract void onLeave();
+        public abstract void onLeave(View view);
 
-        public abstract void onDrop();
+        public abstract void onDrop(View view);
     }
 
     public static class ListenArea {
@@ -210,20 +214,20 @@ public class SensorsGridView extends GridView {
                     y >= view.getTop() && y <= view.getTop() + view.getHeight());
         }
 
-        public void onMove(int x, int y) {
+        public void onMove(int x, int y, View view) {
             if (isPointInside(x, y) && !entered) {
                 entered = true;
-                listener.onEnter();
+                listener.onEnter(view);
             } else if (!isPointInside(x, y) && entered) {
                 entered = false;
-                listener.onLeave();
+                listener.onLeave(view);
             }
         }
 
-        public void onDrop(int x, int y) {
-            listener.onLeave();
+        public void onDrop(int x, int y, View view) {
+            listener.onLeave(view);
             if (isPointInside(x, y)) {
-                listener.onDrop();
+                listener.onDrop(view);
             }
         }
     }

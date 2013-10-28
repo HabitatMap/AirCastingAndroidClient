@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -16,6 +17,9 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.event.ui.LongClickEvent;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.StreamViewHelper;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
@@ -51,33 +55,37 @@ public class StreamsActivity extends ButtonsActivity {
 
         SensorsGridView.OnDragListener graphListener = new SensorsGridView.OnDragListener() {
             @Override
-            public void onEnter() {
+            public void onEnter(View view) {
                 findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.transparent));
             }
 
             @Override
-            public void onLeave() {
+            public void onLeave(View view) {
                 findViewById(R.id.graph_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
             }
 
             @Override
-            public void onDrop() {
+            public void onDrop(View view) {
+                eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                startActivity(new Intent(StreamsActivity.this, GraphActivity.class));
             }
         };
 
         SensorsGridView.OnDragListener mapListener = new SensorsGridView.OnDragListener() {
             @Override
-            public void onEnter() {
+            public void onEnter(View view) {
                 findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.transparent));
             }
 
             @Override
-            public void onLeave() {
+            public void onLeave(View view) {
                 findViewById(R.id.heat_map_button).setBackgroundColor(getResources().getColor(R.color.bar_blue));
             }
 
             @Override
-            public void onDrop() {
+            public void onDrop(View view) {
+                eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
             }
         };
 
