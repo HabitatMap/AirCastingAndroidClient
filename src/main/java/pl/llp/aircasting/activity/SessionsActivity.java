@@ -338,37 +338,14 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       protected void onPostExecute(Session session) {
         super.onPostExecute(session);
 
-        selectSensor();
+        startSessionView();
       }
     }.execute(id);
   }
 
-  private void selectSensor()
-  {
-    if (selectedSensor != null)
-    {
-      ViewStreamEvent event = new ViewStreamEvent(selectedSensor);
-      eventBus.post(event);
-    }
-    else if (sessionManager.getMeasurementStreams().size() > 1)
-    {
-      showDialog(SelectSensorHelper.DIALOG_ID);
-    }
-    else
-    {
-      startSessionView();
-    }
-  }
-
-  @Subscribe
-  public void onEvent(ViewStreamEvent event) {
-    startSessionView();
-  }
-
   private void startSessionView() {
-    Intent intent = new Intent(context, StreamsActivity.class);
     eventBus.post(new SessionLoadedEvent(sessionManager.getSession()));
-    startActivity(intent);
+    startActivity(new Intent(context, StreamsActivity.class));
   }
 
   @Override
