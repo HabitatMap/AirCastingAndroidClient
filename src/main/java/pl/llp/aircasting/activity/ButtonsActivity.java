@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.util.Log;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -139,10 +140,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 finish();
                 break;
             case R.id.graph_button:
-                startActivity(new Intent(context, GraphActivity.class));
+                Toast.makeText(context, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.heat_map_button:
-                startActivity(new Intent(context, AirCastingMapActivity.class));
+                Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
                 break;
             case R.id.toggle_aircasting:
                 toggleAirCasting();

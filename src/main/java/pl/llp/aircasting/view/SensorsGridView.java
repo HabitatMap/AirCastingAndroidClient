@@ -66,6 +66,12 @@ public class SensorsGridView extends GridView {
         }
     }
 
+    private void notifyMotionEvent(MotionEvent event) {
+        for (ListenArea listenArea : listenAreas) {
+            listenArea.onMotionEvent(event);
+        }
+    }
+
     public void registerListenArea(View view, OnDragListener listener) {
         listenAreas.add(new ListenArea(view, listener));
     }
@@ -103,6 +109,7 @@ public class SensorsGridView extends GridView {
                 int position = pointToPosition(mDownX, mDownY);
 
                 if (position == INVALID_POSITION) {
+                    notifyMotionEvent(event);
                     return super.dispatchTouchEvent(event);
                 }
 
@@ -112,6 +119,7 @@ public class SensorsGridView extends GridView {
                 setHoverView(mCurrentItemView);
 
                 if (!isDragEnabled()) {
+                    notifyMotionEvent(event);
                     return super.dispatchTouchEvent(event);
                 }
 
@@ -120,6 +128,7 @@ public class SensorsGridView extends GridView {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (!isDragEnabled()) {
+                    notifyMotionEvent(event);
                     return super.dispatchTouchEvent(event);
                 }
 
@@ -140,6 +149,7 @@ public class SensorsGridView extends GridView {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (!isDragEnabled()) {
+                    notifyMotionEvent(event);
                     return super.dispatchTouchEvent(event);
                 }
 
@@ -228,6 +238,14 @@ public class SensorsGridView extends GridView {
             listener.onLeave(view);
             if (isPointInside(x, y)) {
                 listener.onDrop(view);
+            }
+        }
+
+        public void onMotionEvent(MotionEvent event) {
+            if (isPointInside((int) event.getX(), (int) event.getY())) {
+                MotionEvent moved = MotionEvent.obtain(event);
+                moved.offsetLocation(-view.getLeft(), -view.getTop());
+                view.dispatchTouchEvent(moved);
             }
         }
     }

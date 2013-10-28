@@ -211,4 +211,7 @@
   <string name="stop_recording">Stop Recording</string>
   <string name="crowdmap">CrowdMap</string>
   <string name="dashboard">Dashboard</string>
+
+    <string name="drag_to_graph_stream">Drag and drop rectangles to graph</string>
+    <string name="drag_to_map_stream">Drag and drop rectangles to map</string>
 </resources>
