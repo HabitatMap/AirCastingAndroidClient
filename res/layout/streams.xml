@@ -8,34 +8,46 @@
 
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="fill_parent"
-                  android:layout_height="40dp"
+                  android:layout_height="60dp"
                   android:id="@+id/buttons"
                   android:layout_alignParentTop="true"
             >
-        <TextView android:layout_width="0dp"
-                  android:layout_height="fill_parent"
-                  android:layout_weight="1"
-                  android:layout_marginRight="2dp"
-                  android:gravity="center"
-                  android:textStyle="bold"
-                  android:textSize="24sp"
-                  android:textColor="@android:color/white"
-                  android:background="#0BB8F4"
-                  android:text="GRAPH"
-                  android:id="@+id/graph_button"
-                />
-        <TextView android:layout_width="0dp"
-                  android:layout_height="fill_parent"
-                  android:layout_weight="1"
-                  android:layout_marginLeft="2dp"
-                  android:gravity="center"
-                  android:textStyle="bold"
-                  android:textSize="24sp"
-                  android:textColor="@android:color/white"
-                  android:background="#0BB8F4"
-                  android:text="MAP"
-                  android:id="@+id/heat_map_button"
-                />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="60dp"
+            android:id="@+id/graph_button_container"
+            >
+            <TextView android:layout_width="fill_parent"
+                      android:layout_height="40dp"
+                      android:layout_marginRight="2dp"
+                      android:gravity="center"
+                      android:textStyle="bold"
+                      android:textSize="24sp"
+                      android:textColor="@android:color/white"
+                      android:background="#0BB8F4"
+                      android:text="GRAPH"
+                      android:id="@+id/graph_button"
+                    />
+        </FrameLayout>
+        <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:id="@+id/heat_map_button_container"
+                >
+            <TextView android:layout_width="fill_parent"
+                      android:layout_height="40dp"
+                      android:layout_marginLeft="2dp"
+                      android:gravity="center"
+                      android:textStyle="bold"
+                      android:textSize="24sp"
+                      android:textColor="@android:color/white"
+                      android:background="#0BB8F4"
+                      android:text="MAP"
+                      android:id="@+id/heat_map_button"
+                    />
+        </FrameLayout>
     </LinearLayout>
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"

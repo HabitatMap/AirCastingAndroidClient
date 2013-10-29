@@ -12,9 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridView;
+import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.BitmapViewHelper;
+import pl.llp.aircasting.helper.ResourceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class SensorsGridView extends GridView {
         init();
     }
 
-    private boolean isInListenArea() {
+    public boolean isInListenArea() {
         for (ListenArea listenArea : listenAreas) {
             if (listenArea.isEntered()) {
                 return true;
@@ -82,8 +85,8 @@ public class SensorsGridView extends GridView {
         }
     }
 
-    public void registerListenArea(View view, OnDragListener listener) {
-        listenAreas.add(new ListenArea(view, listener));
+    public void registerListenArea(ViewGroup rootView, int id, OnDragListener listener) {
+        listenAreas.add(new ListenArea(rootView, id, listener));
     }
 
     public boolean isDragEnabled() {
@@ -113,7 +116,6 @@ public class SensorsGridView extends GridView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 reset();
@@ -204,14 +206,21 @@ public class SensorsGridView extends GridView {
     }
 
     public static class ListenArea {
+        private ViewGroup parentView;
+        private int viewId;
         private View view;
         private OnDragListener listener;
         private boolean entered;
 
-        public ListenArea(View view, OnDragListener listener) {
+        public ListenArea(ViewGroup parentView, int viewId, OnDragListener listener) {
             entered = false;
-            this.view = view;
+            this.parentView = parentView;
+            this.viewId = viewId;
             this.listener = listener;
+        }
+
+        private void findView() {
+            view = parentView.findViewById(viewId);
         }
 
         private boolean isPointInside(int x, int y) {
@@ -224,6 +233,7 @@ public class SensorsGridView extends GridView {
         }
 
         public void onMove(int x, int y, View view) {
+            findView();
             if (isPointInside(x, y) && !entered) {
                 entered = true;
                 listener.onEnter(view);
@@ -234,14 +244,16 @@ public class SensorsGridView extends GridView {
         }
 
         public void onDrop(int x, int y, View view) {
-            listener.onLeave(view);
+            findView();
             entered = false;
             if (isPointInside(x, y)) {
+                listener.onLeave(view);
                 listener.onDrop(view);
             }
         }
 
         public void onMotionEvent(MotionEvent event) {
+            findView();
             if (isPointInside((int) event.getX(), (int) event.getY())) {
                 MotionEvent moved = MotionEvent.obtain(event);
                 moved.offsetLocation(-view.getLeft(), -view.getTop());

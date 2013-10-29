@@ -8,9 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
@@ -54,6 +52,36 @@ public class StreamsActivity extends ButtonsActivity {
         });
 
         SensorsGridView.OnDragListener graphListener = new SensorsGridView.OnDragListener() {
+            private int origHeight;
+
+            @Override
+            public void onEnter(View view) {
+                View area = findViewById(R.id.graph_button);
+                View container = findViewById(R.id.graph_button_container);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
+                params.weight = 2f;
+                container.setLayoutParams(params);
+                ViewGroup.LayoutParams areaParams = area.getLayoutParams();
+                origHeight = areaParams.height;
+                areaParams.height *= 1.5f;
+                area.setLayoutParams(areaParams);
+                gridView.setPadding(gridView.getPaddingLeft(), areaParams.height + 4, gridView.getPaddingRight(), gridView.getPaddingBottom());
+            }
+
+            @Override
+            public void onLeave(View view) {
+                View area = findViewById(R.id.graph_button);
+                View container = findViewById(R.id.graph_button_container);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
+                params.weight = 1f;
+                container.setLayoutParams(params);
+                ViewGroup.LayoutParams areaParams = area.getLayoutParams();
+                areaParams.height = origHeight;
+                area.setLayoutParams(areaParams);
+                if (!gridView.isInListenArea())
+                    gridView.setPadding(gridView.getPaddingLeft(), areaParams.height, gridView.getPaddingRight(), gridView.getPaddingBottom());
+            }
+
             @Override
             public void onDrop(View view) {
                 eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
@@ -62,6 +90,38 @@ public class StreamsActivity extends ButtonsActivity {
         };
 
         SensorsGridView.OnDragListener mapListener = new SensorsGridView.OnDragListener() {
+            private int origHeight;
+
+            @Override
+            public void onEnter(View view) {
+                View area = findViewById(R.id.heat_map_button);
+                View container = findViewById(R.id.heat_map_button_container);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
+                params.weight = 2f;
+                container.setLayoutParams(params);
+                ViewGroup.LayoutParams areaParams = area.getLayoutParams();
+                origHeight = areaParams.height;
+                areaParams.height *= 1.5f;
+                area.setLayoutParams(areaParams);
+                gridView.setPadding(gridView.getPaddingLeft(), areaParams.height + 4, gridView.getPaddingRight(), gridView.getPaddingBottom());
+
+            }
+
+            @Override
+            public void onLeave(View view) {
+                View area = findViewById(R.id.heat_map_button);
+                View container = findViewById(R.id.heat_map_button_container);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
+                params.weight = 1f;
+                container.setLayoutParams(params);
+                ViewGroup.LayoutParams areaParams = area.getLayoutParams();
+                areaParams.height = origHeight;
+                area.setLayoutParams(areaParams);
+                if (!gridView.isInListenArea())
+                    gridView.setPadding(gridView.getPaddingLeft(), areaParams.height, gridView.getPaddingRight(), gridView.getPaddingBottom());
+
+            }
+
             @Override
             public void onDrop(View view) {
                 eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
@@ -69,8 +129,8 @@ public class StreamsActivity extends ButtonsActivity {
             }
         };
 
-        gridView.registerListenArea(findViewById(R.id.graph_button), graphListener);
-        gridView.registerListenArea(findViewById(R.id.heat_map_button), mapListener);
+        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
+        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
     }
 
     @Override
