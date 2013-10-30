@@ -115,10 +115,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     streamViewHelper.updateMeasurements(sensor, view);
     initializeButtons(view, sensor);
+    view.setOnClickListener(this);
 
     view.setClickable(true);
     view.setFocusable(true);
-    view.setTag(sensor);
 
     return view;
   }
@@ -126,12 +126,9 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
   private void initializeButtons(View view, Sensor sensor)
   {
     View deleteButton = view.findViewById(R.id.delete_stream);
-    View viewButton = view.findViewById(R.id.view_stream);
 
-    viewButton.setTag(sensor);
     deleteButton.setTag(sensor);
     deleteButton.setOnClickListener(this);
-    viewButton.setOnClickListener(this);
 
     if (sensorManager.isSessionBeingRecorded())
     {
@@ -144,16 +141,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     else
     {
       deleteButton.setVisibility(View.GONE);
-    }
-
-    Sensor visibleSensor = sensorManager.getVisibleSensor();
-    if (visibleSensor.equals(sensor))
-    {
-      viewButton.setBackgroundResource(R.drawable.viewing_active);
-    }
-    else
-    {
-      viewButton.setBackgroundResource(R.drawable.viewing_inactive);
     }
 
   }
@@ -193,17 +180,18 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     Sensor sensor = (Sensor) view.getTag();
     switch (view.getId())
     {
-      case R.id.view_stream:
-        eventBus.post(new ViewStreamEvent(sensor));
-        break;
-      case R.id.record_stream:
-        sensorManager.toggleSensor(sensor);
-        break;
       case R.id.delete_stream:
         deleteStream(context, sensor);
         break;
-      case R.id.top_bar:
-        Intents.thresholdsEditor(context, sensor);
+      case R.id.stream:
+        if (sensorManager.isSessionBeingViewed())
+            break;
+        View sessionStats = view.findViewById(R.id.session_stats);
+        if (sessionStats.getVisibility() == View.GONE) {
+            sessionStats.setVisibility(View.VISIBLE);
+        } else {
+            sessionStats.setVisibility(View.GONE);
+        }
         break;
     }
 

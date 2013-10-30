@@ -25,21 +25,26 @@ public class StreamViewHelper {
     public void updateMeasurements(Sensor sensor, View view) {
         int now = (int) sessionManager.getNow(sensor);
 
-        View nowView = view.findViewById(R.id.now_pane);
         View avgView = view.findViewById(R.id.avg_pane);
         View peakView = view.findViewById(R.id.peak_pane);
+        View sensorDetails = view.findViewById(R.id.sensor_details);
+        View sessionStats = view.findViewById(R.id.session_stats);
 
-        TextView nowTextView = (TextView) nowView.findViewById(R.id.now);
+        TextView nowTextView = (TextView) view.findViewById(R.id.now);
         TextView avgTextView = (TextView) avgView.findViewById(R.id.avg);
         TextView peakTextView = (TextView) peakView.findViewById(R.id.peak);
 
         if (sensorManager.isSessionBeingViewed()) {
-            nowView.setBackgroundColor(resourceHelper.gray);
+            nowTextView.setBackgroundColor(resourceHelper.gray);
             nowTextView.setVisibility(View.GONE);
+            sessionStats.setVisibility(View.VISIBLE);
+            sensorDetails.setBackgroundColor(resourceHelper.gray);
         } else {
             nowTextView.setText(String.valueOf(now));
             nowTextView.setVisibility(View.VISIBLE);
-            setBackground(sensor, nowView, now);
+
+            setBackground(sensor, sensorDetails, now);
+            setBackground(sensor, nowTextView, now);
         }
 
         if (sessionManager.isSessionStarted() || sessionManager.isSessionSaved()) {
@@ -56,7 +61,8 @@ public class StreamViewHelper {
             avgTextView.setText("--");
             peakTextView.setText("--");
 
-            nowView.setBackgroundColor(resourceHelper.gray);
+            sensorDetails.setBackgroundColor(resourceHelper.gray);
+            nowTextView.setBackgroundColor(resourceHelper.gray);
             avgView.setBackgroundColor(resourceHelper.gray);
             peakView.setBackgroundColor(resourceHelper.gray);
 

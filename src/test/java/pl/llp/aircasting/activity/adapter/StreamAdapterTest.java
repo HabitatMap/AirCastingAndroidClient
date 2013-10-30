@@ -57,24 +57,6 @@ public class StreamAdapterTest {
     }
 
     @Test
-    public void shouldToggleStreams() {
-        when(view.getId()).thenReturn(R.id.record_stream);
-
-        adapter.onClick(view);
-        verify(adapter.sensorManager).toggleSensor(sensor);
-    }
-
-    @Test
-    public void shouldPostEventsOnSensorView() {
-        when(view.getId()).thenReturn(R.id.view_stream);
-
-        adapter.onClick(view);
-
-        ViewStreamEvent expected = new ViewStreamEvent(sensor);
-        verify(adapter.eventBus, only()).post(expected);
-    }
-
-    @Test
     public void shouldSuppressNextTapWhenAButtonIsClicked() {
         adapter.onClick(view);
 
