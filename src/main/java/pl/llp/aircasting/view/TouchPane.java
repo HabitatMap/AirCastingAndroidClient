@@ -33,6 +33,7 @@ import android.view.View;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import pl.llp.aircasting.view.detector.LongPressDetector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,8 +41,10 @@ import com.google.inject.Injector;
  * Date: 11/4/11
  * Time: 1:12 PM
  */
-public class TouchPane extends View implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener {
+public class TouchPane extends View implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener,
+        LongPressDetector.OnLongPressListener {
     GestureDetector gestureDetector = new GestureDetector(this);
+    LongPressDetector longPressDetector = new LongPressDetector(this);
     @Inject EventBus eventBus;
 
     @SuppressWarnings("UnusedDeclaration")
@@ -68,11 +71,13 @@ public class TouchPane extends View implements GestureDetector.OnDoubleTapListen
         injector.injectMembers(this);
 
         gestureDetector.setOnDoubleTapListener(this);
+        gestureDetector.setIsLongpressEnabled(false);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
+        longPressDetector.onTouchEvent(event);
         eventBus.post(event);
         return true;
     }
