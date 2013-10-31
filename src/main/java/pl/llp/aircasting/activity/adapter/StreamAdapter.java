@@ -119,6 +119,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     view.setClickable(true);
     view.setFocusable(true);
+    view.setTag(sensor);
 
     return view;
   }

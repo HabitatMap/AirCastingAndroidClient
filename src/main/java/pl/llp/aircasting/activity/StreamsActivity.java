@@ -52,19 +52,6 @@ public class StreamsActivity extends ButtonsActivity {
             }
         });
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("KLIKLEM", "KLIK");
-                View sensorDetails = view.findViewById(R.id.sensor_details);
-                if (sensorDetails.getVisibility() == View.GONE) {
-                    sensorDetails.setVisibility(View.VISIBLE);
-                } else {
-                    sensorDetails.setVisibility(View.GONE);
-                }
-            }
-        });
-
         View graphContainer = findViewById(R.id.graph_button_container);
         View graphButton = findViewById(R.id.graph_button);
 
