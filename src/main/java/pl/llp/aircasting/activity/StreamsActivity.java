@@ -15,10 +15,13 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.listener.OnSensorDragListener;
+import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
+import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
@@ -28,6 +31,7 @@ import static pl.llp.aircasting.Intents.stopSensors;
 public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
+    @Inject SensorManager sensorManager;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
 
@@ -49,6 +53,29 @@ public class StreamsActivity extends ButtonsActivity {
                 v.vibrate(50);
                 gridView.enableDrag();
                 return false;
+            }
+        });
+
+        gridView.setOnItemDoubleClickListener(new SensorsGridView.OnItemDoubleClickListener() {
+            @Override
+            public void onItemDoubleClick(AdapterView<?> parent, View view, int position, long id) {
+                if (sensorManager.isSessionBeingRecorded()) {
+                    sensorManager.toggleSensor((Sensor) view.getTag());
+                }
+            }
+        });
+
+        gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
+            @Override
+            public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
+                if (sensorManager.isSessionBeingViewed())
+                    return;
+                View sessionStats = view.findViewById(R.id.session_stats);
+                if (sessionStats.getVisibility() == View.GONE) {
+                    sessionStats.setVisibility(View.VISIBLE);
+                } else {
+                    sessionStats.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -94,5 +121,15 @@ public class StreamsActivity extends ButtonsActivity {
     @Subscribe
     public void onEvent(LongClickEvent event) {
         gridView.dispatchLongPressEvent(event.getMotionEvent());
+    }
+
+    @Subscribe
+    public void onEvent(DoubleTapEvent event) {
+        gridView.dispatchDoubleClickEvent(event.getMotionEvent());
+    }
+
+    @Subscribe
+    public void onEvent(TapEvent event) {
+        gridView.dispatchSingleTapEvent(event.getMotionEvent());
     }
 }

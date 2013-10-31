@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.event.ui;
 
+import android.view.MotionEvent;
 import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
@@ -28,19 +29,13 @@ import pl.llp.aircasting.event.AirCastingEvent;
  * Time: 12:45 PM
  */
 public class TapEvent extends AirCastingEvent {
-    float x;
-    float y;
+    MotionEvent event;
 
-    public TapEvent(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public TapEvent(MotionEvent event) {
+        this.event = event;
     }
 
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
+    public MotionEvent getMotionEvent() {
+        return event;
     }
 }

@@ -47,7 +47,7 @@ public class StreamViewHelper {
             setBackground(sensor, nowTextView, now);
         }
 
-        if (sessionManager.isSessionStarted() || sessionManager.isSessionSaved()) {
+        if ((sensor.isEnabled() && sessionManager.isSessionStarted()) || sessionManager.isSessionSaved()) {
             int avg = (int) sessionManager.getAvg(sensor);
             int peak = (int) sessionManager.getPeak(sensor);
 

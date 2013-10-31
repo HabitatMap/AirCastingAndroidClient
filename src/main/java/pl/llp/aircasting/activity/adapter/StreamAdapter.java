@@ -184,16 +184,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
       case R.id.delete_stream:
         deleteStream(context, sensor);
         break;
-      case R.id.stream:
-        if (sensorManager.isSessionBeingViewed())
-            break;
-        View sessionStats = view.findViewById(R.id.session_stats);
-        if (sessionStats.getVisibility() == View.GONE) {
-            sessionStats.setVisibility(View.VISIBLE);
-        } else {
-            sessionStats.setVisibility(View.GONE);
-        }
-        break;
     }
 
     context.suppressNextTap();

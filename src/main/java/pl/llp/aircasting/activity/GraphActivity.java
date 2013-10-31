@@ -141,7 +141,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
   @Subscribe
   public void onEvent(TapEvent event) {
-    if (!plot.onTap(event)) {
+    if (!plot.onTap(event.getMotionEvent())) {
       super.onEvent(event);
     }
   }

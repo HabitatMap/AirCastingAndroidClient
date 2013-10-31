@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
@@ -36,6 +37,8 @@ public class SensorsGridView extends GridView {
     private BitmapViewHelper mBitmapViewHelper;
     private View mCurrentItemView;
     private boolean mDragEnabled = false;
+    private OnItemDoubleClickListener onItemDoubleClickListener;
+    private OnItemSingleTapListener onItemSingleTapListener;
     List<ListenArea> listenAreas;
 
     public SensorsGridView(Context context) {
@@ -64,6 +67,19 @@ public class SensorsGridView extends GridView {
 
     private void init() {
         listenAreas = new ArrayList<ListenArea>();
+
+        onItemDoubleClickListener = new OnItemDoubleClickListener() {
+            @Override
+            public void onItemDoubleClick(AdapterView<?> parent, View view, int position, long id) {
+            }
+        };
+
+        onItemSingleTapListener = new OnItemSingleTapListener() {
+            @Override
+            public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
+            }
+        };
+
         reset();
     }
 
@@ -111,6 +127,34 @@ public class SensorsGridView extends GridView {
         if (isDragEnabled() && mCurrentItemView != null) {
             mCurrentItemView.setVisibility(GONE);
         }
+        return true;
+    }
+
+    public void setOnItemDoubleClickListener(OnItemDoubleClickListener listener) {
+        onItemDoubleClickListener = listener;
+    }
+
+    public boolean dispatchDoubleClickEvent(MotionEvent event) {
+        int position = pointToPosition((int) event.getX(), (int) event.getY());
+        View itemView = getChildAt(position - getFirstVisiblePosition());
+        if (itemView == null) {
+            return false;
+        }
+        onItemDoubleClickListener.onItemDoubleClick(this, itemView, position, getAdapter().getItemId(position));
+        return true;
+    }
+
+    public void setOnItemSingleTapListener(OnItemSingleTapListener listener) {
+        onItemSingleTapListener = listener;
+    }
+
+    public boolean dispatchSingleTapEvent(MotionEvent event) {
+        int position = pointToPosition((int) event.getX(), (int) event.getY());
+        View itemView = getChildAt(position - getFirstVisiblePosition());
+        if (itemView == null) {
+            return false;
+        }
+        onItemSingleTapListener.onItemSingleTap(this, itemView, position, getAdapter().getItemId(position));
         return true;
     }
 
@@ -260,5 +304,13 @@ public class SensorsGridView extends GridView {
                 view.dispatchTouchEvent(moved);
             }
         }
+    }
+
+    public static abstract class OnItemDoubleClickListener {
+        public abstract void onItemDoubleClick(AdapterView<?> parent, View view, int position, long id);
+    }
+
+    public static abstract class OnItemSingleTapListener {
+        public abstract void onItemSingleTap(AdapterView<?> parent, View view, int position, long id);
     }
 }

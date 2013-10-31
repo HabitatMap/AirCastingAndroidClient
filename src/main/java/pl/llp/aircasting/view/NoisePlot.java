@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.view;
 
+import android.view.MotionEvent;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.AirCastingActivity;
 import pl.llp.aircasting.android.Logger;
@@ -241,7 +242,7 @@ public class NoisePlot extends View
     return (int) (getHeight() * (top - value) / (top - bottom));
   }
 
-  public boolean onTap(TapEvent event) {
+  public boolean onTap(MotionEvent event) {
     for (int i = 0; i < notes.size(); i++) {
       Note note = notes.get(i);
       Point place = place(note);
@@ -254,7 +255,7 @@ public class NoisePlot extends View
     return false;
   }
 
-  private boolean isClose(TapEvent event, Point place) {
+  private boolean isClose(MotionEvent event, Point place) {
     float x = event.getX() - place.x;
     float y = event.getY() - place.y;
     return Math.sqrt(x * x + y * y) < CLICK_RADIUS;

@@ -19,6 +19,7 @@
 */
 package pl.llp.aircasting.event.ui;
 
+import android.view.MotionEvent;
 import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
@@ -28,4 +29,13 @@ import pl.llp.aircasting.event.AirCastingEvent;
  * Time: 2:47 PM
  */
 public class DoubleTapEvent extends AirCastingEvent {
+    private MotionEvent event;
+
+    public DoubleTapEvent(MotionEvent event) {
+        this.event = event;
+    }
+
+    public MotionEvent getMotionEvent() {
+        return event;
+    }
 }

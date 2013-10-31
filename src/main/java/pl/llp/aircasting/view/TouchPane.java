@@ -84,13 +84,13 @@ public class TouchPane extends View implements GestureDetector.OnDoubleTapListen
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent event) {
-        eventBus.post(new TapEvent(event.getX(), event.getY()));
+        eventBus.post(new TapEvent(event));
         return true;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent event) {
-        eventBus.post(new DoubleTapEvent());
+        eventBus.post(new DoubleTapEvent(event));
         return true;
     }
 
