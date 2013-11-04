@@ -34,6 +34,10 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject SensorManager sensorManager;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
+    @InjectView(R.id.heat_map_button_container) View mapContainer;
+    @InjectView(R.id.heat_map_button) View mapButton;
+    @InjectView(R.id.graph_button_container) View graphContainer;
+    @InjectView(R.id.graph_button) View graphButton;
 
     StreamAdapter adapter;
 
@@ -79,14 +83,8 @@ public class StreamsActivity extends ButtonsActivity {
             }
         });
 
-        View graphContainer = findViewById(R.id.graph_button_container);
-        View graphButton = findViewById(R.id.graph_button);
-
         SensorsGridView.OnDragListener graphListener = new OnSensorDragListener(eventBus, this, gridView, graphButton, graphContainer,
                 new Intent(this, GraphActivity.class));
-
-        View mapContainer = findViewById(R.id.heat_map_button_container);
-        View mapButton = findViewById(R.id.heat_map_button);
 
         SensorsGridView.OnDragListener mapListener = new OnSensorDragListener(eventBus, this, gridView, mapButton, mapContainer,
                 new Intent(this, AirCastingMapActivity.class));
