@@ -40,6 +40,7 @@ public class SensorsGridView extends GridView {
     private boolean mDragEnabled = false;
     private OnItemDoubleClickListener onItemDoubleClickListener;
     private OnItemSingleTapListener onItemSingleTapListener;
+    private int currentPosition;
     private StreamAdapter adapter;
     List<ListenArea> listenAreas;
 
@@ -132,7 +133,7 @@ public class SensorsGridView extends GridView {
         }
         getOnItemLongClickListener().onItemLongClick(this, itemView, position, getAdapter().getItemId(position));
         if (isDragEnabled() && mCurrentItemView != null) {
-            mCurrentItemView.setVisibility(GONE);
+            mCurrentItemView.setVisibility(INVISIBLE);
         }
         return true;
     }
@@ -165,6 +166,27 @@ public class SensorsGridView extends GridView {
         return true;
     }
 
+    private void changePosition(int to) {
+        mCurrentItemView.setVisibility(VISIBLE);
+        mCurrentItemView = getChildAt(to - getFirstVisiblePosition());
+        mCurrentItemView.setVisibility(INVISIBLE);
+        currentPosition = to;
+    }
+
+    private boolean isInsideView(int x, int y, View view) {
+        if (view == null) {
+            return false;
+        }
+        return x >= view.getLeft() &&
+                x <= view.getRight() &&
+                y >= view.getTop() &&
+                y <= view.getBottom();
+    }
+
+    private View getViewForPosition(int position) {
+        return getChildAt(position - getFirstVisiblePosition());
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -173,16 +195,14 @@ public class SensorsGridView extends GridView {
                 mDownX = (int) event.getX();
                 mDownY = (int) event.getY();
 
-                int position = pointToPosition(mDownX, mDownY);
+                currentPosition = pointToPosition(mDownX, mDownY);
 
-                if (position == INVALID_POSITION) {
+                if (currentPosition == INVALID_POSITION) {
                     notifyMotionEvent(event);
                     return super.dispatchTouchEvent(event);
                 }
 
-                int num = position - getFirstVisiblePosition();
-
-                mCurrentItemView = getChildAt(num);
+                mCurrentItemView = getViewForPosition(currentPosition);
                 mBitmapViewHelper = new BitmapViewHelper(getResources(), mCurrentItemView, mDownX, mDownY);
 
                 if (!isDragEnabled()) {
@@ -190,7 +210,7 @@ public class SensorsGridView extends GridView {
                     return super.dispatchTouchEvent(event);
                 }
 
-                mCurrentItemView.setVisibility(GONE);
+                mCurrentItemView.setVisibility(INVISIBLE);
 
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -206,9 +226,19 @@ public class SensorsGridView extends GridView {
                     deltaY = eventY - mDownY;
 
                 if (mBitmapViewHelper != null) {
-                    mCurrentItemView.setVisibility(GONE);
+                    mCurrentItemView.setVisibility(INVISIBLE);
                     mBitmapViewHelper.move(deltaX, deltaY);
                     notifyMove(eventX, eventY);
+
+                    for (int i = -3; i <= 3; i++) {
+                        if (i == 0) continue;
+                        if (isInsideView(eventX, eventY, getViewForPosition(currentPosition + i))) {
+                            adapter.swapPositions(currentPosition, currentPosition + i);
+                            changePosition(currentPosition + i);
+                            break;
+                        }
+                    }
+
                     invalidate();
                 }
                 break;

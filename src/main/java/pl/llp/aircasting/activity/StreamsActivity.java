@@ -74,12 +74,8 @@ public class StreamsActivity extends ButtonsActivity {
             public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
                 if (sensorManager.isSessionBeingViewed())
                     return;
-                View sessionStats = view.findViewById(R.id.session_stats);
-                if (sessionStats.getVisibility() == View.GONE) {
-                    sessionStats.setVisibility(View.VISIBLE);
-                } else {
-                    sessionStats.setVisibility(View.GONE);
-                }
+
+                adapter.toggleStatsVisibility((Sensor) view.getTag());
             }
         });
 

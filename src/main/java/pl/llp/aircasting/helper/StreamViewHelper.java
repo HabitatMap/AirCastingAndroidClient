@@ -22,7 +22,7 @@ public class StreamViewHelper {
     @Inject ResourceHelper resourceHelper;
 
 
-    public void updateMeasurements(Sensor sensor, View view) {
+    public void updateMeasurements(Sensor sensor, View view, boolean statsVisible) {
         int now = (int) sessionManager.getNow(sensor);
 
         View avgView = view.findViewById(R.id.avg_pane);
@@ -45,6 +45,12 @@ public class StreamViewHelper {
 
             setBackground(sensor, sensorDetails, now);
             setBackground(sensor, nowTextView, now);
+
+            if (statsVisible) {
+                sessionStats.setVisibility(View.VISIBLE);
+            } else {
+                sessionStats.setVisibility(View.GONE);
+            }
         }
 
         if ((sensor.isEnabled() && sessionManager.isSessionStarted()) || sessionManager.isSessionSaved()) {

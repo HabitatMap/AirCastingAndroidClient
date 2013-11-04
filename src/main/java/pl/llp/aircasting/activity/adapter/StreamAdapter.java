@@ -37,18 +37,14 @@ import static java.util.Collections.sort;
 public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
     public static final String QUANTITY = "quantity";
     public static final String SENSOR_NAME = "sensorName";
-    public static final String VERY_LOW = "veryLow";
-    public static final String LOW = "low";
-    public static final String MID = "mid";
-    public static final String HIGH = "high";
-    public static final String VERY_HIGH = "veryHigh";
+    public static final String SENSOR = "sensor";
 
     private static final String[] FROM = new String[]{
-            QUANTITY, SENSOR_NAME, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+            QUANTITY, SENSOR_NAME
     };
 
     private static final int[] TO = new int[]{
-            R.id.quantity, R.id.sensor_name, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
+            R.id.quantity, R.id.sensor_name
     };
 
     private final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
@@ -62,17 +58,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         }
     };
 
-    private int getPosition(Map<String, Object> data) {
-        Sensor sensor = (Sensor) data.get(SENSOR);
-        Integer position = positions.get(sensor.toString());
-        if (position == null) {
-            return 0;
-        }
-        return position.intValue();
-    }
-
-    public static final String SENSOR = "sensor";
-
     SessionManager sessionManager;
     SensorManager sensorManager;
     StreamViewHelper streamViewHelper;
@@ -83,6 +68,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
     private Map<String, Integer> positions = newHashMap();
+    private Map<String, Boolean> statsVisibility = newHashMap();
 
 
     public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
@@ -125,6 +111,25 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
         positions.put(s1.toString(), pos2);
         positions.put(s2.toString(), pos1);
+        update();
+    }
+
+    private int getPosition(Map<String, Object> data) {
+        Sensor sensor = (Sensor) data.get(SENSOR);
+        Integer position = positions.get(sensor.toString());
+        if (position == null) {
+            return 0;
+        }
+        return position.intValue();
+    }
+
+    public void toggleStatsVisibility(Sensor sensor) {
+        Boolean currentVisibility = statsVisibility.get(sensor.toString());
+        if (currentVisibility == null) {
+            currentVisibility = false;
+        }
+        statsVisibility.put(sensor.toString(), !currentVisibility);
+        update();
     }
 
     @Override
@@ -133,8 +138,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
+        Boolean statsVisible = statsVisibility.get(sensor.toString());
+        if (statsVisible == null) statsVisible = false;
 
-        streamViewHelper.updateMeasurements(sensor, view);
+        streamViewHelper.updateMeasurements(sensor, view, statsVisible);
         initializeButtons(view, sensor);
         view.setOnClickListener(this);
 
