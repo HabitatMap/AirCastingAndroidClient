@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.helper.BitmapViewHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 
@@ -39,6 +40,7 @@ public class SensorsGridView extends GridView {
     private boolean mDragEnabled = false;
     private OnItemDoubleClickListener onItemDoubleClickListener;
     private OnItemSingleTapListener onItemSingleTapListener;
+    private StreamAdapter adapter;
     List<ListenArea> listenAreas;
 
     public SensorsGridView(Context context) {
@@ -54,6 +56,11 @@ public class SensorsGridView extends GridView {
     public SensorsGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
+    }
+
+    public void setAdapter(StreamAdapter adapter) {
+        this.adapter = adapter;
+        super.setAdapter(adapter);
     }
 
     public boolean isInListenArea() {

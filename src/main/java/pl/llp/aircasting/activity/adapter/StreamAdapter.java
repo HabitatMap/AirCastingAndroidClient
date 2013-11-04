@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.adapter;
 import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
+import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
@@ -33,212 +34,221 @@ import java.util.Map;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
 
-public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
-{
-  public static final String QUANTITY = "quantity";
-  public static final String SENSOR_NAME = "sensorName";
-  public static final String VERY_LOW = "veryLow";
-  public static final String LOW = "low";
-  public static final String MID = "mid";
-  public static final String HIGH = "high";
-  public static final String VERY_HIGH = "veryHigh";
+public class StreamAdapter extends SimpleAdapter implements View.OnClickListener {
+    public static final String QUANTITY = "quantity";
+    public static final String SENSOR_NAME = "sensorName";
+    public static final String VERY_LOW = "veryLow";
+    public static final String LOW = "low";
+    public static final String MID = "mid";
+    public static final String HIGH = "high";
+    public static final String VERY_HIGH = "veryHigh";
 
-  private static final String[] FROM = new String[]{
-      QUANTITY, SENSOR_NAME,VERY_LOW, LOW, MID, HIGH, VERY_HIGH
-  };
-  private static final int[] TO = new int[]{
-      R.id.quantity, R.id.sensor_name, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
-  };
+    private static final String[] FROM = new String[]{
+            QUANTITY, SENSOR_NAME, VERY_LOW, LOW, MID, HIGH, VERY_HIGH
+    };
 
-  private static final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
+    private static final int[] TO = new int[]{
+            R.id.quantity, R.id.sensor_name, R.id.top_bar_very_low, R.id.top_bar_low, R.id.top_bar_mid, R.id.top_bar_high, R.id.top_bar_very_high
+    };
+
+    private final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
+        @Override
+        public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            String rightTitle = right.get(QUANTITY).toString();
+            String leftTitle = left.get(QUANTITY).toString();
+            return ComparisonChain.start()
+                    .compare(getPosition(left), getPosition(right))
+                    .compare(leftTitle, rightTitle).result();
+        }
+    };
+
+    private int getPosition(Map<String, Object> data) {
+        Sensor sensor = (Sensor) data.get(SENSOR);
+        Integer position = positions.get(sensor.toString());
+        if (position == null) {
+            return 0;
+        }
+        return position.intValue();
+    }
+
+    public static final String SENSOR = "sensor";
+
+    SessionManager sessionManager;
+    SensorManager sensorManager;
+    StreamViewHelper streamViewHelper;
+
+    ButtonsActivity context;
+    EventBus eventBus;
+
+    private List<Map<String, Object>> data;
+    private Map<String, Map<String, Object>> sensors = newHashMap();
+    private Map<String, Integer> positions = newHashMap();
+
+
+    public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
+                         StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
+        super(context, data, R.layout.stream, FROM, TO);
+        this.data = data;
+        this.eventBus = eventBus;
+        this.context = context;
+        this.sensorManager = sensorManager;
+        this.sessionManager = sessionManager;
+        this.streamViewHelper = streamViewHelper;
+    }
+
+    /**
+     * Start updating the adapter
+     */
+    public void start() {
+        eventBus.register(this);
+    }
+
+    /**
+     * Stop updating the adapter
+     */
+    public void stop() {
+        eventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void onEvent(SensorEvent event) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        });
+    }
+
+    public void swapPositions(int pos1, int pos2) {
+        Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
+        Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
+        positions.put(s1.toString(), pos2);
+        positions.put(s2.toString(), pos1);
+    }
+
     @Override
-    public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
-      String rightTitle = right.get(QUANTITY).toString();
-      String leftTitle = left.get(QUANTITY).toString();
-      return leftTitle.compareTo(rightTitle);
-    }
-  };
-  public static final String SENSOR = "sensor";
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
 
-  SessionManager sessionManager;
-  SensorManager sensorManager;
-  StreamViewHelper streamViewHelper;
+        Map<String, Object> state = data.get(position);
+        Sensor sensor = (Sensor) state.get(SENSOR);
 
-  ButtonsActivity context;
-  EventBus eventBus;
+        streamViewHelper.updateMeasurements(sensor, view);
+        initializeButtons(view, sensor);
+        view.setOnClickListener(this);
 
-  private List<Map<String, Object>> data;
-  private Map<String, Map<String, Object>> sensors = newHashMap();
+        view.setClickable(true);
+        view.setFocusable(true);
+        view.setTag(sensor);
 
-
-  public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                       StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
-    super(context, data, R.layout.stream, FROM, TO);
-    this.data = data;
-    this.eventBus = eventBus;
-    this.context = context;
-    this.sensorManager = sensorManager;
-    this.sessionManager = sessionManager;
-    this.streamViewHelper = streamViewHelper;
-  }
-
-  /**
-   * Start updating the adapter
-   */
-  public void start() {
-    eventBus.register(this);
-  }
-
-  /**
-   * Stop updating the adapter
-   */
-  public void stop() {
-    eventBus.unregister(this);
-  }
-
-  @Subscribe
-  public void onEvent(SensorEvent event) {
-    context.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        update();
-      }
-    });
-  }
-
-  @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
-    View view = super.getView(position, convertView, parent);
-
-    Map<String, Object> state = data.get(position);
-    Sensor sensor = (Sensor) state.get(SENSOR);
-
-    streamViewHelper.updateMeasurements(sensor, view);
-    initializeButtons(view, sensor);
-    view.setOnClickListener(this);
-
-    view.setClickable(true);
-    view.setFocusable(true);
-    view.setTag(sensor);
-
-    return view;
-  }
-
-  private void initializeButtons(View view, Sensor sensor)
-  {
-    View deleteButton = view.findViewById(R.id.delete_stream);
-
-    deleteButton.setTag(sensor);
-    deleteButton.setOnClickListener(this);
-
-    if (sensorManager.isSessionBeingRecorded())
-    {
-      deleteButton.setVisibility(View.GONE);
-    }
-    else if(sensorManager.isSessionBeingViewed())
-    {
-      deleteButton.setVisibility(View.VISIBLE);
-    }
-    else
-    {
-      deleteButton.setVisibility(View.GONE);
+        return view;
     }
 
-  }
+    private void initializeButtons(View view, Sensor sensor) {
+        View deleteButton = view.findViewById(R.id.delete_stream);
 
-  private void update() {
-    data.clear();
+        deleteButton.setTag(sensor);
+        deleteButton.setOnClickListener(this);
 
-    List<Sensor> sensors = sensorManager.getSensors();
-    for (Sensor sensor : sensors) {
-      Map<String, Object> map = prepareItem(sensor);
+        if (sensorManager.isSessionBeingRecorded()) {
+            deleteButton.setVisibility(View.GONE);
+        } else if (sensorManager.isSessionBeingViewed()) {
+            deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+        }
 
-      map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
-      map.put(SENSOR_NAME, sensor.getSensorName());
-      map.put(SENSOR, sensor);
-
-      data.add(map);
     }
 
-    sort(data, titleComparator);
+    private void update() {
+        data.clear();
 
-    notifyDataSetChanged();
-  }
+        List<Sensor> sensors = sensorManager.getSensors();
+        for (Sensor sensor : sensors) {
+            Map<String, Object> map = prepareItem(sensor);
 
-  private Map<String, Object> prepareItem(Sensor sensor) {
-    String name = sensor.getSensorName();
-    if (!sensors.containsKey(name)) {
-      HashMap<String, Object> map = new HashMap<String, Object>();
-      sensors.put(name, map);
-      data.add(map);
-    }
-    return sensors.get(name);
-  }
+            map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
+            map.put(SENSOR_NAME, sensor.getSensorName());
+            map.put(SENSOR, sensor);
 
-  @Override
-  public void onClick(View view)
-  {
-    Sensor sensor = (Sensor) view.getTag();
-    switch (view.getId())
-    {
-      case R.id.delete_stream:
-        deleteStream(context, sensor);
-        break;
-    }
+            data.add(map);
+        }
 
-    context.suppressNextTap();
-    notifyDataSetChanged();
-  }
+        sort(data, titleComparator);
 
-  private void deleteStream(ButtonsActivity context, Sensor sensor)
-  {
-    if(sessionManager.getSession().getActiveMeasurementStreams().size() > 1)
-    {
-      confirmDeletingStream(context, sensor);
-    }
-    else
-    {
-      confirmDeletingSession(context);
+        int currentPosition = 0;
+        for (Map<String, Object> map : data) {
+            Sensor sensor = (Sensor) map.get(SENSOR);
+            positions.put(sensor.toString(), Integer.valueOf(currentPosition));
+            currentPosition++;
+        }
+
+        notifyDataSetChanged();
     }
 
-  }
+    private Map<String, Object> prepareItem(Sensor sensor) {
+        String name = sensor.getSensorName();
+        if (!sensors.containsKey(name)) {
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            sensors.put(name, map);
+            data.add(map);
+        }
+        return sensors.get(name);
+    }
 
-  private void confirmDeletingSession(final ButtonsActivity context)
-  {
-    AlertDialog.Builder b = new AlertDialog.Builder(context);
-    b.setMessage("This is the only stream, delete session?").
-        setCancelable(true).
-        setPositiveButton("Yes", new DialogInterface.OnClickListener()
-        {
-          @Override
-          public void onClick(DialogInterface dialog, int which)
-          {
-            sessionManager.deleteSession();
-            Intents.triggerSync(context);
-            Intents.sessions(context, context);
-          }
-        }).setNegativeButton("No", NoOp.dialogOnClick());
-    AlertDialog dialog = b.create();
-    dialog.show();
+    @Override
+    public void onClick(View view) {
+        Sensor sensor = (Sensor) view.getTag();
+        switch (view.getId()) {
+            case R.id.delete_stream:
+                deleteStream(context, sensor);
+                break;
+        }
 
-  }
+        context.suppressNextTap();
+        notifyDataSetChanged();
+    }
 
-  private void confirmDeletingStream(final ButtonsActivity context, final Sensor sensor)
-  {
-    AlertDialog.Builder b = new AlertDialog.Builder(context);
-    b.setMessage("Delete stream?").
-        setCancelable(true).
-        setPositiveButton("Yes", new DialogInterface.OnClickListener()
-        {
-          @Override
-          public void onClick(DialogInterface dialog, int which)
-          {
-            sensorManager.deleteSensorFromCurrentSession(sensor);
-            update();
-            Intents.triggerSync(context);
-          }
-        }).setNegativeButton("No", NoOp.dialogOnClick());
-    AlertDialog dialog = b.create();
-    dialog.show();
-  }
+    private void deleteStream(ButtonsActivity context, Sensor sensor) {
+        if (sessionManager.getSession().getActiveMeasurementStreams().size() > 1) {
+            confirmDeletingStream(context, sensor);
+        } else {
+            confirmDeletingSession(context);
+        }
+
+    }
+
+    private void confirmDeletingSession(final ButtonsActivity context) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setMessage("This is the only stream, delete session?").
+                setCancelable(true).
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sessionManager.deleteSession();
+                        Intents.triggerSync(context);
+                        Intents.sessions(context, context);
+                    }
+                }).setNegativeButton("No", NoOp.dialogOnClick());
+        AlertDialog dialog = b.create();
+        dialog.show();
+
+    }
+
+    private void confirmDeletingStream(final ButtonsActivity context, final Sensor sensor) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setMessage("Delete stream?").
+                setCancelable(true).
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sensorManager.deleteSensorFromCurrentSession(sensor);
+                        update();
+                        Intents.triggerSync(context);
+                    }
+                }).setNegativeButton("No", NoOp.dialogOnClick());
+        AlertDialog dialog = b.create();
+        dialog.show();
+    }
 }
