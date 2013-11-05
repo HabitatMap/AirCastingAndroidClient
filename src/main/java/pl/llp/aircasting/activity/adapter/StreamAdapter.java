@@ -69,6 +69,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private Map<String, Map<String, Object>> sensors = newHashMap();
     private Map<String, Integer> positions = newHashMap();
     private Map<String, Boolean> statsVisibility = newHashMap();
+    private int invisiblePosition = -1;
 
 
     public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
@@ -132,6 +133,11 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         update();
     }
 
+    public void setInvisiblePosition(int position) {
+        invisiblePosition = position;
+        update();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
@@ -148,6 +154,12 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         view.setClickable(true);
         view.setFocusable(true);
         view.setTag(sensor);
+
+        if (position == invisiblePosition) {
+            view.setVisibility(View.INVISIBLE);
+        } else {
+            view.setVisibility(View.VISIBLE);
+        }
 
         return view;
     }

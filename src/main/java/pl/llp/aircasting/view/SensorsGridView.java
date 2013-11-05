@@ -132,8 +132,8 @@ public class SensorsGridView extends GridView {
             return false;
         }
         getOnItemLongClickListener().onItemLongClick(this, itemView, position, getAdapter().getItemId(position));
-        if (isDragEnabled() && mCurrentItemView != null) {
-            mCurrentItemView.setVisibility(INVISIBLE);
+        if (isDragEnabled()) {
+            adapter.setInvisiblePosition(currentPosition);
         }
         return true;
     }
@@ -167,10 +167,9 @@ public class SensorsGridView extends GridView {
     }
 
     private void changePosition(int to) {
-        mCurrentItemView.setVisibility(VISIBLE);
         mCurrentItemView = getChildAt(to - getFirstVisiblePosition());
-        mCurrentItemView.setVisibility(INVISIBLE);
         currentPosition = to;
+        adapter.setInvisiblePosition(to);
     }
 
     private boolean isInsideView(int x, int y, View view) {
@@ -191,7 +190,6 @@ public class SensorsGridView extends GridView {
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                reset();
                 mDownX = (int) event.getX();
                 mDownY = (int) event.getY();
 
@@ -210,7 +208,7 @@ public class SensorsGridView extends GridView {
                     return super.dispatchTouchEvent(event);
                 }
 
-                mCurrentItemView.setVisibility(INVISIBLE);
+                adapter.setInvisiblePosition(currentPosition);
 
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -226,7 +224,6 @@ public class SensorsGridView extends GridView {
                     deltaY = eventY - mDownY;
 
                 if (mBitmapViewHelper != null) {
-                    mCurrentItemView.setVisibility(INVISIBLE);
                     mBitmapViewHelper.move(deltaX, deltaY);
                     notifyMove(eventX, eventY);
 
@@ -267,10 +264,10 @@ public class SensorsGridView extends GridView {
     }
 
     private void reset() {
-        if (mCurrentItemView != null) {
-            mCurrentItemView.setVisibility(VISIBLE);
+        if (adapter != null) {
+            adapter.setInvisiblePosition(INVALID_POSITION);
         }
-
+        currentPosition = INVALID_POSITION;
         mCurrentItemView = null;
         mBitmapViewHelper = null;
     }
