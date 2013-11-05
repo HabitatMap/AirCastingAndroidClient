@@ -55,6 +55,7 @@
                     android:layout_above="@id/context_buttons"
             >
         <pl.llp.aircasting.view.SensorsGridView xmlns:android="http://schemas.android.com/apk/res/android"
+                                                xmlns:aircasting="http://schemas.android.com/apk/res/pl.llp.aircasting"
                   style="@style/Fill"
                   android:id="@+id/sensors_grid"
                   android:numColumns="2"
@@ -65,6 +66,9 @@
                   android:horizontalSpacing="4dp"
                   android:fadingEdge="none"
                   android:fadingEdgeLength="0dp"
+                  aircasting:bottomScrollAreaHeight="50dp"
+                  aircasting:topScrollAreaHeight="50dp"
+                  aircasting:dragScrollStep="10dp"
                 />
 
         <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"

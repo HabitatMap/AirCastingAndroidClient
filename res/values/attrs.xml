@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SensorsGridView">
+        <attr name="topScrollAreaHeight" format="dimension"/>
+        <attr name="bottomScrollAreaHeight" format="dimension"/>
+        <attr name="dragScrollStep" format="dimension"/>
+    </declare-styleable>
+</resources>

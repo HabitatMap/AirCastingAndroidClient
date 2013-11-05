@@ -1,6 +1,7 @@
 package pl.llp.aircasting.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -42,6 +43,9 @@ public class SensorsGridView extends GridView {
     private OnItemSingleTapListener onItemSingleTapListener;
     private int currentPosition;
     private StreamAdapter adapter;
+    private float topScrollAreaHeight;
+    private float bottomScrollAreaHeight;
+    private int dragScrollStep;
     List<ListenArea> listenAreas;
 
     public SensorsGridView(Context context) {
@@ -51,11 +55,13 @@ public class SensorsGridView extends GridView {
 
     public SensorsGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setAttrs(context, attrs);
         init();
     }
 
     public SensorsGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setAttrs(context, attrs);
         init();
     }
 
@@ -71,6 +77,13 @@ public class SensorsGridView extends GridView {
             }
         }
         return false;
+    }
+
+    private void setAttrs(Context context, AttributeSet attrs) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SensorsGridView, 0, 0);
+        topScrollAreaHeight = a.getDimension(R.styleable.SensorsGridView_topScrollAreaHeight, 0);
+        bottomScrollAreaHeight = a.getDimension(R.styleable.SensorsGridView_bottomScrollAreaHeight, 0);
+        dragScrollStep = (int) a.getDimension(R.styleable.SensorsGridView_dragScrollStep, 0);
     }
 
     private void init() {
@@ -91,7 +104,21 @@ public class SensorsGridView extends GridView {
         reset();
     }
 
+    private void performScrollTop(int y) {
+        if (y >= getPaddingTop() && y <= getPaddingTop() + topScrollAreaHeight) {
+            smoothScrollBy(-dragScrollStep, 0);
+        }
+    }
+
+    private void performScrollBottom(int y) {
+        if (y <= getBottom() && y >= getBottom() - bottomScrollAreaHeight) {
+            smoothScrollBy(dragScrollStep, 0);
+        }
+    }
+
     private void notifyMove(int x, int y) {
+        performScrollTop(y);
+        performScrollBottom(y);
         for (ListenArea listenArea : listenAreas) {
             listenArea.onMove(x, y, mCurrentItemView);
         }
