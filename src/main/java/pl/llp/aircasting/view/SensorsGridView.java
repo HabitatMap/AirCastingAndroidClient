@@ -47,6 +47,7 @@ public class SensorsGridView extends GridView {
     private float bottomScrollAreaHeight;
     private int dragScrollStep;
     List<ListenArea> listenAreas;
+    private boolean motionEventDispatched;
 
     public SensorsGridView(Context context) {
         super(context);
@@ -153,6 +154,8 @@ public class SensorsGridView extends GridView {
     }
 
     public boolean dispatchLongPressEvent(MotionEvent event) {
+        if (motionEventDispatched)
+            return false;
         int position = pointToPosition((int) event.getX(), (int) event.getY());
         View itemView = getChildAt(position - getFirstVisiblePosition());
         if (itemView == null) {
@@ -162,6 +165,7 @@ public class SensorsGridView extends GridView {
         if (isDragEnabled()) {
             adapter.setInvisiblePosition(currentPosition);
         }
+        motionEventDispatched = true;
         return true;
     }
 
@@ -170,12 +174,15 @@ public class SensorsGridView extends GridView {
     }
 
     public boolean dispatchDoubleClickEvent(MotionEvent event) {
+        if (motionEventDispatched)
+            return false;
         int position = pointToPosition((int) event.getX(), (int) event.getY());
         View itemView = getChildAt(position - getFirstVisiblePosition());
         if (itemView == null) {
             return false;
         }
         onItemDoubleClickListener.onItemDoubleClick(this, itemView, position, getAdapter().getItemId(position));
+        motionEventDispatched = true;
         return true;
     }
 
@@ -184,12 +191,15 @@ public class SensorsGridView extends GridView {
     }
 
     public boolean dispatchSingleTapEvent(MotionEvent event) {
+        if (motionEventDispatched)
+            return false;
         int position = pointToPosition((int) event.getX(), (int) event.getY());
         View itemView = getChildAt(position - getFirstVisiblePosition());
         if (itemView == null) {
             return false;
         }
         onItemSingleTapListener.onItemSingleTap(this, itemView, position, getAdapter().getItemId(position));
+        motionEventDispatched = true;
         return true;
     }
 
@@ -245,6 +255,7 @@ public class SensorsGridView extends GridView {
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+                motionEventDispatched = false;
                 mDownX = (int) event.getX();
                 mDownY = (int) event.getY();
 

@@ -53,11 +53,9 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (adapter.getCount() > 1) {
-                    Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                    v.vibrate(50);
-                    gridView.enableDrag();
-                }
+                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                v.vibrate(50);
+                gridView.enableDrag();
                 return false;
             }
         });
@@ -74,7 +72,7 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
             @Override
             public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
-                if (sensorManager.isSessionBeingViewed() || adapter.getCount() == 1)
+                if (sensorManager.isSessionBeingViewed())
                     return;
 
                 adapter.toggleStatsVisibility((Sensor) view.getTag());
