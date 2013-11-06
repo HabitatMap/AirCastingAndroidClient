@@ -214,6 +214,34 @@ public class SensorsGridView extends GridView {
     }
 
     @Override
+    public int getFirstVisiblePosition() {
+        if (getChildCount() == 1) return 0;
+        return super.getFirstVisiblePosition();
+    }
+
+    @Override
+    public int pointToPosition(int x, int y) {
+        if (getChildCount() == 1) {
+            View view = getChildAt(0);
+            return isInsideView(x, y, view) ? 0 : INVALID_POSITION;
+        }
+        return super.pointToPosition(x, y);
+    }
+
+    @Override
+    public void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (getChildCount() == 1) {
+            int width = getChildAt(0).getMeasuredWidth();
+            int height = getChildAt(0).getMeasuredHeight();
+            getChildAt(0).layout((l + r - width) / 2,
+                    (t + getPaddingTop() + b - height) / 2,
+                    (l + r + width) / 2,
+                    (t + getPaddingTop() + b + height) / 2);
+        }
+    }
+
+    @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:

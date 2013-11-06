@@ -53,9 +53,11 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                v.vibrate(50);
-                gridView.enableDrag();
+                if (adapter.getCount() > 1) {
+                    Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                    v.vibrate(50);
+                    gridView.enableDrag();
+                }
                 return false;
             }
         });
@@ -72,7 +74,7 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
             @Override
             public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
-                if (sensorManager.isSessionBeingViewed())
+                if (sensorManager.isSessionBeingViewed() || adapter.getCount() == 1)
                     return;
 
                 adapter.toggleStatsVisibility((Sensor) view.getTag());
@@ -105,6 +107,29 @@ public class StreamsActivity extends ButtonsActivity {
 
         adapter.stop();
         stopSensors(context);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.graph_button:
+                if (adapter.getCount() == 1) {
+                    eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
+                    startActivity(new Intent(this, GraphActivity.class));
+                } else {
+                    Toast.makeText(this, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.heat_map_button:
+                if (adapter.getCount() == 1) {
+                    eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
+                    startActivity(new Intent(this, AirCastingMapActivity.class));
+                } else {
+                    Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+        super.onClick(view);
     }
 
     @Subscribe

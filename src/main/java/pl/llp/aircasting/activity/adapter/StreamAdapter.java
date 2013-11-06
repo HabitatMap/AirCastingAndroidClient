@@ -147,7 +147,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Boolean statsVisible = statsVisibility.get(sensor.toString());
         if (statsVisible == null) statsVisible = false;
 
-        streamViewHelper.updateMeasurements(sensor, view, statsVisible);
+        streamViewHelper.updateMeasurements(sensor, view, getCount() == 1 || statsVisible);
         initializeButtons(view, sensor);
         view.setOnClickListener(this);
 

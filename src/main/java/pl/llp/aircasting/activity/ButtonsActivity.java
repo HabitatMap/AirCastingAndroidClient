@@ -139,12 +139,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             case R.id.back_to_dashboard:
                 finish();
                 break;
-            case R.id.graph_button:
-                Toast.makeText(context, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.heat_map_button:
-                Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
-                break;
             case R.id.toggle_aircasting:
                 toggleAirCasting();
                 break;
