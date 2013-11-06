@@ -119,7 +119,11 @@ public class GaugeHelper
 
     textView.setText(valueOf(value));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-    textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
+    if (sensorManager.isSessionBeingRecorded() || sensorManager.isSessionBeingViewed()) {
+      textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
+    } else {
+      textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+    }
   }
 
   private void displayInactiveGauge(View view, MarkerSize size)
