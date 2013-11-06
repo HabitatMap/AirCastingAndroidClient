@@ -52,7 +52,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
             String rightTitle = right.get(QUANTITY).toString();
             String leftTitle = left.get(QUANTITY).toString();
+            Sensor leftSensor = (Sensor) left.get(SENSOR);
+            Sensor rightSensor = (Sensor) right.get(SENSOR);
             return ComparisonChain.start()
+                    .compare(leftSensor.isEnabled() ? 0 : 1, rightSensor.isEnabled() ? 0 : 1)
                     .compare(getPosition(left), getPosition(right))
                     .compare(leftTitle, rightTitle).result();
         }
