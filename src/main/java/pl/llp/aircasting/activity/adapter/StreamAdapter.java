@@ -73,7 +73,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private Map<String, Integer> positions = newHashMap();
     private Map<String, Boolean> statsVisibility = newHashMap();
     private int invisiblePosition = -1;
-
+    private int lastStreamsNumber = -1;
+    private boolean firstStatsVisible = false;
 
     public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
@@ -132,7 +133,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         if (currentVisibility == null) {
             currentVisibility = false;
         }
-        statsVisibility.put(sensor.toString(), !currentVisibility);
+        statsVisibility.put(sensor.toString(), !currentVisibility && !firstStatsVisible);
+        firstStatsVisible = false;
         update();
     }
 
@@ -150,7 +152,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Boolean statsVisible = statsVisibility.get(sensor.toString());
         if (statsVisible == null) statsVisible = false;
 
-        streamViewHelper.updateMeasurements(sensor, view, statsVisible);
+        streamViewHelper.updateMeasurements(sensor, view, firstStatsVisible || statsVisible);
         initializeButtons(view, sensor);
         view.setOnClickListener(this);
 
@@ -205,6 +207,13 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
             positions.put(sensor.toString(), Integer.valueOf(currentPosition));
             currentPosition++;
         }
+
+        if (data.size() == 1 && lastStreamsNumber != 1) {
+            firstStatsVisible = true;
+        } else if (data.size() > 1) {
+            firstStatsVisible = false;
+        }
+        lastStreamsNumber = data.size();
 
         notifyDataSetChanged();
     }
