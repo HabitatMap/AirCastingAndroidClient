@@ -44,10 +44,10 @@ public class ContinuousTracker
     sessionTracker.addNote(note);
   }
 
-  public void startTracking(Session incomingSession)
+  public void startTracking(Session incomingSession, boolean locationLess)
   {
     this.session = incomingSession;
-    sessionTracker = new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions);
+    sessionTracker = new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
     sessionTracker.save(session);
   }
 

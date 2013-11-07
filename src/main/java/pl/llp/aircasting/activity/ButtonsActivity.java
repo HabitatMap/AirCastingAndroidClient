@@ -33,28 +33,46 @@ import roboguice.inject.InjectView;
 public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
     public static final String SHOW_BUTTONS = "showButtons";
 
-    @Inject Context context;
-    @Inject EventBus eventBus;
+    @Inject
+    Context context;
+    @Inject
+    EventBus eventBus;
 
-    @Nullable @InjectView(R.id.heat_map_button) View heatMapButton;
-    @Nullable @InjectView(R.id.graph_button) View graphButton;
+    @Nullable
+    @InjectView(R.id.heat_map_button)
+    View heatMapButton;
+    @Nullable
+    @InjectView(R.id.graph_button)
+    View graphButton;
 
-    @InjectView(R.id.context_buttons) ViewGroup contextButtons;
+    @InjectView(R.id.context_buttons)
+    ViewGroup contextButtons;
 
-    @Inject LocationManager locationManager;
-    @Inject SessionManager sessionManager;
-    @Inject LayoutInflater layoutInflater;
-    @Inject LocationHelper locationHelper;
-    @Inject SettingsHelper settingsHelper;
-    @Inject MainMenu mainMenu;
+    @Inject
+    LocationManager locationManager;
+    @Inject
+    SessionManager sessionManager;
+    @Inject
+    LayoutInflater layoutInflater;
+    @Inject
+    LocationHelper locationHelper;
+    @Inject
+    SettingsHelper settingsHelper;
+    @Inject
+    MainMenu mainMenu;
 
     private boolean suppressTap = false;
     private boolean initialized = false;
-    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+    @Inject
+    SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
-    @Nullable @InjectView(R.id.zoom_in) Button zoomIn;
-    @Nullable @InjectView(R.id.zoom_out) Button zoomOut;
+    @Nullable
+    @InjectView(R.id.zoom_in)
+    Button zoomIn;
+    @Nullable
+    @InjectView(R.id.zoom_out)
+    Button zoomOut;
 
     @Override
     protected void onResume() {
@@ -85,10 +103,9 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
         locationHelper.stop();
 
-        if(registeredReceiver != null)
-        {
-          unregisterReceiver(syncBroadcastReceiver);
-          registeredReceiver = null;
+        if (registeredReceiver != null) {
+            unregisterReceiver(syncBroadcastReceiver);
+            registeredReceiver = null;
         }
         eventBus.unregister(this);
     }
@@ -171,27 +188,21 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-  protected void updateButtons()
-  {
+    protected void updateButtons() {
 
-    clearButtons();
-    if (sessionManager.isSessionStarted())
-    {
-      addButton(R.layout.context_button_stop);
-      addButton(R.layout.context_button_note);
+        clearButtons();
+        if (sessionManager.isSessionStarted()) {
+            addButton(R.layout.context_button_stop);
+            addButton(R.layout.context_button_note);
+        } else if (sessionManager.isSessionSaved()) {
+            addButton(R.layout.context_button_edit);
+            addButton(R.layout.context_button_share);
+        } else {
+            addButton(R.layout.context_button_record);
+            addButton(R.layout.context_button_placeholder);
+        }
+        addContextSpecificButtons();
     }
-    else if (sessionManager.isSessionSaved())
-    {
-      addButton(R.layout.context_button_edit);
-      addButton(R.layout.context_button_share);
-    }
-    else
-    {
-      addButton(R.layout.context_button_record);
-      addButton(R.layout.context_button_placeholder);
-    }
-    addContextSpecificButtons();
-  }
 
     protected void addContextSpecificButtons() {
     }
@@ -217,10 +228,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void stopAirCasting() {
-      locationHelper.stop();
-      Session session = sessionManager.getSession();
-      Long sessionId = session.getId();
-      if (session.isEmpty()) {
+        locationHelper.stop();
+        Session session = sessionManager.getSession();
+        Long sessionId = session.getId();
+        if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
             sessionManager.discardSession(sessionId);
         } else {
@@ -231,42 +242,30 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-  private void startAirCasting()
-  {
-    if (settingsHelper.areMapsDisabled())
-    {
-      sessionManager.startSession();
-    }
-    else
-    {
-      if (locationHelper.getLastLocation() == null)
-      {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.cannot_record_session_due_to_location);
-        builder.setNeutralButton(R.string.ok, NoOp.dialogOnClick()).show();
-      }
-      else
-      {
-        sessionManager.startSession();
+    private void startAirCasting() {
+        if (settingsHelper.areMapsDisabled()) {
+            sessionManager.startSession(true);
+        } else {
+            if (locationHelper.getLastLocation() == null) {
+                sessionManager.startSession(true);
+                Toast.makeText(context, R.string.no_location_warning, Toast.LENGTH_LONG).show();
+            } else {
+                sessionManager.startSession();
 
-        if (!settingsHelper.hasCredentials()) {
-          Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-        }
+                if (!settingsHelper.hasCredentials()) {
+                    Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+                }
 
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-        {
-          if (!locationHelper.hasGPSFix())
-          {
-            Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
-          }
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    if (!locationHelper.hasGPSFix()) {
+                        Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
+                }
+            }
         }
-        else
-        {
-          Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
-        }
-      }
     }
-  }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

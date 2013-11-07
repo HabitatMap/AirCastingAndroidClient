@@ -48,7 +48,7 @@ public class ActualSessionTrackerTest
     MetadataHelper metadata = mock(MetadataHelper.class);
     m = mock(Measurement.class);
     stream = New.stream();
-    tracker = new ActualSessionTracker(eventBus, session, dbQueue, settings, metadata, sessions);
+    tracker = new ActualSessionTracker(eventBus, session, dbQueue, settings, metadata, sessions, false);
     tracker.save(session);
   }
 

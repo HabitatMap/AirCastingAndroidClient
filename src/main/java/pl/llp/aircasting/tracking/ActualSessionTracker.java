@@ -33,7 +33,7 @@ public class ActualSessionTracker implements SessionTracker
 
   final SessionPropertySetter setter;
 
-  ActualSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions)
+  ActualSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
   {
     this.session = session;
     this.settingsHelper = settingsHelper;
@@ -47,7 +47,7 @@ public class ActualSessionTracker implements SessionTracker
 
     session.setStart(new Date());
 
-    session.setLocationless(this.settingsHelper.areMapsDisabled());
+    session.setLocationless(this.settingsHelper.areMapsDisabled() || locationLess);
     session.setCalibration(this.settingsHelper.getCalibration());
     session.setOffset60DB(this.settingsHelper.getOffset60DB());
 

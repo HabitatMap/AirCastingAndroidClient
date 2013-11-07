@@ -299,7 +299,11 @@ public class SessionManager
     eventBus.post(new SessionChangeEvent(session));
   }
 
-  public void startSession()
+  public void startSession() {
+      startSession(false);
+  }
+
+  public void startSession(boolean locationLess)
   {
     setSession(new Session());
     locationHelper.start();
@@ -307,7 +311,7 @@ public class SessionManager
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
     eventBus.post(new SessionStartedEvent(getSession()));
-    tracker.startTracking(getSession());
+    tracker.startTracking(getSession(), locationLess);
   }
 
   public void stopSession()

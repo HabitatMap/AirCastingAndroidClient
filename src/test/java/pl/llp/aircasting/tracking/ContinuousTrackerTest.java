@@ -40,7 +40,7 @@ public class ContinuousTrackerTest
     when(tracker.metadataHelper.getPhoneModel()).thenReturn("EyPhone");
 
     // when
-    tracker.startTracking(session);
+    tracker.startTracking(session, false);
 
     // then
     assertThat(queue).hasSize(1);
