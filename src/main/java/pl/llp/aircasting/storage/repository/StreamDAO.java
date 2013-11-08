@@ -83,8 +83,6 @@ public class StreamDAO
           long id = getLong(c, STREAM_ID);
           boolean markedForRemoval = getBool(c, STREAM_MARKED_FOR_REMOVAL);
 
-          stream.setAvg(avg);
-          stream.setPeak(peak);
           stream.setId(id);
           stream.setSessionId(sessionId);
 
