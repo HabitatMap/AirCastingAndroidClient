@@ -126,8 +126,16 @@ public class SensorsGridView extends GridView {
     }
 
     private void notifyDrop(int x, int y) {
+        boolean dispatched = false;
         for (ListenArea listenArea : listenAreas) {
-            listenArea.onDrop(x, y, mCurrentItemView);
+            if (listenArea.onDrop(x, y, mCurrentItemView)) {
+                dispatched = true;
+            }
+        }
+        if (dispatched) {
+            adapter.cancelReorder();
+        } else {
+            adapter.commitReorder();
         }
     }
 
@@ -147,6 +155,7 @@ public class SensorsGridView extends GridView {
 
     public void enableDrag() {
         mDragEnabled = true;
+        adapter.startReorder();
     }
 
     public void disableDrag() {
@@ -387,13 +396,15 @@ public class SensorsGridView extends GridView {
             }
         }
 
-        public void onDrop(int x, int y, View view) {
+        public boolean onDrop(int x, int y, View view) {
             findView();
             entered = false;
             if (isPointInside(x, y)) {
                 listener.onLeave(view);
                 listener.onDrop(view);
+                return true;
             }
+            return false;
         }
 
         public void onMotionEvent(MotionEvent event) {

@@ -71,6 +71,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
     private Map<String, Integer> positions = newHashMap();
+    private Map<String, Integer> oldPositions = newHashMap();
     private Map<String, Boolean> statsVisibility = newHashMap();
     private int invisiblePosition = -1;
     private int lastStreamsNumber = -1;
@@ -111,6 +112,25 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         });
     }
 
+    public void startReorder() {
+        for (Map<String, Object> stream : data) {
+            Sensor s = (Sensor) stream.get(SENSOR);
+            oldPositions.put(s.toString(), getPosition(stream));
+        }
+    }
+
+    public void cancelReorder() {
+        for (Map<String, Object> stream : data) {
+            Sensor s = (Sensor) stream.get(SENSOR);
+            positions.put(s.toString(), getPosition(stream, oldPositions));
+        }
+        update();
+    }
+
+    public void commitReorder() {
+        oldPositions = newHashMap();
+    }
+
     public void swapPositions(int pos1, int pos2) {
         Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
         Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
@@ -119,13 +139,17 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         update();
     }
 
-    private int getPosition(Map<String, Object> data) {
-        Sensor sensor = (Sensor) data.get(SENSOR);
+    private int getPosition(Map<String, Object> stream, Map<String, Integer> positions) {
+        Sensor sensor = (Sensor) stream.get(SENSOR);
         Integer position = positions.get(sensor.toString());
         if (position == null) {
             return 0;
         }
         return position.intValue();
+    }
+
+    private int getPosition(Map<String, Object> stream) {
+        return getPosition(stream, positions);
     }
 
     public void toggleStatsVisibility(Sensor sensor) {
