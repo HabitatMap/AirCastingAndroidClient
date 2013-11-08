@@ -110,6 +110,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
+
+        if (!sessionManager.isSessionSaved()) {
+            mapView.getOverlays().add(locationOverlay);
+        }
     }
 
     @Override
@@ -165,8 +169,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void addContextSpecificButtons() {
         if (!sessionManager.isSessionSaved()) {
-            mapView.getOverlays().add(locationOverlay);
-
             addButton(R.layout.context_button_locate);
         }
 
