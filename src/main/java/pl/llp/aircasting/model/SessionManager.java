@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
@@ -282,12 +283,6 @@ public class SessionManager
     discardSession(sessionId);
   }
 
-  public void discardSession(long sessionId)
-  {
-    tracker.discard(sessionId);
-    cleanup();
-  }
-
   public synchronized double getNow(Sensor sensor) {
     if (!recentMeasurements.containsKey(sensor.getSensorName())) {
       return 0;
@@ -329,6 +324,16 @@ public class SessionManager
       Intents.triggerSync(applicationContext);
     }
     cleanup();
+  }
+
+  public void discardSession(long sessionId) {
+      tracker.discard(sessionId);
+      cleanup();
+  }
+
+  public void resetSession(long sessionId) {
+      tracker.stopTracking();
+      cleanup();
   }
 
   public void deleteSession()

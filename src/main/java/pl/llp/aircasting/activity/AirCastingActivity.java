@@ -244,20 +244,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
   }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Intents.EDIT_SESSION:
-                if (resultCode == R.id.save_button) {
-                    Session session = Intents.editSessionResult(data);
-                    sessionManager.updateSession(session);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.top_bar:

@@ -51,6 +51,10 @@ public class ContinuousTracker
     sessionTracker.save(session);
   }
 
+  public void stopTracking() {
+      stopTracking(session);
+  }
+
   public void stopTracking(Session session)
   {
     sessionTracker.finishTracking();
@@ -96,7 +100,7 @@ public class ContinuousTracker
   public void discard(long sessionId)
   {
     stopTracking(session);
-    sessionTracker.delete(sessionId);
+    sessions.deleteCompletely(sessionId);
   }
 
   public void deleteNote(Session session, Note note)

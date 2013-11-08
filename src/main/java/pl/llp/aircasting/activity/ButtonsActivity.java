@@ -273,6 +273,12 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             case Intents.SAVE_DIALOG:
                 startActivity(new Intent(getApplicationContext(), StreamsActivity.class));
                 break;
+            case Intents.EDIT_SESSION:
+                if (resultCode == R.id.save_button) {
+                    Session session = Intents.editSessionResult(data);
+                    sessionManager.updateSession(session);
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }

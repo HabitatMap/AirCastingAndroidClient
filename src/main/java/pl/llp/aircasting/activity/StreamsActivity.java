@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
@@ -21,6 +22,7 @@ import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
@@ -45,6 +47,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intents.startDatabaseWriterService(context);
 
         setContentView(R.layout.streams);
 
@@ -107,6 +110,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Intents.startDatabaseWriterService(context);
 
         adapter.start();
         adapter.notifyDataSetChanged();
