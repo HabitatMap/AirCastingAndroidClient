@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.*;
 import pl.llp.aircasting.Intents;
@@ -24,7 +25,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
+import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 import roboguice.inject.InjectView;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A common superclass for activities that want to display left/right
@@ -74,6 +78,13 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @InjectView(R.id.zoom_out)
     Button zoomOut;
 
+    @Inject UnfinishedSessionChecker checker;
+    @Inject ApplicationState state;
+
+
+    private long lastChecked = 0;
+    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -91,6 +102,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         registeredReceiver = syncBroadcastReceiver;
 
         eventBus.register(this);
+        checkForUnfinishedSessions();
+
     }
 
     @Override
@@ -283,4 +296,33 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private void checkForUnfinishedSessions()
+    {
+        if (shouldCheckForUnfinishedSessions())
+        {
+            new AsyncTask<Void, Void, Void>(){
+                @Override
+                protected Void doInBackground(Void... voids)
+                {
+                    checker.check(ButtonsActivity.this);
+                    lastChecked = System.currentTimeMillis();
+                    return null;
+                }
+            }.execute();
+        }
+    }
+
+    private boolean shouldCheckForUnfinishedSessions()
+    {
+        if(sessionManager.isRecording())
+            return false;
+
+        if(state.saving().isSaving())
+            return false;
+
+        long timeout = System.currentTimeMillis() - lastChecked;
+        return timeout > DELTA;
+    }
+
 }

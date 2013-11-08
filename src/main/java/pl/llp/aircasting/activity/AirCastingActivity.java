@@ -83,9 +83,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
 
-    @Inject UnfinishedSessionChecker checker;
-    @Inject ApplicationState state;
-
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
     int noteIndex = -1;
@@ -93,9 +90,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     int noteTotal;
 
     final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
-
-  private long lastChecked = 0;
-  public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
   @Override
     protected void onResume() {
@@ -110,37 +104,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
         Intents.startIOIO(context);
         Intents.startDatabaseWriterService(context);
-
-        checkForUnfinishedSessions();
     }
-
-    private void checkForUnfinishedSessions()
-    {
-      if (shouldCheckForUnfinishedSessions())
-      {
-        new AsyncTask<Void, Void, Void>(){
-          @Override
-          protected Void doInBackground(Void... voids)
-          {
-            checker.check(AirCastingActivity.this);
-            lastChecked = System.currentTimeMillis();
-            return null;
-          }
-        }.execute();
-      }
-    }
-
-  private boolean shouldCheckForUnfinishedSessions()
-  {
-    if(sessionManager.isRecording())
-      return false;
-
-    if(state.saving().isSaving())
-      return false;
-
-    long timeout = System.currentTimeMillis() - lastChecked;
-    return timeout > DELTA;
-  }
 
   private void initialize() {
         if (!initialized) {
