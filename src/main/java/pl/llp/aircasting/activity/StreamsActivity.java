@@ -19,9 +19,9 @@ import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
@@ -32,6 +32,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SensorManager sensorManager;
+    @Inject SessionManager sessionManager;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
@@ -79,11 +80,25 @@ public class StreamsActivity extends ButtonsActivity {
             }
         });
 
-        SensorsGridView.OnDragListener graphListener = new OnSensorDragListener(eventBus, this, gridView, graphButton, graphContainer,
-                new Intent(this, GraphActivity.class));
+        SensorsGridView.OnDragListener graphListener = new OnSensorDragListener(gridView, graphButton, graphContainer) {
+            @Override
+            public void onDrop(View view) {
+                eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                context.startActivity(new Intent(StreamsActivity.this, GraphActivity.class));
+            }
+        };
 
-        SensorsGridView.OnDragListener mapListener = new OnSensorDragListener(eventBus, this, gridView, mapButton, mapContainer,
-                new Intent(this, AirCastingMapActivity.class));
+        SensorsGridView.OnDragListener mapListener = new OnSensorDragListener(gridView, mapButton, mapContainer) {
+            @Override
+            public void onDrop(View view) {
+                if (sessionManager.isLocationless()) {
+                    Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
+                } else {
+                    eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                    context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
+                }
+            }
+        };
 
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
@@ -120,8 +135,12 @@ public class StreamsActivity extends ButtonsActivity {
                 break;
             case R.id.heat_map_button:
                 if (adapter.getCount() == 1) {
-                    eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
-                    startActivity(new Intent(this, AirCastingMapActivity.class));
+                    if (sessionManager.isLocationless()) {
+                        Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
+                    } else {
+                        eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                        context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
+                    }
                 } else {
                     Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
                 }

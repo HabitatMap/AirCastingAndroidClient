@@ -1,7 +1,5 @@
 package pl.llp.aircasting.activity.listener;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,17 +13,12 @@ public class OnSensorDragListener extends SensorsGridView.OnDragListener {
     private SensorsGridView gridView;
     private View innerView;
     private View containerView;
-    private Intent onDropActivity;
-    private Context context;
     private EventBus eventBus;
 
-    public OnSensorDragListener(EventBus eventBus, Context context, SensorsGridView gridView, View innerView, View containerView, Intent onDropActivity) {
-        this.context = context;
+    public OnSensorDragListener(SensorsGridView gridView, View innerView, View containerView) {
         this.gridView = gridView;
         this.innerView = innerView;
         this.containerView = containerView;
-        this.onDropActivity = onDropActivity;
-        this.eventBus = eventBus;
     }
 
     @Override
@@ -62,11 +55,5 @@ public class OnSensorDragListener extends SensorsGridView.OnDragListener {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) containerView.getLayoutParams();
         params.weight = weight;
         containerView.setLayoutParams(params);
-    }
-
-    @Override
-    public void onDrop(View view) {
-        eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
-        context.startActivity(onDropActivity);
     }
 }

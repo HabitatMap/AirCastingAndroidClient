@@ -212,6 +212,8 @@
   <string name="crowdmap">CrowdMap</string>
   <string name="dashboard">Dashboard</string>
 
-    <string name="drag_to_graph_stream">Long press then drag &amp; drop sensor tiles to graph.</string>
-    <string name="drag_to_map_stream">Long press then drag &amp; drop sensor tiles to map.</string>
+  <string name="drag_to_graph_stream">Long press then drag &amp; drop sensor tiles to graph.</string>
+  <string name="drag_to_map_stream">Long press then drag &amp; drop sensor tiles to map.</string>
+
+  <string name="cant_map_without_gps">Without a GPS fix you can\'t map your session. Turn on your GPS or find some sky.</string>
 </resources>
