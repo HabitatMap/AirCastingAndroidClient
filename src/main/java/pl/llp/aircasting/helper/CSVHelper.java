@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.helper;
 
+import android.util.Log;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -66,7 +67,7 @@ public class CSVHelper
       File storage = Environment.getExternalStorageDirectory();
       File dir = new File(storage, "aircasting_sessions");
       dir.mkdirs();
-      File file = new File(dir, fileName(session.getTitle() + ZIP_EXTENSION));
+      File file = new File(dir, fileName(session.getTitle()) + ZIP_EXTENSION);
       OutputStream outputStream = new FileOutputStream(file);
       closer.register(outputStream);
       ZipOutputStream zippedOutputStream = new ZipOutputStream(outputStream);
