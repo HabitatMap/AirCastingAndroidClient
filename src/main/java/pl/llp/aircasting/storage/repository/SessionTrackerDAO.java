@@ -85,8 +85,8 @@ public class SessionTrackerDAO
               "    FROM " + MEASUREMENT_TABLE_NAME + "\n" +
               "    WHERE " + MEASUREMENT_STREAM_ID + "= ?\n" +
               "  )\n" +
-              "WHERE " + STREAM_ID + " = ?\n      AND " + SESSION_ID + " = ?";
-          writableDb.execSQL(query, new Object[]{streamId, streamId, streamId, sessionId});
+              "WHERE " + STREAM_ID + " = ?";
+          writableDb.execSQL(query, new Object[]{streamId, streamId, streamId});
           return null;
         }
       });

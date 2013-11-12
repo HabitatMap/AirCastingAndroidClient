@@ -87,6 +87,8 @@ public class StreamDAO
           stream.setSessionId(sessionId);
 
           stream.setMarkedForRemoval(markedForRemoval);
+          stream.setAvg(avg);
+          stream.setPeak(peak);
           result.add(stream);
 
           c.moveToNext();
