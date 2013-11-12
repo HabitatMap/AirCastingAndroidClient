@@ -32,7 +32,7 @@ public class SessionDAO
           " ON " + SESSION_TABLE_NAME + "." + SESSION_ID + " = " + STREAM_TABLE_NAME + "." + STREAM_SESSION_ID +
           " WHERE " + STREAM_SENSOR_NAME + " = ?" +
           " AND " + SESSION_MARKED_FOR_REMOVAL + " = 0 " +
-          " AND " + SESSION_INCOMPLETE + " = 0 " +
+          " AND " + SESSION_TABLE_NAME + "." + SESSION_INCOMPLETE + " = 0 " +
           " ORDER BY " + SESSION_START + " DESC";
 
   @Inject AirCastingDB dbAccessor;
