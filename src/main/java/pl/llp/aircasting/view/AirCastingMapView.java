@@ -21,6 +21,7 @@ package pl.llp.aircasting.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ import java.util.List;
  */
 public class AirCastingMapView extends MapView {
     private List<Listener> listeners = new ArrayList<Listener>();
+    private int zoom;
+    private GeoPoint center;
 
     @SuppressWarnings("UnusedDeclaration")
     public AirCastingMapView(Context context, String s) {
@@ -52,9 +55,20 @@ public class AirCastingMapView extends MapView {
         super(context, set, i);
     }
 
+    private boolean compareAndSetNewCoords() {
+        GeoPoint newCenter = getMapCenter();
+        int newZoom = getZoomLevel();
+        boolean result = (newCenter.equals(center)) && (newZoom == zoom);
+        center = newCenter;
+        zoom = newZoom;
+        return result;
+    }
+
     @Override
     protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
-        notifyListeners();
+        if (!compareAndSetNewCoords()) {
+            notifyListeners();
+        }
         super.onLayout(b, i, i1, i2, i3);
     }
 

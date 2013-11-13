@@ -127,9 +127,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         if (heatMapVisible) {
             heatMapVisible = false;
             mapView.getOverlays().remove(heatMapOverlay);
+            mapView.invalidate();
         } else {
             heatMapVisible = true;
             mapView.getOverlays().add(heatMapOverlay);
+            mapView.invalidate();
         }
     }
 
