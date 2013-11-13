@@ -55,8 +55,7 @@
             android:layout_marginLeft="5dp"
             android:ellipsize="none"
             android:gravity="center_vertical"
-            android:text="CO/dB/K"
-            android:lines="1"
+            android:text="CO/dB/K/Ma/Ny/Pa/Ra/Ms/A/Re/Wra/Pp/Ed"
             android:layout_below="@+id/session_title"
       />
 
