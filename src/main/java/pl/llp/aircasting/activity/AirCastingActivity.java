@@ -25,6 +25,7 @@ import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
+import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.GaugeHelper;
@@ -202,7 +203,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
   }
 
   @Subscribe
-  public void onEvent(ViewStreamEvent event) {
+  public void onEvent(StreamUpdateEvent event) {
     topBarHelper.updateTopBar(event.getSensor(), topBar);
     updateGauges();
   }

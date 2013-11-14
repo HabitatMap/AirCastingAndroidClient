@@ -34,6 +34,7 @@ import pl.llp.aircasting.api.AveragesDriver;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
@@ -311,7 +312,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Subscribe
     @Override
-    public void onEvent(ViewStreamEvent event) {
+    public void onEvent(StreamUpdateEvent event) {
         super.onEvent(event);
 
         runOnUiThread(new Runnable() {

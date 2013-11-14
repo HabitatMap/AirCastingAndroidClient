@@ -2,6 +2,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
@@ -101,6 +102,7 @@ public class SensorManager
     String sensorName = event.getSensor().getSensorName();
     visibleSensor = sensors.get(SensorName.from(sensorName));
     if(visibleSensor == null) visibleSensor = AUDIO_SENSOR;
+    eventBus.post(new StreamUpdateEvent(visibleSensor));
   }
 
   @Subscribe
