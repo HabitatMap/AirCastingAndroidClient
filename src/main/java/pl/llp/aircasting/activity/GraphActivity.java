@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
@@ -120,6 +121,13 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
       default:
         super.onClick(view);
     }
+  }
+
+
+  @Override
+  public void onEvent(StreamUpdateEvent event) {
+      super.onEvent(event);
+      refresh();
   }
 
   private void zoomIn() {
