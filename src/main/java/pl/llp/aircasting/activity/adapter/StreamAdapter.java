@@ -213,6 +213,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         data.clear();
 
         List<Sensor> sensors = sensorManager.getSensors();
+
         for (Sensor sensor : sensors) {
             Map<String, Object> map = prepareItem(sensor);
 
@@ -247,7 +248,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         if (!sensors.containsKey(name)) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             sensors.put(name, map);
-            data.add(map);
         }
         return sensors.get(name);
     }
