@@ -70,12 +70,15 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
-    private Map<String, Integer> positions = newHashMap();
+
+    // these are static to retain after activity recreation
+    private static Map<String, Integer> positions = newHashMap();
+    private static boolean firstStatsVisible = false;
+    private static Map<String, Boolean> statsVisibility = newHashMap();
+    private static int lastStreamsNumber = -1;
+
     private Map<String, Integer> oldPositions = newHashMap();
-    private Map<String, Boolean> statsVisibility = newHashMap();
     private int invisiblePosition = -1;
-    private int lastStreamsNumber = -1;
-    private boolean firstStatsVisible = false;
 
     public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
