@@ -179,7 +179,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 Intents.makeANote(this);
                 break;
             case R.id.share:
-                startActivity(new Intent(context, ShareSessionActivity.class));
+                Intents.shareSession(this, sessionManager.getSession().getId());
                 break;
         }
     }
