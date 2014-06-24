@@ -184,6 +184,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   {
     this.sensor = sensorManager.getVisibleSensor();
     reset();
+    anchor = 0;
   }
 
   @Subscribe
@@ -197,7 +198,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   {
     fullView = null;
     timelineView.clear();
-    anchor = 0;
 
     notifyListeners();
   }
