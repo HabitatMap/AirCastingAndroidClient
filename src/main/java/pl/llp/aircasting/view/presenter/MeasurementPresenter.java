@@ -72,6 +72,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private int measurementsSize;
 
   private int anchor;
+  private int beginningAnchor;
   private long visibleMilliseconds = MIN_ZOOM;
 
   private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
@@ -287,9 +288,15 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       return;
     }
+
     Stopwatch stopwatch = new Stopwatch().start();
 
     final List<Measurement> measurements = getFullView();
+
+    if (anchor != 0) {
+        anchor = measurements.size() - beginningAnchor;
+    }
+
     int position = measurements.size() - 1 - anchor;
     final long lastMeasurementTime = measurements.isEmpty() ? 0 : measurements.get(position).getTime().getTime();
 
@@ -364,6 +371,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     if (anchor < 0) {
       anchor = 0;
     }
+    beginningAnchor = measurementsSize - anchor;
   }
 
   public synchronized void scroll(double scrollAmount)
