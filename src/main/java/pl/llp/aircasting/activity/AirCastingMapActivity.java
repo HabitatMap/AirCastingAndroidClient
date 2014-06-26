@@ -427,8 +427,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private void refreshSoundTrace() {
         if (refreshTask != null && refreshTask.getStatus() != AsyncTask.Status.FINISHED) return;
 
-        //noinspection unchecked
-        refreshTask = new UpdateSoundTraceTask().execute();
+        soundTraceComplete = false;
+        refresh();
+
+        traceOverlay.refresh(mapView);
+
+        soundTraceComplete = true;
+        mapView.invalidate();
+        refresh();
     }
 
     class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
@@ -469,27 +475,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
                 heatMapOverlay.setRegions(regions.getContent());
             }
 
-            mapView.invalidate();
-            refresh();
-        }
-    }
-
-    class UpdateSoundTraceTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            soundTraceComplete = false;
-            refresh();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            traceOverlay.refresh(mapView);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            soundTraceComplete = true;
             mapView.invalidate();
             refresh();
         }
