@@ -2,6 +2,8 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
@@ -180,6 +182,11 @@ public class SensorManager
   public boolean isSessionBeingViewed()
   {
     return sessionManager.isSessionSaved();
+  }
+
+  @Subscribe
+  public void onEvent(ConnectionUnsuccessfulEvent e) {
+      disconnectSensors(new ExternalSensorDescriptor(e.getDevice()));
   }
 
   public void disconnectSensors(ExternalSensorDescriptor descriptor)

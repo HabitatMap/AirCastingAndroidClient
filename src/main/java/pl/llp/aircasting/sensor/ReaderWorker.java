@@ -57,9 +57,10 @@ public class ReaderWorker extends Worker
     }
     catch (IOException e)
     {
-      considerStoppingOnFailure();
+      handlePersistentFailure();
+      stop();
       status = Status.CONNECTION_INTERRUPTED;
-      Logger.w("Bluetooth communication failure - mostly likely end of stream", e);
+      Logger.w("Bluetooth communication failure - most likely end of stream", e);
     }
   }
 
