@@ -19,10 +19,12 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.net.Uri;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
@@ -55,6 +57,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -229,6 +232,9 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
             case R.id.gauge_container:
                 showDialog(SelectSensorHelper.DIALOG_ID);
                 break;
+            case R.id.view_photo:
+                Intents.viewPhoto(this, photoUri());
+                break;
             default:
                 super.onClick(view);
                 break;
@@ -329,6 +335,15 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
                 hideNoteViewer();
             }
         }.execute();
+    }
+
+    private Uri photoUri() {
+        if (photoHelper.photoExistsLocally(currentNote)) {
+            File file = new File(currentNote.getPhotoPath());
+            return Uri.fromFile(file);
+        } else {
+            return Uri.parse(currentNote.getPhotoPath());
+        }
     }
 
   protected abstract void refreshNotes();

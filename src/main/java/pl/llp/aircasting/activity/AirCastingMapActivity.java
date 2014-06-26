@@ -152,20 +152,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             case R.id.locate:
                 centerMap();
                 break;
-            case R.id.view_photo:
-                Intents.viewPhoto(this, photoUri());
-                break;
             default:
                 super.onClick(view);
-        }
-    }
-
-    private Uri photoUri() {
-        if (photoHelper.photoExistsLocally(currentNote)) {
-            File file = new File(currentNote.getPhotoPath());
-            return Uri.fromFile(file);
-        } else {
-            return Uri.parse(currentNote.getPhotoPath());
         }
     }
 
