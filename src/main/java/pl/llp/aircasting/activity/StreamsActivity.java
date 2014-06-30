@@ -142,7 +142,7 @@ public class StreamsActivity extends ButtonsActivity {
                     if (sessionManager.isLocationless()) {
                         Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
                     } else {
-                        eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+                        eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
                         context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
                     }
                 } else {
