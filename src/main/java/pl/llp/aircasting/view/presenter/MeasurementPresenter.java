@@ -44,6 +44,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -60,6 +61,7 @@ import static java.util.Collections.sort;
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
   private static final long MIN_ZOOM = 30000;
+  private static final long SCROLL_TIMEOUT = 1000;
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
@@ -72,8 +74,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private int measurementsSize;
 
   private int anchor;
-  private int beginningAnchor;
   private long visibleMilliseconds = MIN_ZOOM;
+  private long lastScrolled;
+  private Date timeAnchor;
 
   private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
   private List<Listener> listeners = newArrayList();
@@ -282,6 +285,18 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
   }
 
+  private int timeToAnchor(Date d, List<Measurement> measurements) {
+      if (measurements.isEmpty()) return 0;
+      int position = 0;
+      for (int i = 1; i < measurements.size(); i++) {
+          if (Math.abs(d.getTime() - measurements.get(i).getTime().getTime()) <
+                  Math.abs(d.getTime() - measurements.get(position).getTime().getTime())) {
+              position = i;
+          }
+      }
+      return measurements.size() - 1 - position;
+  }
+
   protected synchronized void prepareTimelineView()
   {
     if (!timelineView.isEmpty())
@@ -293,8 +308,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     final List<Measurement> measurements = getFullView();
 
-    if (anchor != 0) {
-        anchor = measurements.size() - beginningAnchor;
+    if (anchor != 0 && new Date().getTime() - lastScrolled > SCROLL_TIMEOUT) {
+        anchor = timeToAnchor(timeAnchor, measurements);
     }
 
     int position = measurements.size() - 1 - anchor;
@@ -371,11 +386,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     if (anchor < 0) {
       anchor = 0;
     }
-    beginningAnchor = measurementsSize - anchor;
+    int position = fullView.size() - 1 - anchor;
+    timeAnchor = fullView.isEmpty() ? new Date() : fullView.get(position).getTime();
   }
 
   public synchronized void scroll(double scrollAmount)
   {
+
+    lastScrolled = new Date().getTime();
     prepareTimelineView();
 
     anchor -= scrollAmount * timelineView.size();
