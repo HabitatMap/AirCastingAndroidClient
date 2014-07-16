@@ -90,6 +90,12 @@ public class SessionManager
   private Map<String, Double> recentMeasurements = newHashMap();
 
   private boolean paused;
+  private boolean isCalibrating;
+
+
+  public boolean isCalibrating() {
+      return isCalibrating;
+  }
 
   @Inject
   public void init() {
@@ -112,17 +118,26 @@ public class SessionManager
     return session;
   }
 
-  public void loadSession(long sessionId, @NotNull ProgressListener listener)
+  public void loadSession(long sessionId, ProgressListener listener) {
+      loadSession(sessionId, listener, false);
+  }
+
+  public void loadSession(long sessionId, @NotNull ProgressListener listener, boolean isCalibrating)
   {
     Preconditions.checkNotNull(listener);
     Session newSession = sessionRepository.loadFully(sessionId, listener);
     state.recording().startShowingOldSession();
-    setSession(newSession);
+    setSession(newSession, isCalibrating);
   }
 
-  void setSession(@NotNull Session session)
+  public void setSession(Session session) {
+    setSession(session, false);
+  }
+
+  void setSession(@NotNull Session session, boolean isCalibrating)
   {
     Preconditions.checkNotNull(session, "Cannot set null session");
+    this.isCalibrating = isCalibrating;
     this.session = session;
     notifyNewSession(session);
   }

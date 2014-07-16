@@ -1,6 +1,8 @@
 package pl.llp.aircasting.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -43,6 +45,10 @@ public class StreamsActivity extends ButtonsActivity {
     @InjectView(R.id.graph_button) View graphButton;
 
     StreamAdapter adapter;
+    boolean selectingReference = false;
+    boolean selectingTarget = false;
+    Sensor reference = null;
+    Sensor target = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +82,24 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
             @Override
             public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
-                if (sensorManager.isSessionBeingViewed())
-                    return;
-
-                adapter.toggleStatsVisibility((Sensor) view.getTag());
+                if (selectingReference) {
+                    reference = (Sensor) view.getTag();
+                    selectingReference = false;
+                    showDialog(R.string.calibration_select_target, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            selectingTarget = true;
+                        }
+                    });
+                } else if (selectingTarget) {
+                    target = (Sensor) view.getTag();
+                    selectingTarget = false;
+                    triggerCalibration();
+                } else {
+                    if (sensorManager.isSessionBeingViewed())
+                        return;
+                    adapter.toggleStatsVisibility((Sensor) view.getTag());
+                }
             }
         });
 
@@ -105,6 +125,28 @@ public class StreamsActivity extends ButtonsActivity {
 
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
+
+        if (sessionManager.isCalibrating()) {
+            showDialog(R.string.calibration_select_reference, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    selectingReference = true;
+                }
+            });
+        }
+    }
+
+    private void showDialog(int messageId, DialogInterface.OnClickListener listener) {
+        new AlertDialog.Builder(this)
+                .setMessage(messageId)
+                .setPositiveButton(R.string.ok, listener)
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    private void triggerCalibration() {
+        Log.d("CALIBRATION", "I'd calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
     }
 
     @Override

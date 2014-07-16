@@ -37,6 +37,7 @@ public class OpenSessionActivity extends DialogActivity implements View.OnClickL
     @InjectView(R.id.share) Button share;
     @InjectView(R.id.edit) Button edit;
     @InjectView(R.id.delete_session) Button delete;
+    @InjectView(R.id.calibrate_session) Button calibrate_session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class OpenSessionActivity extends DialogActivity implements View.OnClickL
         share.setOnClickListener(this);
         edit.setOnClickListener(this);
         delete.setOnClickListener(this);
+        calibrate_session.setOnClickListener(this);
     }
 
     @Override

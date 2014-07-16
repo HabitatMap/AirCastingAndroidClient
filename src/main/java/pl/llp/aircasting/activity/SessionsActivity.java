@@ -274,7 +274,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       case R.id.view:
         viewSession(sessionId);
         break;
-      case R.id.delete_session :
+      case R.id.calibrate_session:
+        viewSession(sessionId, true);
+        break;
+      case R.id.delete_session:
         deleteSession(sessionId);
         break;
       case R.id.edit:
@@ -320,7 +323,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     return mainMenu.handleClick(this, item);
   }
 
+
   private void viewSession(long id) {
+      viewSession(id, false);
+  }
+  private void viewSession(long id, final boolean isCalibrating) {
     if (sessionManager.isSessionStarted()) {
       Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
       return;
@@ -329,7 +336,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     new OpenSessionTask(this) {
       @Override
       protected Session doInBackground(Long... longs) {
-        sessionManager.loadSession(longs[0], this);
+        sessionManager.loadSession(longs[0], this, isCalibrating);
 
         return null;
       }
