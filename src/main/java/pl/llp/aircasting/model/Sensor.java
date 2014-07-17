@@ -1,5 +1,7 @@
 package pl.llp.aircasting.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 
 import pl.llp.aircasting.model.events.SensorEvent;
@@ -13,8 +15,8 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class Sensor implements Serializable
 {
-  private String sensorName;
-  private String packageName;
+  @Expose @SerializedName("sensor_name") private String sensorName;
+  @Expose @SerializedName("package_name") private String packageName;
   private String measurementType;
   private String shortType;
   private String unit;

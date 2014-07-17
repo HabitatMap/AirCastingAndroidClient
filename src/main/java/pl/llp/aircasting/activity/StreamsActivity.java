@@ -18,6 +18,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.listener.OnSensorDragListener;
+import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
@@ -37,6 +38,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SensorManager sensorManager;
     @Inject SessionManager sessionManager;
+    @Inject SessionDriver sessionDriver;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
@@ -146,7 +148,8 @@ public class StreamsActivity extends ButtonsActivity {
     }
 
     private void triggerCalibration() {
-        Log.d("CALIBRATION", "I'd calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
+        Log.d("CALIBRATION", "Calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
+        sessionDriver.createRegression(sessionManager.getSession(), target, reference);
     }
 
     @Override

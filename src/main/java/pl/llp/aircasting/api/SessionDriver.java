@@ -19,12 +19,15 @@
 */
 package pl.llp.aircasting.api;
 
+import com.google.gson.Gson;
+import pl.llp.aircasting.api.data.CreateRegressionResponse;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
@@ -46,12 +49,24 @@ public class SessionDriver
     private static final String DELETE_SESSION_PATH = "/api/user/sessions/delete_session";
     private static final String DELETE_SESSION_STREAMS_PATH = "/api/user/sessions/delete_session_streams";
     private static final String USER_SESSION_PATH = "/api/user/sessions/";
+    private static final String REGRESSIONS_PATH = "/api/regressions.json";
     public static final String COMPRESSION = "compression";
 
     @Inject SessionRepository sessionRepository;
     @Inject GZIPHelper gzipHelper;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
+    @Inject Gson gson;
+
+    public HttpResult<CreateRegressionResponse> createRegression(Session session, Sensor target, Sensor reference) {
+        return http()
+                .post()
+                .to(REGRESSIONS_PATH)
+                .with("session_uuid", session.getUUID().toString())
+                .with("target", gson.toJson(target))
+                .with("reference", gson.toJson(reference))
+                .into(CreateRegressionResponse.class);
+    }
 
     /**
      * Uploads the given session to the backend
