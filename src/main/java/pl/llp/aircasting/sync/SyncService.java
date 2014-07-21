@@ -22,6 +22,7 @@ package pl.llp.aircasting.sync;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.api.RegressionDriver;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
@@ -31,7 +32,9 @@ import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.Regression;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.storage.repository.RegressionRepository;
 import pl.llp.aircasting.storage.repository.RepositoryException;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.SyncState;
@@ -66,6 +69,8 @@ public class SyncService extends RoboIntentService
   @Inject SyncState syncState;
   @Inject Context context;
   @Inject EventBus events;
+  @Inject RegressionRepository regressionRepository;
+  @Inject RegressionDriver regressionDriver;
 
   @InjectResource(R.string.account_reminder) String accountReminder;
 
@@ -119,9 +124,20 @@ public class SyncService extends RoboIntentService
       uploadSessions(upload);
       downloadSessions(download);
     }
+
+    fetchRegressions();
   }
 
-  private void deleteMarked(UUID[] deleted)
+  private void fetchRegressions() {
+      HttpResult<Regression[]> result = regressionDriver.index();
+      if (!(result.getStatus() == Status.SUCCESS))
+          return;
+      for (Regression regression : result.getContent()) {
+          regressionRepository.save(regression);
+      }
+  }
+
+    private void deleteMarked(UUID[] deleted)
   {
     if(deleted.length == 0)
       return;
@@ -293,6 +309,8 @@ public class SyncService extends RoboIntentService
       Intents.notifySyncUpdate(context);
     }
   }
+
+
 
   private void fixTimesFromUTC(Session session)
   {

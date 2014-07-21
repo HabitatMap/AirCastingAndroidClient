@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 30;
+  int DB_VERSION = 31;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -98,4 +98,19 @@ public interface DBConstants
   String NOTE_DATE = "Date";
   String NOTE_PHOTO = "Photo";
   String NOTE_NUMBER = "Number";
+
+  String REGRESSION_TABLE_NAME = "regressions";
+  String REGRESSION_ID = BaseColumns._ID;
+  String REGRESSION_COEFFICIENTS = "coefficients";
+  String REGRESSION_THRESHOLD_LOW = "threshold_low";
+  String REGRESSION_THRESHOLD_VERY_LOW = "threshold_very_low";
+  String REGRESSION_THRESHOLD_HIGH = "threshold_high";
+  String REGRESSION_THRESHOLD_VERY_HIGH = "threshold_very_high";
+  String REGRESSION_THRESHOLD_MEDIUM = "threshold_mid";
+  String REGRESSION_MEASUREMENT_UNIT = "measurement_unit";
+  String REGRESSION_MEASUREMENT_SYMBOL = "measurement_symbol";
+  String REGRESSION_MEASUREMENT_TYPE = "measurement_type";
+  String REGRESSION_SENSOR_NAME = "sensor_name";
+  String REGRESSION_SENSOR_PACKAGE_NAME = "sensor_package_name";
+
 }

@@ -27,6 +27,25 @@ public class SchemaCreator
     db.execSQL(measurementTable().asSQL(DB_VERSION));
     db.execSQL(streamTable().asSQL(DB_VERSION));
     db.execSQL(CREATE_NOTE_TABLE);
+    db.execSQL(regressionTable().asSQL(DB_VERSION));
+  }
+
+  Table regressionTable() {
+      Table table = new Table(REGRESSION_TABLE_NAME);
+      table.setPrimaryKey(new Column(REGRESSION_ID, Datatype.INTEGER));
+
+      table.addColumn(new Column(REGRESSION_COEFFICIENTS, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_THRESHOLD_LOW, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_THRESHOLD_VERY_LOW, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_THRESHOLD_HIGH, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_THRESHOLD_VERY_HIGH, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_THRESHOLD_MEDIUM, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_MEASUREMENT_UNIT, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_MEASUREMENT_SYMBOL, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_MEASUREMENT_TYPE, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_SENSOR_NAME, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_SENSOR_PACKAGE_NAME, Datatype.TEXT));
+      return table;
   }
 
   Table measurementTable()

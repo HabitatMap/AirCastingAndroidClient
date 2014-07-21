@@ -34,6 +34,10 @@ public class SchemaMigrator
     db.execSQL(query);
   }
 
+  private void createRegressionTable(SQLiteDatabase db, int revision) {
+      db.execSQL(new SchemaCreator().regressionTable().asSQL(revision));
+  }
+
   public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) { if (oldVersion < 19 && newVersion >= 19) {
       addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, Datatype.TEXT);
     }
@@ -83,6 +87,11 @@ public class SchemaMigrator
     if(oldVersion < 30 && newVersion >= 30)
     {
       addColumn(db, SESSION_TABLE_NAME, SESSION_INCOMPLETE, Datatype.BOOLEAN);
+    }
+
+    if (oldVersion < 31 && newVersion >= 31)
+    {
+      createRegressionTable(db, 31);
     }
 
 //    sometime in the future

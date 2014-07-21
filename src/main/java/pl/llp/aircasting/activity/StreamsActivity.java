@@ -18,15 +18,14 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.listener.OnSensorDragListener;
+import pl.llp.aircasting.api.RegressionDriver;
 import pl.llp.aircasting.api.SessionDriver;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.storage.repository.RegressionRepository;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
@@ -38,7 +37,8 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SensorManager sensorManager;
     @Inject SessionManager sessionManager;
-    @Inject SessionDriver sessionDriver;
+    @Inject RegressionDriver regressionDriver;
+    @Inject RegressionRepository regressionRepository;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
@@ -62,6 +62,10 @@ public class StreamsActivity extends ButtonsActivity {
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
 
+        for (MeasurementStream stream : sessionManager.getSession().getMeasurementStreams()) {
+            Log.d("CHECKING_REGS", stream.getSensorName() + " " + stream.getPackageName() + " " +
+                    regressionRepository.getForSensor(stream.getSensorName(), stream.getPackageName()));
+        }
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,6 +100,7 @@ public class StreamsActivity extends ButtonsActivity {
                 } else if (selectingTarget) {
                     target = (Sensor) view.getTag();
                     selectingTarget = false;
+                    sessionManager.disableCalibration();
                     triggerCalibration();
                 } else {
                     if (sensorManager.isSessionBeingViewed())
@@ -149,7 +154,7 @@ public class StreamsActivity extends ButtonsActivity {
 
     private void triggerCalibration() {
         Log.d("CALIBRATION", "Calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
-        sessionDriver.createRegression(sessionManager.getSession(), target, reference);
+        regressionDriver.createRegression(sessionManager.getSession(), target, reference);
     }
 
     @Override

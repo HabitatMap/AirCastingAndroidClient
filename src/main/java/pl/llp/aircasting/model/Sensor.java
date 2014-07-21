@@ -16,7 +16,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class Sensor implements Serializable
 {
   @Expose @SerializedName("sensor_name") private String sensorName;
-  @Expose @SerializedName("package_name") private String packageName;
+  @Expose @SerializedName("sensor_package_name") private String packageName;
   private String measurementType;
   private String shortType;
   private String unit;

@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.util.Log;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;

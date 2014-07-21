@@ -97,6 +97,10 @@ public class SessionManager
       return isCalibrating;
   }
 
+  public void disableCalibration() {
+      isCalibrating = false;
+  }
+
   @Inject
   public void init() {
     telephonyManager.listen(new PhoneStateListener() {
