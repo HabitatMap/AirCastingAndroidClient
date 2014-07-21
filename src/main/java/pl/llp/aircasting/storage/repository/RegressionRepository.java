@@ -71,4 +71,14 @@ public class RegressionRepository {
         return values;
     }
 
+    public void deleteAll() {
+        airCastingDB.executeWritableTask(new WritableDatabaseTask<Object>() {
+            @Override
+            public Object execute(SQLiteDatabase writableDatabase) {
+                writableDatabase.execSQL("DELETE FROM " + REGRESSION_TABLE_NAME);
+                return null;
+            }
+        });
+    }
+
 }

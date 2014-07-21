@@ -132,6 +132,8 @@ public class SyncService extends RoboIntentService
       HttpResult<Regression[]> result = regressionDriver.index();
       if (!(result.getStatus() == Status.SUCCESS))
           return;
+
+      regressionRepository.deleteAll();
       for (Regression regression : result.getContent()) {
           regressionRepository.save(regression);
       }
