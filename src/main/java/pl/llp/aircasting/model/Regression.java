@@ -13,8 +13,8 @@ public class Regression {
     @Expose @SerializedName("sensor_name") private String sensorName;
     @Expose @SerializedName("sensor_package_name") private String sensorPackageName;
     @Expose @SerializedName("measurement_type") private String measurementType;
-    @Expose @SerializedName("measurement_symbol") private String measurementSymbol;
-    @Expose @SerializedName("measurement_unit") private String measurementUnit;
+    @Expose @SerializedName("unit_symbol") private String measurementSymbol;
+    @Expose @SerializedName("unit_name") private String measurementUnit;
     @Expose @SerializedName("coefficients") private double[] coefficients;
     @Expose @SerializedName("threshold_very_low") private int thresholdVeryLow;
     @Expose @SerializedName("threshold_low") private int thresholdLow;
