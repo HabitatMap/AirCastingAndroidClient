@@ -19,6 +19,7 @@ public class SensorEvent extends AirCastingEvent
   private int high;
   private int veryHigh;
   private double value;
+  private double measuredValue;
 
   private long creationTime = new Date().getTime();
 
@@ -79,6 +80,10 @@ public class SensorEvent extends AirCastingEvent
     return shortType;
   }
 
+  public double getMeasuredValue() {
+      return measuredValue;
+  }
+
   public SensorEvent(String packageName, String sensorName, String measurementType,
                      String shortType, String unit, String symbol,
                      int veryLow, int low, int mid, int high, int veryHigh, double value, String address)
@@ -99,20 +104,28 @@ public class SensorEvent extends AirCastingEvent
 
   public SensorEvent(String packageName, String sensorName, String measurementType,
                      String shortType, String unit, String symbol,
+                     int veryLow, int low, int mid, int high, int veryHigh, double value, double measuredValue) {
+      this.packageName = packageName;
+      this.sensorName = sensorName;
+      this.measurementType = measurementType;
+      this.shortType = shortType;
+      this.unit = unit;
+      this.symbol = symbol;
+      this.veryLow = veryLow;
+      this.low = low;
+      this.mid = mid;
+      this.high = high;
+      this.veryHigh = veryHigh;
+      this.measuredValue = measuredValue;
+      this.value = value;
+  }
+
+  public SensorEvent(String packageName, String sensorName, String measurementType,
+                     String shortType, String unit, String symbol,
                      int veryLow, int low, int mid, int high, int veryHigh, double value)
   {
-    this.packageName = packageName;
-    this.sensorName = sensorName;
-    this.measurementType = measurementType;
-    this.shortType = shortType;
-    this.unit = unit;
-    this.symbol = symbol;
-    this.veryLow = veryLow;
-    this.low = low;
-    this.mid = mid;
-    this.high = high;
-    this.veryHigh = veryHigh;
-    this.value = value;
+
+    this(packageName, sensorName, measurementType, shortType, unit, symbol, veryLow, low, mid, high, veryHigh, value, value);
   }
 
   @Override
@@ -192,6 +205,10 @@ public class SensorEvent extends AirCastingEvent
   public String getAddress()
   {
     return address;
+  }
+
+  public void setDate(Date date) {
+      this.creationTime = date.getTime();
   }
 
   public Date getDate()

@@ -9,6 +9,7 @@ import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEventTransformer;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -38,6 +39,7 @@ public class SensorManager
   @Inject ExternalSensors externalSensors;
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
+  @Inject SensorEventTransformer sensorEventTransformer;
 
   @Inject ApplicationState state;
 
@@ -60,6 +62,8 @@ public class SensorManager
     {
       return;
     }
+
+    event = sensorEventTransformer.transform(event);
 
     // IOIO
     Sensor visibleSensor = getVisibleSensor();

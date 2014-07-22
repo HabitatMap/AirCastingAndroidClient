@@ -31,6 +31,7 @@ import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
+import static pl.llp.aircasting.Intents.triggerSync;
 
 public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
@@ -155,6 +156,7 @@ public class StreamsActivity extends ButtonsActivity {
     private void triggerCalibration() {
         Log.d("CALIBRATION", "Calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
         regressionDriver.createRegression(sessionManager.getSession(), target, reference);
+        triggerSync(this);
     }
 
     @Override

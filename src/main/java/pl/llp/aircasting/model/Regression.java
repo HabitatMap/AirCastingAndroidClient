@@ -81,4 +81,14 @@ public class Regression {
         this.thresholdHigh = thresholdHigh;
         this.thresholdVeryHigh = thresholdVeryHigh;
     }
+
+    public double apply(double value) {
+        int len = coefficients.length;
+        double val = coefficients[len - 1];
+        for (int i = len - 2; i >= 0; i--) {
+            val *= value;
+            val += coefficients[i];
+        }
+        return val;
+    }
 }

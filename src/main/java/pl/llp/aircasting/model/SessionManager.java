@@ -30,6 +30,7 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.model.events.SensorEventTransformer;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
@@ -87,6 +88,7 @@ public class SessionManager
 
   @Inject ApplicationState state;
 
+  @Inject SensorEventTransformer sensorEventTransformer;
   private Map<String, Double> recentMeasurements = newHashMap();
 
   private boolean paused;
@@ -219,6 +221,8 @@ public class SessionManager
   @Subscribe
   public synchronized void onEvent(SensorEvent event)
   {
+    event = sensorEventTransformer.transform(event);
+
     double value = event.getValue();
     String sensorName = event.getSensorName();
     Sensor sensor = sensorManager.getSensorByName(sensorName);
