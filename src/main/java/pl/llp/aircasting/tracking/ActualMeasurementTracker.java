@@ -31,12 +31,13 @@ class ActualMeasurementTracker implements MeasurementTracker
       @Override
       public Void execute(SQLiteDatabase writableDatabase)
       {
-        ContentValues values = new ContentValues(6);
+        ContentValues values = new ContentValues(7);
         values.put(MEASUREMENT_SESSION_ID, stream.getSessionId());
         values.put(MEASUREMENT_STREAM_ID, stream.getId());
         values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
         values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
         values.put(MEASUREMENT_VALUE, measurement.getValue());
+        values.put(MEASUREMENT_MEASURED_VALUE, measurement.getMeasuredValue());
         values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
 
         writableDatabase.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);

@@ -1,5 +1,6 @@
 package pl.llp.aircasting.storage.repository;
 
+import com.google.gson.Gson;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
@@ -52,6 +53,7 @@ public class MeasurementDAO
       measurement.setLongitude(getDouble(measurements, MEASUREMENT_LONGITUDE));
       measurement.setValue(getDouble(measurements, MEASUREMENT_VALUE));
       measurement.setTime(getDate(measurements, MEASUREMENT_TIME));
+      measurement.setMeasuredValue(getDouble(measurements, MEASUREMENT_MEASURED_VALUE));
 
       long id = getLong(measurements, MEASUREMENT_STREAM_ID);
       stream(id, results).add(measurement);
@@ -89,6 +91,7 @@ public class MeasurementDAO
       values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
       values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
       values.put(MEASUREMENT_VALUE, measurement.getValue());
+      values.put(MEASUREMENT_MEASURED_VALUE, measurement.getMeasuredValue());
       values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
 
       writableDatabase.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);

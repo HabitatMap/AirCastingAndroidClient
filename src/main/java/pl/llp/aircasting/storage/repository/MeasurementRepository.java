@@ -51,6 +51,7 @@ class MeasurementRepository
       measurement.setLongitude(getDouble(measurements, MEASUREMENT_LONGITUDE));
       measurement.setValue(getDouble(measurements, MEASUREMENT_VALUE));
       measurement.setTime(getDate(measurements, MEASUREMENT_TIME));
+      measurement.setMeasuredValue(getDouble(measurements, MEASUREMENT_MEASURED_VALUE));
 
       long id = getLong(measurements, MEASUREMENT_STREAM_ID);
       stream(id, results).add(measurement);
@@ -89,6 +90,7 @@ class MeasurementRepository
       values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
       values.put(MEASUREMENT_VALUE, measurement.getValue());
       values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
+      values.put(MEASUREMENT_MEASURED_VALUE, measurement.getMeasuredValue());
 
       writableDatabase.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
     }

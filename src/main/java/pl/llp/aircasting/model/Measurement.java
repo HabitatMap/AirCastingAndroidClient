@@ -34,6 +34,7 @@ public class Measurement
   @Expose private double longitude;
   @Expose private double value;
   @Expose private Date time;
+  @Expose @SerializedName("measured_value") private double measuredValue;
   @Expose @SerializedName("timezone_offset") private int timeZoneOffsetMinutes;
 
   private transient Long seconds;
@@ -47,11 +48,27 @@ public class Measurement
   }
 
   public Measurement(double latitude, double longitude, double value, Date time) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.value = value;
-    setTime(time);
+      this.latitude = latitude;
+      this.longitude = longitude;
+      this.value = value;
+      setTime(time);
   }
+
+    public Measurement(double latitude, double longitude, double value, double measuredValue, Date time) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.value = value;
+        this.measuredValue = measuredValue;
+        setTime(time);
+    }
+
+    public double getMeasuredValue() {
+        return measuredValue;
+    }
+
+    public void setMeasuredValue(double measuredValue) {
+        this.measuredValue = measuredValue;
+    }
 
   public Measurement() {
   }
