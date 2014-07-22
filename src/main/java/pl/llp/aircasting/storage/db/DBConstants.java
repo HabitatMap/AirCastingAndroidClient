@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 31;
+  int DB_VERSION = 32;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -70,6 +70,7 @@ public interface DBConstants
   String MEASUREMENT_VALUE = "Value";
   String MEASUREMENT_TIME = "Time";
   String MEASUREMENT_STREAM_ID = "stream_id";
+  String MEASUREMENT_MEASURED_VALUE = "measured_value";
 
   String STREAM_TABLE_NAME = "streams";
   String STREAM_ID = BaseColumns._ID;
@@ -110,6 +111,7 @@ public interface DBConstants
   String REGRESSION_MEASUREMENT_UNIT = "measurement_unit";
   String REGRESSION_MEASUREMENT_SYMBOL = "measurement_symbol";
   String REGRESSION_MEASUREMENT_TYPE = "measurement_type";
+  String REGRESSION_SHORT_TYPE = "measurement_short_type";
   String REGRESSION_SENSOR_NAME = "sensor_name";
   String REGRESSION_SENSOR_PACKAGE_NAME = "sensor_package_name";
 

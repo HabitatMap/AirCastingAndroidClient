@@ -13,6 +13,7 @@ public class Regression {
     @Expose @SerializedName("sensor_name") private String sensorName;
     @Expose @SerializedName("sensor_package_name") private String sensorPackageName;
     @Expose @SerializedName("measurement_type") private String measurementType;
+    @Expose @SerializedName("measurement_short_type") private String shortType;
     @Expose @SerializedName("unit_symbol") private String measurementSymbol;
     @Expose @SerializedName("unit_name") private String measurementUnit;
     @Expose @SerializedName("coefficients") private double[] coefficients;
@@ -32,6 +33,10 @@ public class Regression {
 
     public String getMeasurementType() {
         return measurementType;
+    }
+
+    public String getShortType() {
+        return shortType;
     }
 
     public String getMeasurementSymbol() {
@@ -66,12 +71,13 @@ public class Regression {
         return thresholdVeryHigh;
     }
 
-    public Regression(String sensorName, String sensorPackageName, String measurementType, String measurementSymbol,
+    public Regression(String sensorName, String sensorPackageName, String measurementType, String shortType, String measurementSymbol,
                       String measurementUnit, double[] coefficients, int thresholdVeryLow,
                       int thresholdLow, int thresholdMedium, int thresholdHigh, int thresholdVeryHigh) {
         this.sensorName = sensorName;
         this.sensorPackageName = sensorPackageName;
         this.measurementType = measurementType;
+        this.shortType = shortType;
         this.measurementSymbol = measurementSymbol;
         this.measurementUnit = measurementUnit;
         this.coefficients = coefficients;

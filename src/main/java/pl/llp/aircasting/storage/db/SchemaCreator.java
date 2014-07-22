@@ -45,6 +45,7 @@ public class SchemaCreator
       table.addColumn(new Column(REGRESSION_MEASUREMENT_TYPE, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SENSOR_NAME, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SENSOR_PACKAGE_NAME, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_SHORT_TYPE, Datatype.TEXT));
       return table;
   }
 
@@ -59,6 +60,7 @@ public class SchemaCreator
     table.addColumn(new Column(MEASUREMENT_TIME, Datatype.INTEGER));
     table.addColumn(new Column(MEASUREMENT_STREAM_ID, Datatype.INTEGER));
     table.addColumn(new Column(MEASUREMENT_SESSION_ID, Datatype.INTEGER));
+    table.addColumn(new Column(MEASUREMENT_MEASURED_VALUE, Datatype.REAL));
     return table;
   }
 

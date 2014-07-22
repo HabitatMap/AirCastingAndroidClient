@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.Regression;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
@@ -34,8 +33,9 @@ public class RegressionRepository {
                 c.moveToFirst();
                 if (!c.isAfterLast()) {
                     return new Regression(getString(c, REGRESSION_SENSOR_NAME), getString(c, REGRESSION_SENSOR_PACKAGE_NAME),
-                            getString(c, REGRESSION_MEASUREMENT_TYPE), getString(c, REGRESSION_MEASUREMENT_SYMBOL),
-                            getString(c, REGRESSION_MEASUREMENT_UNIT), gson.fromJson(getString(c, REGRESSION_COEFFICIENTS), double[].class),
+                            getString(c, REGRESSION_MEASUREMENT_TYPE), getString(c, REGRESSION_SHORT_TYPE),
+                            getString(c, REGRESSION_MEASUREMENT_SYMBOL), getString(c, REGRESSION_MEASUREMENT_UNIT),
+                            gson.fromJson(getString(c, REGRESSION_COEFFICIENTS), double[].class),
                             getInt(c, REGRESSION_THRESHOLD_VERY_LOW), getInt(c, REGRESSION_THRESHOLD_LOW),
                             getInt(c, REGRESSION_THRESHOLD_MEDIUM), getInt(c, REGRESSION_THRESHOLD_HIGH),
                             getInt(c, REGRESSION_THRESHOLD_VERY_HIGH));
@@ -62,6 +62,7 @@ public class RegressionRepository {
         values.put(REGRESSION_MEASUREMENT_TYPE, regression.getMeasurementType());
         values.put(REGRESSION_MEASUREMENT_SYMBOL, regression.getMeasurementSymbol());
         values.put(REGRESSION_MEASUREMENT_UNIT, regression.getMeasurementUnit());
+        values.put(REGRESSION_SHORT_TYPE, regression.getShortType());
         values.put(REGRESSION_COEFFICIENTS, gson.toJson(regression.getCoefficients()));
         values.put(REGRESSION_THRESHOLD_VERY_LOW, regression.getThresholdVeryLow());
         values.put(REGRESSION_THRESHOLD_LOW, regression.getThresholdLow());

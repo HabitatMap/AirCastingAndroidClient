@@ -94,6 +94,12 @@ public class SchemaMigrator
       createRegressionTable(db, 31);
     }
 
+    if (oldVersion < 32 && newVersion >= 32)
+    {
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_SHORT_TYPE, Datatype.TEXT);
+        addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_MEASURED_VALUE, Datatype.REAL);
+    }
+
 //    sometime in the future
 //    {
 //      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);

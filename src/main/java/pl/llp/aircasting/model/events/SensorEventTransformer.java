@@ -18,7 +18,7 @@ public class SensorEventTransformer {
         if (regression == null) return event;
 
         SensorEvent e = new SensorEvent(event.getPackageName(), event.getSensorName(), regression.getMeasurementType(),
-                event.getShortType(), regression.getMeasurementUnit(), regression.getMeasurementSymbol(),
+                regression.getShortType(), regression.getMeasurementUnit(), regression.getMeasurementSymbol(),
                 regression.getThresholdVeryLow(), regression.getThresholdLow(), regression.getThresholdMedium(),
                 regression.getThresholdHigh(), regression.getThresholdVeryHigh(), regression.apply(event.getValue()),
                 event.getValue());
