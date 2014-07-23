@@ -60,6 +60,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.graph);
+        measurementPresenter.setSensor(sensorManager.getVisibleSensor());
 
         plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
     }

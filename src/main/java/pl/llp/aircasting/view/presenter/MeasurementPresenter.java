@@ -83,7 +83,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   @Inject private ApplicationState state;
 
-  private Sensor sensor = SimpleAudioReader.getSensor();
+    public void setSensor(Sensor sensor) {
+        this.sensor = sensor;
+    }
+
+    private Sensor sensor = SimpleAudioReader.getSensor();
 
   @Inject
   public void init()
