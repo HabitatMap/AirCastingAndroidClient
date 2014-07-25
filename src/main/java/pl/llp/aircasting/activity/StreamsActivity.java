@@ -20,12 +20,15 @@ import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.listener.OnSensorDragListener;
 import pl.llp.aircasting.api.RegressionDriver;
 import pl.llp.aircasting.api.SessionDriver;
+import pl.llp.aircasting.api.data.CreateRegressionResponse;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.repository.RegressionRepository;
+import pl.llp.aircasting.util.http.HttpResult;
+import pl.llp.aircasting.util.http.Status;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
@@ -63,10 +66,6 @@ public class StreamsActivity extends ButtonsActivity {
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
 
-        for (MeasurementStream stream : sessionManager.getSession().getMeasurementStreams()) {
-            Log.d("CHECKING_REGS", stream.getSensorName() + " " + stream.getPackageName() + " " +
-                    regressionRepository.getForSensor(stream.getSensorName(), stream.getPackageName()));
-        }
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,9 +153,22 @@ public class StreamsActivity extends ButtonsActivity {
     }
 
     private void triggerCalibration() {
-        Log.d("CALIBRATION", "Calibrate " + target.getSensorName() + " " + target.getPackageName() + " to " + reference.getSensorName() + " " + reference.getPackageName());
-        regressionDriver.createRegression(sessionManager.getSession(), target, reference);
-        triggerSync(this);
+        new AlertDialog.Builder(this)
+                .setMessage(target.getPackageName() + " - " + target.getSensorName() +
+                            " will now be calibrated against " + reference.getPackageName() + " - " + reference.getSensorName())
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        HttpResult<CreateRegressionResponse> response = regressionDriver.createRegression(sessionManager.getSession(), target, reference);
+                        if (response.getStatus() == Status.SUCCESS) {
+                            Toast.makeText(StreamsActivity.this, "Calibration successful", Toast.LENGTH_LONG).show();
+                        }
+                        triggerSync(StreamsActivity.this);
+                    }
+                })
+                .setCancelable(false)
+                .create()
+                .show();
     }
 
     @Override
