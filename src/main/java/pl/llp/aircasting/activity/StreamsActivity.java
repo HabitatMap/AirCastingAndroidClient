@@ -161,7 +161,7 @@ public class StreamsActivity extends ButtonsActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         HttpResult<CreateRegressionResponse> response = regressionDriver.createRegression(sessionManager.getSession(), target, reference);
                         if (response.getStatus() == Status.SUCCESS) {
-                            Toast.makeText(StreamsActivity.this, "Calibration successful", Toast.LENGTH_LONG).show();
+                            Toast.makeText(StreamsActivity.this, R.string.calibration_successful, Toast.LENGTH_LONG).show();
                         }
                         triggerSync(StreamsActivity.this);
                     }

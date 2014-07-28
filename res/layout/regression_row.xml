@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:paddingBottom="10dp"
+              android:paddingTop="10dp"
+              android:gravity="center_vertical">
+
+    <CheckBox android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerVertical="true"
+              android:id="@+id/regression_enabled"
+            />
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/target_name"
+              android:layout_margin="5dp"
+              android:textSize="15sp"
+              android:layout_toRightOf="@id/regression_enabled"
+              android:layout_alignParentTop="true"
+            />
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_margin="5dp"
+              android:text="was calibrated against"
+              android:textSize="12sp"
+              android:layout_below="@id/target_name"
+              android:layout_toRightOf="@id/regression_enabled"
+              android:id="@+id/was_calibrated_against"
+            />
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_margin="5dp"
+              android:id="@+id/reference_name"
+              android:textSize="15sp"
+              android:layout_below="@id/was_calibrated_against"
+              android:layout_toRightOf="@id/regression_enabled"
+            />
+
+</RelativeLayout>

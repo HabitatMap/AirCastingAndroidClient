@@ -48,6 +48,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
   public static final String DISABLE_MAPS_KEY = "disable_maps";
+  public static final String CALIBRATIONS_KEY = "calibrations";
 
   @Inject Application context;
 
@@ -119,6 +120,11 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     else if (DISABLE_MAPS_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, DisableMapSettingsActivity.class));
+      return true;
+    }
+    else if (CALIBRATIONS_KEY.equals(preference.getKey()))
+    {
+      startActivity(new Intent(this, RegressionsActivity.class));
       return true;
     }
     else

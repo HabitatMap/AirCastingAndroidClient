@@ -10,6 +10,9 @@ import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 import static pl.llp.aircasting.storage.DBHelper.*;
 
@@ -20,6 +23,16 @@ public class RegressionRepository {
 
     @Inject AirCastingDB airCastingDB;
     @Inject Gson gson;
+
+    private Regression get(Cursor c) {
+        return new Regression(getString(c, REGRESSION_SENSOR_NAME), getString(c, REGRESSION_SENSOR_PACKAGE_NAME),
+                getString(c, REGRESSION_MEASUREMENT_TYPE), getString(c, REGRESSION_SHORT_TYPE),
+                getString(c, REGRESSION_MEASUREMENT_SYMBOL), getString(c, REGRESSION_MEASUREMENT_UNIT),
+                gson.fromJson(getString(c, REGRESSION_COEFFICIENTS), double[].class),
+                getInt(c, REGRESSION_THRESHOLD_VERY_LOW), getInt(c, REGRESSION_THRESHOLD_LOW),
+                getInt(c, REGRESSION_THRESHOLD_MEDIUM), getInt(c, REGRESSION_THRESHOLD_HIGH),
+                getInt(c, REGRESSION_THRESHOLD_VERY_HIGH));
+    }
 
     public Regression getForSensor(final String sensorName, final String sensorPackageName) {
 
@@ -32,15 +45,25 @@ public class RegressionRepository {
 
                 c.moveToFirst();
                 if (!c.isAfterLast()) {
-                    return new Regression(getString(c, REGRESSION_SENSOR_NAME), getString(c, REGRESSION_SENSOR_PACKAGE_NAME),
-                            getString(c, REGRESSION_MEASUREMENT_TYPE), getString(c, REGRESSION_SHORT_TYPE),
-                            getString(c, REGRESSION_MEASUREMENT_SYMBOL), getString(c, REGRESSION_MEASUREMENT_UNIT),
-                            gson.fromJson(getString(c, REGRESSION_COEFFICIENTS), double[].class),
-                            getInt(c, REGRESSION_THRESHOLD_VERY_LOW), getInt(c, REGRESSION_THRESHOLD_LOW),
-                            getInt(c, REGRESSION_THRESHOLD_MEDIUM), getInt(c, REGRESSION_THRESHOLD_HIGH),
-                            getInt(c, REGRESSION_THRESHOLD_VERY_HIGH));
+                    return get(c);
                 }
                 return null;
+            }
+        });
+    }
+
+    public List<Regression> fetchAll() {
+        return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Regression>>() {
+            @Override
+            public List<Regression> execute(SQLiteDatabase readOnlyDatabase) {
+                List<Regression> result = new ArrayList<Regression>();
+                Cursor c = readOnlyDatabase.query(REGRESSION_TABLE_NAME, null, null, null, null, null, null);
+                c.moveToFirst();
+                while (!c.isAfterLast()) {
+                    result.add(get(c));
+                    c.moveToNext();
+                }
+                return result;
             }
         });
     }
