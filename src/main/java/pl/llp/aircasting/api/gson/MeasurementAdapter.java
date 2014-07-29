@@ -40,8 +40,10 @@ public class MeasurementAdapter implements JsonDeserializer<Measurement>, JsonSe
 
   private double asDouble(JsonObject object, String name)
   {
+    if (object.isJsonNull()) return 0;
+
     JsonElement element = object.get(name);
-    if (element != null)
+    if (element != null && !element.isJsonNull())
     {
       return element.getAsDouble();
     }
