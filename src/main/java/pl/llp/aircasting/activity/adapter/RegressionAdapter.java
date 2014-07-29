@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Regression;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.repository.RegressionRepository;
 
 import java.util.List;
@@ -19,11 +20,14 @@ public class RegressionAdapter extends ArrayAdapter {
 
     private List<Regression> regressions;
     private RegressionRepository regressionRepository;
+    private SessionManager sessionManager;
 
-    public RegressionAdapter(Context context, List<Regression> regressions, RegressionRepository regressionRepository) {
+    public RegressionAdapter(Context context, List<Regression> regressions,
+                             RegressionRepository regressionRepository, SessionManager sessionManager) {
         super(context, R.layout.regression_row, R.id.target_name, regressions);
         this.regressions = regressions;
         this.regressionRepository = regressionRepository;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class RegressionAdapter extends ArrayAdapter {
             @Override
             public void onClick(View view) {
                 regressionRepository.setEnabled(regressions.get(position), enabled.isChecked());
+                sessionManager.refreshUnits();
             }
         });
         return view;

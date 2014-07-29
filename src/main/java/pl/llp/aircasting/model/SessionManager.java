@@ -136,6 +136,11 @@ public class SessionManager
     setSession(newSession, isCalibrating);
   }
 
+  public void refreshUnits() {
+      if (state.recording().isJustShowingCurrentValues())
+          setSession(new Session());
+  }
+
   public void setSession(Session session) {
     setSession(session, false);
   }

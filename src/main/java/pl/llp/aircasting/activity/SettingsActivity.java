@@ -38,6 +38,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
+import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
@@ -56,6 +57,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   @Inject SettingsHelper settingsHelper;
   @Inject SensorManager sensorManager;
   @Inject MainMenu mainMenu;
+  @Inject ApplicationState state;
 
   @InjectResource(R.string.profile_template) String profileTemplate;
   Offset60DbInputListener offset60DbInputListener;
@@ -71,6 +73,10 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     offset60DbInputListener = new Offset60DbInputListener();
 
     final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
+
+    if (!state.recording().isJustShowingCurrentValues()) {
+        getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(CALIBRATIONS_KEY));
+    }
 
     offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
   }

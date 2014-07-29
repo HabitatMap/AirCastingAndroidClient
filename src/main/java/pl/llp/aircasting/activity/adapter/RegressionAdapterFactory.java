@@ -2,6 +2,7 @@ package pl.llp.aircasting.activity.adapter;
 
 import android.content.Context;
 import com.google.inject.Inject;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.repository.RegressionRepository;
 
 /**
@@ -9,8 +10,9 @@ import pl.llp.aircasting.storage.repository.RegressionRepository;
  */
 public class RegressionAdapterFactory {
     @Inject RegressionRepository regressionRepository;
+    @Inject SessionManager sessionManager;
 
     public RegressionAdapter create(Context context) {
-        return new RegressionAdapter(context, regressionRepository.fetchAll(), regressionRepository);
+        return new RegressionAdapter(context, regressionRepository.fetchAll(), regressionRepository, sessionManager);
     }
 }

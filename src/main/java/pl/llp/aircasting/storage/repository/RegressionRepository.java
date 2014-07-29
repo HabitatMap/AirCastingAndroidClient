@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.Regression;
+import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
