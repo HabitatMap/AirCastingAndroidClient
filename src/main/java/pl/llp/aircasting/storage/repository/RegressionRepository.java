@@ -36,13 +36,50 @@ public class RegressionRepository {
                 getInt(c, REGRESSION_BACKEND_ID), getBool(c, REGRESSION_IS_ENABLED));
     }
 
+    public List<Integer> disabledIds() {
+        return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Integer>>() {
+            @Override
+            public List<Integer> execute(SQLiteDatabase readOnlyDatabase) {
+                List<Integer> result = new ArrayList<Integer>();
+                Cursor c = readOnlyDatabase.query(REGRESSION_TABLE_NAME, null,
+                        REGRESSION_IS_ENABLED + " = 1", null, null, null, null);
+                c.moveToFirst();
+                while (!c.isAfterLast()) {
+                    result.add(getInt(c, REGRESSION_BACKEND_ID));
+                    c.moveToNext();
+                }
+                return result;
+            }
+        });
+    }
+
+    public void setEnabled(final Regression regression, final boolean value) {
+        airCastingDB.executeWritableTask(new WritableDatabaseTask<Object>() {
+            @Override
+            public Object execute(SQLiteDatabase writableDatabase) {
+                regression.setEnabled(value);
+                writableDatabase.update(REGRESSION_TABLE_NAME, isEnabledValues(value),
+                        REGRESSION_BACKEND_ID + " = ?", new String[] {String.valueOf(regression.getBackendId())});
+                return null;
+            }
+        });
+    }
+
+    public void enable(Regression regression) {
+        setEnabled(regression, true);
+    }
+
+    public void disable(Regression regression) {
+        setEnabled(regression, false);
+    }
+
     public Regression getForSensor(final String sensorName, final String sensorPackageName) {
 
         return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<Regression>() {
             @Override
             public Regression execute(SQLiteDatabase readOnlyDatabase) {
                 Cursor c = readOnlyDatabase.query(REGRESSION_TABLE_NAME, null,
-                        REGRESSION_SENSOR_NAME + " = ? AND " + REGRESSION_SENSOR_PACKAGE_NAME + " = ?",
+                        REGRESSION_IS_ENABLED + " = 1 AND " + REGRESSION_SENSOR_NAME + " = ? AND " + REGRESSION_SENSOR_PACKAGE_NAME + " = ?",
                         new String[] {sensorName, sensorPackageName}, null, null, null);
 
                 c.moveToFirst();
@@ -78,6 +115,12 @@ public class RegressionRepository {
                 return writableDatabase.insertOrThrow(REGRESSION_TABLE_NAME, null, values);
             }
         });
+    }
+
+    private ContentValues isEnabledValues(boolean val) {
+        ContentValues values = new ContentValues();
+        values.put(REGRESSION_IS_ENABLED, val);
+        return values;
     }
 
     private ContentValues values(Regression regression) {

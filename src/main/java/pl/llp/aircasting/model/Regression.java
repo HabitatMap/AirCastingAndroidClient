@@ -125,6 +125,7 @@ public class Regression {
     }
 
     public double apply(double value) {
+        if (!isEnabled()) return value;
         int len = coefficients.length;
         double val = coefficients[len - 1];
         for (int i = len - 2; i >= 0; i--) {

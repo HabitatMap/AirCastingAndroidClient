@@ -133,8 +133,15 @@ public class SyncService extends RoboIntentService
       if (!(result.getStatus() == Status.SUCCESS))
           return;
 
+      List<Integer> disabled = regressionRepository.disabledIds();
+
       regressionRepository.deleteAll();
       for (Regression regression : result.getContent()) {
+          if (disabled.contains(regression.getBackendId())) {
+              regression.setEnabled(false);
+          } else {
+              regression.setEnabled(true);
+          }
           regressionRepository.save(regression);
       }
   }

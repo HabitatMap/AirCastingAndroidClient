@@ -11,6 +11,6 @@ public class RegressionAdapterFactory {
     @Inject RegressionRepository regressionRepository;
 
     public RegressionAdapter create(Context context) {
-        return new RegressionAdapter(context, regressionRepository.fetchAll());
+        return new RegressionAdapter(context, regressionRepository.fetchAll(), regressionRepository);
     }
 }
