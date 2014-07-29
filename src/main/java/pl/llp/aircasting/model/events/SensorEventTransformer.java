@@ -2,7 +2,6 @@ package pl.llp.aircasting.model.events;
 
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.Regression;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.storage.repository.RegressionRepository;
 
 /**
@@ -14,7 +13,7 @@ public class SensorEventTransformer {
 
     public SensorEvent transform(SensorEvent event) {
 
-        Regression regression = regressionRepository.getForSensor(event.getSensorName(), event.getPackageName());
+        Regression regression = regressionRepository.getEnabledForSensor(event.getSensorName(), event.getPackageName());
         if (regression == null) return event;
 
         SensorEvent e = new SensorEvent(event.getPackageName(), event.getSensorName(), regression.getMeasurementType(),

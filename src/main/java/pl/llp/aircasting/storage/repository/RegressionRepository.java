@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.Regression;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
@@ -74,7 +75,7 @@ public class RegressionRepository {
         setEnabled(regression, false);
     }
 
-    public Regression getForSensor(final String sensorName, final String sensorPackageName) {
+    public Regression getEnabledForSensor(final String sensorName, final String sensorPackageName) {
 
         return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<Regression>() {
             @Override
@@ -92,6 +93,22 @@ public class RegressionRepository {
         });
     }
 
+    private Regression getForSensor(final String sensorName, final String sensorPackageName) {
+        return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<Regression>() {
+            @Override
+            public Regression execute(SQLiteDatabase readOnlyDatabase) {
+                Cursor c = readOnlyDatabase.query(REGRESSION_TABLE_NAME, null,
+                        REGRESSION_SENSOR_NAME + " = ? AND " + REGRESSION_SENSOR_PACKAGE_NAME + " = ?",
+                        new String[] {sensorName, sensorPackageName}, null, null, null);
+
+                c.moveToFirst();
+                if (!c.isAfterLast()) {
+                    return get(c);
+                }
+                return null;
+            }
+        });
+    }
     public List<Regression> fetchAll() {
         return airCastingDB.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Regression>>() {
             @Override
@@ -156,4 +173,14 @@ public class RegressionRepository {
         });
     }
 
+    public List<Regression> forSensors(List<Sensor> sensors) {
+        List<Regression> result = new ArrayList<Regression>();
+        for (Sensor sensor : sensors) {
+            Regression reg = getForSensor(sensor.getSensorName(), sensor.getPackageName());
+            if (reg != null) {
+                result.add(reg);
+            }
+        }
+        return result;
+    }
 }
