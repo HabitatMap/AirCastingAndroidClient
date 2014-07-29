@@ -22,6 +22,35 @@ public class Regression {
     @Expose @SerializedName("threshold_medium") private int thresholdMedium;
     @Expose @SerializedName("threshold_high") private int thresholdHigh;
     @Expose @SerializedName("threshold_very_high") private int thresholdVeryHigh;
+    @Expose @SerializedName("reference_sensor_name") private String referenceSensorName;
+    @Expose @SerializedName("reference_sensor_package_name") private String referenceSensorPackageName;
+    @Expose @SerializedName("is_owner") private boolean isOwner;
+    @Expose @SerializedName("id") private int backendId;
+    private boolean isEnabled;
+
+    public String getReferenceSensorName() {
+        return referenceSensorName;
+    }
+
+    public String getReferenceSensorPackageName() {
+        return referenceSensorPackageName;
+    }
+
+    public boolean isOwner() {
+        return isOwner;
+    }
+
+    public int getBackendId() {
+        return backendId;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
 
     public String getSensorName() {
         return sensorName;
@@ -71,9 +100,11 @@ public class Regression {
         return thresholdVeryHigh;
     }
 
-    public Regression(String sensorName, String sensorPackageName, String measurementType, String shortType, String measurementSymbol,
-                      String measurementUnit, double[] coefficients, int thresholdVeryLow,
-                      int thresholdLow, int thresholdMedium, int thresholdHigh, int thresholdVeryHigh) {
+    public Regression(String sensorName, String sensorPackageName, String measurementType, String shortType,
+                      String measurementSymbol, String measurementUnit, double[] coefficients, int thresholdVeryLow,
+                      int thresholdLow, int thresholdMedium, int thresholdHigh, int thresholdVeryHigh,
+                      String referenceSensorName, String referenceSensorPackageName, boolean isOwner,
+                      int backendId, boolean isEnabled) {
         this.sensorName = sensorName;
         this.sensorPackageName = sensorPackageName;
         this.measurementType = measurementType;
@@ -86,6 +117,11 @@ public class Regression {
         this.thresholdMedium = thresholdMedium;
         this.thresholdHigh = thresholdHigh;
         this.thresholdVeryHigh = thresholdVeryHigh;
+        this.referenceSensorName = referenceSensorName;
+        this.referenceSensorPackageName = referenceSensorPackageName;
+        this.isOwner = isOwner;
+        this.backendId = backendId;
+        this.isEnabled = isEnabled;
     }
 
     public double apply(double value) {

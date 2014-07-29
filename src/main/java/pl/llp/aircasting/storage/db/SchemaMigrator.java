@@ -100,6 +100,16 @@ public class SchemaMigrator
         addColumn(db, MEASUREMENT_TABLE_NAME, MEASUREMENT_MEASURED_VALUE, Datatype.REAL);
     }
 
+    if (oldVersion < 33 && newVersion >= 33)
+    {
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_REFERENCE_SENSOR_NAME, Datatype.TEXT);
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME, Datatype.TEXT);
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_IS_OWNER, Datatype.BOOLEAN);
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_IS_ENABLED, Datatype.BOOLEAN);
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_BACKEND_ID, Datatype.INTEGER);
+    }
+
+
 //    sometime in the future
 //    {
 //      dropColumn(db, SESSION_TABLE_NAME, DEPRECATED_SESSION_PEAK);

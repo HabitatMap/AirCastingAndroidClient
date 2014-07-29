@@ -46,6 +46,11 @@ public class SchemaCreator
       table.addColumn(new Column(REGRESSION_SENSOR_NAME, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SENSOR_PACKAGE_NAME, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SHORT_TYPE, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_NAME, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_IS_OWNER, Datatype.BOOLEAN));
+      table.addColumn(new Column(REGRESSION_IS_ENABLED, Datatype.BOOLEAN));
+      table.addColumn(new Column(REGRESSION_BACKEND_ID, Datatype.INTEGER));
       return table;
   }
 

@@ -31,7 +31,9 @@ public class RegressionRepository {
                 gson.fromJson(getString(c, REGRESSION_COEFFICIENTS), double[].class),
                 getInt(c, REGRESSION_THRESHOLD_VERY_LOW), getInt(c, REGRESSION_THRESHOLD_LOW),
                 getInt(c, REGRESSION_THRESHOLD_MEDIUM), getInt(c, REGRESSION_THRESHOLD_HIGH),
-                getInt(c, REGRESSION_THRESHOLD_VERY_HIGH));
+                getInt(c, REGRESSION_THRESHOLD_VERY_HIGH), getString(c, REGRESSION_REFERENCE_SENSOR_NAME),
+                getString(c, REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME), getBool(c, REGRESSION_IS_OWNER),
+                getInt(c, REGRESSION_BACKEND_ID), getBool(c, REGRESSION_IS_ENABLED));
     }
 
     public Regression getForSensor(final String sensorName, final String sensorPackageName) {
@@ -92,6 +94,11 @@ public class RegressionRepository {
         values.put(REGRESSION_THRESHOLD_MEDIUM, regression.getThresholdMedium());
         values.put(REGRESSION_THRESHOLD_HIGH, regression.getThresholdHigh());
         values.put(REGRESSION_THRESHOLD_VERY_HIGH, regression.getThresholdVeryHigh());
+        values.put(REGRESSION_REFERENCE_SENSOR_NAME, regression.getReferenceSensorName());
+        values.put(REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME, regression.getReferenceSensorPackageName());
+        values.put(REGRESSION_IS_OWNER, regression.isOwner());
+        values.put(REGRESSION_IS_ENABLED, regression.isEnabled());
+        values.put(REGRESSION_BACKEND_ID, regression.getBackendId());
         return values;
     }
 

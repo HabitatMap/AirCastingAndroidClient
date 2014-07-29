@@ -19,6 +19,7 @@
 */
 package pl.llp.aircasting.util.http;
 
+import android.util.Log;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.util.Constants;

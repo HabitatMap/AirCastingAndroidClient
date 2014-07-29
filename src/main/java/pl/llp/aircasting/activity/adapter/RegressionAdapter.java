@@ -27,7 +27,7 @@ public class RegressionAdapter extends ArrayAdapter {
         View view = super.getView(position, convertView, parent);
         Regression regression = regressions.get(position);
         ((TextView) view.findViewById(R.id.target_name)).setText(regression.getSensorName() + " " + regression.getSensorPackageName());
-        ((TextView) view.findViewById(R.id.reference_name)).setText(regression.getSensorName() + " " + regression.getSensorPackageName());
+        ((TextView) view.findViewById(R.id.reference_name)).setText(regression.getReferenceSensorName() + " " + regression.getReferenceSensorPackageName());
         return view;
     }
 

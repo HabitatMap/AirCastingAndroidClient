@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 32;
+  int DB_VERSION = 33;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -114,5 +114,10 @@ public interface DBConstants
   String REGRESSION_SHORT_TYPE = "measurement_short_type";
   String REGRESSION_SENSOR_NAME = "sensor_name";
   String REGRESSION_SENSOR_PACKAGE_NAME = "sensor_package_name";
+  String REGRESSION_REFERENCE_SENSOR_NAME = "reference_sensor_name";
+  String REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME = "reference_sensor_package_name";
+  String REGRESSION_IS_OWNER = "is_owner";
+  String REGRESSION_BACKEND_ID = "backend_id";
+  String REGRESSION_IS_ENABLED = "is_enabled";
 
 }
