@@ -24,4 +24,7 @@ public interface ChooseMethod {
     ChoosePath post();
 
     ChoosePath get();
+
+    ChoosePath delete();
 }
+

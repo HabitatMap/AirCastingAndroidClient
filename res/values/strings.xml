@@ -221,4 +221,5 @@
   <string name="calibration_successful">Calibration successful</string>
   <string name="calibrations">Calibrations</string>
   <string name="calibrations_description">Uncheck to disable calibrations, long press to delete calibrations</string>
+  <string name="confirm_remove_calibration">Are you sure you want to remove this calibration?</string>
 </resources>

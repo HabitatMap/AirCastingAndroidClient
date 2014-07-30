@@ -20,6 +20,7 @@
 package pl.llp.aircasting.util.http;
 
 import android.util.Log;
+import org.apache.http.client.methods.HttpDelete;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.util.Constants;
@@ -77,7 +78,7 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
     private Method method;
 
     private enum Method {
-        GET, POST
+        GET, POST, DELETE;
     }
 
     public static ChooseMethod http() {
@@ -142,6 +143,13 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
         return this;
     }
 
+    @Override
+    public ChoosePath delete() {
+        this.method = Method.DELETE;
+
+        return this;
+    }
+
     public HttpResult<Void> execute() {
         return into(Void.class);
     }
@@ -149,8 +157,10 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
     public <T> HttpResult<T> into(Type target) {
         if (method == Method.POST) {
             return doPost(target);
-        } else {
+        } else if (method == Method.GET) {
             return doGet(target);
+        } else {
+            return doDelete(target);
         }
     }
 
@@ -193,6 +203,18 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
             return doRequest(get, target);
         } catch (URISyntaxException e) {
             Logger.e("Couldn't create path", e);
+            return error();
+        }
+    }
+
+    private <T> HttpResult<T> doDelete(Type target) {
+        try {
+            URI path = createPath(address, query());
+            HttpDelete delete = new HttpDelete(path);
+
+            return doRequest(delete, target);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
             return error();
         }
     }
@@ -240,7 +262,14 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
       client.addRequestInterceptor(preemptiveAuth(), 0);
 
       HttpResponse response = client.execute(request);
+
+      if (response.getStatusLine().getStatusCode() == 204) {
+          result.setStatus(Status.SUCCESS);
+          return result;
+      }
+
       content = response.getEntity().getContent();
+
       reader = new InputStreamReader(content);
 
 

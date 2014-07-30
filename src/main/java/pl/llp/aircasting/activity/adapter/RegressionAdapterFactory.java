@@ -2,6 +2,7 @@ package pl.llp.aircasting.activity.adapter;
 
 import android.content.Context;
 import com.google.inject.Inject;
+import pl.llp.aircasting.api.RegressionDriver;
 import pl.llp.aircasting.model.Regression;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
@@ -14,11 +15,11 @@ import java.util.List;
  */
 public class RegressionAdapterFactory {
     @Inject RegressionRepository regressionRepository;
-    @Inject SessionManager sessionManager;
     @Inject SensorManager sensorManager;
+    @Inject RegressionDriver regressionDriver;
 
     public RegressionAdapter create(Context context) {
         List<Regression> regressions = regressionRepository.forSensors(sensorManager.getSensors());
-        return new RegressionAdapter(context, regressions, regressionRepository, sessionManager);
+        return new RegressionAdapter(context, regressions, regressionRepository, regressionDriver);
     }
 }

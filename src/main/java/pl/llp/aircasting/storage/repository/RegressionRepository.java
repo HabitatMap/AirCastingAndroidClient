@@ -55,6 +55,17 @@ public class RegressionRepository {
         });
     }
 
+    public void delete(final Regression regression) {
+        airCastingDB.executeWritableTask(new WritableDatabaseTask<Void>() {
+            @Override
+            public Void execute(SQLiteDatabase writableDatabase) {
+                writableDatabase.delete(REGRESSION_TABLE_NAME, REGRESSION_BACKEND_ID + " = ?",
+                        new String[] {String.valueOf(regression.getBackendId())});
+                return null;
+            }
+        });
+    }
+
     public void setEnabled(final Regression regression, final boolean value) {
         airCastingDB.executeWritableTask(new WritableDatabaseTask<Object>() {
             @Override
