@@ -74,7 +74,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
     final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
 
-    if (!state.recording().isJustShowingCurrentValues()) {
+    if (state.recording().isRecording()) {
         getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(CALIBRATIONS_KEY));
     }
 
