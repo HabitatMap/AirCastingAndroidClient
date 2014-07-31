@@ -330,7 +330,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   }
   private void viewSession(long id, final boolean isCalibrating) {
     if (sessionManager.isSessionStarted()) {
-      Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
+      if (isCalibrating) {
+          Toast.makeText(context, R.string.stop_aircasting_to_calibrate, Toast.LENGTH_LONG).show();
+      } else {
+          Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
+      }
       return;
     }
 

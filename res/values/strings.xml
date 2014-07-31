@@ -151,6 +151,7 @@
   </string>
   <string name="setting_error">Value invalid</string>
   <string name="stop_aircasting">To view sessions you must first stop AirCasting.</string>
+  <string name="stop_aircasting_to_calibrate">To calibrate you must first stop AirCasting.</string>
   <string name="session_not_uploaded">Session upload pending - wait a couple of minutes and try again.</string>
 
   <string name="unnamed_session"><![CDATA[<i>unnamed</i>]]></string>
