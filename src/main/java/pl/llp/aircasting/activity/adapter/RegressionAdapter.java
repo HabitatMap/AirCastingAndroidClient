@@ -52,6 +52,7 @@ public class RegressionAdapter extends ArrayAdapter {
             @Override
             public void onClick(View view) {
                 regressionRepository.setEnabled(regressions.get(position), enabled.isChecked());
+                notifyDataSetChanged();
             }
         });
         view.setOnLongClickListener(new View.OnLongClickListener() {
