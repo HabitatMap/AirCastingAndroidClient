@@ -128,6 +128,7 @@ public class ResourceHelper
   {
     switch (getLevel(sensor, value))
     {
+      case TOO_LOW:
       case VERY_LOW:
         return green;
       case LOW:
