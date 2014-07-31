@@ -44,7 +44,7 @@ public class RegressionRepository {
             public List<Integer> execute(SQLiteDatabase readOnlyDatabase) {
                 List<Integer> result = new ArrayList<Integer>();
                 Cursor c = readOnlyDatabase.query(REGRESSION_TABLE_NAME, null,
-                        REGRESSION_IS_ENABLED + " = 1", null, null, null, null);
+                        REGRESSION_IS_ENABLED + " = 0", null, null, null, null);
                 c.moveToFirst();
                 while (!c.isAfterLast()) {
                     result.add(getInt(c, REGRESSION_BACKEND_ID));
