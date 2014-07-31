@@ -46,6 +46,7 @@ public class RegressionAdapter extends ArrayAdapter {
         Regression regression = regressions.get(position);
         ((TextView) view.findViewById(R.id.target_name)).setText(regression.getSensorName() + " " + regression.getSensorPackageName());
         ((TextView) view.findViewById(R.id.reference_name)).setText(regression.getReferenceSensorName() + " " + regression.getReferenceSensorPackageName());
+        ((TextView) view.findViewById(R.id.calibration_date)).setText(regression.formattedDate());
         final CheckBox enabled = (CheckBox) view.findViewById(R.id.regression_enabled);
         enabled.setChecked(regression.isEnabled());
         enabled.setOnClickListener(new View.OnClickListener() {

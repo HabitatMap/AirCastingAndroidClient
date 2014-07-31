@@ -1,9 +1,15 @@
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import javax.xml.bind.DatatypeConverter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by marcin on 17/07/14.
@@ -27,6 +33,21 @@ public class Regression {
     @Expose @SerializedName("is_owner") private boolean isOwner;
     @Expose @SerializedName("id") private int backendId;
     private boolean isEnabled;
+    @Expose @SerializedName("created_at") private String createdAt;
+
+    public Date getDate() {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return format.parse(getCreatedAt());
+        } catch (ParseException e) {
+            return new Date();
+        }
+    }
+
+    public String formattedDate() {
+        return new SimpleDateFormat("MM/dd/yyyy, HH:mm").format(getDate());
+    }
 
     public String getReferenceSensorName() {
         return referenceSensorName;
@@ -38,6 +59,10 @@ public class Regression {
 
     public boolean isOwner() {
         return isOwner;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
     }
 
     public int getBackendId() {
@@ -104,7 +129,7 @@ public class Regression {
                       String measurementSymbol, String measurementUnit, double[] coefficients, int thresholdVeryLow,
                       int thresholdLow, int thresholdMedium, int thresholdHigh, int thresholdVeryHigh,
                       String referenceSensorName, String referenceSensorPackageName, boolean isOwner,
-                      int backendId, boolean isEnabled) {
+                      int backendId, boolean isEnabled, String createdAt) {
         this.sensorName = sensorName;
         this.sensorPackageName = sensorPackageName;
         this.measurementType = measurementType;
@@ -122,6 +147,7 @@ public class Regression {
         this.isOwner = isOwner;
         this.backendId = backendId;
         this.isEnabled = isEnabled;
+        this.createdAt = createdAt;
     }
 
     public double apply(double value) {
@@ -134,4 +160,6 @@ public class Regression {
         }
         return val;
     }
+
+
 }

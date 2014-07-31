@@ -35,7 +35,7 @@ public class RegressionRepository {
                 getInt(c, REGRESSION_THRESHOLD_MEDIUM), getInt(c, REGRESSION_THRESHOLD_HIGH),
                 getInt(c, REGRESSION_THRESHOLD_VERY_HIGH), getString(c, REGRESSION_REFERENCE_SENSOR_NAME),
                 getString(c, REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME), getBool(c, REGRESSION_IS_OWNER),
-                getInt(c, REGRESSION_BACKEND_ID), getBool(c, REGRESSION_IS_ENABLED));
+                getInt(c, REGRESSION_BACKEND_ID), getBool(c, REGRESSION_IS_ENABLED), getString(c, REGRESSION_CREATED_AT));
     }
 
     public List<Integer> disabledIds() {
@@ -171,6 +171,7 @@ public class RegressionRepository {
         values.put(REGRESSION_IS_OWNER, regression.isOwner());
         values.put(REGRESSION_IS_ENABLED, regression.isEnabled());
         values.put(REGRESSION_BACKEND_ID, regression.getBackendId());
+        values.put(REGRESSION_CREATED_AT, regression.getCreatedAt());
         return values;
     }
 

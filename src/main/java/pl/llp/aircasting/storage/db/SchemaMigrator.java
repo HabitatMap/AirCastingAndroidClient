@@ -109,6 +109,11 @@ public class SchemaMigrator
         addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_BACKEND_ID, Datatype.INTEGER);
     }
 
+    if (oldVersion < 34 && newVersion >= 34)
+    {
+        addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_CREATED_AT, Datatype.TEXT);
+    }
+
 
 //    sometime in the future
 //    {

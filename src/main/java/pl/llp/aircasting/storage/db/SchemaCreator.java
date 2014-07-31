@@ -51,6 +51,7 @@ public class SchemaCreator
       table.addColumn(new Column(REGRESSION_IS_OWNER, Datatype.BOOLEAN));
       table.addColumn(new Column(REGRESSION_IS_ENABLED, Datatype.BOOLEAN));
       table.addColumn(new Column(REGRESSION_BACKEND_ID, Datatype.INTEGER));
+      table.addColumn(new Column(REGRESSION_CREATED_AT, Datatype.TEXT));
       return table;
   }
 
