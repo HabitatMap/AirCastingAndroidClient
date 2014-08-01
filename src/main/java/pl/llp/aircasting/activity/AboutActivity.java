@@ -74,6 +74,7 @@ public class AboutActivity extends RoboActivity
         getString(R.string.about_stop),
         getString(R.string.about_open_session),
         getString(R.string.disable_maps),
+        getString(R.string.about_calibrations),
         getString(R.string.about_open_source),
         getString(R.string.about_thanks),
         getString(R.string.about_version)
@@ -88,6 +89,7 @@ public class AboutActivity extends RoboActivity
         getString(R.string.about_stop_content),
         getString(R.string.about_open_session_content),
         getString(R.string.disable_maps_content),
+        getString(R.string.about_calibrations_content),
         getString(R.string.about_open_source_content),
         getString(R.string.about_thanks_content),
         getVersion()

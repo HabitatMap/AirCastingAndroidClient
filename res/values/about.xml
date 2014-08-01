@@ -115,6 +115,15 @@
         ]]>
   </string>
 
+  <string name="about_calibrations">Calibrations</string>
+  <string name="about_calibrations_content">
+    <![CDATA[
+      <p>
+      A target instrument can be calibrated against a reference instrument. Calibration is achieved by siting a reference instrument in close proximity to a target instrument and recording an AirCasting session while exposing the instruments to variable conditions over an extended period of time. Then, utilizing the AirCasting "Calibration" feature, measurements from the instruments can be uploaded to the AirCasting server where a fourth-degree polynomial equation is applied to convert the target instruments units of measurement into those of the reference instrument. To establish a calibration between a target instrument and reference instrument, long press a session name on the "Sessions" screen, select "calibrate", and follow the on screen instructions.
+      </p>
+      ]]>
+  </string>
+
   <string name="about_open_source">Open Source</string>
   <string name="about_open_source_content">
     <![CDATA[
