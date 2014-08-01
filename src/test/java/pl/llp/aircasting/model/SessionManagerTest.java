@@ -344,7 +344,7 @@ public class SessionManagerTest
 
     sessionManager.loadSession(0, progressListener);
 
-    verify(sessionManager, atLeastOnce()).setSession(any(Session.class));
+    verify(sessionManager, atLeastOnce()).setSession(any(Session.class), anyBoolean());
   }
 
   @Test
