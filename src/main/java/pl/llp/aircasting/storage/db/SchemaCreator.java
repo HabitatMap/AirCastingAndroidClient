@@ -45,13 +45,13 @@ public class SchemaCreator
       table.addColumn(new Column(REGRESSION_MEASUREMENT_TYPE, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SENSOR_NAME, Datatype.TEXT));
       table.addColumn(new Column(REGRESSION_SENSOR_PACKAGE_NAME, Datatype.TEXT));
-      table.addColumn(new Column(REGRESSION_SHORT_TYPE, Datatype.TEXT));
-      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_NAME, Datatype.TEXT));
-      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME, Datatype.TEXT));
-      table.addColumn(new Column(REGRESSION_IS_OWNER, Datatype.BOOLEAN));
-      table.addColumn(new Column(REGRESSION_IS_ENABLED, Datatype.BOOLEAN));
-      table.addColumn(new Column(REGRESSION_BACKEND_ID, Datatype.INTEGER));
-      table.addColumn(new Column(REGRESSION_CREATED_AT, Datatype.TEXT));
+      table.addColumn(new Column(REGRESSION_SHORT_TYPE, Datatype.TEXT, 32));
+      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_NAME, Datatype.TEXT, 33));
+      table.addColumn(new Column(REGRESSION_REFERENCE_SENSOR_PACKAGE_NAME, Datatype.TEXT, 33));
+      table.addColumn(new Column(REGRESSION_IS_OWNER, Datatype.BOOLEAN, 33));
+      table.addColumn(new Column(REGRESSION_IS_ENABLED, Datatype.BOOLEAN, 33));
+      table.addColumn(new Column(REGRESSION_BACKEND_ID, Datatype.INTEGER, 33));
+      table.addColumn(new Column(REGRESSION_CREATED_AT, Datatype.TEXT, 34));
       return table;
   }
 
@@ -66,7 +66,7 @@ public class SchemaCreator
     table.addColumn(new Column(MEASUREMENT_TIME, Datatype.INTEGER));
     table.addColumn(new Column(MEASUREMENT_STREAM_ID, Datatype.INTEGER));
     table.addColumn(new Column(MEASUREMENT_SESSION_ID, Datatype.INTEGER));
-    table.addColumn(new Column(MEASUREMENT_MEASURED_VALUE, Datatype.REAL));
+    table.addColumn(new Column(MEASUREMENT_MEASURED_VALUE, Datatype.REAL, 32));
     return table;
   }
 
