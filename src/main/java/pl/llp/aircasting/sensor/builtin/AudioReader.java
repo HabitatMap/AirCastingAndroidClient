@@ -294,7 +294,7 @@ public class AudioReader {
     private Listener inputListener = null;
 
     // Flag whether the thread should be running.
-    private boolean running = false;
+    private volatile boolean running = false;
 
     // The thread, if any, which is currently reading.  Null if not running.
     private Thread readerThread = null;
