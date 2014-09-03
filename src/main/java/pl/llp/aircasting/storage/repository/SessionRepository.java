@@ -449,6 +449,7 @@ public class SessionRepository
         {
           Logger.e("Session [" + whereClause + "] not found in database");
         }
+        c.close();
         return "";
       }
     });

@@ -137,13 +137,16 @@ public class UncalibratedMeasurementCalibrator
       {
         Cursor c = readOnlyDatabase.rawQuery("SELECT COUNT(*) FROM " + SESSION_TABLE_NAME + " WHERE "
                                                  + SESSION_CALIBRATED + " = 0", null);
-        c.moveToFirst();
         if(c.getCount() < 1)
         {
+          c.close();
           return 0;
         }
+        c.moveToFirst();
+        int anInt = c.getInt(0);
+        c.close();
 
-        return c.getInt(0);
+        return anInt;
       }
     });
   }

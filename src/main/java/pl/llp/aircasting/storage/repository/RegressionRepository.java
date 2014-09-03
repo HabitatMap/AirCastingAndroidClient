@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import pl.llp.aircasting.model.Regression;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.ReadOnlyDatabaseTask;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
@@ -15,8 +14,10 @@ import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import static pl.llp.aircasting.storage.DBHelper.getBool;
+import static pl.llp.aircasting.storage.DBHelper.getInt;
+import static pl.llp.aircasting.storage.DBHelper.getString;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
-import static pl.llp.aircasting.storage.DBHelper.*;
 
 /**
  * Created by marcin on 17/07/14.
@@ -50,6 +51,7 @@ public class RegressionRepository {
                     result.add(getInt(c, REGRESSION_BACKEND_ID));
                     c.moveToNext();
                 }
+                c.close();
                 return result;
             }
         });
@@ -96,10 +98,12 @@ public class RegressionRepository {
                         new String[] {sensorName, sensorPackageName}, null, null, null);
 
                 c.moveToFirst();
+                Regression result = null;
                 if (!c.isAfterLast()) {
-                    return get(c);
+                  result = get(c);
                 }
-                return null;
+                c.close();
+                return result;
             }
         });
     }
@@ -113,10 +117,12 @@ public class RegressionRepository {
                         new String[] {sensorName, sensorPackageName}, null, null, null);
 
                 c.moveToFirst();
+                Regression result = null;
                 if (!c.isAfterLast()) {
-                    return get(c);
+                    result = get(c);
                 }
-                return null;
+                c.close();
+                return result;
             }
         });
     }
@@ -131,6 +137,7 @@ public class RegressionRepository {
                     result.add(get(c));
                     c.moveToNext();
                 }
+                c.close();
                 return result;
             }
         });
