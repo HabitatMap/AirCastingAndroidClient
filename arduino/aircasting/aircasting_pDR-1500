@@ -1,0 +1,69 @@
+int day = 0, year = 0, hours= 0, mins = 0, secs = 0;
+int temp;
+unsigned long count;
+unsigned long starttime;
+unsigned long sampletime_ms = 1000;
+double concentration = 0, totalconcentration = 0;
+// include the SoftwareSerial library so you can use its functions:
+#include <SoftwareSerial.h>
+
+// set up a new serial port
+SoftwareSerial mySerial(3, 2);
+
+void parser() {
+               day = mySerial.parseInt();
+               temp = mySerial.parseInt();
+               year = mySerial.parseInt();
+               hours = mySerial.parseInt();
+               mins = mySerial.parseInt();
+               secs = mySerial.parseInt();
+               concentration = mySerial.parseFloat();
+               temp = mySerial.parseFloat();
+               temp = mySerial.parseInt();
+               temp = mySerial.parseInt();
+               }
+
+void setup()  {
+  //Serial.begin(9600);
+  mySerial.begin(19200);
+  Serial.begin(115200);
+  //set up Arduino's Serial
+  //Serial.println("Ready");
+  mySerial.print("SD on\r");
+  starttime = millis();
+  //mySerial.print("SD off\r");
+}
+
+
+void loop() {
+  if(mySerial.available()>0){
+  parser();
+  
+  //Serial.print(concentration); 
+  //Serial.print(";HabitatMap_pDR;pDR-1500;Particulate Matter;PM;micrograms per cubic meter;µg/m³;0;12;35;55;150");
+  //Serial.print("\n");
+  
+  count = count + 1;
+  totalconcentration = totalconcentration + concentration;
+  }
+  if ((millis()-starttime) > sampletime_ms)
+  {
+  totalconcentration = totalconcentration/count;
+  Serial.print(totalconcentration); 
+  Serial.print(";InsertSensorPackageName;pDR-1500;Particulate Matter;PM;micrograms per cubic meter;µg/m³;0;12;35;55;150");
+  Serial.print("\n");
+  starttime = millis();
+  count = 0;
+  totalconcentration = 0;
+  }
+  //Serial.print("Time: ");
+  //Serial.print(hours);
+  //Serial.print(":");
+  //Serial.print(mins);
+  //Serial.print(":");
+  //Serial.print(secs);
+  //Serial.print(" Concentration: ");
+  //Serial.println(concentration);
+
+  //delay(100); 
+}
