@@ -109,7 +109,11 @@ public class AudioReader {
                     audioBuf);
             inputBlockSize = block;
             sleepTime = (long) (1000f / ((float) rate / (float) block));
-            inputBuffer = new short[2][inputBlockSize];
+
+            // We double inputBlockSize because of Android 5.0 bug,
+            // AudioRecord.read(short[] audioData, int offsetInShorts, int sizeInShorts)
+            // writes twice as much data to a buffer than it should.
+            inputBuffer = new short[2][inputBlockSize * 2];
             inputBufferWhich = 0;
             inputBufferIndex = 0;
             inputListener = listener;
