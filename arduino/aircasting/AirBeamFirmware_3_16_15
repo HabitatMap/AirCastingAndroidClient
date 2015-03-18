@@ -1,0 +1,236 @@
+#include <SoftwareSerial.h>
+#include <DHT.h>
+#include <stdlib.h>
+//#include <string.h>
+
+#define DHTPIN 9
+#define DHTTYPE DHT22   // DHT 22  (AM2302)
+
+//int pin = 8;
+int humi, cel, fah, kelv; 
+unsigned long analogcount;
+double analogtotal;
+
+String inData;
+
+//boolean LEDstate = LOW;
+unsigned long duration;
+//unsigned long LEDstarttime = 0;
+unsigned long starttime = 0;
+//unsigned long LEDsampletime_ms = 100;
+unsigned long sampletime_ms = 1000;
+//unsigned long lowpulseoccupancy = 0;
+unsigned long analogvalue = 0;
+//double ratio = 0;
+double LconAV = 0;
+double Lugm3_2 = 0;
+
+DHT dht(DHTPIN, DHTTYPE);
+SoftwareSerial mySerial(10, 11); //RX, TX
+
+#define LEDPIN 13
+#define BT_BUF_LEN 10
+char bt_index = 0;
+char bt_buffer[BT_BUF_LEN];
+int8_t bt_connected = -1; // 0 = not connected (but been connected), 1 == connected, -1 == never been connected
+
+uint8_t put_chr_buf(char c){
+  // puts a character into the bt_buffer.
+  // If the character is '\n' returns 1 (and doesn't put it into the buffer)
+  // else returns 0
+  if(c == '\n'){
+      return 1;
+  }
+  if(bt_index >= BT_BUF_LEN - 2){
+    return 0;
+  }
+  bt_buffer[bt_index] = c;
+  bt_index++;
+  bt_buffer[bt_index] = 0;
+  return 0;
+}
+
+void analyze_buf(){
+  // Determines if the buffer contains the SS notation
+  if(bt_connected == -1){
+    if(strncmp(bt_buffer, "SS=", 3) == 0){
+      bt_connected = 0;
+      Serial.println(F("1st Connect to BT"));
+    }
+  }
+  else{
+    if(strncmp(bt_buffer, "OK", 2) == 0){
+    }
+    else{
+      Serial.println(F("ERROR: Unknown response:"));
+      Serial.println(bt_buffer);
+    }
+    bt_connected = 0;
+  }
+  bt_buffer[0] = 0;
+  bt_index = 0;
+}
+
+void update_bt_status(){
+  // This should be called in the loop with at least a hundred milliescond delay before it is called again.
+  // Determine if the BT module is connected or not.
+  uint8_t temp = 0;
+  if(mySerial.available()){
+    while(mySerial.available()){
+      temp = put_chr_buf(mySerial.read());
+      if(temp){
+        analyze_buf();
+      }
+    }
+  }
+  else{
+    if(bt_connected >= 0){
+      bt_connected = 1;
+    }
+  }
+  
+  // clear excess
+  while(mySerial.available()){
+    mySerial.read();
+  }
+  
+  // Send out another signal for the next loop
+  mySerial.println(F("BC:UI=01"));
+  
+  // Indicate connection status via the LED
+  digitalWrite(LEDPIN, HIGH);
+  if(bt_connected < 1){
+    delay(100);
+    digitalWrite(LEDPIN, LOW);
+    delay(100);
+  }
+}
+
+String readBTMAC() {
+inData = "";
+if (mySerial.available() > 0) {
+Serial.println(mySerial.available());
+int h = mySerial.available();
+for (int i = 0; i < h; i++) {
+inData += (char)mySerial.read();
+}
+inData.remove(15, 17);
+inData.remove(0, 3);
+}
+return inData;
+}
+
+void setup() {
+  //delay(5000);
+  Serial.begin(115200);
+  mySerial.begin(19200);
+  bt_buffer[0] = 0;
+  mySerial.println(F("BC:AD"));
+  delay(100);
+  readBTMAC();
+  mySerial.print(F("BC:NM=AirBeam-"));
+  mySerial.println(inData);
+  //pinMode(8,INPUT);
+  pinMode(LEDPIN, OUTPUT);
+  starttime = millis();
+  //LEDstarttime = millis();
+}
+
+void loop() {
+  //unsigned long int start = millis(); // The main block takes at least 1.5 seconds!
+  analogvalue = analogvalue + analogRead(0);
+  analogcount++;
+  //duration = pulseIn(pin, LOW);
+  //lowpulseoccupancy = lowpulseoccupancy + duration;
+  //Serial.println(F("Took ms: "));
+  //Serial.println(millis() - starttime);
+  //Serial.println(millis() - LEDstarttime);
+  update_bt_status();
+  if ((millis()-starttime) > sampletime_ms)
+  {
+    starttime = millis(); // moved to create more regular periods.
+    //update_bt_status();
+    
+    //ratio = lowpulseoccupancy/(sampletime_ms*10.0);  // Integer percentage 0=>100
+    analogvalue = analogvalue/analogcount;
+    analogtotal = (analogvalue*5.0)/1024;
+    LconAV = (240.0*pow(analogtotal,6) - 2491.3*pow(analogtotal,5) + 9448.7*pow(analogtotal,4) - 14840.0*pow(analogtotal,3) + 10684.0*pow(analogtotal,2) + 2211.8*(analogtotal) + 7.9623);
+    Lugm3_2 = (0.0000000495*pow(LconAV,2) + 0.0015247767*(LconAV));//Cardboard
+    
+    //y = 0.0000000495x2 + 0.0015247767x - 0.7700757363 //Cardboard
+    //Lugm3 = (0.000000000000000000000000124084*pow(LconAV,6) - 0.000000000000000000021601485060*pow(LconAV,5) + 0.00000000000000143560109703371*pow(LconAV,4) - 0.0000000000441691662383661*pow(LconAV,3) + 0.000000633178466830333*pow(LconAV,2) - 0.00127531308452014*(LconAV) + 6.46046830008057); //-1E-16x4 + 1E-11x3 - 4E-07x2 + 0.0055x - 8.1472         
+    //0.000000000000000000000000124084x6 - 0.000000000000000000021601485060x5 + 0.000000000000001435601097033710x4 - 0.000000000044169166238366100000x3 + 0.000000633178466830333000000000x2 - 0.001275313084520140000000000000x + 6.460468300080570000000000000000
+    //0.000000000000000000000000107376x6 - 0.000000000000000000017973858956x5 + 0.000000000000001131107063421510x4 - 0.000000000031786851160857600000x3 + 0.000000383869228359063000000000x2 + 0.000966287521677600000000000000x
+
+    //if(LconAV < 0){
+    //  LconAV = 0;
+    //}
+    if(Lugm3_2 < 0){
+      Lugm3_2 = 0;
+    }
+ 
+    humi = dht.readHumidity();
+    cel = dht.readTemperature();
+    fah = ((cel * 9)/5) + 32;
+    
+    Serial.println();
+    Serial.print("AirBeam MAC: ");
+    Serial.print(inData);
+    Serial.print(fah);
+    Serial.print(F("F "));
+    Serial.print(cel);
+    Serial.print(F("C "));
+    Serial.print(humi);
+    Serial.print(F("RH "));
+    Serial.print(F(" Analog Total: "));
+    Serial.print(analogtotal);
+    Serial.print(F(" Lower Concentration: "));
+    Serial.print(LconAV);
+    Serial.print(F(" Lower ugm3_2: "));
+    Serial.print(Lugm3_2);
+    Serial.println();
+    
+    analogvalue = 0;
+    analogcount = 0;
+    //lowpulseoccupancy = 0;
+    
+    if(bt_connected > 0){
+      //mySerial.print(analogtotal);
+      //mySerial.print((";AirBeam:"));
+      //mySerial.print(inData);
+      //mySerial.print((";AirBeam-PM-V;Particulate Matter;PM;Volts;V;0;1;2;3;4"));
+      //mySerial.print("\n");
+      
+      //mySerial.print(LconAV);
+      //mySerial.print((";AirBeam:"));
+      //mySerial.print(inData);
+      //mySerial.print((";AirBeam-PM-hppcf;Particulate Matter;PM;hundreds of particles per cubic foot;hppcf;0;3000;8000;13000;26000"));
+      //mySerial.print("\n");
+      
+      mySerial.print(Lugm3_2);
+      mySerial.print((";AirBeam:"));
+      mySerial.print(inData);
+      mySerial.print((";AirBeam-PM;Particulate Matter;PM;micrograms per cubic meter;µg/m³;0;12;35;55;150"));
+      mySerial.print("\n");
+      
+      mySerial.print(fah);
+      mySerial.print((";AirBeam:"));
+      mySerial.print(inData);
+      mySerial.print((";AirBeam-F;Temperature;F;degrees Fahrenheit;F;0;25;50;75;100"));
+      mySerial.print("\n");
+   
+      //mySerial.print(cel);
+      //mySerial.print((";AirBeam:"));
+      //mySerial.print(inData);
+      //mySerial.print((";AirBeam-C;Temperature;C;degrees Celsius;C;0;10;20;30;40"));
+      //mySerial.print("\n");
+      
+      mySerial.print(humi);
+      mySerial.print((";AirBeam:"));
+      mySerial.print(inData);
+      mySerial.print((";AirBeam-RH;Relative Humidity;RH;percent;%;0;25;50;75;100"));
+      mySerial.print("\n");
+      
+    }
+    }
+}
