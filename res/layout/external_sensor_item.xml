@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_alignParentTop="true"
+                  android:layout_alignParentLeft="true"
+                  android:layout_margin="3dp">
+
+        <TextView android:id="@+id/name"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textSize="20dp"
+                  android:textStyle="bold"
+                  android:text="Name"
+                  android:layout_margin="3dp"/>
+
+        <TextView android:id="@+id/address"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:layout_weight="1"
+                  android:textSize="20dp"
+                  android:layout_margin="3dp"
+                  android:text="Address"
+                  android:ellipsize="end"/>
+
+    </LinearLayout>
+
+    <TextView android:id="@+id/action"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:orientation="vertical"
-    >
-
-  <TextView android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:text="Name"
-            android:layout_margin="3dp"
-      />
-
-  <TextView android:id="@+id/address"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:layout_weight="1"
-            android:textSize="20dp"
-            android:layout_margin="3dp"
-            android:text="Address"
-            android:ellipsize="end"
-      />
-</LinearLayout>
+              android:text="Action"
+              android:textSize="20dp"
+              android:layout_centerInParent="true"
+              android:layout_alignParentRight="true"
+              android:layout_gravity="center_vertical" android:layout_margin="3dp"/>
+</RelativeLayout>
