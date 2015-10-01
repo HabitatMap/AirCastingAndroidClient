@@ -56,8 +56,9 @@ public class ConnectedSensorAdapter extends SensorAdapter
     {
       Map<String, String> next = iterator.next();
       String address = next.get(ADDRESS);
-      String name = (next.get(NAME));
-      sensors.add(sensor(name, address));
+      String name = next.get(NAME);
+      String action = next.get(ACTION);
+      sensors.add(sensor(name, address, action));
     }
     settingsHelper.setExternalSensors(sensors);
   }
@@ -72,9 +73,9 @@ public class ConnectedSensorAdapter extends SensorAdapter
     updateSettings();
   }
 
-  ExternalSensorDescriptor sensor(String name, String address)
+  ExternalSensorDescriptor sensor(String name, String address, String action)
   {
-    return new ExternalSensorDescriptor(name, address);
+    return new ExternalSensorDescriptor(name, address, action);
   }
 
   public void updatePreviouslyConnected(List<ExternalSensorDescriptor> descriptors)
@@ -86,6 +87,7 @@ public class ConnectedSensorAdapter extends SensorAdapter
         Map<String, String> item = newHashMap();
         item.put(ADDRESS, sensor.getAddress());
         item.put(NAME, sensor.getName());
+        item.put(ACTION, sensor.getAction());
 
         data.add(item);
       }
