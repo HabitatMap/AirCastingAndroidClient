@@ -59,7 +59,7 @@ class AdapterInteractor
   public ExternalSensorDescriptor connectToActive(int position)
   {
     ExternalSensorDescriptor descriptor = pairedSensorAdapter.get(position);
-    descriptor.setAction("Disconnect");
+    descriptor.setAction("disconnect");
 
     pairedSensorAdapter.markAsConnected(position);
     connectedSensorAdapter.addSensor(descriptor);

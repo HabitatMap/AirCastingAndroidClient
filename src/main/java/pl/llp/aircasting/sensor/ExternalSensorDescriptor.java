@@ -30,7 +30,7 @@ public class ExternalSensorDescriptor
 
   public ExternalSensorDescriptor(BluetoothDevice device)
   {
-    this(device.getName(), device.getAddress(), "Connect");
+    this(device.getName(), device.getAddress(), "connect");
   }
 
   public String getAddress()
