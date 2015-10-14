@@ -60,7 +60,6 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
     @InjectView(R.id.note_text) EditText noteText;
     @InjectView(R.id.save_button) Button save;
     @InjectView(R.id.date) TextView dateText;
-    @InjectView(R.id.share) Button share;
 
     @InjectResource(R.string.im_aircasting) String imAircasting;
     @InjectResource(R.string.share_with) String shareWith;
@@ -79,7 +78,6 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
         dateText.setText(FormatHelper.dateTime(date));
 
         save.setOnClickListener(this);
-        share.setOnClickListener(this);
         attachPhoto.setOnClickListener(this);
     }
 
@@ -119,8 +117,6 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
         return;
       }
       switch (view.getId()) {
-            case R.id.share:
-                Intents.share(this, shareWith, imAircasting, text);
             case R.id.save_button:
                 sessionManager.makeANote(date, text, photoPath);
                 finish();

@@ -40,9 +40,5 @@
             android:text="@string/save"
             android:id="@+id/save_button"
             />
-    <Button style="@style/DialogLastButton"
-            android:text="@string/save_and_share"
-            android:id="@+id/share"
-            />
 
 </LinearLayout>
