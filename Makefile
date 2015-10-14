@@ -8,3 +8,6 @@ install: release adb.install
 
 test:
 	mvn test
+
+clean:
+	mvn clean

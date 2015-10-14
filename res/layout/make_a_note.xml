@@ -36,7 +36,7 @@
             android:text="@string/attach_photo"
             android:id="@+id/attach_photo"
             />
-    <Button style="@style/DialogButton"
+    <Button style="@style/DialogLastButton"
             android:text="@string/save"
             android:id="@+id/save_button"
             />
