@@ -27,6 +27,7 @@
     <color name="yellow">#FFFFD800</color>
     <color name="orange">#FFFF7F00</color>
     <color name="red">#FFFE0000</color>
+    <color name="blue">#FF3DB8DD</color>
 
     <color name="graph_green">#FF65C68A</color>
     <color name="graph_yellow">#FFFEE665</color>

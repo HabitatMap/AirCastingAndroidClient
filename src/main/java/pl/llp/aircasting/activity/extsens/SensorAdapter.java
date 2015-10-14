@@ -14,9 +14,10 @@ public class SensorAdapter extends SimpleAdapter
 {
   public static final String ADDRESS = "address";
   public static final String NAME = "name";
+  public static final String ACTION = "action";
 
-  public static final String[] KEYS = new String[]{ADDRESS, NAME};
-  public static final int[] FIELDS = new int[]{R.id.address, R.id.name};
+  public static final String[] KEYS = new String[]{ADDRESS, NAME, ACTION};
+  public static final int[] FIELDS = new int[]{R.id.address, R.id.name, R.id.action};
 
   protected List<Map<String, String>> data;
 
@@ -34,7 +35,7 @@ public class SensorAdapter extends SimpleAdapter
   public ExternalSensorDescriptor get(int position)
   {
     Map<String, String> map = data.get(position);
-    return new ExternalSensorDescriptor(map.get(NAME), map.get(ADDRESS));
+    return new ExternalSensorDescriptor(map.get(NAME), map.get(ADDRESS), map.get(ACTION));
   }
 
   public Map<String, String> remove(int position)

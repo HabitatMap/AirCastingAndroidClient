@@ -23,6 +23,7 @@ public class AdapterInteractorTest
   private AdapterInteractor interactor;
   private ConnectedSensorAdapter connected;
   private PairedSensorAdapter paired;
+  private ExternalSensorDescriptor descriptor;
 
   @Before
   public void setUp() throws Exception
@@ -37,6 +38,7 @@ public class AdapterInteractorTest
                                        paired,
                                        connected,
                                        settings);
+    descriptor = mock(ExternalSensorDescriptor.class);
   }
 
   @Test
@@ -45,9 +47,11 @@ public class AdapterInteractorTest
       // given
 
       // when
+    when(paired.get(0)).thenReturn(descriptor);
     interactor.connectToActive(0);
 
       // then
+    verify(descriptor).setAction("disconnect");
     verify(connected).addSensor(any(ExternalSensorDescriptor.class));
   }
   

@@ -29,7 +29,7 @@ public class ExternalSensorActivityTest
   private BluetoothDevice ANY_DEVICE;
 
   private String ANY_ADDRESS = "any";
-  private ExternalSensorDescriptor ANY_DESCRIPTOR = new ExternalSensorDescriptor("", ANY_ADDRESS);
+  private ExternalSensorDescriptor ANY_DESCRIPTOR = new ExternalSensorDescriptor("", ANY_ADDRESS, "");
 
   Intent intent;
   private SettingsHelper mockHelper;
