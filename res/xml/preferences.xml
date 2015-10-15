@@ -31,6 +31,12 @@
                                  android:key="external_sensor"
           />
 
+
+  <android.preference.CheckBoxPreference android:title="Contribute to CrowdMap"
+                                         android:key="contribute_to_crowdmap"
+                                         android:summary="Check to contribute your sessions to the CrowdMap by default"
+          />
+
   <android.preference.Preference android:title="@string/calibrations"
                                  android:key="calibrations"
                                  android:summary="@string/calibrations_description"
