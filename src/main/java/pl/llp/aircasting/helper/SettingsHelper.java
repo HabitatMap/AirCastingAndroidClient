@@ -343,8 +343,7 @@ public class SettingsHelper
     return preferences.getBoolean(DISABLE_MAPS, false);
   }
 
-  public boolean getContributeToCrowdMap()
-  {
+  public boolean isContributingToCrowdMap() {
     return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
   }
 }

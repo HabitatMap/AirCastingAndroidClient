@@ -60,6 +60,10 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
 
     saveButton.setOnClickListener(this);
     discardButton.setOnClickListener(this);
+
+    if (settingsHelper.isContributingToCrowdMap()) {
+      discardButton.setVisibility(View.GONE);
+    }
   }
 
   @Override
@@ -91,12 +95,14 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
       {
         fillSessionDetails(sessionId);
         Session session = sessionManager.getSession();
-        if(session.isLocationless())
-        {
+        if(session.isLocationless()) {
           sessionManager.finishSession(sessionId);
         }
-        else
-        {
+        else if (settingsHelper.isContributingToCrowdMap()) {
+          sessionManager.setContribute(sessionId, true);
+          sessionManager.finishSession(sessionId);
+        }
+        else {
           Intents.contribute(this, sessionId);
         }
         break;
