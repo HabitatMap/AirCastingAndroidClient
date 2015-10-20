@@ -160,4 +160,8 @@ public class LocationHelper implements LocationListener
         return (lastLocation != null) &&
             LocationManager.GPS_PROVIDER.equals(lastLocation.getProvider());
     }
+
+    public boolean hasNoGPSFix() {
+        return !hasGPSFix();
+    }
 }

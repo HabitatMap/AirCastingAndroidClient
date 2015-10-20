@@ -181,6 +181,10 @@ public class SettingsHelper
         return preferences.contains(AUTH_TOKEN);
     }
 
+    public boolean hasNoCredentials() {
+        return !hasCredentials();
+    }
+
     public boolean isKeepScreenOn() {
         return preferences.getBoolean(KEEP_SCREEN_ON, DEFAULT_KEEP_SCREEN_ON);
     }

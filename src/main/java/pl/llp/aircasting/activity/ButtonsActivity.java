@@ -1,20 +1,17 @@
 package pl.llp.aircasting.activity;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
@@ -201,6 +198,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
+    public void update() {
+        updateButtons();
+    }
+
     protected void updateButtons() {
 
         clearButtons();
@@ -260,21 +261,20 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             sessionManager.startSession(true);
         } else {
             if (locationHelper.getLastLocation() == null) {
-                sessionManager.startSession(true);
-                Toast.makeText(context, R.string.no_location_warning, Toast.LENGTH_LONG).show();
+                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
+                recordAlert.display();
             } else {
-                sessionManager.startSession();
-
-                if (!settingsHelper.hasCredentials()) {
+                if (settingsHelper.hasNoCredentials()) {
+                    sessionManager.startSession();
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
                 }
 
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    if (!locationHelper.hasGPSFix()) {
-                        Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
-                    }
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && locationHelper.hasNoGPSFix()) {
+                    sessionManager.startSession();
+                    Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
+                    RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, false);
+                    recordAlert.display();
                 }
             }
         }
