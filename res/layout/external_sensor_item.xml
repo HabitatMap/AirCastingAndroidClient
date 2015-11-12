@@ -38,7 +38,6 @@
               android:textSize="20dp"
               android:background="@drawable/blue_box"
               android:textColor="@android:color/white"
-              android:textStyle="bold"
               android:paddingLeft="10dp"
               android:paddingTop="5dp"
               android:paddingRight="10dp"
