@@ -95,6 +95,47 @@ public class SessionTest {
         assertThat(session.isEmpty(), equalTo(false));
     }
 
+    @Test
+    public void returnsTrueWhenAnyOfStreamsHasNoMeasurements() {
+        MeasurementStream stream1 = mock(MeasurementStream.class);
+        when(stream1.isEmpty()).thenReturn(false);
+        MeasurementStream stream2 = mock(MeasurementStream.class);
+        when(stream2.isEmpty()).thenReturn(true);
+        session.add(stream1);
+        session.add(stream2);
+
+        assertThat(session.isIncomplete(), equalTo(true));
+    }
+
+    @Test
+    public void returnsTrueWhenAllOfStreamsHasNoMeasurements() {
+        MeasurementStream stream1 = mock(MeasurementStream.class);
+        when(stream1.isEmpty()).thenReturn(true);
+        MeasurementStream stream2 = mock(MeasurementStream.class);
+        when(stream2.isEmpty()).thenReturn(true);
+        session.add(stream1);
+        session.add(stream2);
+
+        assertThat(session.isIncomplete(), equalTo(true));
+    }
+
+    @Test
+    public void returnsFalseWhenAllOfStreamsHasMeasurements() {
+        MeasurementStream stream1 = mock(MeasurementStream.class);
+        when(stream1.isEmpty()).thenReturn(false);
+        MeasurementStream stream2 = mock(MeasurementStream.class);
+        when(stream2.isEmpty()).thenReturn(false);
+        session.add(stream1);
+        session.add(stream2);
+
+        assertThat(session.isIncomplete(), equalTo(false));
+    }
+
+    @Test
+    public void returnsTrueWhenThereAreNoStreams() {
+        assertThat(emptySession.isIncomplete(), equalTo(true));
+    }
+
   @Test
   public void should_reorderNotesOnDelete() throws Exception
   {

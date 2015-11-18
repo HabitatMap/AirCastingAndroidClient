@@ -297,12 +297,13 @@ public class SyncService extends RoboIntentService
 
       if (result.getStatus() == Status.SUCCESS) {
         Session session = result.getContent();
-        if (session == null)
-        {
+        if (session == null) {
           Logger.w("Session [" + id + "] couldn't ");
         }
-        else
-        {
+        else if (session.isIncomplete()) {
+          Logger.w(String.format("Session [%s] lacks of some measurements.", id));
+        }
+        else {
           try
           {
             fixTimesFromUTC(session);

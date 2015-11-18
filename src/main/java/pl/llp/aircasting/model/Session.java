@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Iterables.all;
+import static com.google.common.collect.Iterables.any;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
@@ -264,6 +265,18 @@ public class Session implements Serializable
                 return input.isEmpty();
             }
         });
+    }
+
+    public boolean isIncomplete() {
+        Boolean noStreams = streams.isEmpty();
+        Boolean noMeasurements = any(streams.values(), new Predicate<MeasurementStream>() {
+            @Override
+            public boolean apply(@Nullable MeasurementStream input) {
+                return input.isEmpty();
+            }
+        });
+
+        return noStreams || noMeasurements;
     }
 
   public void removeStream(MeasurementStream stream)
