@@ -89,17 +89,6 @@ public class SignUpActivityTest {
     }
 
     @Test
-    public void shouldInformAboutAccountCreationFailure() throws IOException, URISyntaxException {
-        result.setStatus(Status.FAILURE);
-        result.setContent(new UserInfo("bad", null, null));
-
-        click(activity, R.id.ok);
-
-        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(activity.getString(R.string.email) + " bad"));
-        assertFalse(activity.isFinishing());
-    }
-
-    @Test
     public void shouldHandleOtherExceptions() throws IOException, URISyntaxException {
         result.setStatus(Status.ERROR);
 

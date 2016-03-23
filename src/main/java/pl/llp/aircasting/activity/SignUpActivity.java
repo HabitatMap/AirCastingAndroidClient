@@ -22,6 +22,7 @@ package pl.llp.aircasting.activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.view.View;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -110,14 +111,14 @@ public class SignUpActivity extends DialogActivity implements View.OnClickListen
     }
 
     private void toastErrors(HttpResult<UserInfo> result) {
-        if (result.getContent().getEmail() != null) {
-            Toast.makeText(context, email + " " + result.getContent().getEmail(), Toast.LENGTH_LONG).show();
+        if (result.getErrors().get("email") != null) {
+            Toast.makeText(context, email + " " + TextUtils.join(", ", result.getErrors().get("email")), Toast.LENGTH_LONG).show();
         }
-        if (result.getContent().getUsername() != null) {
-            Toast.makeText(context, username + " " + result.getContent().getUsername(), Toast.LENGTH_LONG).show();
+        if (result.getErrors().get("username") != null) {
+            Toast.makeText(context, username + " " + TextUtils.join(", ", result.getErrors().get("username")), Toast.LENGTH_LONG).show();
         }
-        if (result.getContent().getPassword() != null) {
-            Toast.makeText(context, password + " " + result.getContent().getPassword(), Toast.LENGTH_LONG).show();
+        if (result.getErrors().get("password") != null) {
+            Toast.makeText(context, password + " " + TextUtils.join(", ", result.getErrors().get("password")), Toast.LENGTH_LONG).show();
         }
     }
 

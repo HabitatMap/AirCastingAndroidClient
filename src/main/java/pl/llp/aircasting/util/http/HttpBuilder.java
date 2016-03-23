@@ -28,6 +28,7 @@ import pl.llp.aircasting.util.Constants;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
@@ -60,6 +61,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Closeables.closeQuietly;
@@ -281,9 +283,19 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
         Logger.i("Full http json: " + fullJson);
       }
 
-      T output = gson.fromJson(reader, target);
-      result.setContent(output);
-      result.setStatus(response.getStatusLine().getStatusCode() < 300 ? Status.SUCCESS : Status.FAILURE);
+      if(response.getStatusLine().getStatusCode() < 300) {
+        result.setStatus(Status.SUCCESS);
+
+        T output = gson.fromJson(reader, target);
+        result.setContent(output);
+      }
+      else {
+        result.setStatus(Status.FAILURE);
+
+        Type type = new TypeToken<Map<String, String[]>>(){}.getType();
+        Map<String, String[]> output = gson.fromJson(reader, type);
+        result.setErrors(output);
+      }
     }
     catch (Exception e)
     {
