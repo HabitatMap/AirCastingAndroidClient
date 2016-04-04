@@ -188,8 +188,12 @@ public class AudioReader {
         try {
             Log.i(TAG, "Reader: Start Recording");
             audioInput.startRecording();
+            long stime = 0;
+
             while (running) {
-                long stime = System.currentTimeMillis();
+                if (inputBufferIndex == 0) {
+                    stime = System.currentTimeMillis();
+                }
 
                 if (!running)
                     break;
