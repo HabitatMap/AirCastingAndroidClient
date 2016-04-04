@@ -25,6 +25,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
+import java.util.Arrays;
 
 /**
  * A class which reads builtin input from the mic in a background thread and
@@ -113,6 +114,7 @@ public class AudioReader {
             // We double inputBlockSize because of Android 5.0 bug,
             // AudioRecord.read(short[] audioData, int offsetInShorts, int sizeInShorts)
             // writes twice as much data to a buffer than it should.
+            // We cut it later: Arrays.copyOfRange(buffer, 0, inputBlockSize)
             inputBuffer = new short[2][inputBlockSize * 2];
             inputBufferWhich = 0;
             inputBufferIndex = 0;
@@ -227,7 +229,7 @@ public class AudioReader {
                         inputBufferIndex = end;
 
                     if (done) {
-                        readDone(buffer);
+                        readDone(Arrays.copyOfRange(buffer, 0, inputBlockSize));
 
                         // Because our block size is way smaller than the builtin
                         // buffer, we get blocks in bursts, which messes up
