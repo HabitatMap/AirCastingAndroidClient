@@ -217,10 +217,4 @@
   <string name="drag_to_map_stream">Long press then drag &amp; drop sensor tiles to map.</string>
 
   <string name="cant_map_without_gps">Without a GPS fix you can\'t map your session. Turn on your GPS or find some sky.</string>
-  <string name="calibration_select_reference">Select the Reference instrument for calibration</string>
-  <string name="calibration_select_target">Select the Target instrument for calibration</string>
-  <string name="calibration_successful">Calibration successful</string>
-  <string name="calibrations">Calibrations</string>
-  <string name="calibrations_description">Uncheck to disable calibrations, long press to delete calibrations</string>
-  <string name="confirm_remove_calibration">Are you sure you want to remove this calibration?</string>
 </resources>

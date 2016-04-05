@@ -30,7 +30,6 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.model.events.SensorEventTransformer;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
@@ -88,20 +87,9 @@ public class SessionManager
 
   @Inject ApplicationState state;
 
-  @Inject SensorEventTransformer sensorEventTransformer;
   private Map<String, Double> recentMeasurements = newHashMap();
 
   private boolean paused;
-  private boolean isCalibrating;
-
-
-  public boolean isCalibrating() {
-      return isCalibrating;
-  }
-
-  public void disableCalibration() {
-      isCalibrating = false;
-  }
 
   @Inject
   public void init() {
@@ -124,16 +112,12 @@ public class SessionManager
     return session;
   }
 
-  public void loadSession(long sessionId, ProgressListener listener) {
-      loadSession(sessionId, listener, false);
-  }
-
-  public void loadSession(long sessionId, @NotNull ProgressListener listener, boolean isCalibrating)
+  public void loadSession(long sessionId, @NotNull ProgressListener listener)
   {
     Preconditions.checkNotNull(listener);
     Session newSession = sessionRepository.loadFully(sessionId, listener);
     state.recording().startShowingOldSession();
-    setSession(newSession, isCalibrating);
+    setSession(newSession);
   }
 
   public void refreshUnits() {
@@ -141,14 +125,9 @@ public class SessionManager
           setSession(new Session());
   }
 
-  public void setSession(Session session) {
-    setSession(session, false);
-  }
-
-  void setSession(@NotNull Session session, boolean isCalibrating)
+  void setSession(@NotNull Session session)
   {
     Preconditions.checkNotNull(session, "Cannot set null session");
-    this.isCalibrating = isCalibrating;
     this.session = session;
     notifyNewSession(session);
   }
@@ -226,8 +205,6 @@ public class SessionManager
   @Subscribe
   public synchronized void onEvent(SensorEvent event)
   {
-    event = sensorEventTransformer.transform(event);
-
     double value = event.getValue();
     String sensorName = event.getSensorName();
     Sensor sensor = sensorManager.getSensorByName(sensorName);

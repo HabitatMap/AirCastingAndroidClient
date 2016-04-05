@@ -38,7 +38,4 @@
             android:text="@string/delete"
             android:id="@+id/delete_session"
             />
-    <Button style="@style/DialogLastButton"
-            android:text="Calibrate"
-            android:id="@+id/calibrate_session"/>
 </LinearLayout>

@@ -4,7 +4,6 @@ import pl.llp.aircasting.helper.ResourceHelper;
 
 import android.content.Context;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.Regression;
 
 import java.util.List;
 

@@ -1,8 +1,6 @@
 package pl.llp.aircasting.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -18,31 +16,22 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.listener.OnSensorDragListener;
-import pl.llp.aircasting.api.RegressionDriver;
-import pl.llp.aircasting.api.SessionDriver;
-import pl.llp.aircasting.api.data.CreateRegressionResponse;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.LongClickEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.*;
-import pl.llp.aircasting.storage.repository.RegressionRepository;
-import pl.llp.aircasting.util.http.HttpResult;
-import pl.llp.aircasting.util.http.Status;
 import pl.llp.aircasting.view.SensorsGridView;
 import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
-import static pl.llp.aircasting.Intents.triggerSync;
 
 public class StreamsActivity extends ButtonsActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SensorManager sensorManager;
     @Inject SessionManager sessionManager;
-    @Inject RegressionDriver regressionDriver;
-    @Inject RegressionRepository regressionRepository;
 
     @InjectView(R.id.sensors_grid) SensorsGridView gridView;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
@@ -51,10 +40,6 @@ public class StreamsActivity extends ButtonsActivity {
     @InjectView(R.id.graph_button) View graphButton;
 
     StreamAdapter adapter;
-    boolean selectingReference = false;
-    boolean selectingTarget = false;
-    Sensor reference = null;
-    Sensor target = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,25 +73,9 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
             @Override
             public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
-                if (selectingReference) {
-                    reference = (Sensor) view.getTag();
-                    selectingReference = false;
-                    showDialog(R.string.calibration_select_target, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            selectingTarget = true;
-                        }
-                    });
-                } else if (selectingTarget) {
-                    target = (Sensor) view.getTag();
-                    selectingTarget = false;
-                    sessionManager.disableCalibration();
-                    triggerCalibration();
-                } else {
-                    if (sensorManager.isSessionBeingViewed())
-                        return;
-                    adapter.toggleStatsVisibility((Sensor) view.getTag());
-                }
+                if (sensorManager.isSessionBeingViewed())
+                    return;
+                adapter.toggleStatsVisibility((Sensor) view.getTag());
             }
         });
 
@@ -132,43 +101,6 @@ public class StreamsActivity extends ButtonsActivity {
 
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
-
-        if (sessionManager.isCalibrating()) {
-            showDialog(R.string.calibration_select_reference, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    selectingReference = true;
-                }
-            });
-        }
-    }
-
-    private void showDialog(int messageId, DialogInterface.OnClickListener listener) {
-        new AlertDialog.Builder(this)
-                .setMessage(messageId)
-                .setPositiveButton(R.string.ok, listener)
-                .setCancelable(false)
-                .create()
-                .show();
-    }
-
-    private void triggerCalibration() {
-        new AlertDialog.Builder(this)
-                .setMessage(target.getPackageName() + " - " + target.getSensorName() +
-                            " will now be calibrated against " + reference.getPackageName() + " - " + reference.getSensorName())
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        HttpResult<CreateRegressionResponse> response = regressionDriver.createRegression(sessionManager.getSession(), target, reference);
-                        if (response.getStatus() == Status.SUCCESS) {
-                            Toast.makeText(StreamsActivity.this, R.string.calibration_successful, Toast.LENGTH_LONG).show();
-                        }
-                        triggerSync(StreamsActivity.this);
-                    }
-                })
-                .setCancelable(false)
-                .create()
-                .show();
     }
 
     @Override
