@@ -155,4 +155,8 @@ public class Sensor implements Serializable
   void toggle() {
     enabled = !enabled;
   }
+
+  void disable() {
+    enabled = false;
+  }
 }

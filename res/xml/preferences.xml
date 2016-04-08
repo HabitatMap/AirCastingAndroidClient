@@ -54,6 +54,11 @@
                                            android:title="@string/offset_60_db"
                                            android:summary="@string/offset_60_db_summary"
             />
+    <android.preference.CheckBoxPreference android:defaultValue="true"
+                                           android:key="sound_level_measurementless"
+                                           android:title="@string/sound_level_measurementless"
+                                           android:summary="@string/sound_level_measurementless_summary"
+            />
 
     <android.preference.EditTextPreference android:defaultValue="10"
                                            android:numeric="integer"

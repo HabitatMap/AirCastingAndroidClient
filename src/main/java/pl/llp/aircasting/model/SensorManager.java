@@ -1,5 +1,8 @@
 package pl.llp.aircasting.model;
 
+import android.content.Context;
+import android.widget.Toast;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.android.Logger;
@@ -7,6 +10,7 @@ import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
@@ -40,6 +44,8 @@ public class SensorManager
   @Inject EventBus eventBus;
 
   @Inject ApplicationState state;
+  @Inject SettingsHelper settingsHelper;
+  @Inject Context context;
 
   final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
@@ -137,11 +143,29 @@ public class SensorManager
   public void toggleSensor(Sensor sensor) {
     String name = sensor.getSensorName();
     Sensor actualSensor = sensors.get(SensorName.from(name));
-    actualSensor.toggle();
+
+    if(isSensorToggleable(actualSensor))
+      actualSensor.toggle();
+    else
+      Toast.makeText(context, R.string.sensor_is_disabled_in_settings, Toast.LENGTH_SHORT).show();
+  }
+
+  public void setSensorsStatusesDisabledInSettings() {
+    if (settingsHelper.isSoundLevelMeasurementsDisabled())
+      sensors.get(SensorName.from("Phone Microphone")).disable();
+  }
+
+  public boolean isSensorToggleable(Sensor sensor) {
+    if (sensor.getSensorName() == "Phone Microphone" && settingsHelper.isSoundLevelMeasurementsDisabled())
+      return false;
+    else
+      return true;
   }
 
   @Subscribe
   public void onEvent(SessionChangeEvent event) {
+    setSensorsStatusesDisabledInSettings();
+
     disabled = newHashSet();
     for (Sensor sensor : sensors.values()) {
       if (!sensor.isEnabled()) {
