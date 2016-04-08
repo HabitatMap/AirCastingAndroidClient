@@ -264,17 +264,18 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
                 recordAlert.display();
             } else {
+                sessionManager.startSession();
+
                 if (settingsHelper.hasNoCredentials()) {
-                    sessionManager.startSession();
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
                 }
 
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && locationHelper.hasNoGPSFix()) {
-                    sessionManager.startSession();
-                    Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    if (locationHelper.hasNoGPSFix()) {
+                        Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, false);
-                    recordAlert.display();
+                    Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
                 }
             }
         }

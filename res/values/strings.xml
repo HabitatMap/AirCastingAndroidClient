@@ -129,7 +129,7 @@
   <string name="sign_in">Sign in</string>
   <string name="reset_password">Reset password</string>
   <string name="username_or_email">Profile name or email</string>
-  <string name="gps_off_warning">Please enable your GPS receiver</string>
+  <string name="gps_off_warning">Please enable your GPS receiver.</string>
   <string name="send_emails">Send me emails from AirCasting</string>
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
     correct.
