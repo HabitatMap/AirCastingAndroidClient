@@ -84,7 +84,9 @@
   <string name="too_quiet_summary">Measurements less than this will not be displayed.</string>
 
   <string name="color_scale_error">The values are incorrect</string>
-  <string name="login_error">Login failed</string>
+  <string name="login_error">Credentials are incorrect.</string>
+  <string name="profile_name_or_email_field_blank">Profile name or email field can\'t be blank</string>
+  <string name="password_blank">Password can\'t be blank</string>
   <string name="account_creation_error">Could not create account</string>
   <string name="unknown_error">Unknown error</string>
   <string name="email_invalid">The email is invalid</string>
