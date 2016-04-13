@@ -150,9 +150,11 @@ public class SensorManager
       Toast.makeText(context, R.string.sensor_is_disabled_in_settings, Toast.LENGTH_SHORT).show();
   }
 
-  public void setSensorsStatusesDisabledInSettings() {
+  public void setSensorsStatusesToDefaultsFromSettings() {
     if (settingsHelper.isSoundLevelMeasurementsDisabled())
       sensors.get(SensorName.from("Phone Microphone")).disable();
+    else
+      sensors.get(SensorName.from("Phone Microphone")).enable();
   }
 
   public boolean isSensorToggleable(Sensor sensor) {
@@ -164,7 +166,7 @@ public class SensorManager
 
   @Subscribe
   public void onEvent(SessionChangeEvent event) {
-    setSensorsStatusesDisabledInSettings();
+    setSensorsStatusesToDefaultsFromSettings();
 
     disabled = newHashSet();
     for (Sensor sensor : sensors.values()) {

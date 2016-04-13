@@ -159,4 +159,8 @@ public class Sensor implements Serializable
   void disable() {
     enabled = false;
   }
+
+  void enable() {
+    enabled = true;
+  }
 }
