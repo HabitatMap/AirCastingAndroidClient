@@ -304,12 +304,12 @@ public class SessionManager
 
   public void startSession(boolean locationLess)
   {
+    eventBus.post(new SessionStartedEvent(getSession()));
     setSession(new Session());
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
-    eventBus.post(new SessionStartedEvent(getSession()));
     tracker.startTracking(getSession(), locationLess);
   }
 

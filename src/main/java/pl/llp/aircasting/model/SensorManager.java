@@ -5,6 +5,7 @@ import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
@@ -165,9 +166,12 @@ public class SensorManager
   }
 
   @Subscribe
-  public void onEvent(SessionChangeEvent event) {
+  public void onEvent(SessionStartedEvent event) {
     setSensorsStatusesToDefaultsFromSettings();
+  }
 
+  @Subscribe
+  public void onEvent(SessionChangeEvent event) {
     disabled = newHashSet();
     for (Sensor sensor : sensors.values()) {
       if (!sensor.isEnabled()) {
