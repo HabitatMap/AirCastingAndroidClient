@@ -37,11 +37,6 @@
                                          android:summary="Check to contribute your sessions to the CrowdMap by default"
           />
 
-  <android.preference.Preference android:title="@string/calibrations"
-                                 android:key="calibrations"
-                                 android:summary="@string/calibrations_description"
-          />
-
   <android.preference.CheckBoxPreference android:defaultValue="false"
                                            android:key="satellite"
                                            android:title="@string/satellite_view"
@@ -58,6 +53,11 @@
                                            android:key="offset_60_db"
                                            android:title="@string/offset_60_db"
                                            android:summary="@string/offset_60_db_summary"
+            />
+    <android.preference.CheckBoxPreference android:defaultValue="false"
+                                           android:key="sound_level_measurementless"
+                                           android:title="@string/sound_level_measurementless"
+                                           android:summary="@string/sound_level_measurementless_summary"
             />
 
     <android.preference.EditTextPreference android:defaultValue="10"

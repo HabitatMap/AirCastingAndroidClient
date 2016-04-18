@@ -47,6 +47,7 @@ public class SettingsHelper
   public static final String USER_LOGIN = "user_login";
   public static final String KEEP_SCREEN_ON = "keep_screen_on";
   public static final String OFFSET_60_DB = "offset_60_db";
+  public static final String SOUND_LEVEL_MEASUREMENTLESS = "sound_level_measurementless";
   public static final String CALIBRATION = "calibration";
   public static final String SATELLITE = "satellite";
   public static final String BACKEND = "backend";
@@ -65,6 +66,7 @@ public class SettingsHelper
   public static final int DEFAULT_OFFSET_60_DB = 0;
   public static final int MIN_OFFSET_60_DB = -5;
   public static final int MAX_OFFSET_60_DB = 5;
+  public static final boolean DEFAULT_SOUND_LEVEL_MEASUREMENTLESS = false;
   public static final String SAMPLE_INTERVAL = "sample_interval";
   public static final String AVERAGING_TIME = "averaging_time";
   private static final int MIN_AVERAGING_TIME = 1;
@@ -187,6 +189,10 @@ public class SettingsHelper
 
     public boolean isKeepScreenOn() {
         return preferences.getBoolean(KEEP_SCREEN_ON, DEFAULT_KEEP_SCREEN_ON);
+    }
+
+    public boolean isSoundLevelMeasurementsDisabled() {
+      return preferences.getBoolean(SOUND_LEVEL_MEASUREMENTLESS, DEFAULT_SOUND_LEVEL_MEASUREMENTLESS);
     }
 
     public int getOffset60DB() {

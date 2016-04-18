@@ -49,7 +49,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
   public static final String DISABLE_MAPS_KEY = "disable_maps";
-  public static final String CALIBRATIONS_KEY = "calibrations";
+  public static final String SOUND_LEVEL_MEASUREMENTLESS_KEY = "sound_level_measurementless";
 
   @Inject Application context;
 
@@ -75,7 +75,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
 
     if (state.recording().isRecording()) {
-        getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(CALIBRATIONS_KEY));
+      getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(SOUND_LEVEL_MEASUREMENTLESS_KEY));
     }
 
     offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
@@ -126,11 +126,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     else if (DISABLE_MAPS_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, DisableMapSettingsActivity.class));
-      return true;
-    }
-    else if (CALIBRATIONS_KEY.equals(preference.getKey()))
-    {
-      startActivity(new Intent(this, RegressionsActivity.class));
       return true;
     }
     else

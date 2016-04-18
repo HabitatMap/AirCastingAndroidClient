@@ -1,15 +1,19 @@
 package pl.llp.aircasting.model;
 
+import android.content.Context;
+import android.widget.Toast;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.model.events.SensorEventTransformer;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -39,9 +43,10 @@ public class SensorManager
   @Inject ExternalSensors externalSensors;
   @Inject SessionManager sessionManager;
   @Inject EventBus eventBus;
-  @Inject SensorEventTransformer sensorEventTransformer;
 
   @Inject ApplicationState state;
+  @Inject SettingsHelper settingsHelper;
+  @Inject Context context;
 
   final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
@@ -62,8 +67,6 @@ public class SensorManager
     {
       return;
     }
-
-    event = sensorEventTransformer.transform(event);
 
     // IOIO
     Sensor visibleSensor = getVisibleSensor();
@@ -141,7 +144,30 @@ public class SensorManager
   public void toggleSensor(Sensor sensor) {
     String name = sensor.getSensorName();
     Sensor actualSensor = sensors.get(SensorName.from(name));
-    actualSensor.toggle();
+
+    if(isSensorToggleable(actualSensor))
+      actualSensor.toggle();
+    else
+      Toast.makeText(context, R.string.sensor_is_disabled_in_settings, Toast.LENGTH_SHORT).show();
+  }
+
+  public void setSensorsStatusesToDefaultsFromSettings() {
+    if (settingsHelper.isSoundLevelMeasurementsDisabled())
+      sensors.get(SensorName.from("Phone Microphone")).disable();
+    else
+      sensors.get(SensorName.from("Phone Microphone")).enable();
+  }
+
+  public boolean isSensorToggleable(Sensor sensor) {
+    if (sensor.getSensorName() == "Phone Microphone" && settingsHelper.isSoundLevelMeasurementsDisabled())
+      return false;
+    else
+      return true;
+  }
+
+  @Subscribe
+  public void onEvent(SessionStartedEvent event) {
+    setSensorsStatusesToDefaultsFromSettings();
   }
 
   @Subscribe

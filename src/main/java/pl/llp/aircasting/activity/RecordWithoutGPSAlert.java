@@ -36,7 +36,7 @@ public class RecordWithoutGPSAlert {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("Without a GPS fix you can't map your session or contribute it to the CrowdMap")
+        builder.setMessage("Without location data you can't map your session or contribute it to the CrowdMap")
                 .setPositiveButton("Continue", dialogOnClickListener)
                 .setNegativeButton("Cancel", dialogOnClickListener).show();
     }

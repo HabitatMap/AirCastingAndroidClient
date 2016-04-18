@@ -336,15 +336,15 @@ public class SessionManagerTest
   }
 
   @Test
-  public void shouldNotifyListenersOnSessionLoad()
+  public void isCalibrating()
   {
     sessionManager = spy(sessionManager);
     doReturn(new Session()).when(sessionManager.sessionRepository)
-        .loadFully(anyLong(), Matchers.<ProgressListener>anyObject());
+        .loadFully(anyLong(), Matchers.<ProgressListener>anyObject()); 
 
     sessionManager.loadSession(0, progressListener);
 
-    verify(sessionManager, atLeastOnce()).setSession(any(Session.class), anyBoolean());
+    verify(sessionManager, atLeastOnce()).setSession(any(Session.class));
   }
 
   @Test

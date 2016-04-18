@@ -18,10 +18,12 @@
     You can contact the authors by email at <info@habitatmap.org>
 */
 package pl.llp.aircasting.util.http;
+import java.util.Map;
 
 public class HttpResult<T> {
     Status status;
     T content;
+    private Map<String, String[]> errors;
 
     public Status getStatus() {
         return status;
@@ -31,6 +33,10 @@ public class HttpResult<T> {
         return content;
     }
 
+    public Map<String, String[]> getErrors() {
+        return errors;
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }
@@ -38,4 +44,6 @@ public class HttpResult<T> {
     public void setContent(T content) {
         this.content = content;
     }
+
+    public void setErrors(Map<String, String[]> errors) { this.errors = errors; }
 }

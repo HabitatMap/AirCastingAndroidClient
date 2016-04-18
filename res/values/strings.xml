@@ -84,7 +84,9 @@
   <string name="too_quiet_summary">Measurements less than this will not be displayed.</string>
 
   <string name="color_scale_error">The values are incorrect</string>
-  <string name="login_error">Login failed</string>
+  <string name="login_error">Credentials are incorrect.</string>
+  <string name="profile_name_or_email_field_blank">Profile name or email field can\'t be blank</string>
+  <string name="password_blank">Password can\'t be blank</string>
   <string name="account_creation_error">Could not create account</string>
   <string name="unknown_error">Unknown error</string>
   <string name="email_invalid">The email is invalid</string>
@@ -129,7 +131,7 @@
   <string name="sign_in">Sign in</string>
   <string name="reset_password">Reset password</string>
   <string name="username_or_email">Profile name or email</string>
-  <string name="gps_off_warning">Please enable your GPS receiver</string>
+  <string name="gps_off_warning">Please enable your GPS receiver.</string>
   <string name="send_emails">Send me emails from AirCasting</string>
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
     correct.
@@ -144,6 +146,8 @@
   <string name="offset_60_db_summary">If you have access to a professional sound level meter for comparison, you can
     adjust the dB offset to increase the accuracy of your readings.
   </string>
+  <string name="sound_level_measurementless">Disable phone microphone</string>
+  <string name="sound_level_measurementless_summary">Check to disable sound level measurements from phone microphone.</string>
   <string name="offset_error">The offset should be between -5 and +5 dB.</string>
   <string name="share_session">Share session</string>
   <string name="account_reminder">To save and upload your AirCasting sessions navigate to the Settings screen and sign
@@ -217,10 +221,6 @@
   <string name="drag_to_map_stream">Long press then drag &amp; drop sensor tiles to map.</string>
 
   <string name="cant_map_without_gps">Without a GPS fix you can\'t map your session. Turn on your GPS or find some sky.</string>
-  <string name="calibration_select_reference">Select the Reference instrument for calibration</string>
-  <string name="calibration_select_target">Select the Target instrument for calibration</string>
-  <string name="calibration_successful">Calibration successful</string>
-  <string name="calibrations">Calibrations</string>
-  <string name="calibrations_description">Uncheck to disable calibrations, long press to delete calibrations</string>
-  <string name="confirm_remove_calibration">Are you sure you want to remove this calibration?</string>
+
+  <string name="sensor_is_disabled_in_settings">This sensor is disabled. To turn it on, stop recording and go to settings.</string>
 </resources>

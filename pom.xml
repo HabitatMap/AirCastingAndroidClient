@@ -5,7 +5,7 @@
 
   <groupId>pl.llp</groupId>
   <artifactId>aircasting</artifactId>
-  <version>1.3.80</version>
+  <version>1.3.81</version>
   <packaging>apk</packaging>
 
   <prerequisites>
@@ -380,7 +380,7 @@
   <scm>
     <connection>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</connection>
     <url>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</url>
-    <tag>1.3.80</tag>
+    <tag>1.3.81</tag>
   </scm>
 
   <distributionManagement>

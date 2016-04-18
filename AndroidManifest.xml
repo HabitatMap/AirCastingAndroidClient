@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     You can contact the authors by email at <info@habitatmap.org>
---><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="72" android:versionName="1.3.80" package="pl.llp.aircasting">
+--><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="73" android:versionName="1.3.81" package="pl.llp.aircasting">
 
   <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
 
@@ -86,8 +86,6 @@
     <activity android:label="@string/share_session" android:name=".activity.ShareSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/external_devices" android:name=".activity.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
-
-    <activity android:label="@string/calibrations" android:name=".activity.RegressionsActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@style/AirCastingTheme"/>
 

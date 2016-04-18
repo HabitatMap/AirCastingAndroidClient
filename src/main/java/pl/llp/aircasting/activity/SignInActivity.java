@@ -63,9 +63,27 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
   public void onClick(View view) {
     switch (view.getId()) {
       case R.id.ok:
-        signIn();
+        if(validateInput()) {
+          signIn();
+        }
         break;
     }
+  }
+
+  private boolean validateInput() {
+    if (getLogin().isEmpty() || getPassword().isEmpty()) {
+      if (getLogin().isEmpty()) {
+        Toast.makeText(context, R.string.profile_name_or_email_field_blank, Toast.LENGTH_LONG).show();
+      }
+
+      if (getPassword().isEmpty()) {
+        Toast.makeText(context, R.string.password_blank, Toast.LENGTH_LONG).show();
+      }
+
+      return(false);
+    }
+
+    return(true);
   }
 
   private void signIn() {

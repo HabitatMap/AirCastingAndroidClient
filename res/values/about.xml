@@ -23,11 +23,11 @@
   <string name="hardware_developers_content">
     <![CDATA[
         <p>
-            It’s simple to connect your own custom-designed sense device to the AirCasting app to display and record sensor measurements. Just do the following:
+            It\'s simple to connect your own custom-designed sense device to the AirCasting app to display and record sensor measurements. Just do the following:
             <ul>
-            <li>Download the AirCasting Arduino sketch, which controls the sensors and sends data to the app via Bluetooth.</li>
-             <li>Alter the Arduino sketch to communicate your sensor data.</li>
-            <li>Use the AirCasting app to send your data to the AirCasting servers for display on the AirCasting website. Want to send the data to your own servers? Just specify the URL in the AirCasting app settings, “Menu” > “Settings” > “Backend settings”.</li>
+                <li>Download the <a href="https://github.com/HabitatMap/AirCastingAndroidClient/blob/master/arduino/aircasting/aircasting_lm335a.ino">AirCasting Arduino sketch</a>, which controls the sensors and sends data to the app via Bluetooth.</li>
+                <li>Alter the Arduino sketch to communicate your sensor data.</li>
+                <li>Use the AirCasting app to send your data to the AirCasting servers for display on the AirCasting website. Want to send the data to your own servers? Just specify the URL in the AirCasting app settings, "Menu" > "Settings" > "Backend settings".</li>
             </ul>
         </p>
     ]]>
@@ -37,14 +37,13 @@
   <string name="connect_external_device_content">
     <![CDATA[
         <p>
-        The AirCasting app can connect to external devices via Bluetooth. Currently supported devices include
-        1) sensor packages, such as the AirCasting Air Monitor, whose communications conform to the format defined in the AirCasting Arduino sketch
-        2) the IOIO microcontroller, which powers AirCasting Luminescence and
-        3) the Zephyr HxM heart rate monitor.
+            The AirCasting app can connect to external devices via Bluetooth. Currently supported devices include
+            1) the <a href="http://www.takingspace.org/aircasting/airbeam/">AirBeam</a> or other sensor packages whose communications conform to the format defined in the <a href="https://github.com/HabitatMap/AirCastingAndroidClient/blob/master/arduino/aircasting/aircasting_lm335a.ino">AirCasting Arduino sketch</a>
+            2) the IOIO microcontroller, which powers <a href="http://www.instructables.com/id/AirCasting-LiteBeam/">AirCasting Luminescence</a> and
+            3) the Zephyr HxM and BioHarness 3.
         </p>
-
         <p>
-        To connect to an external device navigate to the settings screen, press “External devices”, press “pair with new devices”, scan for the device, select the device, enter the pairing code (“1234” for the AirCasting Air Monitor and Zephyr HxM, “4545” for the IOIO), return to the AirCasting app, select the name of the device, and when prompted to connect select “Yes”. You normally only need to pair with a device once, however, in the case of the IOIO you’ll need to pair whenever prompted by pulling down the window shade, selecting the pairing request, and entering "4545".
+            To connect to an external device navigate to the settings screen, press "External devices", press "pair with new devices", scan for the device, select the device, enter the pairing code if prompted, then return to the AirCasting app, select the name of the device, and when prompted to connect select "Yes". You only need to pair with a device once, however, in the case of the IOIO you\'ll need to pair whenever prompted by pulling down the window shade, selecting the pairing request, and entering "4545".
         </p>
     ]]>
   </string>
@@ -53,7 +52,7 @@
   <string name="about_start_content">
     <![CDATA[
         <p>
-        Make sure your GPS is on and your location on the map is accurate. Press the “Center Map” button to refresh your location and center the map. When your location is accurate, press the “Start Recording” button to begin an AirCasting session. Note that without a GPS fix you will not be able to map your session or contribute your data to the CrowdMap
+            Make sure your GPS is on and your location on the map is accurate. Press the "Center Map" button to refresh your location and center the map. When your location is accurate, press the "Start Recording" button to begin an AirCasting session. Note that without a GPS fix you will not be able to map your session or contribute your data to the CrowdMap.
         </p>
     ]]>
   </string>
@@ -62,86 +61,75 @@
   <string name="about_view_data_content">
     <![CDATA[
         <p>
-        AirCasting provides three ways to view your sensor data: the Map, the Graph, and the Sensors Dashboard. The default view is the Sensors Dashboard.
+            AirCasting provides three ways to view your sensor data: the Map, the Graph, and the Sensors Dashboard. The default view is the Sensors Dashboard.
         </p>
         <p>
-        On the Sensors Dashboard, tap sensor tiles once to hide/show the peak and average values for your session and tap the tile twice to pause the stream.  To map or graph a sensor stream, long press the tile, then drag and drop it on the “MAP” or “GRAPH” areas at the top of the screen.  Sensor tiles can also be rearranged using the long press, drag and drop method.
+            On the Sensors Dashboard, tap sensor tiles once to hide/show the peak and average values for your session and tap the tile twice to pause the stream. To map or graph a sensor stream, long press the tile, then drag and drop it on the "MAP" or "GRAPH" areas at the top of the screen. Sensor tiles can also be rearranged using the long press, drag and drop method.
         </p>
         <p>
-        The Map displays your current position as a colored dot with a white outline; dots without an outline are past readings. A dot’s color corresponds to the reading’s intensity at a location. Refer to the “Heat Legend ” (the colored bar at the top of the screen) to identify the intensity range for a reading. For example, a yellow dot corresponds to a sound level reading between 61 and 70 decibels. To quickly toggle between sensor streams without returning to the Sensors Dashboard tap the “Avg” “Now” “Peak” circles at the top of the screen.
+            The Map displays your current position as a colored dot with a white outline; dots without an outline are past readings. A dot\'s color corresponds to the reading\'s intensity at a location. Refer to the "Heat Legend" (the colored bar at the top of the screen) to identify the intensity range for a reading. For example, a yellow dot corresponds to a sound level reading between 61 and 70 decibels. To quickly toggle between sensor streams without returning to the Sensors Dashboard tap the "Avg" "Now" "Peak" circles at the top of the screen.
         </p>
         <p>
-        When viewing the Map, press the CrowdMap button to view the CrowdMap layer. The CrowdMap displays AirCasting data from all contributors. Each square’s color corresponds to the average intensity of all the readings recorded in that area. Refer to the “Heat Legend ” to identify the intensity range for a square. For example, an orange square corresponds to an average sound level between 71 and 80 decibels. If no colors are displayed, there is no data in that area.
+            When viewing the Map, press the CrowdMap button to view the CrowdMap layer. The CrowdMap displays AirCasting data from all contributors. Each square\'s color corresponds to the average intensity of all the readings recorded in that area. Refer to the "Heat Legend" to identify the intensity range for a square. For example, an orange square corresponds to an average sound level between 71 and 80 decibels. If no colors are displayed, there is no data in that area.
         </p>
         <p>
-        The Graph displays your readings over time. Zoom in and out for more or less detail, swipe to pan through the data.
+            The Graph displays your readings over time. Zoom in and out for more or less detail, swipe to pan through the data.
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="about_note">Make a Note or Share a Reading</string>
   <string name="about_note_content">
     <![CDATA[
         <p>
-        Tap the “Make a Note” button to add a note or photo to a specific location or share your readings.
+            Tap the "Make a Note" button to add a note or photo to a specific location.
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="about_stop">Stop AirCasting</string>
   <string name="about_stop_content">
     <![CDATA[
         <p>
-        Press the “Stop Recording” button to close out your session. Enter a title, tags, and description and press “Save session”.
+            Press the "Stop Recording" button to close out your session. Enter a title, tags, and description and press "Save session".
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="about_open_session">Share, Edit, or Delete Sessions</string>
   <string name="about_open_session_content">
     <![CDATA[
         <p>
-        Long press a past session to share, edit, or delete it. While viewing a session, share or edit it by pressing the corresponding buttons. You can share a session as a web link or CSV file.  To delete a sensor stream from a session containing multiple sensor streams first view the session, then press the “X” next to the stream you would like to delete.
+            Long press a past session to share, edit, or delete it. While viewing a session, share or edit it by pressing the corresponding buttons. You can share a session as a web link or CSV file. To delete a sensor stream from a session containing multiple sensor streams first view the session, then press the "X" next to the stream you would like to delete.
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="disable_maps">Disable maps</string>
   <string name="disable_maps_content">
     <![CDATA[
         <p>
-        Disabling maps allows you to record sessions without sharing your location. Sessions recorded when maps are disabled are saved to your Android device, but they are not saved to www.aircasting.org. As a result, when signing out of the app these sessions will be erased.  Email sessions as CSV files to prevent data loss.
+            Disabling maps allows you to record sessions without sharing your location. Sessions recorded when maps are disabled are saved to your Android device, but they are not saved to www.aircasting.org. As a result, when signing out of the app these sessions will be erased. Email sessions as CSV files to prevent data loss.
         </p>
-        ]]>
-  </string>
-
-  <string name="about_calibrations">Calibrations</string>
-  <string name="about_calibrations_content">
-    <![CDATA[
-      <p>
-      A target instrument can be calibrated against a reference instrument. Calibration is achieved by siting a reference instrument in close proximity to a target instrument and recording an AirCasting session while exposing the instruments to variable conditions over an extended period of time. Then, utilizing the AirCasting "Calibration" feature, measurements from the instruments can be uploaded to the AirCasting server where a fourth-degree polynomial equation is applied to convert the target instruments units of measurement into those of the reference instrument. To establish a calibration between a target instrument and reference instrument, long press a session name on the "Sessions" screen, select "calibrate", and follow the on screen instructions.
-      </p>
-      ]]>
+    ]]>
   </string>
 
   <string name="about_open_source">Open Source</string>
   <string name="about_open_source_content">
     <![CDATA[
         <p>
-        AirCasting is an open source project. You can access the code repositories for the AirCasting Android app and the AirCasting web app through GitHub.
+            AirCasting is an open source project. You can access the code repositories for both the AirCasting Android app and the AirCasting web app through <a href="https://github.com/habitatmap">GitHub</a>.
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="about_thanks">Thanks!</string>
   <string name="about_thanks_content">
     <![CDATA[
         <p>
-        To <a href="http://www.lunarlogic.io">Lunar Logic</a> for coding the AirCasting website and app;
-        to <a href="http://www.citytech.cuny.edu/academics/deptsites/cetech/faculty/heng.html">Dr. Iem Heng</a> and Raymond Yap for designing, programming, assembling and testing the AirCasting Air Monitor and AirCasting Luminescence electronics;
-        and to <a href="http://www.sonomatech.com/staff.cfm?uemployeeid=8">Tim Dye</a> for big ideas and constructive feedback.
+            To <a href="http://www.lunarlogic.io">Lunar Logic</a> for coding the AirCasting website and app and Raymond Yap for prototyping and programming AirCasting hardware.
         </p>
-        ]]>
+    ]]>
   </string>
 
   <string name="about_version">Version</string>
