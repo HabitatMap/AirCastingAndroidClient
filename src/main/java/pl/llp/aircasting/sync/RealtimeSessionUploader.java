@@ -91,7 +91,7 @@ public class RealtimeSessionUploader
 
   private void performCreateMeasurement(RealtimeSession realtimeSession)
   {
-    HttpResult<CreateRealtimeMeasurementResponse> result = realtimeSessionDriver.create(realtimeSession);
+    HttpResult<CreateRealtimeMeasurementResponse> result = realtimeSessionDriver.create_measurement(realtimeSession);
   }
 
   private boolean canUpload() {

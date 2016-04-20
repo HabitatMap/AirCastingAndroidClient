@@ -42,7 +42,7 @@ public class RealtimeSessionDriver
       return sessionDriver.create(session);
     }
 
-    public HttpResult<CreateRealtimeMeasurementResponse> create(RealtimeSession realtimeSession) {
+    public HttpResult<CreateRealtimeMeasurementResponse> create_measurement(RealtimeSession realtimeSession) {
       String json = gson.toJson(realtimeSession);
 
         return http()
