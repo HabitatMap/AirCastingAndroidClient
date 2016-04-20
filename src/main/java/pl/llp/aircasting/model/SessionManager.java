@@ -30,6 +30,7 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
@@ -37,6 +38,7 @@ import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.sync.RealtimeSessionUploader;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import android.app.Application;
@@ -86,6 +88,8 @@ public class SessionManager
   @Inject ContinuousTracker tracker;
 
   @Inject ApplicationState state;
+
+  @Inject RealtimeSessionUploader realtimeSessionUploader;
 
   private Map<String, Double> recentMeasurements = newHashMap();
 
@@ -220,6 +224,9 @@ public class SessionManager
       {
         MeasurementStream stream = prepareStream(event);
         tracker.addMeasurement(stream, measurement);
+
+        RealtimeSession realtimeSession = new RealtimeSession(getSession().getUUID(), stream, measurement);
+        eventBus.post(new RealtimeMeasurementEvent(realtimeSession));
       }
       eventBus.post(new MeasurementEvent(measurement, sensor));
     }
@@ -311,6 +318,9 @@ public class SessionManager
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
     tracker.startTracking(getSession(), locationLess);
+
+    if (!realtimeSessionUploader.create(session))
+      discardSession(session.getId());
   }
 
   public void stopSession()

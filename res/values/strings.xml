@@ -223,4 +223,6 @@
   <string name="cant_map_without_gps">Without a GPS fix you can\'t map your session. Turn on your GPS or find some sky.</string>
 
   <string name="sensor_is_disabled_in_settings">This sensor is disabled. To turn it on, stop recording and go to settings.</string>
+
+  <string name="session_creation_failed">Session creation failed.</string>
 </resources>
