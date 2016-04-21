@@ -114,6 +114,11 @@ public class SchemaMigrator
         addColumn(db, REGRESSION_TABLE_NAME, REGRESSION_CREATED_AT, Datatype.TEXT);
     }
 
+    if (oldVersion < 35 && newVersion >= 35)
+    {
+        addColumn(db, SESSION_TABLE_NAME, SESSION_REALTIME, Datatype.BOOLEAN);
+    }
+
 
 //    sometime in the future
 //    {

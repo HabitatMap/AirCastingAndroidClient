@@ -61,6 +61,8 @@ public class Session implements Serializable
   @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
+  @Expose private boolean isRealtime;
+
   private volatile Long id = null;
   private boolean submittedForRemoval = false;
 
@@ -317,4 +319,8 @@ public class Session implements Serializable
   {
     this.locationless = locationless;
   }
+
+  public boolean isRealtime() { return isRealtime; }
+
+  public void setRealtime(boolean isRealtime) { this.isRealtime = isRealtime; }
 }

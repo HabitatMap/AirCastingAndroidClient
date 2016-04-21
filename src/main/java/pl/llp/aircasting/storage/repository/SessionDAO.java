@@ -70,6 +70,7 @@ public class SessionDAO
     session.setMarkedForRemoval(getBool(cursor, SESSION_MARKED_FOR_REMOVAL));
     session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
     session.setLocationless(getBool(cursor, SESSION_LOCAL_ONLY));
+    session.setRealtime(getBool(cursor, SESSION_REALTIME));
   }
 
   public ContentValues asValues(Session session)
@@ -93,6 +94,7 @@ public class SessionDAO
     values.put(SESSION_CALIBRATED, 1);
     values.put(SESSION_INCOMPLETE, 0);
     values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
+    values.put(SESSION_REALTIME, session.isRealtime() ? 1 : 0);
 
     return values;
   }
