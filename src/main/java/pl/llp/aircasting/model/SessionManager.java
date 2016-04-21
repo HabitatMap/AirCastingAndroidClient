@@ -225,8 +225,8 @@ public class SessionManager
         MeasurementStream stream = prepareStream(event);
         tracker.addMeasurement(stream, measurement);
 
-        RealtimeSession realtimeSession = new RealtimeSession(getSession().getUUID(), stream, measurement);
-        eventBus.post(new RealtimeMeasurementEvent(realtimeSession));
+        RealtimeMeasurement realtimeMeasurement = new RealtimeMeasurement(getSession().getUUID(), stream, measurement);
+        eventBus.post(new RealtimeMeasurementEvent(realtimeMeasurement));
       }
       eventBus.post(new MeasurementEvent(measurement, sensor));
     }

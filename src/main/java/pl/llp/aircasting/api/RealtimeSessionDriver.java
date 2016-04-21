@@ -25,7 +25,7 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.CreateRealtimeMeasurementResponse;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.RealtimeSession;
+import pl.llp.aircasting.model.RealtimeMeasurement;
 import pl.llp.aircasting.util.http.HttpResult;
 
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
@@ -42,8 +42,8 @@ public class RealtimeSessionDriver
       return sessionDriver.create(session);
     }
 
-    public HttpResult<CreateRealtimeMeasurementResponse> create_measurement(RealtimeSession realtimeSession) {
-      String json = gson.toJson(realtimeSession);
+    public HttpResult<CreateRealtimeMeasurementResponse> create_measurement(RealtimeMeasurement realtimeMeasurement) {
+      String json = gson.toJson(realtimeMeasurement);
 
         return http()
                 .post()

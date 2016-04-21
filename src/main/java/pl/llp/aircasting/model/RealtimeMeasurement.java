@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.UUID;
 
-public class RealtimeSession {
+public class RealtimeMeasurement {
   @Expose @SerializedName("session_uuid") private UUID sessionUUID;
   @Expose @SerializedName("measurement") private Measurement measurement;
   @Expose @SerializedName("sensor_name") private String sensorName;
@@ -14,7 +14,7 @@ public class RealtimeSession {
   @Expose @SerializedName("unit_name") private String unit;
   @Expose @SerializedName("unit_symbol") private String symbol;
 
-  public RealtimeSession(UUID sessionUUID, MeasurementStream stream, Measurement measurement) {
+  public RealtimeMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement) {
     this.sessionUUID = sessionUUID;
 
     this.measurement = measurement;

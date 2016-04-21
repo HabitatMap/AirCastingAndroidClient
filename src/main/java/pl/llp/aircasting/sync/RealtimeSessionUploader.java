@@ -31,7 +31,7 @@ import pl.llp.aircasting.api.RealtimeSessionDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.CreateRealtimeMeasurementResponse;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.RealtimeSession;
+import pl.llp.aircasting.model.RealtimeMeasurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.util.http.HttpResult;
@@ -85,13 +85,13 @@ public class RealtimeSessionUploader
   @Subscribe
   public void onEvent(RealtimeMeasurementEvent event) {
     if (canUpload()) {
-      performCreateMeasurement(event.getRealtimeSession());
+      performCreateMeasurement(event.getRealtimeMeasurement());
     }
   }
 
-  private void performCreateMeasurement(RealtimeSession realtimeSession)
+  private void performCreateMeasurement(RealtimeMeasurement realtimeMeasurement)
   {
-    HttpResult<CreateRealtimeMeasurementResponse> result = realtimeSessionDriver.create_measurement(realtimeSession);
+    HttpResult<CreateRealtimeMeasurementResponse> result = realtimeSessionDriver.create_measurement(realtimeMeasurement);
   }
 
   private boolean canUpload() {

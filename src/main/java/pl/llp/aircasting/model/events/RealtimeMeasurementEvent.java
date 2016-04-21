@@ -1,18 +1,18 @@
 package pl.llp.aircasting.model.events;
 
-import pl.llp.aircasting.model.RealtimeSession;
+import pl.llp.aircasting.model.RealtimeMeasurement;
 
 public class RealtimeMeasurementEvent
 {
-  private RealtimeSession realtimeSession;
+  private RealtimeMeasurement realtimeMeasurement;
 
-  public RealtimeMeasurementEvent(RealtimeSession realtimeSession)
+  public RealtimeMeasurementEvent(RealtimeMeasurement realtimeMeasurement)
   {
-    this.realtimeSession = realtimeSession;
+    this.realtimeMeasurement = realtimeMeasurement;
   }
 
-  public RealtimeSession getRealtimeSession()
+  public RealtimeMeasurement getRealtimeMeasurement()
   {
-    return realtimeSession;
+    return realtimeMeasurement;
   }
 }
