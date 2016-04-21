@@ -242,7 +242,7 @@ public class SyncService extends RoboIntentService
 
   private boolean skipUpload(Session session)
   {
-    return session == null || session.isMarkedForRemoval() || session.isLocationless();
+    return session == null || session.isMarkedForRemoval() || session.isLocationless() || session.isRealtime();
   }
 
   private void updateSession(Session session, CreateSessionResponse sessionResponse)

@@ -68,6 +68,12 @@ public class Session implements Serializable
 
   private boolean locationless = false;
 
+  public Session() {}
+
+  public Session(boolean isRealtime) {
+    this.isRealtime = isRealtime;
+  }
+
   public void add(MeasurementStream stream)
   {
     streams.put(stream.getSensorName(), stream);
@@ -320,7 +326,11 @@ public class Session implements Serializable
     this.locationless = locationless;
   }
 
-  public boolean isRealtime() { return isRealtime; }
+  public boolean isRealtime() {
+    return isRealtime;
+  }
 
-  public void setRealtime(boolean isRealtime) { this.isRealtime = isRealtime; }
+  public void setRealtime(boolean isRealtime) {
+    this.isRealtime = isRealtime;
+  }
 }

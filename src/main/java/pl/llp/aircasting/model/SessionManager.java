@@ -312,7 +312,7 @@ public class SessionManager
   public void startSession(boolean locationLess)
   {
     eventBus.post(new SessionStartedEvent(getSession()));
-    setSession(new Session());
+    setSession(new Session(true));
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
