@@ -319,8 +319,9 @@ public class SessionManager
     notificationHelper.showRecordingNotification();
     tracker.startTracking(getSession(), locationLess);
 
-    if (!realtimeSessionUploader.create(session))
-      discardSession(session.getId());
+    if (!realtimeSessionUploader.create(getSession())) {
+      discardSession(getSession());
+    }
   }
 
   public void stopSession()
@@ -338,6 +339,16 @@ public class SessionManager
       Intents.triggerSync(applicationContext);
     }
     cleanup();
+  }
+
+  public void discardSession(Session session) {
+    Long sessionId;
+
+    do
+      sessionId = session.getId();
+    while (sessionId == null);
+
+    discardSession(sessionId);
   }
 
   public void discardSession(long sessionId) {

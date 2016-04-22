@@ -59,6 +59,7 @@ public class RealtimeSessionUploader
     try {
       if (canUpload()) {
         performCreateSession(session);
+        return (true);
       } else {
         Toast.makeText(context, session_creation_failed, Toast.LENGTH_LONG).show();
         return (false);
@@ -68,8 +69,6 @@ public class RealtimeSessionUploader
       Toast.makeText(context, session_creation_failed, Toast.LENGTH_LONG).show();
       return (false);
     }
-
-    return (true);
   }
 
   private void performCreateSession(Session session) throws SessionSyncException
