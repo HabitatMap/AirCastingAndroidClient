@@ -135,6 +135,7 @@ public class ActualSessionTracker implements SessionTracker
         values.put(SESSION_CALIBRATED, 1);
         values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
         values.put(SESSION_INCOMPLETE, 1);
+        values.put(SESSION_REALTIME, session.isRealtime() ? 1 : 0);
 
         long sessionKey = writableDatabase.insertOrThrow(SESSION_TABLE_NAME, null, values);
         session.setId(sessionKey);
