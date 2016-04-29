@@ -9,6 +9,7 @@ import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -33,8 +34,13 @@ public class RealtimeSessionTracker extends ActualSessionTracker
       pendingMeasurements.put(stream.getSensorName(), currentTime);
 
       measurementTracker.add(stream, measurement);
-      RealtimeMeasurement realtimeMeasurement = new RealtimeMeasurement(this.session.getUUID(), stream, measurement);
-      eventBus.post(new RealtimeMeasurementEvent(realtimeMeasurement));
+      streamMeasurement(this.session.getUUID(), stream, measurement);
     }
+  }
+
+  private void streamMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement)
+  {
+    RealtimeMeasurement realtimeMeasurement = new RealtimeMeasurement(sessionUUID, stream, measurement);
+    eventBus.post(new RealtimeMeasurementEvent(realtimeMeasurement));
   }
 }
