@@ -18,8 +18,6 @@ import static pl.llp.aircasting.storage.db.DBConstants.*;
  */
 class ActualMeasurementTracker implements MeasurementTracker
 {
-  RealtimeSessionUploader realtimeSessionUploader = new RealtimeSessionUploader();
-
   final DatabaseTaskQueue dbQueue;
 
   ActualMeasurementTracker(DatabaseTaskQueue taskQueue)

@@ -2,10 +2,8 @@ package pl.llp.aircasting.tracking;
 
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -17,14 +15,19 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.common.eventbus.EventBus;
 
 import java.util.Date;
+import java.util.Map;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class ActualSessionTracker implements SessionTracker
 {
+  public static final long MEASUREMENTS_INTERVAL = 60000;
+
   private final Session session;
   private final SettingsHelper settingsHelper;
   private final MetadataHelper metadataHelper;
+  private final EventBus eventBus;
   final DatabaseTaskQueue dbQueue;
 
   final NoteTracker noteTracker;
@@ -32,6 +35,8 @@ public class ActualSessionTracker implements SessionTracker
   MeasurementTracker measurementTracker;
 
   final SessionPropertySetter setter;
+
+  private Map<String, Long> pendingMeasurements = newHashMap();
 
   ActualSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
   {
@@ -41,6 +46,7 @@ public class ActualSessionTracker implements SessionTracker
     this.dbQueue = dbQueue;
     this.sessions = sessions;
     this.setter = new SessionPropertySetter(dbQueue);
+    this.eventBus = eventBus;
 
     this.noteTracker = new ActualNoteTracker(eventBus, dbQueue);
     this.measurementTracker = new ActualMeasurementTracker(dbQueue);
@@ -105,7 +111,16 @@ public class ActualSessionTracker implements SessionTracker
   @Override
   public void addMeasurement(MeasurementStream stream, Measurement measurement)
   {
-    measurementTracker.add(stream, measurement);
+    long currentTime = System.currentTimeMillis();
+    Long lastMeauserementTime = pendingMeasurements.get(stream.getSensorName());
+
+    if(lastMeauserementTime == null || lastMeauserementTime < currentTime - MEASUREMENTS_INTERVAL) {
+      pendingMeasurements.put(stream.getSensorName(), currentTime);
+
+      measurementTracker.add(stream, measurement);
+      RealtimeMeasurement realtimeMeasurement = new RealtimeMeasurement(this.session.getUUID(), stream, measurement);
+      eventBus.post(new RealtimeMeasurementEvent(realtimeMeasurement));
+    }
   }
 
   @Override
