@@ -264,7 +264,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
                 recordAlert.display();
             } else {
-                sessionManager.startSession();
+                sessionManager.startSession(false);
 
                 if (settingsHelper.hasNoCredentials()) {
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();

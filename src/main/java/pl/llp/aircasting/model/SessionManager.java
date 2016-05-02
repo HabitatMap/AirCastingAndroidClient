@@ -298,10 +298,6 @@ public class SessionManager
     eventBus.post(new SessionChangeEvent(session));
   }
 
-  public void startSession() {
-      startSession(false);
-  }
-
   public void startSession(boolean locationLess)
   {
     eventBus.post(new SessionStartedEvent(getSession()));
