@@ -1,12 +1,9 @@
 package pl.llp.aircasting.tracking;
 
-import com.google.inject.Inject;
-
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
-import pl.llp.aircasting.sync.RealtimeSessionUploader;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
