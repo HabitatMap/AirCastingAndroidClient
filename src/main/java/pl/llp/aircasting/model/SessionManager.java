@@ -30,7 +30,6 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
