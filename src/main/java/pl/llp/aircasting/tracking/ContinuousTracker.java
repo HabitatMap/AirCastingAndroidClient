@@ -47,7 +47,7 @@ public class ContinuousTracker
   public void startTracking(Session incomingSession, boolean locationLess)
   {
     this.session = incomingSession;
-    sessionTracker = new RealtimeSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
+    sessionTracker = buildSessionTracker(locationLess);
     sessionTracker.save(session);
   }
 
@@ -106,6 +106,13 @@ public class ContinuousTracker
   public void deleteNote(Session session, Note note)
   {
     noteTracker.deleteNote(session, note);
+  }
+
+  private SessionTracker buildSessionTracker(boolean locationLess) {
+    if(session.isRealtime())
+      return new RealtimeSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
+    else
+      return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
   }
 }
 
