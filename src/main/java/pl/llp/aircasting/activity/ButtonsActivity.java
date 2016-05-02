@@ -258,13 +258,13 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
     private void startAirCasting() {
         if (settingsHelper.areMapsDisabled()) {
-            sessionManager.startSession(true);
+            sessionManager.startTimeboxedSession(true);
         } else {
             if (locationHelper.getLastLocation() == null) {
                 RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
                 recordAlert.display();
             } else {
-                sessionManager.startSession(false);
+                sessionManager.startTimeboxedSession(false);
 
                 if (settingsHelper.hasNoCredentials()) {
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();

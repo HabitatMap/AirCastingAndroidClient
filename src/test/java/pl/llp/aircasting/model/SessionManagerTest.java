@@ -113,7 +113,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateMeasurementStreams()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     triggerMeasurement();
 
@@ -126,7 +126,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateOnlyOneStreamPerSensor()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     triggerMeasurement();
     triggerMeasurement();
@@ -137,7 +137,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateAStreamForEachSensor()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     triggerMeasurement();
     SensorEvent event = new SensorEvent("CERN", "LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
@@ -150,7 +150,7 @@ public class SessionManagerTest
   @Test
   public void shouldAllowAccessToAParticularStream()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     triggerMeasurement();
 
@@ -204,7 +204,7 @@ public class SessionManagerTest
   @Test
   public void shouldStoreMeasurements()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     triggerMeasurement(22);
 
@@ -216,7 +216,7 @@ public class SessionManagerTest
   @Test
   public void measurements_withoutLocation_should_get_a_fake()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     sessionManager.session.setLocationless(true);
     when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
@@ -279,7 +279,7 @@ public class SessionManagerTest
   @Test
   public void shouldNotStopSensorsDuringASession()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     sessionManager.stopSensors();
 
     verify(sessionManager.locationHelper, never()).stop();
@@ -290,7 +290,7 @@ public class SessionManagerTest
   @Test
   public void shouldStartASession()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     verify(sessionManager.locationHelper, times(2)).start();
     verify(sessionManager.audioReader).start();
@@ -300,7 +300,7 @@ public class SessionManagerTest
   @Test
   public void shouldDiscardASession()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     sessionManager.getSession().setId(1234);
 
     triggerMeasurement(13.5);
@@ -360,7 +360,7 @@ public class SessionManagerTest
   @Test
   public void shouldSetSessionStart()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     int oneSecond = 1000;
     assertThat(new Date().getTime() - sessionManager.session.getStart().getTime() < oneSecond, equalTo(true));
@@ -372,7 +372,7 @@ public class SessionManagerTest
     // given
 
     // when
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
 
     // then
     org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isTrue();
@@ -382,7 +382,7 @@ public class SessionManagerTest
   public void stopSession_should_changeRecordingState() throws Exception
   {
       // given
-      sessionManager.startSession(false);
+      sessionManager.startTimeboxedSession(false);
 
       // when
       sessionManager.stopSession();
@@ -395,7 +395,7 @@ public class SessionManagerTest
   @Test
   public void shouldSetSessionEnd()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     triggerMeasurement();
 
     sessionManager.finishSession(0);
@@ -448,7 +448,7 @@ public class SessionManagerTest
   @Test
   public void shouldJustDeleteNotesIfSessionInProgress()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     Note note = sessionManager.makeANote(null, null, null);
 
     sessionManager.deleteNote(note);
@@ -459,7 +459,7 @@ public class SessionManagerTest
   @Test
   public void afterDeletingNotesShouldHaveNewNumbers()
   {
-    sessionManager.startSession(false);
+    sessionManager.startTimeboxedSession(false);
     Note note1 = sessionManager.makeANote(null, "Note1", null);
     Note note2 = sessionManager.makeANote(null, "Note2", null);
 
