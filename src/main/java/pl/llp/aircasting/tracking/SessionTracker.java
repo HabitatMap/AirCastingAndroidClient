@@ -28,5 +28,5 @@ public interface SessionTracker
 
   void delete(long sessionId);
 
-  void save(Session session);
+  boolean save(Session session);
 }

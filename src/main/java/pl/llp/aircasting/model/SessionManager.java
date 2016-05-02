@@ -37,7 +37,6 @@ import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.RealtimeSessionUploader;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import android.app.Application;
@@ -87,8 +86,6 @@ public class SessionManager
   @Inject ContinuousTracker tracker;
 
   @Inject ApplicationState state;
-
-  @Inject RealtimeSessionUploader realtimeSessionUploader;
 
   private Map<String, Double> recentMeasurements = newHashMap();
 
@@ -313,11 +310,9 @@ public class SessionManager
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
-    tracker.startTracking(getSession(), locationLess);
 
-    if (!realtimeSessionUploader.create(getSession())) {
-      discardSession(getSession());
-    }
+    if(!tracker.startTracking(getSession(), locationLess))
+      cleanup();
   }
 
   public void stopSession()
@@ -335,16 +330,6 @@ public class SessionManager
       Intents.triggerSync(applicationContext);
     }
     cleanup();
-  }
-
-  public void discardSession(Session session) {
-    Long sessionId;
-
-    do
-      sessionId = session.getId();
-    while (sessionId == null);
-
-    discardSession(sessionId);
   }
 
   public void discardSession(long sessionId) {

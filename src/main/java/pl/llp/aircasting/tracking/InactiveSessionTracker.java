@@ -88,8 +88,9 @@ public class InactiveSessionTracker implements SessionTracker
   }
 
   @Override
-  public void save(Session session)
+  public boolean save(Session session)
   {
     doNothingAndComplain();
+    return false;
   }
 }

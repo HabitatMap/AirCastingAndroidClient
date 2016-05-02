@@ -7,6 +7,7 @@ import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.sync.RealtimeSessionUploader;
 
 import java.util.Map;
 import java.util.UUID;
@@ -15,11 +16,14 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class RealtimeSessionTracker extends ActualSessionTracker
 {
+  private final RealtimeSessionUploader realtimeSessionUploader;
+
   private Map<String, MeasurementsBuffer> pendingMeasurements = newHashMap();
 
-  RealtimeSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
+  RealtimeSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, RealtimeSessionUploader realtimeSessionUploader, boolean locationLess)
   {
     super(eventBus, session, dbQueue, settingsHelper, metadataHelper, sessions, locationLess);
+    this.realtimeSessionUploader = realtimeSessionUploader;
   }
 
   @Override
@@ -36,6 +40,15 @@ public class RealtimeSessionTracker extends ActualSessionTracker
 
       addActualMeasurement(stream, measurement);
     }
+  }
+
+  @Override
+  protected boolean beforeSave(final Session session)
+  {
+    if (realtimeSessionUploader.create(session))
+      return true;
+    else
+      return false;
   }
 
   private MeasurementsBuffer getMeasurementBuffer(String sensorName) {

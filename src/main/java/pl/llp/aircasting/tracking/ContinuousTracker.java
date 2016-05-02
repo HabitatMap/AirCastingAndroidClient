@@ -10,6 +10,7 @@ import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.sync.RealtimeSessionUploader;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -25,6 +26,7 @@ public class ContinuousTracker
   @Inject SettingsHelper settingsHelper;
   @Inject DatabaseTaskQueue taskQueue;
   @Inject SessionRepository sessions;
+  @Inject RealtimeSessionUploader realtimeSessionUploader;
 
   private Session session;
 
@@ -44,11 +46,17 @@ public class ContinuousTracker
     sessionTracker.addNote(note);
   }
 
-  public void startTracking(Session incomingSession, boolean locationLess)
+  public boolean startTracking(Session incomingSession, boolean locationLess)
   {
     this.session = incomingSession;
     sessionTracker = buildSessionTracker(locationLess);
-    sessionTracker.save(session);
+
+    if(sessionTracker.save(session))
+      return true;
+    else {
+      stopTracking(session);
+      return false;
+    }
   }
 
   public void stopTracking() {
@@ -110,7 +118,7 @@ public class ContinuousTracker
 
   private SessionTracker buildSessionTracker(boolean locationLess) {
     if(session.isRealtime())
-      return new RealtimeSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
+      return new RealtimeSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, realtimeSessionUploader, locationLess);
     else
       return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
   }

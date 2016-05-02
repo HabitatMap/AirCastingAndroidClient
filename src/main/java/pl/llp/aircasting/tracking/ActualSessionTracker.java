@@ -114,7 +114,20 @@ public class ActualSessionTracker implements SessionTracker
   }
 
   @Override
-  public void save(final Session session)
+  public boolean save(final Session session)
+  {
+    if(!beforeSave(session))
+      return false;
+
+    saveToDb(session);
+    return true;
+  }
+
+  protected boolean beforeSave(final Session session) {
+    return true;
+  }
+
+  protected void saveToDb(final Session session)
   {
     dbQueue.add(new WritableDatabaseTask<Void>()
     {
