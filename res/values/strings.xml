@@ -136,6 +136,10 @@
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
     correct.
   </string>
+
+  <string name="realtime_sessions_streaming">Streaming</string>
+  <string name="realtime_sessions_streaming_summary">Check to stream data from a fixed location to a web server for real-time viewing</string>
+
   <string name="contribute_explanation">Do you want to contribute your AirCasting session to the CrowdMap? Sessions
     contributed to the CrowdMap are publicly accessible.
   </string>

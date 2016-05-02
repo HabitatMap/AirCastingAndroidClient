@@ -31,6 +31,11 @@
                                  android:key="external_sensor"
           />
 
+  <android.preference.CheckBoxPreference android:defaultValue="false"
+      android:key="realtime_sessions_streaming"
+      android:title="@string/realtime_sessions_streaming"
+      android:summary="@string/realtime_sessions_streaming_summary"
+      />
 
   <android.preference.CheckBoxPreference android:title="Contribute to CrowdMap"
                                          android:key="contribute_to_crowdmap"
