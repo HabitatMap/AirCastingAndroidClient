@@ -15,9 +15,7 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class RealtimeSessionTracker extends ActualSessionTracker
 {
-  public static final long MEASUREMENTS_INTERVAL = 60000;
-
-  private Map<String, Long> pendingMeasurements = newHashMap();
+  private Map<String, MeasurementsBuffer> pendingMeasurements = newHashMap();
 
   RealtimeSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
   {
@@ -27,15 +25,29 @@ public class RealtimeSessionTracker extends ActualSessionTracker
   @Override
   public void addMeasurement(MeasurementStream stream, Measurement measurement)
   {
-    long currentTime = System.currentTimeMillis();
-    Long lastMeauserementTime = pendingMeasurements.get(stream.getSensorName());
+    MeasurementsBuffer measurementsBuffer = getMeasurementBuffer(stream.getSensorName());
+    measurementsBuffer.add(measurement.getValue());
 
-    if(lastMeauserementTime == null || lastMeauserementTime < currentTime - MEASUREMENTS_INTERVAL) {
-      pendingMeasurements.put(stream.getSensorName(), currentTime);
+    if(measurementsBuffer.isGettable()) {
+      Double average = measurementsBuffer.get();
 
-      measurementTracker.add(stream, measurement);
-      streamMeasurement(this.session.getUUID(), stream, measurement);
+      measurement.setValue(average);
+      measurement.setMeasuredValue(average);
+
+      addActualMeasurement(stream, measurement);
     }
+  }
+
+  private MeasurementsBuffer getMeasurementBuffer(String sensorName) {
+    if(!pendingMeasurements.containsKey(sensorName))
+      pendingMeasurements.put(sensorName, new MeasurementsBuffer());
+
+    return pendingMeasurements.get(sensorName);
+  }
+
+  private void addActualMeasurement(MeasurementStream stream, Measurement measurement) {
+    measurementTracker.add(stream, measurement);
+    streamMeasurement(this.session.getUUID(), stream, measurement);
   }
 
   private void streamMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement)
