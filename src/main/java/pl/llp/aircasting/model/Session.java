@@ -72,6 +72,9 @@ public class Session implements Serializable
 
   public Session(boolean isRealtime) {
     this.isRealtime = isRealtime;
+
+    if(this.isRealtime)
+      setContribute(true);
   }
 
   public void add(MeasurementStream stream)
