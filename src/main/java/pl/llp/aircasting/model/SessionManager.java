@@ -198,6 +198,11 @@ public class SessionManager
     return state.recording().isRecording();
   }
 
+  public boolean canSessionHaveNotes()
+  {
+    return !session.isRealtime();
+  }
+
   public void setContribute(long sessionId, boolean shouldContribute) {
     tracker.setContribute(sessionId, shouldContribute);
   }
