@@ -243,8 +243,16 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void stopAirCasting() {
-        locationHelper.stop();
         Session session = sessionManager.getSession();
+
+        if (session.isRealtime())
+            stopRealtimeAirCasting(session);
+        else
+            stopTimeboxedAirCasting(session);
+    }
+
+    private void stopTimeboxedAirCasting(Session session) {
+        locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
@@ -254,6 +262,18 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
             Intent intent = new Intent(this, SaveSessionActivity.class);
             intent.putExtra(Intents.SESSION_ID, sessionId);
             startActivityForResult(intent, Intents.SAVE_DIALOG);
+        }
+    }
+
+    private void stopRealtimeAirCasting(Session session) {
+        locationHelper.stop();
+        Long sessionId = session.getId();
+        if (session.isEmpty()) {
+            Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
+            sessionManager.discardSession(sessionId);
+        } else {
+            sessionManager.stopSession();
+            sessionManager.finishSession(sessionId);
         }
     }
 
