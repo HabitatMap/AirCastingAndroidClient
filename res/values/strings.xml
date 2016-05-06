@@ -229,4 +229,6 @@
   <string name="sensor_is_disabled_in_settings">This sensor is disabled. To turn it on, stop recording and go to settings.</string>
 
   <string name="session_creation_failed">Session creation failed.</string>
+  <string name="start_realtime_session">Start real-time session</string>
+  <string name="start_session">Start session</string>
 </resources>

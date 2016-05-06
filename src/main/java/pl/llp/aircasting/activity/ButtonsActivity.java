@@ -313,7 +313,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         if (settingsHelper.hasNoCredentials())
             Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
         else
-            sessionManager.startRealtimeSession();
+            startActivity(new Intent(this, StartRealtimeSessionActivity.class));
     }
 
     @Override
