@@ -58,11 +58,19 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
   {
     switch (view.getId()) {
       case R.id.start_session: {
-        sessionManager.startRealtimeSession();
+        startRealtimeSession();
         break;
       }
     }
 
     finish();
+  }
+
+  private void startRealtimeSession() {
+    String title = sessionTitle.getText().toString();
+    String tags = sessionTags.getText().toString();
+    String description = sessionDescription.getText().toString();
+
+    sessionManager.startRealtimeSession(title, tags, description);
   }
 }

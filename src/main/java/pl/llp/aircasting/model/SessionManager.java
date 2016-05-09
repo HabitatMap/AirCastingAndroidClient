@@ -305,18 +305,23 @@ public class SessionManager
 
   public void startTimeboxedSession(boolean locationLess)
   {
-    startSession(locationLess, false);
+    startSession(new Session(false), locationLess);
   }
 
-  public void startRealtimeSession()
+  public void startRealtimeSession(String title, String tags, String description)
   {
-    startSession(false, true);
+    Session newSession = new Session(true);
+    newSession.setTitle(title);
+    newSession.setTags(tags);
+    newSession.setDescription(description);
+
+    startSession(newSession, false);
   }
 
-  private void startSession(boolean locationLess, boolean isRealtime)
+  private void startSession(Session newSession, boolean locationLess)
   {
     eventBus.post(new SessionStartedEvent(getSession()));
-    setSession(new Session(isRealtime));
+    setSession(newSession);
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
