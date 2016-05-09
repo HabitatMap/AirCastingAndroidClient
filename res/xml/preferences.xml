@@ -35,6 +35,7 @@
       android:key="realtime_sessions_streaming"
       android:title="@string/realtime_sessions_streaming"
       android:summary="@string/realtime_sessions_streaming_summary"
+      android:disableDependentsState="true"
       />
 
   <android.preference.CheckBoxPreference android:title="Contribute to CrowdMap"
