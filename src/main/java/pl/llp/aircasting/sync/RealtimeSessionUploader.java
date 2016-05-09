@@ -48,7 +48,7 @@ public class RealtimeSessionUploader
   @Inject RealtimeSessionDriver realtimeSessionDriver;
   @Inject EventBus eventBus;
 
-  @InjectResource(R.string.session_creation_failed) String session_creation_failed;
+  @InjectResource(R.string.realtime_session_creation_failed) String realtime_session_creation_failed;
 
   @Inject
   public void init() {
@@ -61,12 +61,12 @@ public class RealtimeSessionUploader
         performCreateSession(session);
         return (true);
       } else {
-        Toast.makeText(context, session_creation_failed, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, realtime_session_creation_failed, Toast.LENGTH_LONG).show();
         return (false);
       }
     } catch (SessionSyncException exception)
     {
-      Toast.makeText(context, session_creation_failed, Toast.LENGTH_LONG).show();
+      Toast.makeText(context, realtime_session_creation_failed, Toast.LENGTH_LONG).show();
       return (false);
     }
   }
