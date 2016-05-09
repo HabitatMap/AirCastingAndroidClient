@@ -257,15 +257,25 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   protected void onListItemClick(ListView listView, View view, int position, long id) {
     Session s = sessionAdapter.getSession(position);
-    viewSession(s.getId());
+    
+    if(!s.isRealtime())
+      viewSession(s.getId());
+    else
+      Toast.makeText(context, "You can't modify real-time session.", Toast.LENGTH_LONG).show();
   }
 
   @Override
   public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-    Intent intent = new Intent(this, OpenSessionActivity.class);
     Session s = sessionAdapter.getSession(position);
     sessionId = s.getId();
-    startActivityForResult(intent, 0);
+
+    if(!s.isRealtime()) {
+      Intent intent = new Intent(this, OpenSessionActivity.class);
+      startActivityForResult(intent, 0);
+    }
+    else
+      Toast.makeText(context, "You can't modify real-time session.", Toast.LENGTH_LONG).show();
+
     return true;
   }
 
