@@ -116,6 +116,13 @@
       <version>9.0.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.google.android.gms</groupId>
+      <artifactId>play-services-location</artifactId>
+      <version>8.3.0</version>
+      <type>aar</type>
+    </dependency>
+
     <!-- test libraries -->
 
     <dependency>
