@@ -151,6 +151,9 @@ public class ActualSessionTracker implements SessionTracker
         values.put(SESSION_TITLE, session.getTitle());
         values.put(SESSION_DESCRIPTION, session.getDescription());
         values.put(SESSION_TAGS, session.getTags());
+        values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
+        values.put(SESSION_LATITUDE, session.getLatitude());
+        values.put(SESSION_LONGITUDE, session.getLongitude());
 
         long sessionKey = writableDatabase.insertOrThrow(SESSION_TABLE_NAME, null, values);
         session.setId(sessionKey);

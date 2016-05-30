@@ -12,11 +12,7 @@ import org.intellij.lang.annotations.Language;
 
 import java.util.UUID;
 
-import static pl.llp.aircasting.storage.DBHelper.getBool;
-import static pl.llp.aircasting.storage.DBHelper.getDate;
-import static pl.llp.aircasting.storage.DBHelper.getInt;
-import static pl.llp.aircasting.storage.DBHelper.getLong;
-import static pl.llp.aircasting.storage.DBHelper.getString;
+import static pl.llp.aircasting.storage.DBHelper.*;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 /**
@@ -71,6 +67,9 @@ public class SessionDAO
     session.setSubmittedForRemoval(getBool(cursor, SESSION_SUBMITTED_FOR_REMOVAL));
     session.setLocationless(getBool(cursor, SESSION_LOCAL_ONLY));
     session.setRealtime(getBool(cursor, SESSION_REALTIME));
+    session.setIndoor(getBool(cursor, SESSION_INDOOR));
+    session.setLatitude(getDouble(cursor, SESSION_LATITUDE));
+    session.setLongitude(getDouble(cursor, SESSION_LONGITUDE));
   }
 
   public ContentValues asValues(Session session)
@@ -95,6 +94,9 @@ public class SessionDAO
     values.put(SESSION_INCOMPLETE, 0);
     values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
     values.put(SESSION_REALTIME, session.isRealtime() ? 1 : 0);
+    values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
+    values.put(SESSION_LATITUDE, session.getLatitude());
+    values.put(SESSION_LONGITUDE, session.getLongitude());
 
     return values;
   }

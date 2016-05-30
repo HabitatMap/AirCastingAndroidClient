@@ -20,6 +20,7 @@
 package pl.llp.aircasting.model;
 
 import android.util.Log;
+import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
@@ -65,7 +66,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class SessionManager
 {
-  public static final int TOTALLY_FAKE_COORDINATE = 200;
+  public static final double TOTALLY_FAKE_COORDINATE = 200;
 
   @Inject SimpleAudioReader audioReader;
   @Inject EventBus eventBus;
@@ -233,12 +234,19 @@ public class SessionManager
   private Location getLocation()
   {
     Location location = locationHelper.getLastLocation();
-    if(session.isLocationless())
+
+    if(session.isRealtime())
+    {
+      location.setLatitude(session.getLatitude());
+      location.setLongitude(session.getLongitude());
+    }
+    else if(session.isLocationless())
     {
       location = new Location("fake");
       location.setLatitude(TOTALLY_FAKE_COORDINATE);
       location.setLongitude(TOTALLY_FAKE_COORDINATE);
     }
+
     return location;
   }
 
@@ -308,14 +316,24 @@ public class SessionManager
     startSession(new Session(false), locationLess);
   }
 
-  public void startRealtimeSession(String title, String tags, String description)
+  public void startRealtimeSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)
   {
     Session newSession = new Session(true);
     newSession.setTitle(title);
     newSession.setTags(tags);
     newSession.setDescription(description);
+    newSession.setIndoor(isIndoor);
 
-    startSession(newSession, false);
+    if(latlng == null) {
+      newSession.setLatitude(TOTALLY_FAKE_COORDINATE);
+      newSession.setLongitude(TOTALLY_FAKE_COORDINATE);
+    }
+    else {
+      newSession.setLatitude(latlng.latitude);
+      newSession.setLongitude(latlng.longitude);
+    }
+
+    startSession(newSession, true);
   }
 
   private void startSession(Session newSession, boolean locationLess)

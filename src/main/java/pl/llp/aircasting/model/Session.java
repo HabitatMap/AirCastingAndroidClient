@@ -62,6 +62,10 @@ public class Session implements Serializable
   @Expose @SerializedName("end_time") private Date end;
 
   @Expose private boolean isRealtime;
+  @Expose private boolean isIndoor;
+
+  @Expose private double latitude;
+  @Expose private double longitude;
 
   private volatile Long id = null;
   private boolean submittedForRemoval = false;
@@ -335,5 +339,29 @@ public class Session implements Serializable
 
   public void setRealtime(boolean isRealtime) {
     this.isRealtime = isRealtime;
+  }
+
+  public boolean isIndoor() {
+    return isIndoor;
+  }
+
+  public void setIndoor(boolean isIndoor) {
+    this.isIndoor = isIndoor;
+  }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(Double longitude) {
+    this.longitude = longitude;
   }
 }

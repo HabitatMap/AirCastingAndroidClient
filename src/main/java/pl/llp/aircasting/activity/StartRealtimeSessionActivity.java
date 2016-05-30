@@ -112,7 +112,7 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
 
-    sessionManager.startRealtimeSession(title, tags, description);
+    sessionManager.startRealtimeSession(title, tags, description, isIndoor, latlng);
 
     finish();
   }

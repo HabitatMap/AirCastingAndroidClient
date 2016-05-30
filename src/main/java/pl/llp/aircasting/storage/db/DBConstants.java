@@ -25,7 +25,7 @@ public interface DBConstants
 {
   String DB_NAME = "sessions.db";
 
-  int DB_VERSION = 35;
+  int DB_VERSION = 36;
 
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
@@ -58,6 +58,9 @@ public interface DBConstants
   String SESSION_INCOMPLETE = "incomplete";
 
   String SESSION_REALTIME = "is_realtime";
+  String SESSION_INDOOR = "is_indoor";
+  String SESSION_LATITUDE = "Latitude";
+  String SESSION_LONGITUDE = "Longitude";
 
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_AVG = "Average";

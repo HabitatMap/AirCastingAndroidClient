@@ -119,6 +119,14 @@ public class SchemaMigrator
         addColumn(db, SESSION_TABLE_NAME, SESSION_REALTIME, Datatype.BOOLEAN);
         db.execSQL("UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_REALTIME + " = 0" );
     }
+    if (oldVersion < 36 && newVersion >= 36)
+    {
+        addColumn(db, SESSION_TABLE_NAME, SESSION_INDOOR, Datatype.BOOLEAN);
+        db.execSQL("UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_INDOOR + " = 0" );
+
+        addColumn(db, SESSION_TABLE_NAME, SESSION_LATITUDE, Datatype.REAL);
+        addColumn(db, SESSION_TABLE_NAME, SESSION_LONGITUDE, Datatype.REAL);
+    }
 
 
 //    sometime in the future
