@@ -20,10 +20,18 @@
 package pl.llp.aircasting.activity;
 
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.SessionManager;
@@ -31,7 +39,8 @@ import roboguice.inject.InjectView;
 
 public class StartRealtimeSessionActivity extends DialogActivity implements View.OnClickListener
 {
-  @InjectView(R.id.start_session) Button startSessionButton;
+  @InjectView(R.id.start_indoor_session) Button startIndoorSessionButton;
+  @InjectView(R.id.start_outdoor_session) Button startOutdoorSessionButton;
   @InjectView(R.id.cancel) Button cancelButton;
 
   @InjectView(R.id.session_title) EditText sessionTitle;
@@ -42,6 +51,8 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
 
   @Inject SessionManager sessionManager;
 
+  int PLACE_PICKER_REQUEST = 1;
+
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
@@ -49,7 +60,8 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
 
     setContentView(R.layout.start_realtime_session);
 
-    startSessionButton.setOnClickListener(this);
+    startIndoorSessionButton.setOnClickListener(this);
+    startOutdoorSessionButton.setOnClickListener(this);
     cancelButton.setOnClickListener(this);
   }
 
@@ -57,20 +69,51 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
   public void onClick(View view)
   {
     switch (view.getId()) {
-      case R.id.start_session: {
-        startRealtimeSession();
+      case R.id.start_indoor_session: {
+        startRealtimeSession(true, null);
+        break;
+      }
+      case R.id.start_outdoor_session: {
+        runLocationPicker();
+        break;
+      }
+      case R.id.cancel: {
+        finish();
         break;
       }
     }
-
-    finish();
   }
 
-  private void startRealtimeSession() {
+  private void runLocationPicker() {
+    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+    try {
+      startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+    } catch (GooglePlayServicesRepairableException e) {
+      GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
+    } catch (GooglePlayServicesNotAvailableException e) {
+      Toast.makeText(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG).show();
+    }
+  }
+
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PLACE_PICKER_REQUEST) {
+      if (resultCode == RESULT_OK) {
+        Place place = PlacePicker.getPlace(data, this);
+        LatLng latlng = place.getLatLng();
+
+        startRealtimeSession(false, latlng);
+      }
+    }
+  }
+
+  private void startRealtimeSession(boolean isIndoor, LatLng latlng) {
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
 
     sessionManager.startRealtimeSession(title, tags, description);
+
+    finish();
   }
 }

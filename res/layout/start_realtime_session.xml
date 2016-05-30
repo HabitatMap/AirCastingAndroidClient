@@ -52,8 +52,12 @@
         />
 
     <Button style="@style/DialogButton"
-        android:text="@string/start_session"
-        android:id="@+id/start_session"
+        android:text="@string/start_indoor_session"
+        android:id="@+id/start_indoor_session"
+        />
+    <Button style="@style/DialogButton"
+        android:text="@string/start_outdoor_session"
+        android:id="@+id/start_outdoor_session"
         />
     <Button style="@style/DialogLastButton"
         android:text="@string/cancel"
