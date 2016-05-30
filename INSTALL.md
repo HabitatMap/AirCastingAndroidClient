@@ -1,6 +1,6 @@
 1) Install android development tools (`brew install android-sdk` on OSX or from website).
 
-Install all the packages for Android 2.2 (API v.8).
+Install all the packages for Android 2.3.1 (API v.9).
 
 Install Extras.
 
@@ -8,7 +8,7 @@ Install Extras.
 
 3) Clone https://github.com/simpligility/android-maven-plugin
 
-Run `mvn install -P 2.2` inside that repo to install all the android dependencies for maven.
+Run `mvn install` inside that repo to install all the android dependencies for maven.
 
 If maven has problems with fetching `maps-7_r1.jar` download the package and install it manually with `mvn install:install-file -Dfile=maps-7_r1.jar -DgroupId=com.google.android.maps -DartifactId=maps -Dversion=7_r1 -Dpackaging=jar`
 
