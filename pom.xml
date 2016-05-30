@@ -29,6 +29,8 @@
     <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
     <maven-release-plugin.version>2.4.1</maven-release-plugin.version>
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+
+    <android-maven-plugin.platform>8</android-maven-plugin.platform>
   </properties>
 
   <dependencies>
@@ -171,7 +173,7 @@
           <resourceDirectory>${basedir}/res</resourceDirectory>
           <resourceOverlayDirectory>${project.build.directory}/filtered-res</resourceOverlayDirectory>
           <sdk>
-            <platform>8</platform>
+            <platform>${android-maven-plugin.platform}</platform>
           </sdk>
           <undeployBeforeDeploy>true</undeployBeforeDeploy>
           <proguard>
@@ -333,7 +335,7 @@
               <resourceDirectory>${basedir}/res</resourceDirectory>
               <resourceOverlayDirectory>${project.build.directory}/filtered-res</resourceOverlayDirectory>
               <sdk>
-                <platform>8</platform>
+                <platform>${android-maven-plugin.platform}</platform>
               </sdk>
               <emulator>
                 <avd>22</avd>
