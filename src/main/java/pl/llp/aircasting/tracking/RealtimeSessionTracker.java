@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
@@ -27,7 +28,7 @@ public class RealtimeSessionTracker extends ActualSessionTracker
   }
 
   @Override
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
     MeasurementsBuffer measurementsBuffer = getMeasurementBuffer(stream.getSensorName());
     measurementsBuffer.add(measurement.getValue());
@@ -38,7 +39,7 @@ public class RealtimeSessionTracker extends ActualSessionTracker
       measurement.setValue(average);
       measurement.setMeasuredValue(average);
 
-      addActualMeasurement(stream, measurement);
+      addActualMeasurement(sensor, stream, measurement);
     }
   }
 
@@ -58,8 +59,11 @@ public class RealtimeSessionTracker extends ActualSessionTracker
     return pendingMeasurements.get(sensorName);
   }
 
-  private void addActualMeasurement(MeasurementStream stream, Measurement measurement) {
+  private void addActualMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement) {
     measurementTracker.add(stream, measurement);
+    recentMeasurements.put(stream.getSensorName(), measurement.getValue());
+    eventBus.post(new MeasurementEvent(measurement, sensor));
+
     streamMeasurement(this.session.getUUID(), stream, measurement);
   }
 

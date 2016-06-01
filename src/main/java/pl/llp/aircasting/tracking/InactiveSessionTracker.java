@@ -1,9 +1,6 @@
 package pl.llp.aircasting.tracking;
 
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -76,7 +73,7 @@ public class InactiveSessionTracker implements SessionTracker
   }
 
   @Override
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
     doNothingAndComplain();
   }
@@ -92,5 +89,11 @@ public class InactiveSessionTracker implements SessionTracker
   {
     doNothingAndComplain();
     return false;
+  }
+
+  @Override
+  public synchronized double getNow(Sensor sensor) {
+    doNothingAndComplain();
+    return 0;
   }
 }

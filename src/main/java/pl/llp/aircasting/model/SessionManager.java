@@ -225,9 +225,12 @@ public class SessionManager
       if (state.recording().isRecording())
       {
         MeasurementStream stream = prepareStream(event);
-        tracker.addMeasurement(stream, measurement);
+        tracker.addMeasurement(sensor, stream, measurement);
       }
-      eventBus.post(new MeasurementEvent(measurement, sensor));
+      else
+      {
+        eventBus.post(new MeasurementEvent(measurement, sensor));
+      }
     }
   }
 
@@ -301,10 +304,15 @@ public class SessionManager
   }
 
   public synchronized double getNow(Sensor sensor) {
-    if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-      return 0;
+    if (state.recording().isRecording()) {
+      return tracker.getNow(sensor);
     }
-    return recentMeasurements.get(sensor.getSensorName());
+    else {
+      if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+        return 0;
+      }
+      return recentMeasurements.get(sensor.getSensorName());
+    }
   }
 
   private void notifyNewSession(Session session) {

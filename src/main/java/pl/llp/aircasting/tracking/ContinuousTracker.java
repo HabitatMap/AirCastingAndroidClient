@@ -4,10 +4,7 @@ import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.sync.RealtimeSessionUploader;
@@ -95,9 +92,9 @@ public class ContinuousTracker
     sessionTracker.addStream(stream);
   }
 
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
-    sessionTracker.addMeasurement(stream, measurement);
+    sessionTracker.addMeasurement(sensor, stream, measurement);
   }
 
   public void complete(long sessionId)
@@ -122,5 +119,8 @@ public class ContinuousTracker
     else
       return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
   }
-}
 
+  public synchronized double getNow(Sensor sensor) {
+    return sessionTracker.getNow(sensor);
+  }
+}

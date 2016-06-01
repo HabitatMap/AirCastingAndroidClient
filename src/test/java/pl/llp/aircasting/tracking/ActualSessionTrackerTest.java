@@ -6,6 +6,7 @@ import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
@@ -30,6 +31,7 @@ public class ActualSessionTrackerTest
   public static final String NEW_TITLE = "New title";
 
   ActualSessionTracker tracker;
+  Sensor sensor;
   MeasurementStream stream;
   Session session;
 
@@ -47,6 +49,7 @@ public class ActualSessionTrackerTest
     SettingsHelper settings = mock(SettingsHelper.class);
     MetadataHelper metadata = mock(MetadataHelper.class);
     m = mock(Measurement.class);
+    sensor = New.sensor();
     stream = New.stream();
     tracker = new ActualSessionTracker(eventBus, session, dbQueue, settings, metadata, sessions, false);
     tracker.save(session);
@@ -59,7 +62,7 @@ public class ActualSessionTrackerTest
     tracker.measurementTracker = spy(tracker.measurementTracker);
 
     // when
-    tracker.addMeasurement(stream, m);
+    tracker.addMeasurement(sensor, stream, m);
 
     // then
     verify(tracker.measurementTracker).add(stream, m);
@@ -98,7 +101,7 @@ public class ActualSessionTrackerTest
     tracker.addStream(stream);
 
     // when
-    tracker.addMeasurement(stream, m);
+    tracker.addMeasurement(sensor, stream, m);
 
     // then
     assertThat(dbQueue).hasSize(3);

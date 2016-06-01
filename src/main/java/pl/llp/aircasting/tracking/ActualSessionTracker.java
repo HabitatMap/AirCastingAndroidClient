@@ -3,6 +3,7 @@ package pl.llp.aircasting.tracking;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -14,7 +15,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.common.eventbus.EventBus;
 
 import java.util.Date;
+import java.util.Map;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class ActualSessionTracker implements SessionTracker
@@ -30,6 +33,8 @@ public class ActualSessionTracker implements SessionTracker
   MeasurementTracker measurementTracker;
 
   final SessionPropertySetter setter;
+
+  protected Map<String, Double> recentMeasurements = newHashMap();
 
   ActualSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
   {
@@ -102,9 +107,11 @@ public class ActualSessionTracker implements SessionTracker
   }
 
   @Override
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
     measurementTracker.add(stream, measurement);
+    recentMeasurements.put(stream.getSensorName(), measurement.getValue());
+    eventBus.post(new MeasurementEvent(measurement, sensor));
   }
 
   @Override
@@ -121,6 +128,14 @@ public class ActualSessionTracker implements SessionTracker
 
     saveToDb(session);
     return true;
+  }
+
+  @Override
+  public synchronized double getNow(Sensor sensor) {
+    if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+      return 0;
+    }
+    return recentMeasurements.get(sensor.getSensorName());
   }
 
   protected boolean beforeSave(final Session session) {
