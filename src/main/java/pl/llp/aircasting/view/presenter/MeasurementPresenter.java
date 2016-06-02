@@ -60,7 +60,7 @@ import static java.util.Collections.sort;
 @Singleton
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-  private static final long MIN_ZOOM = 30000;
+  private static final long MIN_ZOOM = 120000;
   private static final long SCROLL_TIMEOUT = 1000;
   private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
 
