@@ -62,6 +62,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 {
   private static final long MIN_ZOOM = 30000;
   private static final long SCROLL_TIMEOUT = 1000;
+  private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
@@ -225,7 +226,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
     else
     {
-      measurements = stream.getMeasurements();
+      // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
+      // when user opens the graph with fixed session (since fixed sessions are often much longer).
+      if(sessionManager.getSession().isRealtime())
+        measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
+      else
+        measurements = stream.getMeasurements();
     }
 
     ImmutableListMultimap<Long, Measurement> forAveraging =

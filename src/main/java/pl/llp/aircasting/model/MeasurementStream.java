@@ -113,6 +113,15 @@ public class MeasurementStream implements Serializable
     return measurements;
   }
 
+  public List<Measurement> getLastMeasurements(int amount) {
+    int size = measurements.size();
+
+    if(size > amount)
+      return measurements.subList(size - amount, size);
+    else
+      return measurements;
+  }
+
   public void add(Measurement measurement) {
     if(peak == null)
       peak = Double.NEGATIVE_INFINITY;
