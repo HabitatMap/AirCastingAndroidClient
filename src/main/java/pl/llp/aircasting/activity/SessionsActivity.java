@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.util.Log;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
@@ -29,7 +28,6 @@ import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
@@ -258,10 +256,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   protected void onListItemClick(ListView listView, View view, int position, long id) {
     Session s = sessionAdapter.getSession(position);
     
-    if(!s.isRealtime())
+    if(!s.isFixed())
       viewSession(s.getId());
     else
-      Toast.makeText(context, "You can't modify real-time session.", Toast.LENGTH_LONG).show();
+      Toast.makeText(context, "You can't modify fixed-location session.", Toast.LENGTH_LONG).show();
   }
 
   @Override
@@ -269,12 +267,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     Session s = sessionAdapter.getSession(position);
     sessionId = s.getId();
 
-    if(!s.isRealtime()) {
+    if(!s.isFixed()) {
       Intent intent = new Intent(this, OpenSessionActivity.class);
       startActivityForResult(intent, 0);
     }
     else
-      Toast.makeText(context, "You can't modify real-time session.", Toast.LENGTH_LONG).show();
+      Toast.makeText(context, "You can't modify fixed-location session.", Toast.LENGTH_LONG).show();
 
     return true;
   }

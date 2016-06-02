@@ -96,7 +96,7 @@
 
     <activity android:label="@string/disable_maps" android:name=".activity.settings.DisableMapSettingsActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/start_realtime_session" android:name=".activity.StartRealtimeSessionActivity" android:theme="@style/Dialog"/>
+    <activity android:label="@string/start_fixed_session" android:name=".activity.StartFixedSessionActivity" android:theme="@style/Dialog"/>
 
     <!-- Services -->
     <service android:name=".service.SensorService"/>

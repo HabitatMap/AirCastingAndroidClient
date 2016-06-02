@@ -23,12 +23,12 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
-import pl.llp.aircasting.api.data.CreateRealtimeMeasurementResponse;
+import pl.llp.aircasting.api.data.CreateFixedSessionsMeasurementResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.RealtimeMeasurement;
+import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
@@ -40,12 +40,12 @@ import static pl.llp.aircasting.util.http.HttpBuilder.error;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
 
 @Singleton
-public class RealtimeSessionDriver
+public class FixedSessionDriver
 {
     public static final String SESSION_KEY = "session";
     public static final String COMPRESSION = "compression";
-    private static final String REALTIME_MEASUREMENT_PATH = "/api/realtime/measurements.json";
-    private static final String REALTIME_SESSIONS_PATH = "/api/realtime/sessions.json";
+    private static final String CREATE_FIXED_SESSIONS_MEASUREMENT_PATH = "/api/realtime/measurements.json";
+    private static final String CREATE_FIXED_SESSION_PATH = "/api/realtime/sessions.json";
 
     @Inject Gson gson;
     @Inject SessionDriver sessionDriver;
@@ -63,7 +63,7 @@ public class RealtimeSessionDriver
 
       PerformRequest builder = http()
               .post()
-              .to(REALTIME_SESSIONS_PATH)
+              .to(CREATE_FIXED_SESSION_PATH)
               .with(SESSION_KEY, zipped)
               .with(COMPRESSION, "true");
 
@@ -93,13 +93,13 @@ public class RealtimeSessionDriver
       return builder;
     }
 
-    public HttpResult<CreateRealtimeMeasurementResponse> create_measurement(RealtimeMeasurement realtimeMeasurement) {
-      String json = gson.toJson(realtimeMeasurement);
+    public HttpResult<CreateFixedSessionsMeasurementResponse> create_measurement(FixedSessionsMeasurement fixedSessionsMeasurement) {
+      String json = gson.toJson(fixedSessionsMeasurement);
 
         return http()
                 .post()
-                .to(REALTIME_MEASUREMENT_PATH)
+                .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
                 .with("data", json)
-                .into(CreateRealtimeMeasurementResponse.class);
+                .into(CreateFixedSessionsMeasurementResponse.class);
     }
 }

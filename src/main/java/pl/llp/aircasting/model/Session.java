@@ -61,7 +61,7 @@ public class Session implements Serializable
   @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
-  @Expose private boolean isRealtime;
+  @Expose private boolean isFixed;
   @Expose private boolean isIndoor;
 
   @Expose private double latitude;
@@ -74,10 +74,10 @@ public class Session implements Serializable
 
   public Session() {}
 
-  public Session(boolean isRealtime) {
-    this.isRealtime = isRealtime;
+  public Session(boolean isFixed) {
+    this.isFixed = isFixed;
 
-    if(this.isRealtime)
+    if(this.isFixed)
       setContribute(true);
   }
 
@@ -333,12 +333,12 @@ public class Session implements Serializable
     this.locationless = locationless;
   }
 
-  public boolean isRealtime() {
-    return isRealtime;
+  public boolean isFixed() {
+    return isFixed;
   }
 
-  public void setRealtime(boolean isRealtime) {
-    this.isRealtime = isRealtime;
+  public void setFixed(boolean isFixed) {
+    this.isFixed = isFixed;
   }
 
   public boolean isIndoor() {

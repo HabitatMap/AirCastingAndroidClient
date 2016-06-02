@@ -7,7 +7,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.RealtimeSessionUploader;
+import pl.llp.aircasting.sync.FixedSessionUploader;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -23,7 +23,8 @@ public class ContinuousTracker
   @Inject SettingsHelper settingsHelper;
   @Inject DatabaseTaskQueue taskQueue;
   @Inject SessionRepository sessions;
-  @Inject RealtimeSessionUploader realtimeSessionUploader;
+  @Inject
+  FixedSessionUploader fixedSessionUploader;
 
   private Session session;
 
@@ -114,8 +115,8 @@ public class ContinuousTracker
   }
 
   private SessionTracker buildSessionTracker(boolean locationLess) {
-    if(session.isRealtime())
-      return new RealtimeSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, realtimeSessionUploader, locationLess);
+    if(session.isFixed())
+      return new FixedSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, fixedSessionUploader, locationLess);
     else
       return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
   }

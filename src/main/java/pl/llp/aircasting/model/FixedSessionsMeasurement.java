@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.UUID;
 
-public class RealtimeMeasurement {
+public class FixedSessionsMeasurement {
   @Expose @SerializedName("session_uuid") private UUID sessionUUID;
 
   @Expose @SerializedName("measurements")
@@ -25,7 +25,7 @@ public class RealtimeMeasurement {
   @Expose @SerializedName("threshold_medium") private int thresholdMedium;
   @Expose @SerializedName("threshold_high") private int thresholdHigh;
 
-  public RealtimeMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement) {
+  public FixedSessionsMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement) {
     this.sessionUUID = sessionUUID;
     this.measurements.add(measurement);;
     this.sensorName = stream.getSensorName();

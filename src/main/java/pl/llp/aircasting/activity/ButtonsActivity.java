@@ -245,13 +245,13 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     private void stopAirCasting() {
         Session session = sessionManager.getSession();
 
-        if (session.isRealtime())
-            stopRealtimeAirCasting(session);
+        if (session.isFixed())
+            stopFixedAirCasting(session);
         else
-            stopTimeboxedAirCasting(session);
+            stopMobileAirCasting(session);
     }
 
-    private void stopTimeboxedAirCasting(Session session) {
+    private void stopMobileAirCasting(Session session) {
         locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
@@ -265,7 +265,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    private void stopRealtimeAirCasting(Session session) {
+    private void stopFixedAirCasting(Session session) {
         locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
@@ -278,21 +278,21 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void startAirCasting() {
-        if (settingsHelper.isRealtimeSessionStreamingEnabled())
-            startRealtimeAirCasting();
+        if (settingsHelper.isFixedSessionStreamingEnabled())
+            startFixedAirCasting();
         else
-            startTimeboxedAirCasting();
+            startMobileAirCasting();
     }
 
-    private void startTimeboxedAirCasting() {
+    private void startMobileAirCasting() {
         if (settingsHelper.areMapsDisabled()) {
-            sessionManager.startTimeboxedSession(true);
+            sessionManager.startMobileSession(true);
         } else {
             if (locationHelper.getLastLocation() == null) {
                 RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
                 recordAlert.display();
             } else {
-                sessionManager.startTimeboxedSession(false);
+                sessionManager.startMobileSession(false);
 
                 if (settingsHelper.hasNoCredentials()) {
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
@@ -309,11 +309,11 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    private void startRealtimeAirCasting() {
+    private void startFixedAirCasting() {
         if (settingsHelper.hasNoCredentials())
             Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
         else
-            startActivity(new Intent(this, StartRealtimeSessionActivity.class));
+            startActivity(new Intent(this, StartFixedSessionActivity.class));
     }
 
     @Override

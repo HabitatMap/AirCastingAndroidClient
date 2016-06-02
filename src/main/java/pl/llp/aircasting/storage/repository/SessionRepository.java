@@ -253,7 +253,7 @@ public class SessionRepository
       {
         List<Session> result = Lists.newArrayList();
 
-        String condition = DBConstants.SESSION_INCOMPLETE + " = 0" + " AND " + DBConstants.SESSION_REALTIME + " = 0";
+        String condition = DBConstants.SESSION_INCOMPLETE + " = 0" + " AND " + DBConstants.SESSION_FIXED + " = 0";
 
         Cursor cursor = readOnlyDatabase
             .query(SESSION_TABLE_NAME, null, condition, null, null, null, SESSION_START + " DESC");

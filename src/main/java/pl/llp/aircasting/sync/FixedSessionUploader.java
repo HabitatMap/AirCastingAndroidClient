@@ -27,28 +27,29 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.api.RealtimeSessionDriver;
+import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
-import pl.llp.aircasting.api.data.CreateRealtimeMeasurementResponse;
+import pl.llp.aircasting.api.data.CreateFixedSessionsMeasurementResponse;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.RealtimeMeasurement;
+import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
 import roboguice.inject.InjectResource;
 import com.google.common.eventbus.Subscribe;
 
 @Singleton
-public class RealtimeSessionUploader
+public class FixedSessionUploader
 {
   @Inject ConnectivityManager connectivityManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Context context;
-  @Inject RealtimeSessionDriver realtimeSessionDriver;
+  @Inject
+  FixedSessionDriver fixedSessionDriver;
   @Inject EventBus eventBus;
 
-  @InjectResource(R.string.realtime_session_creation_failed) String realtime_session_creation_failed;
+  @InjectResource(R.string.fixed_session_creation_failed) String fixed_session_creation_failed;
 
   @Inject
   public void init() {
@@ -61,19 +62,19 @@ public class RealtimeSessionUploader
         performCreateSession(session);
         return (true);
       } else {
-        Toast.makeText(context, realtime_session_creation_failed, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
         return (false);
       }
     } catch (SessionSyncException exception)
     {
-      Toast.makeText(context, realtime_session_creation_failed, Toast.LENGTH_LONG).show();
+      Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
       return (false);
     }
   }
 
   private void performCreateSession(Session session) throws SessionSyncException
   {
-    HttpResult<CreateSessionResponse> result = realtimeSessionDriver.create(session);
+    HttpResult<CreateSessionResponse> result = fixedSessionDriver.create(session);
 
     Status status = result.getStatus();
     if(status == Status.ERROR || status == Status.FAILURE)
@@ -82,15 +83,15 @@ public class RealtimeSessionUploader
   }
 
   @Subscribe
-  public void onEvent(RealtimeMeasurementEvent event) {
+  public void onEvent(FixedSessionsMeasurementEvent event) {
     if (canUpload()) {
-      performCreateMeasurement(event.getRealtimeMeasurement());
+      performCreateMeasurement(event.getFixedSessionsMeasurement());
     }
   }
 
-  private void performCreateMeasurement(RealtimeMeasurement realtimeMeasurement)
+  private void performCreateMeasurement(FixedSessionsMeasurement fixedSessionsMeasurement)
   {
-    HttpResult<CreateRealtimeMeasurementResponse> result = realtimeSessionDriver.create_measurement(realtimeMeasurement);
+    HttpResult<CreateFixedSessionsMeasurementResponse> result = fixedSessionDriver.create_measurement(fixedSessionsMeasurement);
   }
 
   private boolean canUpload() {

@@ -118,7 +118,7 @@ public class SchemaCreator
     table.addColumn(new Column(SESSION_CALIBRATED, Datatype.BOOLEAN, 26));
     table.addColumn(new Column(SESSION_LOCAL_ONLY, Datatype.BOOLEAN, 29));
     table.addColumn(new Column(SESSION_INCOMPLETE, Datatype.BOOLEAN, 30));
-    table.addColumn(new Column(SESSION_REALTIME, Datatype.BOOLEAN, 35));
+    table.addColumn(new Column(SESSION_FIXED, Datatype.BOOLEAN, 35));
     table.addColumn(new Column(SESSION_INDOOR, Datatype.BOOLEAN, 36));
     table.addColumn(new Column(SESSION_LATITUDE, Datatype.REAL, 36));
     table.addColumn(new Column(SESSION_LONGITUDE, Datatype.REAL, 36));

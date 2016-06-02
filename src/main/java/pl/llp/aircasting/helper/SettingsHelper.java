@@ -55,7 +55,7 @@ public class SettingsHelper
   public static final String HEAT_MAP_DENSITY = "heat_map_density";
   public static final String FIRST_LAUNCH = "first_launch";
   public static final String DISABLE_MAPS = "disable_maps";
-  public static final String REALTIME_SESSIONS_STREAMING = "realtime_sessions_streaming";
+  public static final String FIXED_SESSIONS_STREAMING = "fixed_sessions_streaming";
   public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
 
   public static final int DEFAULT_CALIBRATION = 100;
@@ -75,7 +75,7 @@ public class SettingsHelper
   public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
   public static final String SHOW_ROUTE = "show_route";
   public static final String SENSORS = "external_sensors_json";
-  public static final boolean DEFAULT_REALTIME_SESSIONS_STREAMING = false;
+  public static final boolean DEFAULT_FIXED_SESSIONS_STREAMING = false;
   public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = false;
 
   public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
@@ -359,7 +359,7 @@ public class SettingsHelper
     return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
   }
 
-  public boolean isRealtimeSessionStreamingEnabled() {
-    return preferences.getBoolean(REALTIME_SESSIONS_STREAMING, DEFAULT_REALTIME_SESSIONS_STREAMING);
+  public boolean isFixedSessionStreamingEnabled() {
+    return preferences.getBoolean(FIXED_SESSIONS_STREAMING, DEFAULT_FIXED_SESSIONS_STREAMING);
   }
 }

@@ -5,26 +5,26 @@ import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.MeasurementEvent;
-import pl.llp.aircasting.model.events.RealtimeMeasurementEvent;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.RealtimeSessionUploader;
+import pl.llp.aircasting.sync.FixedSessionUploader;
 
 import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-public class RealtimeSessionTracker extends ActualSessionTracker
+public class FixedSessionTracker extends ActualSessionTracker
 {
-  private final RealtimeSessionUploader realtimeSessionUploader;
+  private final FixedSessionUploader fixedSessionUploader;
 
   private Map<String, MeasurementsBuffer> pendingMeasurements = newHashMap();
 
-  RealtimeSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, RealtimeSessionUploader realtimeSessionUploader, boolean locationLess)
+  FixedSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, FixedSessionUploader fixedSessionUploader, boolean locationLess)
   {
     super(eventBus, session, dbQueue, settingsHelper, metadataHelper, sessions, locationLess);
-    this.realtimeSessionUploader = realtimeSessionUploader;
+    this.fixedSessionUploader = fixedSessionUploader;
   }
 
   @Override
@@ -46,7 +46,7 @@ public class RealtimeSessionTracker extends ActualSessionTracker
   @Override
   protected boolean beforeSave(final Session session)
   {
-    if (realtimeSessionUploader.create(session))
+    if (fixedSessionUploader.create(session))
       return true;
     else
       return false;
@@ -69,7 +69,7 @@ public class RealtimeSessionTracker extends ActualSessionTracker
 
   private void streamMeasurement(UUID sessionUUID, MeasurementStream stream, Measurement measurement)
   {
-    RealtimeMeasurement realtimeMeasurement = new RealtimeMeasurement(sessionUUID, stream, measurement);
-    eventBus.post(new RealtimeMeasurementEvent(realtimeMeasurement));
+    FixedSessionsMeasurement fixedSessionsMeasurement = new FixedSessionsMeasurement(sessionUUID, stream, measurement);
+    eventBus.post(new FixedSessionsMeasurementEvent(fixedSessionsMeasurement));
   }
 }

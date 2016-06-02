@@ -37,7 +37,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.SessionManager;
 import roboguice.inject.InjectView;
 
-public class StartRealtimeSessionActivity extends DialogActivity implements View.OnClickListener
+public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener
 {
   @InjectView(R.id.start_indoor_session) Button startIndoorSessionButton;
   @InjectView(R.id.start_outdoor_session) Button startOutdoorSessionButton;
@@ -58,7 +58,7 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
   {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.start_realtime_session);
+    setContentView(R.layout.start_fixed_session);
 
     startIndoorSessionButton.setOnClickListener(this);
     startOutdoorSessionButton.setOnClickListener(this);
@@ -70,7 +70,7 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
   {
     switch (view.getId()) {
       case R.id.start_indoor_session: {
-        startRealtimeSession(true, null);
+        startFixedSession(true, null);
         break;
       }
       case R.id.start_outdoor_session: {
@@ -102,17 +102,17 @@ public class StartRealtimeSessionActivity extends DialogActivity implements View
         Place place = PlacePicker.getPlace(data, this);
         LatLng latlng = place.getLatLng();
 
-        startRealtimeSession(false, latlng);
+        startFixedSession(false, latlng);
       }
     }
   }
 
-  private void startRealtimeSession(boolean isIndoor, LatLng latlng) {
+  private void startFixedSession(boolean isIndoor, LatLng latlng) {
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
 
-    sessionManager.startRealtimeSession(title, tags, description, isIndoor, latlng);
+    sessionManager.startFixedSession(title, tags, description, isIndoor, latlng);
 
     finish();
   }

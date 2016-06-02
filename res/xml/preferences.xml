@@ -32,9 +32,9 @@
           />
 
   <android.preference.CheckBoxPreference android:defaultValue="false"
-      android:key="realtime_sessions_streaming"
-      android:title="@string/realtime_sessions_streaming"
-      android:summary="@string/realtime_sessions_streaming_summary"
+      android:key="fixed_sessions_streaming"
+      android:title="@string/fixed_sessions_streaming"
+      android:summary="@string/fixed_sessions_streaming_summary"
       android:disableDependentsState="true"
       />
 

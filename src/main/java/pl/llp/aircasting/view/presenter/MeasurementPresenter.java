@@ -228,7 +228,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
       // when user opens the graph with fixed session (since fixed sessions are often much longer).
-      if(sessionManager.getSession().isRealtime())
+      if(sessionManager.getSession().isFixed())
         measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
       else
         measurements = stream.getMeasurements();
@@ -250,15 +250,15 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     sort(times);
 
     Logger.logGraphPerformance("prepareFullView step 2 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    List<Measurement> timeboxedMeasurements = newLinkedList();
+    List<Measurement> mobileMeasurements = newLinkedList();
     for (Long time : times)
     {
       ImmutableList<Measurement> chunk = forAveraging.get(time);
-      timeboxedMeasurements.add(average(chunk));
+      mobileMeasurements.add(average(chunk));
     }
 
     Logger.logGraphPerformance("prepareFullView step 3 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
+    CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(mobileMeasurements);
 
     Logger.logGraphPerformance("prepareFullView step n took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     fullView = result;

@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -201,7 +200,7 @@ public class SessionManager
 
   public boolean canSessionHaveNotes()
   {
-    return !session.isRealtime();
+    return !session.isFixed();
   }
 
   public void setContribute(long sessionId, boolean shouldContribute) {
@@ -238,7 +237,7 @@ public class SessionManager
   {
     Location location = locationHelper.getLastLocation();
 
-    if(session.isRealtime())
+    if(session.isFixed())
     {
       location.setLatitude(session.getLatitude());
       location.setLongitude(session.getLongitude());
@@ -319,12 +318,12 @@ public class SessionManager
     eventBus.post(new SessionChangeEvent(session));
   }
 
-  public void startTimeboxedSession(boolean locationLess)
+  public void startMobileSession(boolean locationLess)
   {
     startSession(new Session(false), locationLess);
   }
 
-  public void startRealtimeSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)
+  public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)
   {
     Session newSession = new Session(true);
     newSession.setTitle(title);
