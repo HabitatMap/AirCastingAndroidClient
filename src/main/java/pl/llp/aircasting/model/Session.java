@@ -61,7 +61,7 @@ public class Session implements Serializable
   @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
-  @Expose private boolean isFixed;
+  @Expose private String type = "MobileSession";
   @Expose private boolean isIndoor;
 
   @Expose private double latitude;
@@ -75,9 +75,9 @@ public class Session implements Serializable
   public Session() {}
 
   public Session(boolean isFixed) {
-    this.isFixed = isFixed;
+    this.setFixed(isFixed);
 
-    if(this.isFixed)
+    if(this.isFixed())
       setContribute(true);
   }
 
@@ -334,11 +334,29 @@ public class Session implements Serializable
   }
 
   public boolean isFixed() {
-    return isFixed;
+    if (this.type.equals("FixedSession")) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   public void setFixed(boolean isFixed) {
-    this.isFixed = isFixed;
+    if (isFixed) {
+      this.type = "FixedSession";
+    }
+    else {
+      this.type = "MobileSession";
+    }
+  }
+
+  public String getType() {
+    return this.type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   public boolean isIndoor() {

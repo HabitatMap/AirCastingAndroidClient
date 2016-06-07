@@ -57,7 +57,7 @@ public interface DBConstants
    **/
   String SESSION_INCOMPLETE = "incomplete";
 
-  String SESSION_FIXED = "is_fixed";
+  String SESSION_TYPE = "type";
   String SESSION_INDOOR = "is_indoor";
   String SESSION_LATITUDE = "Latitude";
   String SESSION_LONGITUDE = "Longitude";

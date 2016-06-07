@@ -162,7 +162,7 @@ public class ActualSessionTracker implements SessionTracker
         values.put(SESSION_CALIBRATED, 1);
         values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
         values.put(SESSION_INCOMPLETE, 1);
-        values.put(SESSION_FIXED, session.isFixed() ? 1 : 0);
+        values.put(SESSION_TYPE, session.getType());
         values.put(SESSION_TITLE, session.getTitle());
         values.put(SESSION_DESCRIPTION, session.getDescription());
         values.put(SESSION_TAGS, session.getTags());
