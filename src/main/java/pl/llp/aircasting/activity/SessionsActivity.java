@@ -255,25 +255,15 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   protected void onListItemClick(ListView listView, View view, int position, long id) {
     Session s = sessionAdapter.getSession(position);
-    
-    if(!s.isFixed())
-      viewSession(s.getId());
-    else
-      Toast.makeText(context, "You can't modify fixed-location session.", Toast.LENGTH_LONG).show();
+    viewSession(s.getId());
   }
 
   @Override
   public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+    Intent intent = new Intent(this, OpenSessionActivity.class);
     Session s = sessionAdapter.getSession(position);
     sessionId = s.getId();
-
-    if(!s.isFixed()) {
-      Intent intent = new Intent(this, OpenSessionActivity.class);
-      startActivityForResult(intent, 0);
-    }
-    else
-      Toast.makeText(context, "You can't modify fixed-location session.", Toast.LENGTH_LONG).show();
-
+    startActivityForResult(intent, 0);
     return true;
   }
 
