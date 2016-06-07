@@ -64,7 +64,9 @@
 
     <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme"/>
 
-    <activity android:label="@string/session_options" android:name=".activity.OpenSessionActivity" android:theme="@style/Dialog"/>
+    <activity android:label="@string/session_options" android:name=".activity.OpenMobileSessionActivity" android:theme="@style/Dialog"/>
+
+    <activity android:label="@string/session_options" android:name=".activity.OpenFixedSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme"/>
 
