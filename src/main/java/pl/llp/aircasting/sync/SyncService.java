@@ -140,7 +140,7 @@ public class SyncService extends RoboIntentService
 
     for (Session session : sessions)
     {
-      if(session.isLocationless())
+      if(session.isLocationless() && !session.isFixed())
       {
         continue;
       }
@@ -242,7 +242,7 @@ public class SyncService extends RoboIntentService
 
   private boolean skipUpload(Session session)
   {
-    return session == null || session.isMarkedForRemoval() || session.isLocationless() || session.isFixed();
+    return session == null || session.isMarkedForRemoval() || (session.isLocationless() && !session.isFixed());
   }
 
   private void updateSession(Session session, CreateSessionResponse sessionResponse)
@@ -275,7 +275,7 @@ public class SyncService extends RoboIntentService
         if (session == null) {
           Logger.w("Session [" + id + "] couldn't ");
         }
-        else if (session.isIncomplete()) {
+        else if (!session.isFixed() && session.isIncomplete()) {
           Logger.w(String.format("Session [%s] lacks of some measurements.", id));
         }
         else {
