@@ -23,6 +23,10 @@
               style="@style/DialogMain"
         >
     <Button style="@style/DialogButton"
+            android:text="@string/continue_streaming"
+            android:id="@+id/continue_streaming"
+            />
+    <Button style="@style/DialogButton"
             android:text="@string/edit"
             android:id="@+id/edit"
             />

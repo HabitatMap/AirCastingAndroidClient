@@ -57,6 +57,13 @@ public class ContinuousTracker
     }
   }
 
+  public boolean continueTracking(Session incomingSession, boolean locationLess)
+  {
+    this.session = incomingSession;
+    sessionTracker = buildSessionTracker(locationLess);
+    return true;
+  }
+
   public void stopTracking() {
       stopTracking(session);
   }

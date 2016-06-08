@@ -46,6 +46,7 @@
   <string name="edit">Edit</string>
   <string name="delete">Delete</string>
   <string name="share">Share</string>
+  <string name="continue_streaming">Continue fixed-locaton streaming</string>
   <string name="cancel">Cancel</string>
   <string name="upload">Upload</string>
   <string name="username">Profile name</string>

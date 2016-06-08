@@ -295,6 +295,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       case R.id.share:
         Intents.shareSession(this, sessionId);
         break;
+      case R.id.continue_streaming:
+        continueAircastingSession(sessionId);
+        finish();
+        break;
     }
   }
 
@@ -305,6 +309,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     Intents.triggerSync(context);
 
     refreshList();
+  }
+
+  private void continueAircastingSession(long id) {
+    Session session = sessionRepository.loadShallow(id);
+    sessionManager.continueStreamingSession(session, true);
   }
 
   private void editSession(long id) {
