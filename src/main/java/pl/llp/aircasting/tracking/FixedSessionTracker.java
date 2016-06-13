@@ -24,6 +24,7 @@ public class FixedSessionTracker extends ActualSessionTracker
   FixedSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, FixedSessionUploader fixedSessionUploader, boolean locationLess)
   {
     super(eventBus, session, dbQueue, settingsHelper, metadataHelper, sessions, locationLess);
+    session.setEnd(session.getStart());
     this.fixedSessionUploader = fixedSessionUploader;
   }
 
