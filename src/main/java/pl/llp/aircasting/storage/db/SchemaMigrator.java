@@ -117,7 +117,7 @@ public class SchemaMigrator
     if (oldVersion < 35 && newVersion >= 35)
     {
         addColumn(db, SESSION_TABLE_NAME, SESSION_TYPE, Datatype.BOOLEAN);
-        db.execSQL("UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_TYPE + " = MobileSession" );
+        db.execSQL("UPDATE " + SESSION_TABLE_NAME + " SET " + SESSION_TYPE + " = 'MobileSession' " );
     }
     if (oldVersion < 36 && newVersion >= 36)
     {
