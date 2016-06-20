@@ -60,8 +60,9 @@ import static java.util.Collections.sort;
 @Singleton
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-  private static final long MIN_ZOOM = 30000;
+  private static final long MIN_ZOOM = 120000;
   private static final long SCROLL_TIMEOUT = 1000;
+  private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
@@ -225,7 +226,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
     else
     {
-      measurements = stream.getMeasurements();
+      // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
+      // when user opens the graph with fixed session (since fixed sessions are often much longer).
+      if(sessionManager.getSession().isFixed())
+        measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
+      else
+        measurements = stream.getMeasurements();
     }
 
     ImmutableListMultimap<Long, Measurement> forAveraging =
@@ -244,15 +250,15 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     sort(times);
 
     Logger.logGraphPerformance("prepareFullView step 2 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    List<Measurement> timeboxedMeasurements = newLinkedList();
+    List<Measurement> mobileMeasurements = newLinkedList();
     for (Long time : times)
     {
       ImmutableList<Measurement> chunk = forAveraging.get(time);
-      timeboxedMeasurements.add(average(chunk));
+      mobileMeasurements.add(average(chunk));
     }
 
     Logger.logGraphPerformance("prepareFullView step 3 took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(timeboxedMeasurements);
+    CopyOnWriteArrayList<Measurement> result = Lists.newCopyOnWriteArrayList(mobileMeasurements);
 
     Logger.logGraphPerformance("prepareFullView step n took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     fullView = result;

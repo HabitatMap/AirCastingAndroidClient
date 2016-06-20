@@ -32,7 +32,7 @@ import roboguice.inject.InjectView;
  * Date: 10/11/11
  * Time: 4:25 PM
  */
-public class OpenSessionActivity extends DialogActivity implements View.OnClickListener {
+public class OpenMobileSessionActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.view) Button view;
     @InjectView(R.id.share) Button share;
     @InjectView(R.id.edit) Button edit;
@@ -41,7 +41,7 @@ public class OpenSessionActivity extends DialogActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.open_session);
+        setContentView(R.layout.open_mobile_session);
 
         view.setOnClickListener(this);
         share.setOnClickListener(this);

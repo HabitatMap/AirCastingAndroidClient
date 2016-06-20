@@ -31,6 +31,12 @@
                                  android:key="external_sensor"
           />
 
+  <android.preference.CheckBoxPreference android:defaultValue="false"
+      android:key="fixed_sessions_streaming"
+      android:title="@string/fixed_sessions_streaming"
+      android:summary="@string/fixed_sessions_streaming_summary"
+      android:disableDependentsState="true"
+      />
 
   <android.preference.CheckBoxPreference android:title="Contribute to CrowdMap"
                                          android:key="contribute_to_crowdmap"

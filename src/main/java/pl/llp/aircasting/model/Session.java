@@ -61,10 +61,25 @@ public class Session implements Serializable
   @Expose @SerializedName("start_time") private Date start = new Date();
   @Expose @SerializedName("end_time") private Date end;
 
+  @Expose private String type = "MobileSession";
+  @Expose private boolean isIndoor;
+
+  @Expose private double latitude;
+  @Expose private double longitude;
+
   private volatile Long id = null;
   private boolean submittedForRemoval = false;
 
   private boolean locationless = false;
+
+  public Session() {}
+
+  public Session(boolean isFixed) {
+    this.setFixed(isFixed);
+
+    if(this.isFixed())
+      setContribute(true);
+  }
 
   public void add(MeasurementStream stream)
   {
@@ -316,5 +331,55 @@ public class Session implements Serializable
   public void setLocationless(boolean locationless)
   {
     this.locationless = locationless;
+  }
+
+  public boolean isFixed() {
+    if (this.type.equals("FixedSession")) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  public void setFixed(boolean isFixed) {
+    if (isFixed) {
+      this.type = "FixedSession";
+    }
+    else {
+      this.type = "MobileSession";
+    }
+  }
+
+  public String getType() {
+    return this.type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public boolean isIndoor() {
+    return isIndoor;
+  }
+
+  public void setIndoor(boolean isIndoor) {
+    this.isIndoor = isIndoor;
+  }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(Double longitude) {
+    this.longitude = longitude;
   }
 }

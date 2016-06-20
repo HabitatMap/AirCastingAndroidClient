@@ -4,12 +4,10 @@ import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.sync.FixedSessionUploader;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -25,6 +23,8 @@ public class ContinuousTracker
   @Inject SettingsHelper settingsHelper;
   @Inject DatabaseTaskQueue taskQueue;
   @Inject SessionRepository sessions;
+  @Inject
+  FixedSessionUploader fixedSessionUploader;
 
   private Session session;
 
@@ -44,11 +44,24 @@ public class ContinuousTracker
     sessionTracker.addNote(note);
   }
 
-  public void startTracking(Session incomingSession, boolean locationLess)
+  public boolean startTracking(Session incomingSession, boolean locationLess)
   {
     this.session = incomingSession;
-    sessionTracker = new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
-    sessionTracker.save(session);
+    sessionTracker = buildSessionTracker(locationLess);
+
+    if(sessionTracker.save(session))
+      return true;
+    else {
+      stopTracking(session);
+      return false;
+    }
+  }
+
+  public boolean continueTracking(Session incomingSession, boolean locationLess)
+  {
+    this.session = incomingSession;
+    sessionTracker = buildSessionTracker(locationLess);
+    return true;
   }
 
   public void stopTracking() {
@@ -87,9 +100,9 @@ public class ContinuousTracker
     sessionTracker.addStream(stream);
   }
 
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
-    sessionTracker.addMeasurement(stream, measurement);
+    sessionTracker.addMeasurement(sensor, stream, measurement);
   }
 
   public void complete(long sessionId)
@@ -107,5 +120,15 @@ public class ContinuousTracker
   {
     noteTracker.deleteNote(session, note);
   }
-}
 
+  private SessionTracker buildSessionTracker(boolean locationLess) {
+    if(session.isFixed())
+      return new FixedSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, fixedSessionUploader, locationLess);
+    else
+      return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
+  }
+
+  public synchronized double getNow(Sensor sensor) {
+    return sessionTracker.getNow(sensor);
+  }
+}

@@ -1,9 +1,6 @@
 package pl.llp.aircasting.tracking;
 
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
 
 /**
  * Created by ags on 03/14/13 at 23:37
@@ -24,9 +21,11 @@ public interface SessionTracker
 
   void addStream(MeasurementStream stream);
 
-  void addMeasurement(MeasurementStream stream, Measurement measurement);
+  void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement);
 
   void delete(long sessionId);
 
-  void save(Session session);
+  boolean save(Session session);
+
+  double getNow(Sensor sensor);
 }

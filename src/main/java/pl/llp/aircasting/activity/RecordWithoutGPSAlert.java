@@ -25,7 +25,7 @@ public class RecordWithoutGPSAlert {
             public void onClick(DialogInterface dialogInterface, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        sessionManager.startSession(withoutLocation);
+                        sessionManager.startMobileSession(withoutLocation);
                         buttonsActivity.update();
                         break;
 

@@ -38,7 +38,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboPreferenceActivity;
 import roboguice.inject.InjectResource;
 
@@ -50,6 +49,8 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
   public static final String DISABLE_MAPS_KEY = "disable_maps";
   public static final String SOUND_LEVEL_MEASUREMENTLESS_KEY = "sound_level_measurementless";
+  public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
+  public static final String FIXED_SESSIONS_STREAMING = "fixed_sessions_streaming";
 
   @Inject Application context;
 
@@ -77,6 +78,8 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     if (state.recording().isRecording()) {
       getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(SOUND_LEVEL_MEASUREMENTLESS_KEY));
     }
+
+    getPreferenceScreen().findPreference(CONTRIBUTE_TO_CROWDMAP).setDependency(FIXED_SESSIONS_STREAMING);
 
     offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
   }

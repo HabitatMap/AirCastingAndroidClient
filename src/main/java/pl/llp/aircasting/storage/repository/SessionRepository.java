@@ -252,8 +252,11 @@ public class SessionRepository
       public List<Session> execute(SQLiteDatabase readOnlyDatabase)
       {
         List<Session> result = Lists.newArrayList();
+
+        String condition = DBConstants.SESSION_INCOMPLETE + " = 0 OR " + DBConstants.SESSION_TYPE + " = 'FixedSession'";
+
         Cursor cursor = readOnlyDatabase
-            .query(SESSION_TABLE_NAME, null, DBConstants.SESSION_INCOMPLETE + " = 0", null, null, null, SESSION_START + " DESC");
+            .query(SESSION_TABLE_NAME, null, condition, null, null, null, SESSION_START + " DESC");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast())

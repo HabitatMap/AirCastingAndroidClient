@@ -53,6 +53,7 @@ public class MeasurementPresenterTest
   private Measurement measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));
   private MeasurementPresenter.Listener listener;
   private MeasurementStream stream;
+  private Session session;
   private Sensor sensor;
   private SessionChangeEvent EVENT;
 
@@ -77,9 +78,12 @@ public class MeasurementPresenterTest
     stream = mock(MeasurementStream.class);
     when(stream.getMeasurements()).thenReturn(measurements);
 
+    session = mock(Session.class);
+
     presenter.sessionManager = mockSessionManager();
     when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
     when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
+    when(presenter.sessionManager.getSession()).thenReturn(session);
 
     listener = mock(MeasurementPresenter.Listener.class);
     presenter.registerListener(listener);

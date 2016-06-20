@@ -207,7 +207,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         clearButtons();
         if (sessionManager.isSessionStarted()) {
             addButton(R.layout.context_button_stop);
-            addButton(R.layout.context_button_note);
+            if(sessionManager.canSessionHaveNotes())
+                addButton(R.layout.context_button_note);
         } else if (sessionManager.isSessionSaved()) {
             addButton(R.layout.context_button_edit);
             addButton(R.layout.context_button_share);
@@ -242,8 +243,16 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     private void stopAirCasting() {
-        locationHelper.stop();
         Session session = sessionManager.getSession();
+
+        if (session.isFixed())
+            stopFixedAirCasting(session);
+        else
+            stopMobileAirCasting(session);
+    }
+
+    private void stopMobileAirCasting(Session session) {
+        locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
@@ -256,15 +265,34 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
+    private void stopFixedAirCasting(Session session) {
+        locationHelper.stop();
+        Long sessionId = session.getId();
+        if (session.isEmpty()) {
+            Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
+            sessionManager.discardSession(sessionId);
+        } else {
+            sessionManager.stopSession();
+            sessionManager.finishSession(sessionId);
+        }
+    }
+
     private void startAirCasting() {
+        if (settingsHelper.isFixedSessionStreamingEnabled())
+            startFixedAirCasting();
+        else
+            startMobileAirCasting();
+    }
+
+    private void startMobileAirCasting() {
         if (settingsHelper.areMapsDisabled()) {
-            sessionManager.startSession(true);
+            sessionManager.startMobileSession(true);
         } else {
             if (locationHelper.getLastLocation() == null) {
                 RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, sessionManager, this, true);
                 recordAlert.display();
             } else {
-                sessionManager.startSession();
+                sessionManager.startMobileSession(false);
 
                 if (settingsHelper.hasNoCredentials()) {
                     Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
@@ -279,6 +307,13 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 }
             }
         }
+    }
+
+    private void startFixedAirCasting() {
+        if (settingsHelper.hasNoCredentials())
+            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+        else
+            startActivity(new Intent(this, StartFixedSessionActivity.class));
     }
 
     @Override

@@ -19,7 +19,7 @@
  */
 package pl.llp.aircasting.model;
 
-import android.util.Log;
+import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
@@ -65,7 +65,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class SessionManager
 {
-  public static final int TOTALLY_FAKE_COORDINATE = 200;
+  public static final double TOTALLY_FAKE_COORDINATE = 200;
 
   @Inject SimpleAudioReader audioReader;
   @Inject EventBus eventBus;
@@ -198,6 +198,11 @@ public class SessionManager
     return state.recording().isRecording();
   }
 
+  public boolean canSessionHaveNotes()
+  {
+    return !session.isFixed();
+  }
+
   public void setContribute(long sessionId, boolean shouldContribute) {
     tracker.setContribute(sessionId, shouldContribute);
   }
@@ -219,21 +224,31 @@ public class SessionManager
       if (state.recording().isRecording())
       {
         MeasurementStream stream = prepareStream(event);
-        tracker.addMeasurement(stream, measurement);
+        tracker.addMeasurement(sensor, stream, measurement);
       }
-      eventBus.post(new MeasurementEvent(measurement, sensor));
+      else
+      {
+        eventBus.post(new MeasurementEvent(measurement, sensor));
+      }
     }
   }
 
   private Location getLocation()
   {
     Location location = locationHelper.getLastLocation();
-    if(session.isLocationless())
+
+    if(session.isFixed())
+    {
+      location.setLatitude(session.getLatitude());
+      location.setLongitude(session.getLongitude());
+    }
+    else if(session.isLocationless())
     {
       location = new Location("fake");
       location.setLatitude(TOTALLY_FAKE_COORDINATE);
       location.setLongitude(TOTALLY_FAKE_COORDINATE);
     }
+
     return location;
   }
 
@@ -288,29 +303,57 @@ public class SessionManager
   }
 
   public synchronized double getNow(Sensor sensor) {
-    if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-      return 0;
+    if (state.recording().isRecording()) {
+      return tracker.getNow(sensor);
     }
-    return recentMeasurements.get(sensor.getSensorName());
+    else {
+      if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+        return 0;
+      }
+      return recentMeasurements.get(sensor.getSensorName());
+    }
   }
 
   private void notifyNewSession(Session session) {
     eventBus.post(new SessionChangeEvent(session));
   }
 
-  public void startSession() {
-      startSession(false);
+  public void startMobileSession(boolean locationLess)
+  {
+    startSession(new Session(false), locationLess);
   }
 
-  public void startSession(boolean locationLess)
+  public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)
+  {
+    Session newSession = new Session(true);
+    newSession.setTitle(title);
+    newSession.setTags(tags);
+    newSession.setDescription(description);
+    newSession.setIndoor(isIndoor);
+
+    if(latlng == null) {
+      newSession.setLatitude(TOTALLY_FAKE_COORDINATE);
+      newSession.setLongitude(TOTALLY_FAKE_COORDINATE);
+    }
+    else {
+      newSession.setLatitude(latlng.latitude);
+      newSession.setLongitude(latlng.longitude);
+    }
+
+    startSession(newSession, true);
+  }
+
+  private void startSession(Session newSession, boolean locationLess)
   {
     eventBus.post(new SessionStartedEvent(getSession()));
-    setSession(new Session());
+    setSession(newSession);
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
-    tracker.startTracking(getSession(), locationLess);
+
+    if(!tracker.startTracking(getSession(), locationLess))
+      cleanup();
   }
 
   public void stopSession()
@@ -434,5 +477,17 @@ public class SessionManager
         return null;
       }
     });
+  }
+
+  public void continueStreamingSession(Session session, boolean locationLess) {
+    eventBus.post(new SessionStartedEvent(getSession()));
+    setSession(session);
+    locationHelper.start();
+    startSensors();
+    state.recording().startRecording();
+    notificationHelper.showRecordingNotification();
+
+    if(!tracker.continueTracking(getSession(), locationLess))
+      cleanup();
   }
 }

@@ -2,10 +2,8 @@ package pl.llp.aircasting.tracking;
 
 import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -17,14 +15,17 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.common.eventbus.EventBus;
 
 import java.util.Date;
+import java.util.Map;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class ActualSessionTracker implements SessionTracker
 {
-  private final Session session;
-  private final SettingsHelper settingsHelper;
-  private final MetadataHelper metadataHelper;
+  protected final Session session;
+  protected final SettingsHelper settingsHelper;
+  protected final MetadataHelper metadataHelper;
+  protected final EventBus eventBus;
   final DatabaseTaskQueue dbQueue;
 
   final NoteTracker noteTracker;
@@ -32,6 +33,8 @@ public class ActualSessionTracker implements SessionTracker
   MeasurementTracker measurementTracker;
 
   final SessionPropertySetter setter;
+
+  protected Map<String, Double> recentMeasurements = newHashMap();
 
   ActualSessionTracker(EventBus eventBus, final Session session, DatabaseTaskQueue dbQueue, SettingsHelper settingsHelper, MetadataHelper metadataHelper, SessionRepository sessions, boolean locationLess)
   {
@@ -41,6 +44,7 @@ public class ActualSessionTracker implements SessionTracker
     this.dbQueue = dbQueue;
     this.sessions = sessions;
     this.setter = new SessionPropertySetter(dbQueue);
+    this.eventBus = eventBus;
 
     this.noteTracker = new ActualNoteTracker(eventBus, dbQueue);
     this.measurementTracker = new ActualMeasurementTracker(dbQueue);
@@ -103,9 +107,11 @@ public class ActualSessionTracker implements SessionTracker
   }
 
   @Override
-  public void addMeasurement(MeasurementStream stream, Measurement measurement)
+  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
   {
     measurementTracker.add(stream, measurement);
+    recentMeasurements.put(stream.getSensorName(), measurement.getValue());
+    eventBus.post(new MeasurementEvent(measurement, sensor));
   }
 
   @Override
@@ -115,7 +121,28 @@ public class ActualSessionTracker implements SessionTracker
   }
 
   @Override
-  public void save(final Session session)
+  public boolean save(final Session session)
+  {
+    if(!beforeSave(session))
+      return false;
+
+    saveToDb(session);
+    return true;
+  }
+
+  @Override
+  public synchronized double getNow(Sensor sensor) {
+    if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+      return 0;
+    }
+    return recentMeasurements.get(sensor.getSensorName());
+  }
+
+  protected boolean beforeSave(final Session session) {
+    return true;
+  }
+
+  protected void saveToDb(final Session session)
   {
     dbQueue.add(new WritableDatabaseTask<Void>()
     {
@@ -135,6 +162,13 @@ public class ActualSessionTracker implements SessionTracker
         values.put(SESSION_CALIBRATED, 1);
         values.put(SESSION_LOCAL_ONLY, session.isLocationless() ? 1 : 0);
         values.put(SESSION_INCOMPLETE, 1);
+        values.put(SESSION_TYPE, session.getType());
+        values.put(SESSION_TITLE, session.getTitle());
+        values.put(SESSION_DESCRIPTION, session.getDescription());
+        values.put(SESSION_TAGS, session.getTags());
+        values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
+        values.put(SESSION_LATITUDE, session.getLatitude());
+        values.put(SESSION_LONGITUDE, session.getLongitude());
 
         long sessionKey = writableDatabase.insertOrThrow(SESSION_TABLE_NAME, null, values);
         session.setId(sessionKey);

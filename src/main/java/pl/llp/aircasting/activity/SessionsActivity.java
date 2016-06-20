@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.util.Log;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
@@ -29,7 +28,6 @@ import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
@@ -257,14 +255,24 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Override
   protected void onListItemClick(ListView listView, View view, int position, long id) {
     Session s = sessionAdapter.getSession(position);
-    viewSession(s.getId());
+
+    if (s.isFixed())
+      Toast.makeText(context, "You can view fixed-location sessions only on the web app.", Toast.LENGTH_LONG).show();
+    else
+      viewSession(s.getId());
   }
 
   @Override
   public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-    Intent intent = new Intent(this, OpenSessionActivity.class);
     Session s = sessionAdapter.getSession(position);
     sessionId = s.getId();
+    Intent intent;
+
+    if (s.isFixed())
+      intent = new Intent(this, OpenFixedSessionActivity.class);
+    else
+      intent = new Intent(this, OpenMobileSessionActivity.class);
+
     startActivityForResult(intent, 0);
     return true;
   }
@@ -287,6 +295,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
       case R.id.share:
         Intents.shareSession(this, sessionId);
         break;
+      case R.id.continue_streaming:
+        continueAircastingSession(sessionId);
+        finish();
+        break;
     }
   }
 
@@ -297,6 +309,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     Intents.triggerSync(context);
 
     refreshList();
+  }
+
+  private void continueAircastingSession(long id) {
+    Session session = sessionRepository.loadShallow(id);
+    sessionManager.continueStreamingSession(session, true);
   }
 
   private void editSession(long id) {

@@ -16,6 +16,9 @@ proguard_logs
 *.apk
 *.keystore
 gen
+gen-external-apklibs/
+
+res/values/api_keys.xml
 
 # OS X
 .DS_Store
