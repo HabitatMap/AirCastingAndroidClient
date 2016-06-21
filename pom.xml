@@ -5,7 +5,7 @@
 
   <groupId>pl.llp</groupId>
   <artifactId>aircasting</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
   <packaging>apk</packaging>
 
   <prerequisites>
@@ -393,7 +393,7 @@
   <scm>
     <connection>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</connection>
     <url>scm:git:git@github.com:HabitatMap/AirCastingAndroidClient.git</url>
-    <tag>1.4.0</tag>
+    <tag>1.4.1</tag>
   </scm>
 
 </project>
