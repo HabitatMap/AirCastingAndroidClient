@@ -77,6 +77,11 @@ public class FixedSessionDriver
       return gzipHelper.zippedSession(session);
     }
 
+    private byte[] gzip(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException
+    {
+      return gzipHelper.zippedFixedSessionsMeasurement(fixedSessionsMeasurement);
+    }
+
     private PerformRequest attachPhotos(Session session, PerformRequest builder) {
       for (int i = 0; i < session.getNotes().size(); i++) {
         Note note = session.getNotes().get(i);
@@ -94,12 +99,18 @@ public class FixedSessionDriver
     }
 
     public HttpResult<CreateFixedSessionsMeasurementResponse> create_measurement(FixedSessionsMeasurement fixedSessionsMeasurement) {
-      String json = gson.toJson(fixedSessionsMeasurement);
+      String zipped;
+      try {
+        zipped = new String(gzip(fixedSessionsMeasurement));
+      } catch (IOException e) {
+        return error();
+      }
 
-        return http()
-                .post()
-                .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
-                .with("data", json)
-                .into(CreateFixedSessionsMeasurementResponse.class);
+      return http()
+              .post()
+              .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
+              .with("data", zipped)
+              .with(COMPRESSION, "true")
+              .into(CreateFixedSessionsMeasurementResponse.class);
     }
 }

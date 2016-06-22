@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.helper;
 
+import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.util.base64.Base64OutputStream;
 
@@ -49,4 +50,18 @@ public class GZIPHelper
     return byteStream.toByteArray();
   }
 
+  public byte[] zippedFixedSessionsMeasurement(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException
+  {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream);
+    GZIPOutputStream gzip = new GZIPOutputStream(base64OutputStream);
+    OutputStreamWriter writer = new OutputStreamWriter(gzip);
+    gson.toJson(fixedSessionsMeasurement, fixedSessionsMeasurement.getClass(), writer);
+
+    writer.flush();
+    gzip.finish();
+    writer.close();
+
+    return byteStream.toByteArray();
+  }
 }
