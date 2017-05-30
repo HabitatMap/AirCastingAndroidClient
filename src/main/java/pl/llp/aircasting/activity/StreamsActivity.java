@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,17 +39,26 @@ public class StreamsActivity extends ButtonsActivity {
     @InjectView(R.id.graph_button_container) View graphContainer;
     @InjectView(R.id.graph_button) View graphButton;
 
-    StreamAdapter adapter;
+    private StreamAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // new code
+        getDelegate().onCreate(savedInstanceState);
+
+        // previously existing code
         Intents.startDatabaseWriterService(context);
-
+        // delegate.setContentView(R.layout.streams);
         setContentView(R.layout.streams);
-
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
+
+        // new code
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        getDelegate().setSupportActionBar(toolbar);
+        getDelegate().setTitle("Dashboard");
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -102,6 +111,12 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
     }
+
+    // remove the Toolbar overflow icon and traditional menu
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        return false;
+//    }
 
     @Override
     protected void onResume() {
