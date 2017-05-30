@@ -23,6 +23,9 @@
               android:layout_height="fill_parent"
               android:layout_width="fill_parent"
           >
+
+    <include layout="@layout/toolbar"/>
+
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"

@@ -20,6 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import android.net.Uri;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -105,9 +106,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getDelegate().onCreate(savedInstanceState);
         noteOverlay.setContext(this);
 
         setContentView(R.layout.heat_map);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        getDelegate().setSupportActionBar(toolbar);
+        getDelegate().setTitle("Heat Map");
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
