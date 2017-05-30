@@ -23,20 +23,11 @@
               android:layout_width="fill_parent"
               android:orientation="vertical" >
 
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:text="Dashboard"
-            android:layout_height="@dimen/abc_action_bar_default_height_material"
-            android:layout_width="match_parent"
-            android:elevation="4dp"
-            android:minHeight="@dimen/abc_action_bar_default_height_material"
-            android:background="@color/toolbar_blue"
-    />
+    <include layout="@layout/toolbar"/>
 
     <RelativeLayout android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:layout_below="@+id/toolbar"
                     android:background="@android:color/background_light"
             >
 

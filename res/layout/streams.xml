@@ -5,21 +5,15 @@
               android:background="#C7ECF9"
               android:id="@+id/streams_container"
               >
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:text="Dashboard"
-            android:layout_height="@dimen/abc_action_bar_default_height_material"
-            android:layout_width="match_parent"
-            android:elevation="4dp"
-            android:minHeight="@dimen/abc_action_bar_default_height_material"
-            android:background="@color/toolbar_blue"
-    />
+
+    <include layout="@layout/toolbar"/>
 
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:layout_above="@id/context_buttons"
-                    android:layout_below="@+id/toolbar">
+                    android:paddingTop="@dimen/abc_action_bar_default_height_material">
+
         <pl.llp.aircasting.view.SensorsGridView xmlns:android="http://schemas.android.com/apk/res/android"
                                                 xmlns:aircasting="http://schemas.android.com/apk/res/pl.llp.aircasting"
                   style="@style/Fill"
@@ -42,10 +36,10 @@
                                           android:id="@+id/touch_pane"
                 />
         <LinearLayout android:orientation="horizontal"
-                          android:layout_width="fill_parent"
-                          android:layout_height="60dp"
-                          android:id="@+id/buttons"
-                      android:layout_alignParentLeft="true"
+                      android:layout_width="fill_parent"
+                      android:layout_height="60dp"
+                      android:id="@+id/buttons"
+                      android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
                       android:layout_alignParentStart="true">
             <FrameLayout
                 android:layout_width="0dp"
