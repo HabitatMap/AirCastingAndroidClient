@@ -30,7 +30,7 @@
     <maven-release-plugin.version>2.4.1</maven-release-plugin.version>
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 
-    <android-maven-plugin.platform>9</android-maven-plugin.platform>
+    <android-maven-plugin.platform>25</android-maven-plugin.platform>
   </properties>
 
   <dependencies>
@@ -66,7 +66,15 @@
       <groupId>com.android.support</groupId>
       <artifactId>appcompat-v7</artifactId>
       <version>25.3.1</version>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
+      <type>aar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>com.android.support</groupId>
+      <artifactId>support-v4</artifactId>
+      <version>25.3.1</version>
+      <!--<scope>provided</scope>-->
       <type>aar</type>
     </dependency>
 
