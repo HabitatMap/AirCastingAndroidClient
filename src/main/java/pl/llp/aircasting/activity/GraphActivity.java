@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
@@ -59,8 +60,14 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getDelegate().onCreate(savedInstanceState);
+
         setContentView(R.layout.graph);
         measurementPresenter.setSensor(sensorManager.getVisibleSensor());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        getDelegate().setSupportActionBar(toolbar);
+        getDelegate().setTitle("Graph");
 
         plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
     }
