@@ -19,6 +19,11 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatCallback;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.android.Logger;
@@ -50,7 +55,7 @@ import java.util.Map;
 
 import static pl.llp.aircasting.helper.TextViewHelper.stripUnderlines;
 
-public class AboutActivity extends RoboActivity
+public class AboutActivity extends RoboActivity implements AppCompatCallback
 {
   public static final String HEADING = "heading";
 
@@ -61,6 +66,7 @@ public class AboutActivity extends RoboActivity
 
   @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
+  private AppCompatDelegate delegate;
   private String[] headings;
   private String[] contents;
 
@@ -97,8 +103,14 @@ public class AboutActivity extends RoboActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    delegate = AppCompatDelegate.create(this, this);
+    delegate.onCreate(savedInstanceState);
 
     setContentView(R.layout.about);
+
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    delegate.setSupportActionBar(toolbar);
+    delegate.setTitle("About");
 
     initializeSections();
     initializeAbout();
@@ -156,6 +168,18 @@ public class AboutActivity extends RoboActivity
             Logger.e("Error while fetching app version", e);
             return "?";
         }
+    }
+
+    @Override
+    public void onSupportActionModeStarted(ActionMode mode) { }
+
+    @Override
+    public void onSupportActionModeFinished(ActionMode mode) { }
+
+    @Nullable
+    @Override
+    public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
+        return null;
     }
 
     private class AboutAdapter extends SimpleExpandableListAdapter {
