@@ -19,6 +19,10 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.v7.app.AppCompatCallback;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
@@ -75,7 +79,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 
 public class SessionsActivity extends RoboListActivityWithProgress implements AdapterView.OnItemLongClickListener,
-    AdapterView.OnItemSelectedListener
+    AdapterView.OnItemSelectedListener, AppCompatCallback
 {
   private static final int ALL_ID = 0;
 
@@ -115,6 +119,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   private long sessionId;
   private boolean calibrationAttempted;
   private DummySensor dummySensor;
+  private AppCompatDelegate delegate;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +127,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     calibrateOldRecords();
     setContentView(R.layout.sessions);
-
     getListView().setOnItemLongClickListener(this);
 
     dummySensor = new DummySensor(all);
@@ -130,6 +134,13 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     sensorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     sensorAdapter.insert(dummySensor, ALL_ID);
     sensorSpinner.setAdapter(sensorAdapter);
+
+    delegate = AppCompatDelegate.create(this, this);
+    delegate.onCreate(savedInstanceState);
+
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    delegate.setSupportActionBar(toolbar);
+    delegate.setTitle("Sessions");
   }
 
   @Override
@@ -386,6 +397,18 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
   @Override
   public void onNothingSelected(AdapterView<?> parent) {
+  }
+
+  @Override
+  public void onSupportActionModeStarted(ActionMode mode) { }
+
+  @Override
+  public void onSupportActionModeFinished(ActionMode mode) { }
+
+  @android.support.annotation.Nullable
+  @Override
+  public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
+    return null;
   }
 
   private static class SensorWrapper {

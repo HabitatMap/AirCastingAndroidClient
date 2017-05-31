@@ -19,12 +19,13 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="vertical"
                 android:background="@android:color/white"
         >
+    <include layout="@layout/toolbar"/>
 
     <include layout="@layout/top_bar"
              android:id="@+id/top_bar"
@@ -38,10 +39,12 @@
               android:layout_marginLeft="5dp"
             />
 
+    <!--The spinner will be removed, so this is just for dev purposes-->
     <Spinner style="@style/Wide"
              android:layout_below="@id/select_a_sensor"
              android:id="@+id/sensor_spinner"
-            />
+             android:background="@android:drawable/btn_dropdown"
+             android:popupBackground="@android:drawable/editbox_dropdown_dark_frame"/>
 
     <ListView style="@style/Fill"
               android:layout_below="@id/sensor_spinner"
@@ -58,4 +61,4 @@
             android:layout_height="50dp"
             android:gravity="center"
             />
-</RelativeLayout>
+</LinearLayout>
