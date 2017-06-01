@@ -19,6 +19,10 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
@@ -82,6 +86,23 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     getPreferenceScreen().findPreference(CONTRIBUTE_TO_CROWDMAP).setDependency(FIXED_SESSIONS_STREAMING);
 
     offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
+  }
+
+  // preferences screen behaves differently than the others, so we have to use this workaround to add the toolbar
+  @Override
+  protected void onPostCreate(Bundle savedInstanceState) {
+    super.onPostCreate(savedInstanceState);
+
+    LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+    Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+    root.addView(bar, 0); // insert at top
+    bar.setTitle("Settings");
+    bar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        finish();
+      }
+    });
   }
 
   @Override
