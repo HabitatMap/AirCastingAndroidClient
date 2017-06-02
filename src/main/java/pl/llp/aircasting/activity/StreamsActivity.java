@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,25 +43,20 @@ public class StreamsActivity extends ButtonsActivity {
     @InjectView(R.id.graph_button) View graphButton;
 
     private StreamAdapter adapter;
+    private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // new code
-        getDelegate().onCreate(savedInstanceState);
-
-        // previously existing code
         Intents.startDatabaseWriterService(context);
-        // delegate.setContentView(R.layout.streams);
         setContentView(R.layout.streams);
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
 
-        // new code
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        getDelegate().setSupportActionBar(toolbar);
-        getDelegate().setTitle("Dashboard");
+        initToolbar();
+        initNavigationDrawer();
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -112,11 +110,34 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
     }
 
-    // remove the Toolbar overflow icon and traditional menu
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        return false;
-//    }
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setOverflowIcon(null);
+        toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
+        getDelegate().setSupportActionBar(toolbar);
+        getDelegate().setTitle("Dashboard");
+    }
+
+    private void initNavigationDrawer() {
+        NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+
+            @Override
+            public void onDrawerClosed(View v){
+                super.onDrawerClosed(v);
+            }
+
+            @Override
+            public void onDrawerOpened(View v) {
+                super.onDrawerOpened(v);
+            }
+        };
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+    }
 
     @Override
     protected void onResume() {

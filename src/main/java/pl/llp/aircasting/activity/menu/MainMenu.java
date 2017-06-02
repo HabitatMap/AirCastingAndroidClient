@@ -49,7 +49,7 @@ public class MainMenu
   {
     switch (item.getItemId())
     {
-      case R.id.aircasting:
+      case R.id.dashboard:
         if (sessionManager.isSessionSaved())
         {
           Session session = sessionManager.getSession();
