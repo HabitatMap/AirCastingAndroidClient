@@ -106,13 +106,4 @@
             app:menu="@menu/aircasting"/>
             <!--app:headerLayout="@layout/nav_header"-->
 
-    <!--<ListView android:layout_width="280dp"-->
-              <!--android:id="@+id/navList"-->
-              <!--android:layout_height="match_parent"-->
-              <!--android:layout_gravity="left"-->
-              <!--android:choiceMode="singleChoice"-->
-              <!--android:divider="@android:color/transparent"-->
-              <!--android:dividerHeight="0dp"-->
-              <!--android:background="#FCFAFD"/>-->
-
 </android.support.v4.widget.DrawerLayout>
