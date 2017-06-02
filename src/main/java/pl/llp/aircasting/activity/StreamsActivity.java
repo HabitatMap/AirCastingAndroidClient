@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,10 +113,14 @@ public class StreamsActivity extends ButtonsActivity {
 
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setOverflowIcon(null);
         toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
         getDelegate().setSupportActionBar(toolbar);
         getDelegate().setTitle("Dashboard");
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return false;
     }
 
     private void initNavigationDrawer() {
