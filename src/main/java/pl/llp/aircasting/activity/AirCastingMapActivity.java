@@ -19,8 +19,6 @@
 */
 package pl.llp.aircasting.activity;
 
-import android.net.Uri;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -28,7 +26,6 @@ import android.widget.ImageView;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
-import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.api.AveragesDriver;
@@ -36,7 +33,6 @@ import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -60,7 +56,6 @@ import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-import java.io.File;
 import java.util.List;
 
 import static java.lang.Math.min;
@@ -106,14 +101,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getDelegate().onCreate(savedInstanceState);
         noteOverlay.setContext(this);
 
         setContentView(R.layout.heat_map);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        getDelegate().setSupportActionBar(toolbar);
-        getDelegate().setTitle("Heat Map");
+        initToolbar("Heat map");
+        initNavigationDrawer(context);
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
