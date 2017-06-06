@@ -20,7 +20,9 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/group_primary"
+           android:checkableBehavior="single">
+
         <item android:id="@+id/dashboard"
               android:title="@string/dashboard"
               android:icon="@drawable/menu_dashboard_icon"
@@ -36,6 +38,19 @@
         <item android:id="@+id/about"
               android:icon="@drawable/menu_about_icon"
               android:title="@string/menu_about"
+        />
+    </group>
+
+    <group android:id="@+id/group_secondary"
+           android:checkableBehavior="single">
+
+        <item android:id="@+id/phone_microphone"
+              android:icon="@drawable/menu_microphone_icon_black"
+              android:title="Connect to phone microphone"
+        />
+        <item android:id="@+id/external_sensors"
+              android:icon="@drawable/menu_sensors_icon_black"
+              android:title="Connect to external device"
         />
     </group>
 </menu>

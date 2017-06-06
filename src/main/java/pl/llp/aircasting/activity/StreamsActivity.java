@@ -8,10 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -125,8 +122,47 @@ public class StreamsActivity extends ButtonsActivity {
 
     private void initNavigationDrawer() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
 
+                switch (menuItem.getItemId()){
+                    case R.id.dashboard:
+                        if (sessionManager.isSessionSaved())
+                        {
+                            Session session = sessionManager.getSession();
+                            Long sessionId = session.getId();
+                            sessionManager.resetSession(sessionId);
+                        }
+                        Intent intent = new Intent(context, StreamsActivity.class);
+                        intent.putExtra("startingAircasting", true);
+                        startActivity(intent);
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.settings:
+                        startActivity(new Intent(context, SettingsActivity.class));
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.sessions:
+                        startActivity(new Intent(context, SessionsActivity.class));
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.about:
+                        startActivity(new Intent(context, AboutActivity.class));
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.phone_microphone:
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.external_sensors:
+                        drawerLayout.closeDrawers();
+                        break;
+                }
+                return true;
+            }
+        });
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
 
             @Override
