@@ -34,10 +34,12 @@ import roboguice.activity.RoboMapActivity;
 public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback {
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
+    @Inject Context context;
 
     private int progressStyle;
     private ProgressDialog dialog;
     private SimpleProgressTask task;
+    private NavigationView navigationView;
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
     public DrawerLayout drawerLayout;
@@ -83,11 +85,10 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     }
 
     public void initNavigationDrawer(final Context context) {
-        NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
+        navigationView = (NavigationView)findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
                 switch (menuItem.getItemId()){
                     case R.id.dashboard:
                         if (sessionManager.isSessionSaved())
@@ -138,9 +139,6 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
             }
         };
 
-        navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
-        navigationView.addHeaderView(navHeader);
-
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
     }
@@ -176,12 +174,23 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     public void onStop() {
         super.onStop();
         getDelegate().onStop();
+
+        navigationView.removeHeaderView(navHeader);
     }
 
     @Override
     public void onPostResume() {
         super.onPostResume();
         getDelegate().onPostResume();
+
+        // TODO: change to actual condition
+        if (settingsHelper.isFixedSessionStreamingEnabled()) {
+            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
+        } else {
+            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
+        }
+
+        navigationView.addHeaderView(navHeader);
     }
 
     @Override

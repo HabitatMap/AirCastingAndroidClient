@@ -13,12 +13,14 @@ import android.support.v7.app.AppCompatCallback;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboListActivity;
@@ -31,6 +33,8 @@ import roboguice.activity.RoboListActivity;
  */
 public class RoboListActivityWithProgress extends RoboListActivity implements ActivityWithProgress, AppCompatCallback {
     @Inject SessionManager sessionManager;
+    @Inject Context context;
+    @Inject SettingsHelper settingsHelper;
 
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
@@ -38,6 +42,8 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     private int progressStyle;
     private ProgressDialog dialog;
     private SimpleProgressTask task;
+    private NavigationView navigationView;
+    private View navHeader;
 
     @Override
     public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task) {
@@ -73,7 +79,7 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     }
 
     public void initNavigationDrawer(final Context context) {
-        NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
+        navigationView = (NavigationView)findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -135,6 +141,35 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDelegate().onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getDelegate().onStop();
+
+        navigationView.removeHeaderView(navHeader);
+    }
+
+    @Override
+    public void onPostResume() {
+        super.onPostResume();
+        getDelegate().onPostResume();
+
+        // TODO: change to actual condition
+        if (settingsHelper.isFixedSessionStreamingEnabled()) {
+            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
+        } else {
+            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
+        }
+
+        navigationView.addHeaderView(navHeader);
     }
 
     @Override
