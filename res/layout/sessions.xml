@@ -80,6 +80,5 @@
             android:layout_gravity="start"
             android:background="#FCFAFD"
             app:menu="@menu/aircasting"/>
-    <!--app:headerLayout="@layout/nav_header"-->
 
 </android.support.v4.widget.DrawerLayout>

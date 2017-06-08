@@ -13,12 +13,14 @@ import android.support.v7.app.AppCompatCallback;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboMapActivity;
@@ -31,6 +33,7 @@ import roboguice.activity.RoboMapActivity;
  */
 public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback {
     @Inject SessionManager sessionManager;
+    @Inject SettingsHelper settingsHelper;
 
     private int progressStyle;
     private ProgressDialog dialog;
@@ -38,6 +41,7 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
     public DrawerLayout drawerLayout;
+    public View navHeader;
 
     @Override
     public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task) {
@@ -133,6 +137,9 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
                 super.onDrawerOpened(v);
             }
         };
+
+        navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
+        navigationView.addHeaderView(navHeader);
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
