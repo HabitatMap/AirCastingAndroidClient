@@ -106,12 +106,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     });
 
     toolbar.setTitle("Settings");
-    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        finish();
-      }
-    });
   }
 
   @Override
