@@ -119,7 +119,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   private long sessionId;
   private boolean calibrationAttempted;
   private DummySensor dummySensor;
-  private AppCompatDelegate delegate;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -135,12 +134,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     sensorAdapter.insert(dummySensor, ALL_ID);
     sensorSpinner.setAdapter(sensorAdapter);
 
-    delegate = AppCompatDelegate.create(this, this);
-    delegate.onCreate(savedInstanceState);
-
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    delegate.setSupportActionBar(toolbar);
-    delegate.setTitle("Sessions");
+    getDelegate().onCreate(savedInstanceState);
+    initToolbar("Sessions");
+    initNavigationDrawer(context);
   }
 
   @Override
