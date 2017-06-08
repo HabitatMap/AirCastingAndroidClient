@@ -108,10 +108,7 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
 
     setContentView(R.layout.about);
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    delegate.setSupportActionBar(toolbar);
-    delegate.setTitle("About");
-
+    initToolbar();
     initializeSections();
     initializeAbout();
   }
@@ -128,6 +125,25 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
         super.onPause();
 
         unregisterReceiver(syncBroadcastReceiver);
+    }
+
+    public void initToolbar() {
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+
+      delegate.setSupportActionBar(toolbar);
+      delegate.setTitle("About");
+      toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+      });
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return false;
     }
 
     private void initializeAbout() {
