@@ -94,10 +94,19 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     super.onPostCreate(savedInstanceState);
 
     LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
-    Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-    root.addView(bar, 0); // insert at top
-    bar.setTitle("Settings");
-    bar.setNavigationOnClickListener(new View.OnClickListener() {
+    Toolbar toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+    root.addView(toolbar, 0); // insert at top
+
+    toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        finish();
+      }
+    });
+
+    toolbar.setTitle("Settings");
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         finish();
