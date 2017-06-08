@@ -65,6 +65,12 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         }
     }
 
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+       super.onPostCreate(savedInstanceState);
+       getDelegate().onPostCreate(savedInstanceState);
+    }
+
     public void initToolbar(String title) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
@@ -153,6 +159,30 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDelegate().onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getDelegate().onStop();
+    }
+
+    @Override
+    public void onPostResume() {
+        super.onPostResume();
+        getDelegate().onPostResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getDelegate().onDestroy();
+    }
+
     public AppCompatDelegate getDelegate() {
         if (delegate == null) {
             delegate = AppCompatDelegate.create(this, this);
@@ -161,14 +191,10 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     }
 
     @Override
-    public void onSupportActionModeStarted(ActionMode mode) {
-        //let's leave this empty, for now
-    }
+    public void onSupportActionModeStarted(ActionMode mode) { }
 
     @Override
-    public void onSupportActionModeFinished(ActionMode mode) {
-        // let's leave this empty, for now
-    }
+    public void onSupportActionModeFinished(ActionMode mode) { }
 
     @Nullable
     @Override
