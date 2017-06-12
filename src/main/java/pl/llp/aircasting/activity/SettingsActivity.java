@@ -60,11 +60,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
   @Inject SharedPreferences sharedPreferences;
   @Inject SettingsHelper settingsHelper;
-  @Inject SensorManager sensorManager;
   @Inject MainMenu mainMenu;
   @Inject ApplicationState state;
 
-  @InjectResource(R.string.profile_template) String profileTemplate;
   Offset60DbInputListener offset60DbInputListener;
 
   @Override
@@ -112,30 +110,12 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   protected void onResume()
   {
     super.onResume();
-
-    Preference account = getPreferenceScreen().findPreference(ACCOUNT_KEY);
-
-    if (settingsHelper.hasCredentials())
-    {
-      String email = settingsHelper.getUserLogin();
-      String text = String.format(profileTemplate, email);
-      account.setSummary(text);
-    }
-    else
-    {
-      account.setSummary(R.string.profile_summary);
-    }
   }
 
   @Override
   public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
   {
-    if (ACCOUNT_KEY.equals(preference.getKey()))
-    {
-      signInOrOut();
-      return true;
-    }
-    else if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
+    if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, ExternalSensorActivity.class));
       return true;
@@ -158,18 +138,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     else
     {
       return super.onPreferenceTreeClick(preferenceScreen, preference);
-    }
-  }
-
-  private void signInOrOut()
-  {
-    if (settingsHelper.hasCredentials())
-    {
-      startActivity(new Intent(this, SignOutActivity.class));
-    }
-    else
-    {
-      startActivity(new Intent(this, ProfileActivity.class));
     }
   }
 
