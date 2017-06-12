@@ -26,7 +26,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
@@ -49,8 +48,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -90,7 +87,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Inject Application context;
   @Inject SyncState syncState;
   @Inject EventBus eventBus;
-  @Inject MainMenu mainMenu;
 
   @Inject UncalibratedMeasurementCalibrator calibrator;
 
@@ -334,16 +330,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
     Intents.triggerSync(context);
 
     refreshList();
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    return mainMenu.create(this, menu);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    return mainMenu.handleClick(this, item);
   }
 
   private void viewSession(long id) {

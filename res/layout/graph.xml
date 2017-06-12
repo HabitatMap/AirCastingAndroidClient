@@ -25,7 +25,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="left">
+>
 
     <!--main content-->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -100,7 +100,15 @@
                             android:id="@+id/buttons"
             >
 
-                <include layout="@layout/zoom_buttons"/>
+                <include layout="@layout/zoom_buttons"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginBottom="6dp"
+                         android:layout_alignParentBottom="true"
+                         android:layout_alignParentLeft="true"
+                         android:layout_alignParentStart="true"
+                         android:layout_marginLeft="6dp"
+                         android:layout_marginStart="6dp"/>
 
             </RelativeLayout>
         </RelativeLayout>

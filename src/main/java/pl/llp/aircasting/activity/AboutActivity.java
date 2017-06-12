@@ -25,7 +25,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
@@ -37,7 +36,6 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
@@ -59,7 +57,6 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
 {
   public static final String HEADING = "heading";
 
-  @Inject MainMenu mainMenu;
   @Inject LayoutInflater layoutInflater;
 
   @InjectView(R.id.about) ExpandableListView about;
@@ -150,16 +147,6 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
         ExpandableListAdapter adapter = new AboutAdapter();
 
         about.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
     }
 
     private List<Map<String, String>> headings() {

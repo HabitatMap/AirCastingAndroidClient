@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -59,8 +58,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     LocationHelper locationHelper;
     @Inject
     SettingsHelper settingsHelper;
-    @Inject
-    MainMenu mainMenu;
 
     private boolean suppressTap = false;
     private boolean initialized = false;
@@ -184,16 +181,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     @Override
     public void onProfileClick(View view) {
         super.onProfileClick(view);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
     }
 
     @Subscribe

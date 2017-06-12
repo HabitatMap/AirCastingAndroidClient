@@ -26,11 +26,9 @@ import android.widget.LinearLayout;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
 import pl.llp.aircasting.activity.settings.DisableMapSettingsActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SensorManager;
 
 import android.app.Application;
 import android.content.Intent;
@@ -38,12 +36,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.activity.RoboPreferenceActivity;
-import roboguice.inject.InjectResource;
 
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -60,7 +55,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
   @Inject SharedPreferences sharedPreferences;
   @Inject SettingsHelper settingsHelper;
-  @Inject MainMenu mainMenu;
   @Inject ApplicationState state;
 
   Offset60DbInputListener offset60DbInputListener;
@@ -139,18 +133,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     {
       return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu)
-  {
-    return mainMenu.create(this, menu);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item)
-  {
-    return mainMenu.handleClick(this, item);
   }
 
   @Override
