@@ -5,23 +5,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatCallback;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.helper.NavigationDrawerHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboMapActivity;
 
@@ -34,16 +28,14 @@ import roboguice.activity.RoboMapActivity;
 public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback, View.OnClickListener {
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
+    @Inject NavigationDrawerHelper navigationDrawerHelper;
     @Inject Context context;
 
     private int progressStyle;
     private ProgressDialog dialog;
     private SimpleProgressTask task;
-    private NavigationView navigationView;
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
-    public DrawerLayout drawerLayout;
-    public View navHeader;
 
     @Override
     public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task) {
@@ -84,63 +76,8 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         getDelegate().setTitle(title);
     }
 
-    public void initNavigationDrawer(final Context context) {
-        navigationView = (NavigationView)findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.dashboard:
-                        if (sessionManager.isSessionSaved())
-                        {
-                            Session session = sessionManager.getSession();
-                            Long sessionId = session.getId();
-                            sessionManager.resetSession(sessionId);
-                        }
-                        Intent intent = new Intent(context, StreamsActivity.class);
-                        intent.putExtra("startingAircasting", true);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.settings:
-                        startActivity(new Intent(context, SettingsActivity.class));
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.sessions:
-                        startActivity(new Intent(context, SessionsActivity.class));
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.about:
-                        startActivity(new Intent(context, AboutActivity.class));
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.phone_microphone:
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.external_sensors:
-                        drawerLayout.closeDrawers();
-                        break;
-                }
-                return true;
-            }
-        });
-
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
-
-            @Override
-            public void onDrawerClosed(View v){
-                super.onDrawerClosed(v);
-            }
-
-            @Override
-            public void onDrawerOpened(View v) {
-                super.onDrawerOpened(v);
-            }
-        };
-
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+    public void initNavigationDrawer() {
+        navigationDrawerHelper.initNavigationDrawer(toolbar, this);
     }
 
     @Override
@@ -168,7 +105,7 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         super.onStart();
         getDelegate().onStart();
 
-        setDrawerHeader();
+        navigationDrawerHelper.setDrawerHeader();
     }
 
     @Override
@@ -176,7 +113,7 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         super.onStop();
         getDelegate().onStop();
 
-        navigationView.removeHeaderView(navHeader);
+        navigationDrawerHelper.removeHeader();
     }
 
     @Override
@@ -184,8 +121,8 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         super.onPostResume();
         getDelegate().onPostResume();
 
-        navigationView.removeHeaderView(navHeader);
-        setDrawerHeader();
+        navigationDrawerHelper.removeHeader();
+        navigationDrawerHelper.setDrawerHeader();
     }
 
     @Override
@@ -212,7 +149,7 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         return null;
     }
 
-    public void onLogInClick(View view) {
+    public void onProfileClick(View view) {
         signInOrOut();
     }
 
@@ -225,25 +162,6 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         else
         {
             startActivity(new Intent(this, ProfileActivity.class));
-        }
-    }
-
-    private void setDrawerHeader() {
-        navHeader = chooseHeaderView();
-        navigationView.addHeaderView(navHeader);
-        View header = navigationView.getHeaderView(0);
-        TextView email = (TextView) header.findViewById(R.id.profile_name);
-
-        if (email != null) {
-            email.setText(settingsHelper.getUserLogin());
-        }
-    }
-
-    private View chooseHeaderView() {
-        if (settingsHelper.hasCredentials()) {
-            return LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
-        } else {
-            return LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
         }
     }
 }

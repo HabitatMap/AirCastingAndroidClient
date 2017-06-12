@@ -182,8 +182,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     @Override
-    public void onLogInClick(View view) {
-        super.onLogInClick(view);
+    public void onProfileClick(View view) {
+        super.onProfileClick(view);
     }
 
     @Override

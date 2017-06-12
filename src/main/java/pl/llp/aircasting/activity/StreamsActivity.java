@@ -48,7 +48,7 @@ public class StreamsActivity extends ButtonsActivity {
         gridView.setAdapter(adapter);
 
         initToolbar("Dashboard");
-        initNavigationDrawer(context);
+        initNavigationDrawer();
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -155,8 +155,8 @@ public class StreamsActivity extends ButtonsActivity {
     }
 
     @Override
-    public void onLogInClick(View view) {
-        super.onLogInClick(view);
+    public void onProfileClick(View view) {
+        super.onProfileClick(view);
     }
 
     @Subscribe

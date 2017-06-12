@@ -63,7 +63,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         measurementPresenter.setSensor(sensorManager.getVisibleSensor());
 
         initToolbar("Graph");
-        initNavigationDrawer(context);
+        initNavigationDrawer();
 
         plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
     }

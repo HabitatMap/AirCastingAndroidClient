@@ -5,7 +5,7 @@
               android:layout_height="match_parent">
 
     <RelativeLayout android:layout_width="match_parent"
-                    android:onClick="onLogInClick"
+                    android:onClick="onProfileClick"
                     android:layout_height="90dp">
 
         <Button android:layout_height="70dp"

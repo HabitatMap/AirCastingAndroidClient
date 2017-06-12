@@ -132,7 +132,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     getDelegate().onCreate(savedInstanceState);
     initToolbar("Sessions");
-    initNavigationDrawer(context);
+    initNavigationDrawer();
   }
 
   @Override
@@ -281,8 +281,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   }
 
   @Override
-  public void onLogInClick(View view) {
-    super.onLogInClick(view);
+  public void onProfileClick(View view) {
+    super.onProfileClick(view);
   }
 
   @Override

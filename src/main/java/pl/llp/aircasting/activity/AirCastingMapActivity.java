@@ -106,7 +106,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         setContentView(R.layout.heat_map);
 
         initToolbar("Heat map");
-        initNavigationDrawer(context);
+        initNavigationDrawer();
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
