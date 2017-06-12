@@ -20,9 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import android.support.v7.app.AppCompatCallback;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
@@ -36,7 +34,6 @@ import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
@@ -89,7 +86,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
   @Inject SensorRepository sensorRepository;
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
-  @Inject SensorManager sensorManager;
   @Inject TopBarHelper topBarHelper;
   @Inject Application context;
   @Inject SyncState syncState;
@@ -282,6 +278,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ad
 
     startActivityForResult(intent, 0);
     return true;
+  }
+
+  @Override
+  public void onLogInClick(View view) {
+    super.onLogInClick(view);
   }
 
   @Override

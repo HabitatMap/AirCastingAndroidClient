@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
@@ -33,8 +34,8 @@ import roboguice.activity.RoboListActivity;
  */
 public class RoboListActivityWithProgress extends RoboListActivity implements ActivityWithProgress, AppCompatCallback {
     @Inject SessionManager sessionManager;
-    @Inject Context context;
     @Inject SettingsHelper settingsHelper;
+    @Inject Context context;
 
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
@@ -147,6 +148,8 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     public void onStart() {
         super.onStart();
         getDelegate().onStart();
+
+        setDrawerHeader();
     }
 
     @Override
@@ -162,14 +165,14 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
         super.onPostResume();
         getDelegate().onPostResume();
 
-        // TODO: change to actual condition
-        if (settingsHelper.isFixedSessionStreamingEnabled()) {
-            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
-        } else {
-            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
-        }
+        navigationView.removeHeaderView(navHeader);
+        setDrawerHeader();
+    }
 
-        navigationView.addHeaderView(navHeader);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getDelegate().onDestroy();
     }
 
     @Override
@@ -204,5 +207,40 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     @Override
     public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
         return null;
+    }
+
+    public void onLogInClick(View view) {
+        signInOrOut();
+    }
+
+    private void signInOrOut()
+    {
+        if (settingsHelper.hasCredentials())
+        {
+            startActivity(new Intent(this, SignOutActivity.class));
+        }
+        else
+        {
+            startActivity(new Intent(this, ProfileActivity.class));
+        }
+    }
+
+    private void setDrawerHeader() {
+        navHeader = chooseHeaderView();
+        navigationView.addHeaderView(navHeader);
+        View header = navigationView.getHeaderView(0);
+        TextView email = (TextView) header.findViewById(R.id.profile_name);
+
+        if (email != null) {
+            email.setText(settingsHelper.getUserLogin());
+        }
+    }
+
+    private View chooseHeaderView() {
+        if (settingsHelper.hasCredentials()) {
+            return LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
+        } else {
+            return LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
+        }
     }
 }

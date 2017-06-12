@@ -103,6 +103,12 @@ public class StreamsActivity extends ButtonsActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        getDelegate().onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         Intents.startDatabaseWriterService(context);
@@ -146,6 +152,11 @@ public class StreamsActivity extends ButtonsActivity {
                 break;
         }
         super.onClick(view);
+    }
+
+    @Override
+    public void onLogInClick(View view) {
+        super.onLogInClick(view);
     }
 
     @Subscribe

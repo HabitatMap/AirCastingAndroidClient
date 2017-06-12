@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
@@ -31,7 +31,7 @@ import roboguice.activity.RoboMapActivity;
  * Date: 1/16/12
  * Time: 12:35 PM
  */
-public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback {
+public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback, View.OnClickListener {
     @Inject SessionManager sessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
@@ -161,13 +161,14 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         } catch (IllegalArgumentException e) {
             // Ignore - there was no dialog after all
         }
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         getDelegate().onStart();
+
+        setDrawerHeader();
     }
 
     @Override
@@ -183,14 +184,8 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
         super.onPostResume();
         getDelegate().onPostResume();
 
-        // TODO: change to actual condition
-        if (settingsHelper.isFixedSessionStreamingEnabled()) {
-            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
-        } else {
-            navHeader = LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
-        }
-
-        navigationView.addHeaderView(navHeader);
+        navigationView.removeHeaderView(navHeader);
+        setDrawerHeader();
     }
 
     @Override
@@ -212,9 +207,43 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
     @Override
     public void onSupportActionModeFinished(ActionMode mode) { }
 
-    @Nullable
     @Override
     public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
         return null;
+    }
+
+    public void onLogInClick(View view) {
+        signInOrOut();
+    }
+
+    private void signInOrOut()
+    {
+        if (settingsHelper.hasCredentials())
+        {
+            startActivity(new Intent(this, SignOutActivity.class));
+        }
+        else
+        {
+            startActivity(new Intent(this, ProfileActivity.class));
+        }
+    }
+
+    private void setDrawerHeader() {
+        navHeader = chooseHeaderView();
+        navigationView.addHeaderView(navHeader);
+        View header = navigationView.getHeaderView(0);
+        TextView email = (TextView) header.findViewById(R.id.profile_name);
+
+        if (email != null) {
+            email.setText(settingsHelper.getUserLogin());
+        }
+    }
+
+    private View chooseHeaderView() {
+        if (settingsHelper.hasCredentials()) {
+            return LayoutInflater.from(context).inflate(R.layout.nav_header_user_info, null);
+        } else {
+            return LayoutInflater.from(context).inflate(R.layout.nav_header_log_in, null);
+        }
     }
 }

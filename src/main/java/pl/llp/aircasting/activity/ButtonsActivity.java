@@ -182,6 +182,11 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     @Override
+    public void onLogInClick(View view) {
+        super.onLogInClick(view);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return mainMenu.create(this, menu);
     }
