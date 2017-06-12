@@ -111,8 +111,12 @@
                          android:layout_marginStart="6dp"/>
 
             </RelativeLayout>
+
+            <!--TODO: remove this later-->
+            <include layout="@layout/context_buttons"
+                     android:visibility="invisible"/>
         </RelativeLayout>
-        <include layout="@layout/context_buttons"/>
+
     </LinearLayout>
 
     <!--navigation drawer-->

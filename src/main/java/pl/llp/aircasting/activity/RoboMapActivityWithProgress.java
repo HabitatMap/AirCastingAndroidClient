@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatCallback;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.View;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
@@ -78,11 +77,6 @@ public abstract class RoboMapActivityWithProgress extends RoboMapActivity implem
 
     public void initNavigationDrawer() {
         navigationDrawerHelper.initNavigationDrawer(toolbar, this);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return false;
     }
 
     @Override
