@@ -74,6 +74,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @InjectView(R.id.mapview) AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
+    @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
     @Inject HeatMapOverlay heatMapOverlay;
     @Inject AveragesDriver averagesDriver;
@@ -108,6 +109,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         initToolbar("Heat map");
         initNavigationDrawer();
+        centerMap.setOnClickListener(this);
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
@@ -124,15 +126,17 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         zoomToSession = false;
     }
 
-    private void toggleHeatMapVisibility() {
+    private void toggleHeatMapVisibility(MenuItem menuItem) {
         if (heatMapVisible) {
             heatMapVisible = false;
             mapView.getOverlays().remove(heatMapOverlay);
             mapView.invalidate();
+            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_inactive);
         } else {
             heatMapVisible = true;
             mapView.getOverlays().add(heatMapOverlay);
             mapView.invalidate();
+            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_active);
         }
     }
 
@@ -149,7 +153,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             inflater.inflate(R.menu.toolbar_make_note, menu);
         }
 
-        inflater.inflate(R.menu.toolbar_heat_map, menu);
+        inflater.inflate(R.menu.toolbar_crowd_map_toggle, menu);
 
         return true;
     }
@@ -166,7 +170,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
                 Intents.makeANote(this);
                 break;
             case R.id.toggle_heat_map_button:
-                toggleHeatMapVisibility();
+                toggleHeatMapVisibility(menuItem);
                 break;
         }
         return true;
@@ -175,10 +179,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.toggle_heat_map_button:
-                toggleHeatMapVisibility();
-                updateButtons();
-                break;
             case R.id.zoom_in:
                 mapView.getController().zoomIn();
                 break;
