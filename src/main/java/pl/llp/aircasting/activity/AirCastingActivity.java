@@ -79,6 +79,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
     @InjectView(R.id.note_save) Button noteSave;
     @InjectView(R.id.view_photo) View viewPhoto;
     @InjectView(R.id.top_bar) View topBar;
+    @InjectView(R.id.locate) Button centerMap;
 
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject ResourceHelper resourceHelper;
@@ -114,6 +115,7 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
         if (!initialized) {
             zoomOut.setOnClickListener(this);
             zoomIn.setOnClickListener(this);
+            centerMap.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
             noteDelete.setOnClickListener(this);

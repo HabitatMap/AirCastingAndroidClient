@@ -51,12 +51,10 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     SyncBroadcastReceiver registeredReceiver;
 
     @Nullable
-    @InjectView(R.id.heat_map_button)
-    View heatMapButton;
+    @InjectView(R.id.heat_map_button) View heatMapButton;
 
     @Nullable
-    @InjectView(R.id.graph_button)
-    View graphButton;
+    @InjectView(R.id.graph_button) View graphButton;
 
     @Nullable
     @InjectView(R.id.zoom_in) Button zoomIn;

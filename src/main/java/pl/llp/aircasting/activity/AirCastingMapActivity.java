@@ -19,13 +19,14 @@
 */
 package pl.llp.aircasting.activity;
 
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.api.AveragesDriver;
@@ -133,6 +134,42 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             mapView.getOverlays().add(heatMapOverlay);
             mapView.invalidate();
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuInflater inflater = getDelegate().getMenuInflater();
+
+        if (!sessionManager.isRecording()) {
+            inflater.inflate(R.menu.toolbar_start_recording, menu);
+        } else {
+            inflater.inflate(R.menu.toolbar_stop_recording, menu);
+            inflater.inflate(R.menu.toolbar_make_note, menu);
+        }
+
+        inflater.inflate(R.menu.toolbar_heat_map, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        super.onOptionsItemSelected(menuItem);
+
+        switch (menuItem.getItemId()) {
+            case R.id.toggle_aircasting:
+                super.toggleAirCasting();
+                break;
+            case R.id.make_note:
+                Intents.makeANote(this);
+                break;
+            case R.id.toggle_heat_map_button:
+                toggleHeatMapVisibility();
+                break;
+        }
+        return true;
     }
 
     @Override

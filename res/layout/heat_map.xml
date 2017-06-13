@@ -25,7 +25,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="left">
+>
 
     <!--main content-->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -53,12 +53,24 @@
                             android:id="@+id/buttons"
             >
 
+                <Button android:id="@+id/locate"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/center_map_button"
+                        android:layout_marginBottom="96dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginRight="5dp"
+                        />
+
                 <include layout="@layout/zoom_buttons" />
 
             </RelativeLayout>
+
+            <include layout="@layout/context_buttons"
+                     android:visibility="invisible"/>
         </RelativeLayout>
 
-        <include layout="@layout/context_buttons"/>
 
     </LinearLayout>
 
