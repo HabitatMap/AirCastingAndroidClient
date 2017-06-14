@@ -102,12 +102,12 @@ public class SessionDriver
         return builder;
     }
 
-    public HttpResult<Session> show(long id) {
-        return http()
-                .get()
-                .from(USER_SESSION_PATH + id + ".json")
-                .into(Session.class);
-    }
+  public HttpResult<Session> show(long id) {
+      return http()
+              .get()
+              .from(USER_SESSION_PATH + id + ".json")
+              .into(Session.class);
+  }
 
   public HttpResult<DeleteSessionResponse> deleteSession(Session session)
   {
