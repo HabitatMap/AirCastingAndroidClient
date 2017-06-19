@@ -7,7 +7,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="left">
+>
 
     <!--main content-->
 
@@ -19,33 +19,35 @@
 
         <include layout="@layout/toolbar"/>
 
+        <!--<include layout="@drawable/dashboard_microphone_button" android:layout_width="100dp" android:layout_height="100dp"/>-->
+
         <RelativeLayout android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
                         android:layout_above="@id/context_buttons"
                         android:paddingTop="@dimen/abc_action_bar_default_height_material">
 
-            <pl.llp.aircasting.view.SensorsGridView xmlns:android="http://schemas.android.com/apk/res/android"
-                                                    xmlns:aircasting="http://schemas.android.com/apk/res/pl.llp.aircasting"
-                                                    style="@style/Fill"
-                                                    android:id="@+id/sensors_grid"
-                                                    android:numColumns="2"
-                                                    android:padding="-6dp"
-                                                    android:paddingTop="40dp"
-                                                    android:stretchMode="columnWidth"
-                                                    android:verticalSpacing="4dp"
-                                                    android:horizontalSpacing="4dp"
-                                                    android:fadingEdge="none"
-                                                    android:fadingEdgeLength="0dp"
-                                                    aircasting:bottomScrollAreaHeight="50dp"
-                                                    aircasting:topScrollAreaHeight="50dp"
-                                                    aircasting:dragScrollStep="10dp"
-            />
+            <!--<pl.llp.aircasting.view.SensorsGridView xmlns:android="http://schemas.android.com/apk/res/android"-->
+                                                    <!--xmlns:aircasting="http://schemas.android.com/apk/res/pl.llp.aircasting"-->
+                                                    <!--style="@style/Fill"-->
+                                                    <!--android:id="@+id/sensors_grid"-->
+                                                    <!--android:numColumns="2"-->
+                                                    <!--android:padding="-6dp"-->
+                                                    <!--android:paddingTop="40dp"-->
+                                                    <!--android:stretchMode="columnWidth"-->
+                                                    <!--android:verticalSpacing="4dp"-->
+                                                    <!--android:horizontalSpacing="4dp"-->
+                                                    <!--android:fadingEdge="none"-->
+                                                    <!--android:fadingEdgeLength="0dp"-->
+                                                    <!--aircasting:bottomScrollAreaHeight="50dp"-->
+                                                    <!--aircasting:topScrollAreaHeight="50dp"-->
+                                                    <!--aircasting:dragScrollStep="10dp"-->
+            <!--/>-->
 
-            <pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"
-                                              android:layout_height="fill_parent"
-                                              android:id="@+id/touch_pane"
-            />
+            <!--<pl.llp.aircasting.view.TouchPane android:layout_width="fill_parent"-->
+                                              <!--android:layout_height="fill_parent"-->
+                                              <!--android:id="@+id/touch_pane"-->
+            <!--/>-->
             <LinearLayout android:orientation="horizontal"
                           android:layout_width="fill_parent"
                           android:layout_height="60dp"
@@ -89,6 +91,25 @@
                     />
                 </FrameLayout>
             </LinearLayout>
+
+            <Button android:layout_height="130dp"
+                    android:layout_width="130dp"
+                    android:id="@+id/dashboard_microphone"
+                    android:background="@drawable/dashboard_microphone_button"
+                    android:layout_below="@+id/buttons"
+                    android:layout_centerHorizontal="true"
+                    android:drawableTop="@drawable/dashboard_microphone_icon"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:layout_marginTop="60dp"
+                    android:elevation="4dp"
+                    android:text="Phone microphone"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
+                    android:textSize="@dimen/abc_text_size_button_material"
+                    android:textAlignment="gravity"/>
 
         </RelativeLayout>
 
