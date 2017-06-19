@@ -30,7 +30,7 @@ public class StreamsActivity extends ButtonsActivity {
     @Inject SensorManager sensorManager;
     @Inject SessionManager sessionManager;
 
-    @InjectView(R.id.sensors_grid) SensorsGridView gridView;
+//    @InjectView(R.id.sensors_grid) SensorsGridView gridView;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
     @InjectView(R.id.heat_map_button) View mapButton;
     @InjectView(R.id.graph_button_container) View graphContainer;
@@ -45,61 +45,61 @@ public class StreamsActivity extends ButtonsActivity {
         Intents.startDatabaseWriterService(context);
         setContentView(R.layout.streams);
         adapter = adapterFactory.getAdapter(this);
-        gridView.setAdapter(adapter);
+//        gridView.setAdapter(adapter);
 
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                v.vibrate(50);
-                gridView.enableDrag();
-                return false;
-            }
-        });
+//        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+//                v.vibrate(50);
+//                gridView.enableDrag();
+//                return false;
+//            }
+//        });
 
-        gridView.setOnItemDoubleClickListener(new SensorsGridView.OnItemDoubleClickListener() {
-            @Override
-            public void onItemDoubleClick(AdapterView<?> parent, View view, int position, long id) {
-                if (sensorManager.isSessionBeingRecorded()) {
-                    sensorManager.toggleSensor((Sensor) view.getTag());
-                }
-            }
-        });
+//        gridView.setOnItemDoubleClickListener(new SensorsGridView.OnItemDoubleClickListener() {
+//            @Override
+//            public void onItemDoubleClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (sensorManager.isSessionBeingRecorded()) {
+//                    sensorManager.toggleSensor((Sensor) view.getTag());
+//                }
+//            }
+//        });
 
-        gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
-            @Override
-            public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
-                if (sensorManager.isSessionBeingViewed())
-                    return;
-                adapter.toggleStatsVisibility((Sensor) view.getTag());
-            }
-        });
+//        gridView.setOnItemSingleTapListener(new SensorsGridView.OnItemSingleTapListener() {
+//            @Override
+//            public void onItemSingleTap(AdapterView<?> parent, View view, int position, long id) {
+//                if (sensorManager.isSessionBeingViewed())
+//                    return;
+//                adapter.toggleStatsVisibility((Sensor) view.getTag());
+//            }
+//        });
+//
+//        SensorsGridView.OnDragListener graphListener = new OnSensorDragListener(gridView, graphButton, graphContainer) {
+//            @Override
+//            public void onDrop(View view) {
+//                eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+//                context.startActivity(new Intent(StreamsActivity.this, GraphActivity.class));
+//            }
+//        };
 
-        SensorsGridView.OnDragListener graphListener = new OnSensorDragListener(gridView, graphButton, graphContainer) {
-            @Override
-            public void onDrop(View view) {
-                eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
-                context.startActivity(new Intent(StreamsActivity.this, GraphActivity.class));
-            }
-        };
+//        SensorsGridView.OnDragListener mapListener = new OnSensorDragListener(gridView, mapButton, mapContainer) {
+//            @Override
+//            public void onDrop(View view) {
+//                if (sessionManager.isLocationless()) {
+//                    Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
+//                } else {
+//                    eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
+//                    context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
+//                }
+//            }
+//        };
 
-        SensorsGridView.OnDragListener mapListener = new OnSensorDragListener(gridView, mapButton, mapContainer) {
-            @Override
-            public void onDrop(View view) {
-                if (sessionManager.isLocationless()) {
-                    Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
-                } else {
-                    eventBus.post(new ViewStreamEvent((Sensor) view.getTag()));
-                    context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
-                }
-            }
-        };
-
-        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
-        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
+//        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.graph_button_container, graphListener);
+//        gridView.registerListenArea((ViewGroup) findViewById(R.id.buttons), R.id.heat_map_button_container, mapListener);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class StreamsActivity extends ButtonsActivity {
         switch (view.getId()) {
             case R.id.graph_button:
                 if (adapter.getCount() == 1) {
-                    eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
+//                    eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
                     startActivity(new Intent(this, GraphActivity.class));
                 } else {
                     Toast.makeText(this, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
@@ -143,7 +143,7 @@ public class StreamsActivity extends ButtonsActivity {
                     if (sessionManager.isLocationless()) {
                         Toast.makeText(StreamsActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
                     } else {
-                        eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
+//                        eventBus.post(new ViewStreamEvent((Sensor) gridView.getChildAt(0).getTag()));
                         context.startActivity(new Intent(StreamsActivity.this, AirCastingMapActivity.class));
                     }
                 } else {
@@ -159,23 +159,23 @@ public class StreamsActivity extends ButtonsActivity {
         super.onProfileClick(view);
     }
 
-    @Subscribe
-    public void onEvent(MotionEvent event) {
-        gridView.dispatchTouchEvent(event);
-    }
-
-    @Subscribe
-    public void onEvent(LongClickEvent event) {
-        gridView.dispatchLongPressEvent(event.getMotionEvent());
-    }
-
-    @Subscribe
-    public void onEvent(DoubleTapEvent event) {
-        gridView.dispatchDoubleClickEvent(event.getMotionEvent());
-    }
-
-    @Subscribe
-    public void onEvent(TapEvent event) {
-        gridView.dispatchSingleTapEvent(event.getMotionEvent());
-    }
+//    @Subscribe
+//    public void onEvent(MotionEvent event) {
+//        gridView.dispatchTouchEvent(event);
+//    }
+//
+//    @Subscribe
+//    public void onEvent(LongClickEvent event) {
+//        gridView.dispatchLongPressEvent(event.getMotionEvent());
+//    }
+//
+//    @Subscribe
+//    public void onEvent(DoubleTapEvent event) {
+//        gridView.dispatchDoubleClickEvent(event.getMotionEvent());
+//    }
+//
+//    @Subscribe
+//    public void onEvent(TapEvent event) {
+//        gridView.dispatchSingleTapEvent(event.getMotionEvent());
+//    }
 }
