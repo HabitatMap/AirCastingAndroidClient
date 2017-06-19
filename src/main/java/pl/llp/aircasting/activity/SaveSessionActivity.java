@@ -44,7 +44,6 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
-  @Inject MetadataHelper metadataHelper;
 
   @Inject ApplicationState state;
 

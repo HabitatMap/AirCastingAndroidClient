@@ -49,4 +49,5 @@
 
     <color name="gps_route">#007bf2</color>
     <color name="bar_blue">#0BB8F4</color>
+    <color name="toolbar_blue">#0BB0F2</color>
 </resources>

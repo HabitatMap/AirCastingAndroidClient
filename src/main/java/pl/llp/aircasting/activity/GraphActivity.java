@@ -19,8 +19,12 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.os.Build;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.ScrollEvent;
@@ -45,43 +49,112 @@ import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
 
 public class GraphActivity extends AirCastingActivity implements View.OnClickListener, MeasurementPresenter.Listener {
-    @InjectView(R.id.noise_graph) NoisePlot plot;
+  @InjectView(R.id.noise_graph) NoisePlot plot;
 
-    @InjectView(R.id.graph_begin_time) TextView graphBegin;
-    @InjectView(R.id.graph_end_time) TextView graphEnd;
+  @InjectView(R.id.graph_begin_time) TextView graphBegin;
+  @InjectView(R.id.graph_end_time) TextView graphEnd;
 
-    @InjectView(R.id.suggest_scroll_left) View scrollLeft;
-    @InjectView(R.id.suggest_scroll_right) View scrollRight;
+  @InjectView(R.id.suggest_scroll_left) View scrollLeft;
+  @InjectView(R.id.suggest_scroll_right) View scrollRight;
 
-    @Inject MeasurementPresenter measurementPresenter;
+  @Inject MeasurementPresenter measurementPresenter;
   @Inject ThresholdsHolder thresholdsHolder;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.graph);
-        measurementPresenter.setSensor(sensorManager.getVisibleSensor());
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
+    setContentView(R.layout.graph);
+    measurementPresenter.setSensor(sensorManager.getVisibleSensor());
+
+    initToolbar("Graph");
+    initNavigationDrawer();
+
+    plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    refresh();
+    measurementPresenter.registerListener(this);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    measurementPresenter.unregisterListener(this);
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+
+    MenuInflater inflater = getDelegate().getMenuInflater();
+
+    if (!sessionManager.isRecording()) {
+      inflater.inflate(R.menu.toolbar_start_recording, menu);
+    } else {
+      inflater.inflate(R.menu.toolbar_stop_recording, menu);
+      inflater.inflate(R.menu.toolbar_make_note, menu);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refresh();
-        measurementPresenter.registerListener(this);
-    }
+    return true;
+  }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        measurementPresenter.unregisterListener(this);
-    }
+  @Override
+  public boolean onOptionsItemSelected(MenuItem menuItem) {
+    super.onOptionsItemSelected(menuItem);
 
-    @Override
-    protected void addContextSpecificButtons() {
-        addButton(R.layout.context_button_dashboard);
+    switch (menuItem.getItemId()) {
+      case R.id.toggle_aircasting:
+        super.toggleAirCasting();
+        break;
+      case R.id.make_note:
+        Intents.makeANote(this);
+        break;
     }
+    return true;
+  }
+
+  @Override
+  protected void addContextSpecificButtons() {
+    addButton(R.layout.context_button_dashboard);
+  }
+
+  @Override
+  public void onClick(View view) {
+    switch (view.getId()) {
+      case R.id.zoom_in:
+        zoomIn();
+        break;
+      case R.id.zoom_out:
+        zoomOut();
+        break;
+      default:
+        super.onClick(view);
+    }
+  }
+
+  @Override
+  public void onEvent(StreamUpdateEvent event) {
+      super.onEvent(event);
+      refresh();
+  }
+
+  @Override
+  public void onViewUpdated() {
+    refresh();
+  }
+
+  @Override
+  public void onAveragedMeasurement(Measurement measurement) {
+  }
+
+  @Override
+  protected void refreshNotes() {
+    refresh();
+  }
 
   private void refresh() {
     runOnUiThread(new Runnable() {
@@ -110,27 +183,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
   }
 
-  @Override
-  public void onClick(View view) {
-    switch (view.getId()) {
-      case R.id.zoom_in:
-        zoomIn();
-        break;
-      case R.id.zoom_out:
-        zoomOut();
-        break;
-      default:
-        super.onClick(view);
-    }
-  }
-
-
-  @Override
-  public void onEvent(StreamUpdateEvent event) {
-      super.onEvent(event);
-      refresh();
-  }
-
   private void zoomIn() {
     measurementPresenter.zoomIn();
   }
@@ -139,25 +191,11 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     measurementPresenter.zoomOut();
   }
 
-  @Override
-  public void onViewUpdated() {
-    refresh();
-  }
-
-  @Override
-  public void onAveragedMeasurement(Measurement measurement) {
-  }
-
   @Subscribe
   public void onEvent(TapEvent event) {
     if (!plot.onTap(event.getMotionEvent())) {
       super.onEvent(event);
     }
-  }
-
-  @Override
-  protected void refreshNotes() {
-    refresh();
   }
 
   @Subscribe

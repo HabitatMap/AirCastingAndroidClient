@@ -33,18 +33,11 @@ public class SessionDAO
 
   @Inject AirCastingDB dbAccessor;
 
-  public Cursor notDeletedCursor(Sensor sensor, SQLiteDatabase readOnlyDatabase)
+  public Cursor notDeletedCursor(SQLiteDatabase readOnlyDatabase)
   {
     Cursor result;
-    if (sensor == null)
-    {
-      result = readOnlyDatabase
-          .query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0 AND " + SESSION_INCOMPLETE + " = 0 ", null, null, null, SESSION_START + " DESC");
-    }
-    else
-    {
-      result = readOnlyDatabase.rawQuery(SESSIONS_WITH_SENSOR_QUERY, new String[]{sensor.getSensorName()});
-    }
+    result = readOnlyDatabase
+      .query(SESSION_TABLE_NAME, null, SESSION_MARKED_FOR_REMOVAL + " = 0 AND " + SESSION_INCOMPLETE + " = 0 ", null, null, null, SESSION_START + " DESC");
     return result;
   }
 

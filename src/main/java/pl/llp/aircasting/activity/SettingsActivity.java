@@ -19,14 +19,16 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
 import pl.llp.aircasting.activity.settings.DisableMapSettingsActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SensorManager;
 
 import android.app.Application;
 import android.content.Intent;
@@ -34,12 +36,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.activity.RoboPreferenceActivity;
-import roboguice.inject.InjectResource;
 
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -56,11 +55,8 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
   @Inject SharedPreferences sharedPreferences;
   @Inject SettingsHelper settingsHelper;
-  @Inject SensorManager sensorManager;
-  @Inject MainMenu mainMenu;
   @Inject ApplicationState state;
 
-  @InjectResource(R.string.profile_template) String profileTemplate;
   Offset60DbInputListener offset60DbInputListener;
 
   @Override
@@ -84,34 +80,36 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
   }
 
+  // preferences screen behaves differently than the others, so we have to use this workaround to add the toolbar
+  @Override
+  protected void onPostCreate(Bundle savedInstanceState) {
+    super.onPostCreate(savedInstanceState);
+
+    LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+    Toolbar toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+    root.addView(toolbar, 0); // insert at top
+
+    toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        finish();
+      }
+    });
+
+    toolbar.setTitle("Settings");
+  }
+
   @Override
   protected void onResume()
   {
     super.onResume();
-
-    Preference account = getPreferenceScreen().findPreference(ACCOUNT_KEY);
-
-    if (settingsHelper.hasCredentials())
-    {
-      String email = settingsHelper.getUserLogin();
-      String text = String.format(profileTemplate, email);
-      account.setSummary(text);
-    }
-    else
-    {
-      account.setSummary(R.string.profile_summary);
-    }
   }
 
   @Override
   public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
   {
-    if (ACCOUNT_KEY.equals(preference.getKey()))
-    {
-      signInOrOut();
-      return true;
-    }
-    else if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
+    if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
     {
       startActivity(new Intent(this, ExternalSensorActivity.class));
       return true;
@@ -135,30 +133,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     {
       return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
-  }
-
-  private void signInOrOut()
-  {
-    if (settingsHelper.hasCredentials())
-    {
-      startActivity(new Intent(this, SignOutActivity.class));
-    }
-    else
-    {
-      startActivity(new Intent(this, ProfileActivity.class));
-    }
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu)
-  {
-    return mainMenu.create(this, menu);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item)
-  {
-    return mainMenu.handleClick(this, item);
   }
 
   @Override

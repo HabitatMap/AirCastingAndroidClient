@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -39,17 +36,19 @@ public class StreamsActivity extends ButtonsActivity {
     @InjectView(R.id.graph_button_container) View graphContainer;
     @InjectView(R.id.graph_button) View graphButton;
 
-    StreamAdapter adapter;
+    private StreamAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Intents.startDatabaseWriterService(context);
-
         setContentView(R.layout.streams);
-
         adapter = adapterFactory.getAdapter(this);
         gridView.setAdapter(adapter);
+
+        initToolbar("Dashboard");
+        initNavigationDrawer();
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -104,6 +103,12 @@ public class StreamsActivity extends ButtonsActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        getDelegate().onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         Intents.startDatabaseWriterService(context);
@@ -147,6 +152,11 @@ public class StreamsActivity extends ButtonsActivity {
                 break;
         }
         super.onClick(view);
+    }
+
+    @Override
+    public void onProfileClick(View view) {
+        super.onProfileClick(view);
     }
 
     @Subscribe

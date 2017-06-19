@@ -20,6 +20,7 @@
 package pl.llp.aircasting.activity;
 
 import android.net.Uri;
+import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;

@@ -19,10 +19,9 @@
 */
 package pl.llp.aircasting.activity;
 
-import android.net.Uri;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
@@ -35,7 +34,6 @@ import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -59,7 +57,6 @@ import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
-import java.io.File;
 import java.util.List;
 
 import static java.lang.Math.min;
@@ -77,6 +74,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @InjectView(R.id.mapview) AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
+    @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
     @Inject HeatMapOverlay heatMapOverlay;
     @Inject AveragesDriver averagesDriver;
@@ -109,6 +107,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         setContentView(R.layout.heat_map);
 
+        initToolbar("Heat map");
+        initNavigationDrawer();
+        centerMap.setOnClickListener(this);
+
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
@@ -124,25 +126,59 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         zoomToSession = false;
     }
 
-    private void toggleHeatMapVisibility() {
+    private void toggleHeatMapVisibility(MenuItem menuItem) {
         if (heatMapVisible) {
             heatMapVisible = false;
             mapView.getOverlays().remove(heatMapOverlay);
             mapView.invalidate();
+            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_inactive);
         } else {
             heatMapVisible = true;
             mapView.getOverlays().add(heatMapOverlay);
             mapView.invalidate();
+            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_active);
         }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuInflater inflater = getDelegate().getMenuInflater();
+
+        if (!sessionManager.isRecording()) {
+            inflater.inflate(R.menu.toolbar_start_recording, menu);
+        } else {
+            inflater.inflate(R.menu.toolbar_stop_recording, menu);
+            inflater.inflate(R.menu.toolbar_make_note, menu);
+        }
+
+        inflater.inflate(R.menu.toolbar_crowd_map_toggle, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        super.onOptionsItemSelected(menuItem);
+
+        switch (menuItem.getItemId()) {
+            case R.id.toggle_aircasting:
+                super.toggleAirCasting();
+                break;
+            case R.id.make_note:
+                Intents.makeANote(this);
+                break;
+            case R.id.toggle_heat_map_button:
+                toggleHeatMapVisibility(menuItem);
+                break;
+        }
+        return true;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.toggle_heat_map_button:
-                toggleHeatMapVisibility();
-                updateButtons();
-                break;
             case R.id.zoom_in:
                 mapView.getController().zoomIn();
                 break;

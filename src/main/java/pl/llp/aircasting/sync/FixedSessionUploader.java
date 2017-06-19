@@ -22,6 +22,8 @@ package pl.llp.aircasting.sync;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Toast;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -59,6 +61,7 @@ public class FixedSessionUploader
   public boolean create(Session session) {
     try {
       if (canUpload()) {
+//        enableStrictMode();
         performCreateSession(session);
         return (true);
       } else {
@@ -70,6 +73,17 @@ public class FixedSessionUploader
       Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
       return (false);
     }
+  }
+
+  // This is BAD but easy workaround to the fixed sessions creation error, use only for dev purposes.
+  // It enables doing network operations in the main thread of the app. It should be done in a background task.
+  // TODO:
+  // Fix this later, unless we don't need streaming anymore.
+  public void enableStrictMode()
+  {
+    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+    StrictMode.setThreadPolicy(policy);
   }
 
   private void performCreateSession(Session session) throws SessionSyncException

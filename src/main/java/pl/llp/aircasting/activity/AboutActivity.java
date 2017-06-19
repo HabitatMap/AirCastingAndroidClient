@@ -19,8 +19,12 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatCallback;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
@@ -32,7 +36,6 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
@@ -50,17 +53,17 @@ import java.util.Map;
 
 import static pl.llp.aircasting.helper.TextViewHelper.stripUnderlines;
 
-public class AboutActivity extends RoboActivity
+public class AboutActivity extends RoboActivity implements AppCompatCallback
 {
   public static final String HEADING = "heading";
 
-  @Inject MainMenu mainMenu;
   @Inject LayoutInflater layoutInflater;
 
   @InjectView(R.id.about) ExpandableListView about;
 
   @Inject SyncBroadcastReceiver syncBroadcastReceiver;
 
+  private AppCompatDelegate delegate;
   private String[] headings;
   private String[] contents;
 
@@ -97,9 +100,12 @@ public class AboutActivity extends RoboActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    delegate = AppCompatDelegate.create(this, this);
+    delegate.onCreate(savedInstanceState);
 
     setContentView(R.layout.about);
 
+    initToolbar();
     initializeSections();
     initializeAbout();
   }
@@ -118,20 +124,29 @@ public class AboutActivity extends RoboActivity
         unregisterReceiver(syncBroadcastReceiver);
     }
 
+    public void initToolbar() {
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+
+      delegate.setSupportActionBar(toolbar);
+      delegate.setTitle("About");
+      toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+      });
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return false;
+    }
+
     private void initializeAbout() {
         ExpandableListAdapter adapter = new AboutAdapter();
 
         about.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
     }
 
     private List<Map<String, String>> headings() {
@@ -156,6 +171,18 @@ public class AboutActivity extends RoboActivity
             Logger.e("Error while fetching app version", e);
             return "?";
         }
+    }
+
+    @Override
+    public void onSupportActionModeStarted(ActionMode mode) { }
+
+    @Override
+    public void onSupportActionModeFinished(ActionMode mode) { }
+
+    @Nullable
+    @Override
+    public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
+        return null;
     }
 
     private class AboutAdapter extends SimpleExpandableListAdapter {

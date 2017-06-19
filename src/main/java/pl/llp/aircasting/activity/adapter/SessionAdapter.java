@@ -4,7 +4,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 
 import android.content.Context;
@@ -23,7 +22,6 @@ import java.util.List;
 
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 
 /**
  * Created by ags on 05/07/12 at 21:06
@@ -35,7 +33,6 @@ public class SessionAdapter extends ArrayAdapter
   private ResourceHelper resourceHelper;
   private Context context;
   List<Session> sessions = newArrayList();
-  private Sensor selectedSensor;
 
   public SessionAdapter(Context context)
   {
@@ -54,33 +51,28 @@ public class SessionAdapter extends ArrayAdapter
     view.setBackgroundDrawable(background);
 
     fillTitle(view, context, session);
+    fillIcons(view, session);
     fillStats(view, session);
     fillTypes(view, session);
 
     return view;
   }
 
+  private void fillIcons(View view, Session session) {
+    ImageView imageView = (ImageView) view.findViewById(R.id.session_icon);
+
+    if (session.getType().equals("FixedSession")) {
+      imageView.setImageResource(R.drawable.session_fixed_icon);
+    } else {
+      imageView.setImageResource(R.drawable.session_mobile_icon);
+    }
+  }
+
   private void fillStats(View view, Session session) {
     ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
 
-    if (selectedSensor == null) {
-      view.findViewById(R.id.avg_container).setVisibility(View.GONE);
-      view.findViewById(R.id.peak_container).setVisibility(View.GONE);
-    } else {
-      view.findViewById(R.id.avg_container).setVisibility(View.VISIBLE);
-      view.findViewById(R.id.peak_container).setVisibility(View.VISIBLE);
-
-      String name = selectedSensor.getSensorName();
-      MeasurementStream stream = session.getStream(name);
-      int peak = (int) stream.getPeak();
-      int avg = (int) stream.getAvg();
-
-      ((TextView) view.findViewById(R.id.session_peak)).setText(valueOf(peak));
-      ((TextView) view.findViewById(R.id.session_average)).setText(valueOf(avg));
-
-      updateImage((ImageView) view.findViewById(R.id.session_average_marker), avg);
-      updateImage((ImageView) view.findViewById(R.id.session_peak_marker), peak);
-    }
+    view.findViewById(R.id.avg_container).setVisibility(View.GONE);
+    view.findViewById(R.id.peak_container).setVisibility(View.GONE);
   }
 
   private Drawable evenOddBackground(int position)
@@ -103,36 +95,22 @@ public class SessionAdapter extends ArrayAdapter
     }
   }
 
-  private void updateImage(ImageView view, double value)
-  {
-    Drawable bullet = resourceHelper.getBulletAbsolute(selectedSensor, value);
-    view.setBackgroundDrawable(bullet);
-  }
-
   private void fillTypes(View view, Session session)
   {
     TextView dataTypes = (TextView) view.findViewById(R.id.data_types);
 
-    if (selectedSensor == null)
+    Iterable<String> types = transform(session.getActiveMeasurementStreams(), new Function<MeasurementStream, String>()
     {
-      Iterable<String> types = transform(session
-                                             .getActiveMeasurementStreams(), new Function<MeasurementStream, String>()
+      @Override
+      public String apply(MeasurementStream input)
       {
-        @Override
-        public String apply(MeasurementStream input)
-        {
-          return input.getShortType();
-        }
-      });
-      types = Ordering.natural().sortedCopy(types);
+        return input.getShortType();
+      }
+    });
+    types = Ordering.natural().sortedCopy(types);
 
-      String text = Joiner.on("/").join(types);
-      dataTypes.setText(text);
-    }
-    else
-    {
-      dataTypes.setText(selectedSensor.getShortType());
-    }
+    String text = Joiner.on("/").join(types);
+    dataTypes.setText(text);
   }
 
   public void setResourceHelper(ResourceHelper resourceHelper)
@@ -154,10 +132,5 @@ public class SessionAdapter extends ArrayAdapter
   public Session getSession(int position)
   {
     return sessions.get(position);
-  }
-
-  public void setSelectedSensor(Sensor selectedSensor)
-  {
-    this.selectedSensor = selectedSensor;
   }
 }

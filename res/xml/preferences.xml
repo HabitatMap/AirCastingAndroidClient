@@ -21,11 +21,8 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:persistent="true"
+                  android:id="@android:id/list"
         >
-    <android.preference.Preference android:title="@string/profile"
-                                   android:summary="@string/profile_summary"
-                                   android:key="account"
-            />
 
   <android.preference.Preference android:title="@string/external_devices"
                                  android:key="external_sensor"

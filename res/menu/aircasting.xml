@@ -20,20 +20,37 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/aircasting"
-          android:title="@string/app_name"
-          android:icon="@drawable/aircasting"
-            />
-    <item android:id="@+id/sessions"
-          android:icon="@drawable/list"
-          android:title="@string/menu_sessions"
-            />
-    <item android:id="@+id/settings"
-          android:icon="@drawable/settings"
-          android:title="@string/menu_preferences"
-            />
-    <item android:id="@+id/about"
-          android:icon="@drawable/info"
-          android:title="@string/menu_about"
-            />
+    <group android:id="@+id/group_primary"
+           android:checkableBehavior="none">
+
+        <item android:id="@+id/dashboard"
+              android:title="@string/dashboard"
+              android:icon="@drawable/menu_dashboard_icon"
+        />
+        <item android:id="@+id/sessions"
+              android:icon="@drawable/menu_sessions_icon"
+              android:title="@string/menu_sessions"
+        />
+        <item android:id="@+id/settings"
+              android:icon="@drawable/menu_settings_icon"
+              android:title="@string/menu_preferences"
+        />
+        <item android:id="@+id/about"
+              android:icon="@drawable/menu_about_icon"
+              android:title="@string/menu_about"
+        />
+    </group>
+
+    <group android:id="@+id/group_secondary"
+           android:checkableBehavior="none">
+
+        <item android:id="@+id/phone_microphone"
+              android:icon="@drawable/menu_microphone_icon_black"
+              android:title="Connect to phone microphone"
+        />
+        <item android:id="@+id/external_sensors"
+              android:icon="@drawable/menu_sensors_icon_black"
+              android:title="Connect to external device"
+        />
+    </group>
 </menu>

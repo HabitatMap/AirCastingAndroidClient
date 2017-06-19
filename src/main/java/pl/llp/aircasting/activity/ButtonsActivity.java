@@ -1,10 +1,10 @@
 package pl.llp.aircasting.activity;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.menu.MainMenu;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -31,56 +31,42 @@ import java.util.concurrent.TimeUnit;
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
+
 public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
     public static final String SHOW_BUTTONS = "showButtons";
+    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
-    @Inject
-    Context context;
-    @Inject
-    EventBus eventBus;
+    @Inject Context context;
+    @Inject UnfinishedSessionChecker checker;
+    @Inject ApplicationState state;
+    @Inject LocationManager locationManager;
+    @Inject SessionManager sessionManager;
+    @Inject LayoutInflater layoutInflater;
+    @Inject LocationHelper locationHelper;
+    @Inject SettingsHelper settingsHelper;
+    @Inject EventBus eventBus;
 
-    @Nullable
-    @InjectView(R.id.heat_map_button)
-    View heatMapButton;
-    @Nullable
-    @InjectView(R.id.graph_button)
-    View graphButton;
-
-    @InjectView(R.id.context_buttons)
-    ViewGroup contextButtons;
-
-    @Inject
-    LocationManager locationManager;
-    @Inject
-    SessionManager sessionManager;
-    @Inject
-    LayoutInflater layoutInflater;
-    @Inject
-    LocationHelper locationHelper;
-    @Inject
-    SettingsHelper settingsHelper;
-    @Inject
-    MainMenu mainMenu;
-
-    private boolean suppressTap = false;
-    private boolean initialized = false;
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
     @Nullable
-    @InjectView(R.id.zoom_in)
-    Button zoomIn;
+    @InjectView(R.id.heat_map_button) View heatMapButton;
+
     @Nullable
-    @InjectView(R.id.zoom_out)
-    Button zoomOut;
+    @InjectView(R.id.graph_button) View graphButton;
 
-    @Inject UnfinishedSessionChecker checker;
-    @Inject ApplicationState state;
+    @Nullable
+    @InjectView(R.id.zoom_in) Button zoomIn;
 
+    @Nullable
+    @InjectView(R.id.zoom_out) Button zoomOut;
 
+    @InjectView(R.id.context_buttons) ViewGroup contextButtons;
+
+    private boolean suppressTap = false;
+    private boolean initialized = false;
     private long lastChecked = 0;
-    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Override
     protected void onResume() {
@@ -100,7 +86,6 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
 
         eventBus.register(this);
         checkForUnfinishedSessions();
-
     }
 
     @Override
@@ -182,13 +167,8 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return mainMenu.create(this, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mainMenu.handleClick(this, item);
+    public void onProfileClick(View view) {
+        super.onProfileClick(view);
     }
 
     @Subscribe
@@ -232,17 +212,21 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         contextButtons.addView(view);
     }
 
-    private synchronized void toggleAirCasting() {
+    public synchronized void toggleAirCasting() {
         if (sessionManager.isSessionStarted()) {
             stopAirCasting();
         } else {
             startAirCasting();
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getDelegate().invalidateOptionsMenu();
+        }
+
         updateButtons();
     }
 
-    private void stopAirCasting() {
+    public void stopAirCasting() {
         Session session = sessionManager.getSession();
 
         if (session.isFixed())
@@ -277,7 +261,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         }
     }
 
-    private void startAirCasting() {
+    public void startAirCasting() {
         if (settingsHelper.isFixedSessionStreamingEnabled())
             startFixedAirCasting();
         else
@@ -360,5 +344,4 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
         long timeout = System.currentTimeMillis() - lastChecked;
         return timeout > DELTA;
     }
-
 }

@@ -19,11 +19,19 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 
-<ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
-                    style="@style/Fill"
-                    android:background="@color/lighter_gray"
-                    android:childDivider="@color/lighter_gray"
-                    android:divider="@color/lighter_gray"
-                    android:dividerHeight="1dp"
-                    android:id="@+id/about"
-        />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="fill_parent"
+              android:layout_width="fill_parent"
+              android:orientation="vertical" >
+
+  <include layout="@layout/toolbar"/>
+
+  <ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
+                      style="@style/Fill"
+                      android:background="@color/lighter_gray"
+                      android:childDivider="@color/lighter_gray"
+                      android:divider="@color/lighter_gray"
+                      android:dividerHeight="1dp"
+                      android:id="@+id/about"
+  />
+</LinearLayout>
