@@ -274,9 +274,9 @@ public class SessionRepository
   }
 
   @Internal
-  Cursor notDeletedCursor(@Nullable Sensor sensor, SQLiteDatabase readOnlyDatabase)
+  Cursor notDeletedCursor(SQLiteDatabase readOnlyDatabase)
   {
-    return sessionDAO.notDeletedCursor(sensor, readOnlyDatabase);
+    return sessionDAO.notDeletedCursor(readOnlyDatabase);
   }
 
   @API
@@ -478,7 +478,7 @@ public class SessionRepository
     return streams;
   }
 
-  public List<Session> notDeletedSessions(final Sensor selectedSensor)
+  public List<Session> notDeletedSessions()
   {
     return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<List<Session>>()
     {
@@ -487,7 +487,7 @@ public class SessionRepository
       {
         List<Session> result = newArrayList();
 
-        Cursor cursor = notDeletedCursor(selectedSensor, readOnlyDatabase);
+        Cursor cursor = notDeletedCursor(readOnlyDatabase);
         cursor.moveToFirst();
         while (!cursor.isAfterLast())
         {

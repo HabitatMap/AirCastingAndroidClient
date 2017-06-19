@@ -34,7 +34,6 @@
   <ImageView style="@style/Wrap"
              android:layout_marginTop="8dp"
              android:layout_marginLeft="3dp"
-             android:src="@drawable/session"
              android:id="@+id/session_icon"
              android:layout_alignParentLeft="true"
       />
