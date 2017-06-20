@@ -24,10 +24,6 @@
                   android:id="@android:id/list"
         >
 
-  <android.preference.Preference android:title="@string/external_devices"
-                                 android:key="external_sensor"
-          />
-
   <android.preference.CheckBoxPreference android:defaultValue="false"
       android:key="fixed_sessions_streaming"
       android:title="@string/fixed_sessions_streaming"

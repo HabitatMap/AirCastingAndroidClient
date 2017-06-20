@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
 import pl.llp.aircasting.activity.settings.DisableMapSettingsActivity;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -43,7 +42,6 @@ import roboguice.activity.RoboPreferenceActivity;
 public class SettingsActivity extends RoboPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
   public static final String ACCOUNT_KEY = "account";
-  public static final String EXTERNAL_SENSOR_KEY = "external_sensor";
   public static final String MEASUREMENT_STREAMS_KEY = "measurement_streams";
   public static final String BACKEND_SETTINGS_KEY = "backend_settings";
   public static final String DISABLE_MAPS_KEY = "disable_maps";
@@ -109,14 +107,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
   @Override
   public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
   {
-    if (EXTERNAL_SENSOR_KEY.equals(preference.getKey()))
+    if (MEASUREMENT_STREAMS_KEY.equals(preference.getKey()))
     {
-      startActivity(new Intent(this, ExternalSensorActivity.class));
-      return true;
-    }
-    else if (MEASUREMENT_STREAMS_KEY.equals(preference.getKey()))
-    {
-      Intents.startStreamsActivity(this);
+      Intents.startDashboardActivity(this);
       return true;
     }
     else if (BACKEND_SETTINGS_KEY.equals(preference.getKey()))
