@@ -92,7 +92,7 @@
 
     <activity android:label="@string/external_devices" android:name=".activity.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/measurement_streams" android:name=".activity.StreamsActivity" android:theme="@style/AirCastingTheme"/>
+    <activity android:label="@string/measurement_streams" android:name=".activity.DashboardActivity" android:theme="@style/AirCastingTheme" android:screenOrientation="portrait"/>
 
     <activity android:label="@string/backend_settings" android:name=".activity.settings.BackendSettingsActivity" android:theme="@style/Dialog"/>
 
