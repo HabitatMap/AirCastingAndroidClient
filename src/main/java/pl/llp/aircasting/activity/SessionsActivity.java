@@ -242,7 +242,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
 
   private void startSessionView() {
     eventBus.post(new SessionLoadedEvent(sessionManager.getSession()));
-    startActivity(new Intent(context, StreamsActivity.class));
+    startActivity(new Intent(context, DashboardActivity.class));
   }
 
   @Override
