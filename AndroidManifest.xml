@@ -19,7 +19,7 @@
     You can contact the authors by email at <info@habitatmap.org>
 --><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="77" android:versionName="1.4.3" package="pl.llp.aircasting">
 
-  <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="13"/>
+  <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="13"/>
 
   <!-- Settings -->
   <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
