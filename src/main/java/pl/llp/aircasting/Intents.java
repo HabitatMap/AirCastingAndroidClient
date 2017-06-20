@@ -26,7 +26,7 @@ import pl.llp.aircasting.activity.EditSessionActivity;
 import pl.llp.aircasting.activity.MakeANoteActivity;
 import pl.llp.aircasting.activity.SessionsActivity;
 import pl.llp.aircasting.activity.ShareSessionActivity;
-import pl.llp.aircasting.activity.StreamsActivity;
+import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.ThresholdsActivity;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
@@ -235,8 +235,8 @@ public final class Intents
     context.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
   }
 
-  public static void startStreamsActivity(Activity activity) {
-    Intent intent = new Intent(activity, StreamsActivity.class);
+  public static void startDashboardActivity(Activity activity) {
+    Intent intent = new Intent(activity, DashboardActivity.class);
     activity.startActivity(intent);
   }
 

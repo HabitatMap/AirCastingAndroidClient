@@ -56,7 +56,7 @@ public class MainMenu
           Long sessionId = session.getId();
           sessionManager.resetSession(sessionId);
         }
-        Intent intent = new Intent(context, StreamsActivity.class);
+        Intent intent = new Intent(context, DashboardActivity.class);
         intent.putExtra("startingAircasting", true);
         activity.startActivity(intent);
         break;

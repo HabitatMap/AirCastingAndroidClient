@@ -72,7 +72,7 @@ public class SplashActivity extends Activity {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                startActivity(new Intent(getApplication(), StreamsActivity.class));
+                startActivity(new Intent(getApplication(), DashboardActivity.class));
             }
         }.execute();
     }

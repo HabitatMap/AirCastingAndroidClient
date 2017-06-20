@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import pl.llp.aircasting.activity.StreamsActivity;
+import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.SensorService;
@@ -54,7 +54,7 @@ public class IntentsTest {
 
     @Test
     public void shouldStartEditSession() {
-        StreamsActivity activity = mock(StreamsActivity.class);
+        DashboardActivity activity = mock(DashboardActivity.class);
 
         Intents.editSession(activity, session);
 
