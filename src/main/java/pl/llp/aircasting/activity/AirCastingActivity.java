@@ -20,16 +20,13 @@
 package pl.llp.aircasting.activity;
 
 import android.net.Uri;
-import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
@@ -39,14 +36,10 @@ import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 
 import android.app.Dialog;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -60,7 +53,6 @@ import roboguice.inject.InjectView;
 
 import java.io.File;
 import java.text.NumberFormat;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static pl.llp.aircasting.Intents.triggerSync;
@@ -237,7 +229,6 @@ public abstract class AirCastingActivity extends ButtonsActivity implements View
                 Intents.viewPhoto(this, photoUri());
                 break;
             default:
-                super.onClick(view);
                 break;
         }
     }

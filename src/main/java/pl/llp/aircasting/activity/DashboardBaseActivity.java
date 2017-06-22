@@ -14,7 +14,6 @@ import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.widget.Button;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
@@ -27,33 +26,31 @@ import java.util.concurrent.TimeUnit;
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
+public abstract class DashboardBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
+    @Nullable
+    @InjectView(R.id.heat_map_button)
+    View heatMapButton;
 
-public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
-    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
+    @Nullable
+    @InjectView(R.id.graph_button)
+    View graphButton;
 
     @Inject Context context;
-    @Inject UnfinishedSessionChecker checker;
-    @Inject ApplicationState state;
+    @Inject EventBus eventBus;
     @Inject LocationManager locationManager;
     @Inject SessionManager sessionManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
-    @Inject EventBus eventBus;
-
+    @Inject UnfinishedSessionChecker checker;
+    @Inject ApplicationState state;
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
-    @Nullable
-    @InjectView(R.id.zoom_in) Button zoomIn;
-
-    @Nullable
-    @InjectView(R.id.zoom_out) Button zoomOut;
-
-
     private ToggleAircastingHelper toggleAircastingHelper;
     private boolean initialized = false;
     private long lastChecked = 0;
+    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Override
     protected void onResume() {
@@ -101,13 +98,11 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 sessionManager, settingsHelper, locationManager, locationHelper, getDelegate(), context);
 
         if (!initialized) {
+            if (graphButton != null) graphButton.setOnClickListener(this);
+            if (heatMapButton != null) heatMapButton.setOnClickListener(this);
+
             initialized = true;
         }
-    }
-
-    @Override
-    public void onProfileClick(View view) {
-        super.onProfileClick(view);
     }
 
     public synchronized void toggleAirCasting() {
@@ -140,7 +135,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    checker.check(ButtonsActivity.this);
+                    checker.check(DashboardBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
                 }

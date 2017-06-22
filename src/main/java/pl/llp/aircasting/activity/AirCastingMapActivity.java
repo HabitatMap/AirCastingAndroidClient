@@ -194,21 +194,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     @Override
-    protected void addContextSpecificButtons() {
-        if (!sessionManager.isSessionSaved()) {
-            addButton(R.layout.context_button_locate);
-        }
-
-        if (heatMapVisible) {
-            addButton(R.layout.context_button_crowdmap_active);
-        } else {
-            addButton(R.layout.context_button_crowdmap_inactive);
-        }
-
-        addButton(R.layout.context_button_dashboard);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
@@ -326,7 +311,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     public void noteClicked(OverlayItem item, int index) {
-        suppressNextTap();
+//        suppressNextTap();
 
         mapView.getController().animateTo(item.getPoint());
 

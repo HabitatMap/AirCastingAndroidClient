@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.adapter;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
+import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.StreamViewHelper;
@@ -33,7 +34,7 @@ public class StreamAdapterTest {
 
     @Before
     public void setup() {
-        adapter = new StreamAdapter(mock(ButtonsActivity.class), new ArrayList<Map<String, Object>>(),
+        adapter = new StreamAdapter(mock(DashboardBaseActivity.class), new ArrayList<Map<String, Object>>(),
                 mock(EventBus.class), mock(StreamViewHelper.class), mock(SensorManager.class), mock(SessionManager.class));
 
         sensor = mock(Sensor.class);
@@ -54,12 +55,5 @@ public class StreamAdapterTest {
         adapter.stop();
 
         verify(adapter.eventBus).unregister(adapter);
-    }
-
-    @Test
-    public void shouldSuppressNextTapWhenAButtonIsClicked() {
-        adapter.onClick(view);
-
-        verify(adapter.context).suppressNextTap();
     }
 }
