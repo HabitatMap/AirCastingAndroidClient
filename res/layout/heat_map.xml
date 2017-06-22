@@ -66,9 +66,6 @@
                 <include layout="@layout/zoom_buttons" />
 
             </RelativeLayout>
-
-            <include layout="@layout/context_buttons"
-                     android:visibility="invisible"/>
         </RelativeLayout>
 
 
