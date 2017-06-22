@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * navigation arrows
  */
 
-public abstract class ButtonsActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
+public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
     public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Inject Context context;
@@ -140,7 +140,7 @@ public abstract class ButtonsActivity extends RoboMapActivityWithProgress implem
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    checker.check(ButtonsActivity.this);
+                    checker.check(AirCastingBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
                 }

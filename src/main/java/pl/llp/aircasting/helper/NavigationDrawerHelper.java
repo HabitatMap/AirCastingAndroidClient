@@ -94,17 +94,21 @@ public class NavigationDrawerHelper {
 
     public void setDrawerHeader() {
         navHeader = chooseHeaderView();
-        navigationView.addHeaderView(navHeader);
-        View header = navigationView.getHeaderView(0);
-        TextView email = (TextView) header.findViewById(R.id.profile_name);
+        if (navigationView != null) {
+            navigationView.addHeaderView(navHeader);
+            View header = navigationView.getHeaderView(0);
+            TextView email = (TextView) header.findViewById(R.id.profile_name);
 
-        if (email != null) {
-            email.setText(settingsHelper.getUserLogin());
+            if (email != null) {
+                email.setText(settingsHelper.getUserLogin());
+            }
         }
     }
 
     public void removeHeader() {
-        navigationView.removeHeaderView(navHeader);
+        if (navigationView != null) {
+            navigationView.removeHeaderView(navHeader);
+        }
     }
 
     private View chooseHeaderView() {
