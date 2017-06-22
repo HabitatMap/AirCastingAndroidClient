@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static pl.llp.aircasting.Intents.triggerSync;
 
-public abstract class AirCastingActivity extends ButtonsActivity implements View.OnClickListener {
+public abstract class AirCastingActivity extends AirCastingBaseActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
 
     @InjectView(R.id.gauge_container) View gauges;

@@ -1,13 +1,8 @@
 package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ButtonsActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.StreamViewHelper;
-import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
@@ -22,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

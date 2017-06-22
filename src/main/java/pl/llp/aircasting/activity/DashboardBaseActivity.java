@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
-public abstract class DashboardBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
+public abstract class DashboardBaseActivity extends RoboActivityWithProgress implements View.OnClickListener {
     @Nullable
     @InjectView(R.id.heat_map_button)
     View heatMapButton;
@@ -85,12 +85,6 @@ public abstract class DashboardBaseActivity extends RoboMapActivityWithProgress 
             registeredReceiver = null;
         }
         eventBus.unregister(this);
-    }
-
-    @Override
-    protected boolean isRouteDisplayed() {
-        // The maps server needs to know if we are displaying any routes
-        return false;
     }
 
     private void initialize() {

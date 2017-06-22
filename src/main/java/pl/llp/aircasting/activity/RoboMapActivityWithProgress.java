@@ -2,7 +2,6 @@ package pl.llp.aircasting.activity;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatCallback;
@@ -15,7 +14,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.helper.NavigationDrawerHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
 import roboguice.activity.RoboMapActivity;
 
 /**
@@ -25,16 +23,14 @@ import roboguice.activity.RoboMapActivity;
  * Time: 12:35 PM
  */
 public abstract class RoboMapActivityWithProgress extends RoboMapActivity implements ActivityWithProgress, AppCompatCallback, View.OnClickListener {
-    @Inject SessionManager sessionManager;
-    @Inject SettingsHelper settingsHelper;
     @Inject NavigationDrawerHelper navigationDrawerHelper;
-    @Inject Context context;
+    @Inject SettingsHelper settingsHelper;
 
+    public AppCompatDelegate delegate;
+    public Toolbar toolbar;
     private int progressStyle;
     private ProgressDialog dialog;
     private SimpleProgressTask task;
-    public AppCompatDelegate delegate;
-    public Toolbar toolbar;
 
     @Override
     public ProgressDialog showProgressDialog(int progressStyle, SimpleProgressTask task) {

@@ -1,18 +1,11 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.util.Log;
-import android.widget.AbsListView;
-import android.widget.RelativeLayout;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ButtonsActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
-import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
-import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;

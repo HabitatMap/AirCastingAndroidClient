@@ -48,7 +48,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     public void onStart() {
         super.onStart();
-        getDelegate().onStart();
     }
 
     @Override

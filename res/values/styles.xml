@@ -18,7 +18,7 @@
 
         You can contact the authors by email at <info@habitatmap.org>
     -->
-    <style name="Dialog" parent="android:Theme.Dialog" >
+    <style name="Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="android:windowBackground">@drawable/panel_background</item>
     </style>
 
