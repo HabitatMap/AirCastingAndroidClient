@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.activity.ButtonsActivity;
+import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
@@ -22,7 +23,7 @@ public class StreamAdapterFactory
   @Inject SessionManager sessionManager;
   @Inject SensorManager sensorManager;
 
-  public StreamAdapter getAdapter(ButtonsActivity context) {
+  public StreamAdapter getAdapter(DashboardBaseActivity context) {
     return new StreamAdapter(context, new ArrayList<Map<String, Object>>(), eventBus,
                              streamViewHelper, sensorManager, sessionManager);
   }

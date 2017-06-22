@@ -17,7 +17,7 @@ import roboguice.inject.InjectView;
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
-public class DashboardActivity extends ButtonsActivity {
+public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
@@ -71,6 +71,37 @@ public class DashboardActivity extends ButtonsActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuInflater inflater = getDelegate().getMenuInflater();
+
+        if (!sessionManager.isRecording()) {
+            inflater.inflate(R.menu.toolbar_start_recording, menu);
+        } else {
+            inflater.inflate(R.menu.toolbar_stop_recording, menu);
+            inflater.inflate(R.menu.toolbar_make_note, menu);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        super.onOptionsItemSelected(menuItem);
+
+        switch (menuItem.getItemId()) {
+            case R.id.toggle_aircasting:
+                super.toggleAirCasting();
+                break;
+            case R.id.make_note:
+                Intents.makeANote(this);
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.graph_button:
@@ -97,7 +128,6 @@ public class DashboardActivity extends ButtonsActivity {
                 startActivity(new Intent(this, ExternalSensorActivity.class));
                 break;
         }
-        super.onClick(view);
     }
 
     @Override

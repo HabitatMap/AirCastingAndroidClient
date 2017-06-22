@@ -118,11 +118,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
   }
 
   @Override
-  protected void addContextSpecificButtons() {
-    addButton(R.layout.context_button_dashboard);
-  }
-
-  @Override
   public void onClick(View view) {
     switch (view.getId()) {
       case R.id.zoom_in:
@@ -194,7 +189,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
   @Subscribe
   public void onEvent(TapEvent event) {
     if (!plot.onTap(event.getMotionEvent())) {
-      super.onEvent(event);
+        return;
     }
   }
 

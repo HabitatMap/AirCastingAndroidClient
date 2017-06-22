@@ -7,6 +7,7 @@ import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ButtonsActivity;
+import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.GaugeHelper;
 import pl.llp.aircasting.helper.NoOp;
@@ -65,7 +66,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     SensorManager sensorManager;
     StreamViewHelper streamViewHelper;
 
-    ButtonsActivity context;
+    DashboardBaseActivity context;
     EventBus eventBus;
 
     private List<Map<String, Object>> data;
@@ -80,7 +81,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private Map<String, Integer> oldPositions = newHashMap();
     private int invisiblePosition = -1;
 
-    public StreamAdapter(ButtonsActivity context, List<Map<String, Object>> data, EventBus eventBus,
+    public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
         super(context, data, R.layout.stream, FROM, TO);
         this.data = data;
@@ -264,11 +265,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 break;
         }
 
-        context.suppressNextTap();
         notifyDataSetChanged();
     }
 
-    private void deleteStream(ButtonsActivity context, Sensor sensor) {
+    private void deleteStream(DashboardBaseActivity context, Sensor sensor) {
         if (sessionManager.getSession().getActiveMeasurementStreams().size() > 1) {
             confirmDeletingStream(context, sensor);
         } else {
@@ -277,7 +277,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     }
 
-    private void confirmDeletingSession(final ButtonsActivity context) {
+    private void confirmDeletingSession(final DashboardBaseActivity context) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("This is the only stream, delete session?").
                 setCancelable(true).
@@ -294,7 +294,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     }
 
-    private void confirmDeletingStream(final ButtonsActivity context, final Sensor sensor) {
+    private void confirmDeletingStream(final DashboardBaseActivity context, final Sensor sensor) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("Delete stream?").
                 setCancelable(true).
