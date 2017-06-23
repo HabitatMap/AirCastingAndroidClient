@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,12 @@ public class DashboardIdleFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.dashboard_microphone:
-                return;
+                DashboardSessionFragment idleSessionFragment = new DashboardSessionFragment();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, idleSessionFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
             case R.id.dashboard_sensors:
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
                 break;
