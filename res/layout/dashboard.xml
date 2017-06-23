@@ -10,65 +10,20 @@
     <!--main content-->
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     style="@style/Fill"
-                    android:background="#C7ECF9"
+                    android:background="@color/dashboard_background"
                     android:id="@+id/streams_container">
 
         <include layout="@layout/toolbar"/>
 
         <RelativeLayout android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_weight="1"
                         android:paddingTop="@dimen/abc_action_bar_default_height_material">
-
-            <LinearLayout android:orientation="horizontal"
-                          android:layout_width="fill_parent"
-                          android:layout_height="60dp"
-                          android:id="@+id/buttons"
-                          android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
-                          android:layout_alignParentStart="true">
-
-                <FrameLayout android:layout_width="0dp"
-                             android:layout_weight="1"
-                             android:layout_height="60dp"
-                             android:id="@+id/graph_button_container">
-
-                    <TextView android:layout_width="fill_parent"
-                              android:layout_height="40dp"
-                              android:layout_marginRight="2dp"
-                              android:gravity="center"
-                              android:textStyle="bold"
-                              android:textSize="24sp"
-                              android:textColor="@android:color/white"
-                              android:background="@color/gray"
-                              android:text="GRAPH"
-                              android:id="@+id/graph_button"/>
-
-                </FrameLayout>
-
-                <FrameLayout android:layout_width="0dp"
-                             android:layout_weight="1"
-                             android:layout_height="60dp"
-                             android:id="@+id/heat_map_button_container">
-
-                    <TextView android:layout_width="fill_parent"
-                              android:layout_height="40dp"
-                              android:layout_marginLeft="2dp"
-                              android:gravity="center"
-                              android:textStyle="bold"
-                              android:textSize="24sp"
-                              android:textColor="@android:color/white"
-                              android:background="@color/gray"
-                              android:text="MAP"
-                              android:id="@+id/heat_map_button"/>
-
-                </FrameLayout>
-            </LinearLayout>
 
             <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                          android:id="@+id/fragment_container"
                          android:layout_width="match_parent"
                          android:layout_height="match_parent"
-                         android:layout_below="@+id/buttons"/>
+                         android:layout_below="@+id/toolbar"/>
 
         </RelativeLayout>
 
