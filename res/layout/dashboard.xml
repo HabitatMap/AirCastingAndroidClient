@@ -63,52 +63,13 @@
 
                 </FrameLayout>
             </LinearLayout>
-s
-            <LinearLayout android:id="@+id/main_action_buttons"
-                          android:layout_width="match_parent"
-                          android:layout_height="400dp"
-                          android:orientation="vertical"
-                          android:gravity="center"
-                          android:layout_below="@+id/buttons">
 
-                <Button android:layout_height="120dp"
-                        android:layout_width="120dp"
-                        android:id="@+id/dashboard_microphone"
-                        android:background="@drawable/dashboard_button"
-                        android:layout_below="@+id/buttons"
-                        android:layout_centerHorizontal="true"
-                        android:drawableTop="@drawable/dashboard_microphone_icon"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:elevation="6dp"
-                        android:text="Phone microphone"
-                        android:textColor="@android:color/white"
-                        android:textAllCaps="false"
-                        android:textSize="@dimen/abc_text_size_button_material"
-                        android:textAlignment="gravity"/>
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                         android:id="@+id/fragment_container"
+                         android:layout_width="match_parent"
+                         android:layout_height="match_parent"
+                         android:layout_below="@+id/buttons"/>
 
-                <Button android:layout_height="120dp"
-                        android:layout_width="120dp"
-                        android:id="@+id/dashboard_sensors"
-                        android:background="@drawable/dashboard_button"
-                        android:layout_below="@+id/buttons"
-                        android:layout_centerHorizontal="true"
-                        android:drawableTop="@drawable/dashboard_sensors_icon"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:layout_marginTop="30dp"
-                        android:elevation="6dp"
-                        android:text="External sensors"
-                        android:textColor="@android:color/white"
-                        android:textAllCaps="false"
-                        android:textSize="@dimen/abc_text_size_button_material"
-                        android:textAlignment="gravity"/>
-
-            </LinearLayout>
         </RelativeLayout>
 
     </RelativeLayout>
