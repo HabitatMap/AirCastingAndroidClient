@@ -27,14 +27,6 @@ import java.util.concurrent.TimeUnit;
  * navigation arrows
  */
 public abstract class DashboardBaseActivity extends RoboActivityWithProgress implements View.OnClickListener {
-    @Nullable
-    @InjectView(R.id.heat_map_button)
-    View heatMapButton;
-
-    @Nullable
-    @InjectView(R.id.graph_button)
-    View graphButton;
-
     @Inject Context context;
     @Inject EventBus eventBus;
     @Inject LocationManager locationManager;
@@ -92,9 +84,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress imp
                 sessionManager, settingsHelper, locationManager, locationHelper, getDelegate(), context);
 
         if (!initialized) {
-            if (graphButton != null) graphButton.setOnClickListener(this);
-            if (heatMapButton != null) heatMapButton.setOnClickListener(this);
-
             initialized = true;
         }
     }

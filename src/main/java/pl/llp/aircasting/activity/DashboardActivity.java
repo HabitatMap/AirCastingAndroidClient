@@ -22,10 +22,10 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
 
-    @InjectView(R.id.heat_map_button_container) View mapContainer;
-    @InjectView(R.id.heat_map_button) View mapButton;
-    @InjectView(R.id.graph_button_container) View graphContainer;
-    @InjectView(R.id.graph_button) View graphButton;
+//    @InjectView(R.id.heat_map_button_container) View mapContainer;
+//    @InjectView(R.id.heat_map_button) View mapButton;
+//    @InjectView(R.id.graph_button_container) View graphContainer;
+//    @InjectView(R.id.graph_button) View graphButton;
 
     private StreamAdapter adapter;
 
@@ -109,26 +109,26 @@ public class DashboardActivity extends DashboardBaseActivity {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.graph_button:
-                if (adapter.getCount() == 1) {
-                    startActivity(new Intent(this, GraphActivity.class));
-                } else {
-                    Toast.makeText(this, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.heat_map_button:
-                if (adapter.getCount() == 1) {
-                    if (sessionManager.isLocationless()) {
-                        Toast.makeText(DashboardActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
-                    } else {
-                        context.startActivity(new Intent(DashboardActivity.this, AirCastingMapActivity.class));
-                    }
-                } else {
-                    Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
+//        switch (view.getId()) {
+//            case R.id.graph_button:
+//                if (adapter.getCount() == 1) {
+//                    startActivity(new Intent(this, GraphActivity.class));
+//                } else {
+//                    Toast.makeText(this, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//            case R.id.heat_map_button:
+//                if (adapter.getCount() == 1) {
+//                    if (sessionManager.isLocationless()) {
+//                        Toast.makeText(DashboardActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        context.startActivity(new Intent(DashboardActivity.this, AirCastingMapActivity.class));
+//                    }
+//                } else {
+//                    Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
+//                }
+//                break;
+//        }
     }
 
     @Override
