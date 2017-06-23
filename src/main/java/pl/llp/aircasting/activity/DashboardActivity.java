@@ -10,7 +10,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
-import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
+import pl.llp.aircasting.activity.fragments.DashboardIdleFragment;
 import pl.llp.aircasting.model.*;
 import roboguice.inject.InjectView;
 
@@ -22,8 +22,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
 
-    @InjectView(R.id.dashboard_microphone) Button microphoneButton;
-    @InjectView(R.id.dashboard_sensors) Button sensorsButton;
     @InjectView(R.id.heat_map_button_container) View mapContainer;
     @InjectView(R.id.heat_map_button) View mapButton;
     @InjectView(R.id.graph_button_container) View graphContainer;
@@ -37,9 +35,18 @@ public class DashboardActivity extends DashboardBaseActivity {
 
         Intents.startDatabaseWriterService(context);
         setContentView(R.layout.dashboard);
+
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            DashboardIdleFragment dashboardIdleFragment = new DashboardIdleFragment();
+            dashboardIdleFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardIdleFragment).commit();
+        }
+
         adapter = adapterFactory.getAdapter(this);
-        microphoneButton.setOnClickListener(this);
-        sensorsButton.setOnClickListener(this);
 
         initToolbar("Dashboard");
         initNavigationDrawer();
@@ -120,11 +127,6 @@ public class DashboardActivity extends DashboardBaseActivity {
                 } else {
                     Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
                 }
-                break;
-            case R.id.dashboard_microphone:
-                return;
-            case R.id.dashboard_sensors:
-                startActivity(new Intent(this, ExternalSensorActivity.class));
                 break;
         }
     }
