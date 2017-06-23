@@ -40,6 +40,10 @@
 
     <color name="transparent">#0FFF</color>
 
+    <color name="dashboard_background">#FCFAFD</color>
+    <color name="dashboard_light_gray">#EDEDED</color>
+    <color name="dashboard_text_gray">#787878</color>
+
     <color name="lighter_gray">#C6CBC6</color>
     <color name="gray">#8C8C8C</color>
 
