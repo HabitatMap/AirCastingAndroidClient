@@ -145,6 +145,12 @@
       <type>aar</type>
     </dependency>
 
+    <dependency>
+      <groupId>com.github.PhilJay</groupId>
+      <artifactId>MPAndroidChart</artifactId>
+      <version>v3.0.2</version>
+    </dependency>
+
     <!-- test libraries -->
 
     <dependency>
@@ -296,6 +302,11 @@
           <id>acra-releases</id>
           <name>Acra Releases</name>
           <url>http://acra.googlecode.com/svn/repository/releases/</url>
+        </repository>
+
+        <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
         </repository>
 
       </repositories>
