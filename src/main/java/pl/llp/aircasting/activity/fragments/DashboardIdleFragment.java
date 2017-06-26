@@ -36,7 +36,7 @@ public class DashboardIdleFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.dashboard_microphone:
-                DashboardSessionFragment idleSessionFragment = new DashboardSessionFragment();
+                StreamFragment idleSessionFragment = new StreamFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, idleSessionFragment);
                 transaction.addToBackStack(null);
