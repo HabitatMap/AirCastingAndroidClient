@@ -22,56 +22,25 @@ public class StreamViewHelper {
     @Inject ResourceHelper resourceHelper;
 
 
-    public void updateMeasurements(Sensor sensor, View view, boolean statsVisible) {
+    public void updateMeasurements(Sensor sensor, View view) {
         int now = (int) sessionManager.getNow(sensor);
 
-        View avgView = view.findViewById(R.id.avg_pane);
-        View peakView = view.findViewById(R.id.peak_pane);
-        View sensorDetails = view.findViewById(R.id.sensor_details);
-        View sessionStats = view.findViewById(R.id.session_stats);
+//        View avgView = view.findViewById(R.id.avg_pane);
+//        View peakView = view.findViewById(R.id.peak_pane);
+//        View sensorDetails = view.findViewById(R.id.sensor_details);
+//        View sessionStats = view.findViewById(R.id.session_stats);
 
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
-        TextView avgTextView = (TextView) avgView.findViewById(R.id.avg);
-        TextView peakTextView = (TextView) peakView.findViewById(R.id.peak);
 
         if (sensorManager.isSessionBeingViewed()) {
             nowTextView.setBackgroundColor(resourceHelper.gray);
-            nowTextView.setVisibility(View.GONE);
-            sessionStats.setVisibility(View.VISIBLE);
-            sensorDetails.setBackgroundColor(resourceHelper.gray);
         } else {
             nowTextView.setText(String.valueOf(now));
-            nowTextView.setVisibility(View.VISIBLE);
-
-            setBackground(sensor, sensorDetails, now);
             setBackground(sensor, nowTextView, now);
-
-            if (statsVisible) {
-                sessionStats.setVisibility(View.VISIBLE);
-            } else {
-                sessionStats.setVisibility(View.GONE);
-            }
         }
 
-        if ((sensor.isEnabled() && sessionManager.isSessionStarted()) || sessionManager.isSessionSaved()) {
-            int avg = (int) sessionManager.getAvg(sensor);
-            int peak = (int) sessionManager.getPeak(sensor);
-
-            avgTextView.setText(String.valueOf(avg));
-            peakTextView.setText(String.valueOf(peak));
-
-            setBackground(sensor, avgView, avg);
-            setBackground(sensor, peakView, peak);
-
-        } else {
-            avgTextView.setText("--");
-            peakTextView.setText("--");
-
-            sensorDetails.setBackgroundColor(resourceHelper.gray);
+        if (!(sensor.isEnabled() && sessionManager.isSessionStarted()) || !sessionManager.isSessionSaved()) {
             nowTextView.setBackgroundColor(resourceHelper.gray);
-            avgView.setBackgroundColor(resourceHelper.gray);
-            peakView.setBackgroundColor(resourceHelper.gray);
-
         }
     }
 
