@@ -1,18 +1,14 @@
 package pl.llp.aircasting.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
-import pl.llp.aircasting.activity.fragments.DashboardIdleFragment;
+import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.model.*;
-import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
@@ -21,13 +17,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
-
-//    @InjectView(R.id.heat_map_button_container) View mapContainer;
-//    @InjectView(R.id.heat_map_button) View mapButton;
-//    @InjectView(R.id.graph_button_container) View graphContainer;
-//    @InjectView(R.id.graph_button) View graphButton;
-
-    private StreamAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +30,10 @@ public class DashboardActivity extends DashboardBaseActivity {
                 return;
             }
 
-            DashboardIdleFragment dashboardIdleFragment = new DashboardIdleFragment();
-            dashboardIdleFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardIdleFragment).commit();
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory);
+            dashboardListFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardListFragment).commit();
         }
-
-        adapter = adapterFactory.getAdapter(this);
 
         initToolbar("Dashboard");
         initNavigationDrawer();
@@ -62,9 +49,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onResume();
         Intents.startDatabaseWriterService(context);
 
-        adapter.start();
-        adapter.notifyDataSetChanged();
-
         startSensors(context);
     }
 
@@ -72,7 +56,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     protected void onPause() {
         super.onPause();
 
-        adapter.stop();
         stopSensors(context);
     }
 

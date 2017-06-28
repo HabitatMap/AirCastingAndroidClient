@@ -76,7 +76,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
-        super(context, data, R.layout.stream, FROM, TO);
+        super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
@@ -109,32 +109,32 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         });
     }
 
-    public void startReorder() {
-        for (Map<String, Object> stream : data) {
-            Sensor s = (Sensor) stream.get(SENSOR);
-            oldPositions.put(s.toString(), getPosition(stream));
-        }
-    }
-
-    public void cancelReorder() {
-        for (Map<String, Object> stream : data) {
-            Sensor s = (Sensor) stream.get(SENSOR);
-            positions.put(s.toString(), getPosition(stream, oldPositions));
-        }
-        update();
-    }
-
-    public void commitReorder() {
-        oldPositions = newHashMap();
-    }
-
-    public void swapPositions(int pos1, int pos2) {
-        Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
-        Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
-        positions.put(s1.toString(), pos2);
-        positions.put(s2.toString(), pos1);
-        update();
-    }
+//    public void startReorder() {
+//        for (Map<String, Object> stream : data) {
+//            Sensor s = (Sensor) stream.get(SENSOR);
+//            oldPositions.put(s.toString(), getPosition(stream));
+//        }
+//    }
+//
+//    public void cancelReorder() {
+//        for (Map<String, Object> stream : data) {
+//            Sensor s = (Sensor) stream.get(SENSOR);
+//            positions.put(s.toString(), getPosition(stream, oldPositions));
+//        }
+//        update();
+//    }
+//
+//    public void commitReorder() {
+//        oldPositions = newHashMap();
+//    }
+//
+//    public void swapPositions(int pos1, int pos2) {
+//        Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
+//        Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
+//        positions.put(s1.toString(), pos2);
+//        positions.put(s2.toString(), pos1);
+//        update();
+//    }
 
     private int getPosition(Map<String, Object> stream, Map<String, Integer> positions) {
         Sensor sensor = (Sensor) stream.get(SENSOR);
@@ -149,20 +149,20 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         return getPosition(stream, positions);
     }
 
-    public void toggleStatsVisibility(Sensor sensor) {
-        Boolean currentVisibility = statsVisibility.get(sensor.toString());
-        if (currentVisibility == null) {
-            currentVisibility = false;
-        }
-        statsVisibility.put(sensor.toString(), !currentVisibility && !firstStatsVisible);
-        firstStatsVisible = false;
-        update();
-    }
-
-    public void setInvisiblePosition(int position) {
-        invisiblePosition = position;
-        update();
-    }
+//    public void toggleStatsVisibility(Sensor sensor) {
+//        Boolean currentVisibility = statsVisibility.get(sensor.toString());
+//        if (currentVisibility == null) {
+//            currentVisibility = false;
+//        }
+//        statsVisibility.put(sensor.toString(), !currentVisibility && !firstStatsVisible);
+//        firstStatsVisible = false;
+//        update();
+//    }
+//
+//    public void setInvisiblePosition(int position) {
+//        invisiblePosition = position;
+//        update();
+//    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -170,42 +170,42 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
-        Boolean statsVisible = statsVisibility.get(sensor.toString());
-        if (statsVisible == null) statsVisible = false;
+//        Boolean statsVisible = statsVisibility.get(sensor.tostring());
+//        if (statsvisible == null) statsvisible = false;
 
-        streamViewHelper.updateMeasurements(sensor, view, firstStatsVisible || statsVisible);
-        initializeButtons(view, sensor);
-        view.setOnClickListener(this);
+        streamViewHelper.updateMeasurements(sensor, view);
+//        initializeButtons(view, sensor);
+//        view.setOnClickListener(this);
+//
+//        view.setClickable(true);
+//        view.setFocusable(true);
+//        view.setTag(sensor);
 
-        view.setClickable(true);
-        view.setFocusable(true);
-        view.setTag(sensor);
-
-        if (position == invisiblePosition) {
-            view.setVisibility(View.INVISIBLE);
-        } else {
-            view.setVisibility(View.VISIBLE);
-        }
+//        if (position == invisiblePosition) {
+//            view.setVisibility(View.INVISIBLE);
+//        } else {
+//            view.setVisibility(View.VISIBLE);
+//        }
 
         return view;
     }
 
-    private void initializeButtons(View view, Sensor sensor) {
-        View deleteButton = view.findViewById(R.id.delete_stream);
-
-        deleteButton.setTag(sensor);
-        deleteButton.setOnClickListener(this);
-
-        if (sensorManager.isSessionBeingRecorded()) {
-            deleteButton.setVisibility(View.GONE);
-        } else if (sensorManager.isSessionBeingViewed()) {
-            deleteButton.setVisibility(View.VISIBLE);
-        } else {
-            deleteButton.setVisibility(View.GONE);
-        }
-
-    }
-
+//    private void initializeButtons(View view, Sensor sensor) {
+//        View deleteButton = view.findViewById(R.id.delete_stream);
+//
+//        deleteButton.setTag(sensor);
+//        deleteButton.setOnClickListener(this);
+//
+//        if (sensorManager.isSessionBeingRecorded()) {
+//            deleteButton.setVisibility(View.GONE);
+//        } else if (sensorManager.isSessionBeingViewed()) {
+//            deleteButton.setVisibility(View.VISIBLE);
+//        } else {
+//            deleteButton.setVisibility(View.GONE);
+//        }
+//
+//    }
+//
     private void update() {
         data.clear();
 
