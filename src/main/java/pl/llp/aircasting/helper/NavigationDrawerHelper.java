@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
+import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -64,6 +65,7 @@ public class NavigationDrawerHelper {
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.external_sensors:
+                        activity.startActivity(new Intent(context, ExternalSensorActivity.class));
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.graph_button:
