@@ -52,9 +52,9 @@
       </intent-filter>
     </activity>
 
-    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@style/AirCastingTheme"/>
+    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
 
-    <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@style/AirCastingTheme"/>
+    <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
 
     <activity android:label="@string/session_details" android:name=".activity.SaveSessionActivity" android:theme="@style/Dialog"/>
 
@@ -62,13 +62,13 @@
 
     <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme"/>
+    <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
 
     <activity android:label="@string/session_options" android:name=".activity.OpenMobileSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/session_options" android:name=".activity.OpenFixedSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme"/>
+    <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
 
     <activity android:name=".activity.AboutActivity" android:theme="@style/AirCastingTheme"/>
 
@@ -92,7 +92,7 @@
 
     <activity android:label="@string/external_devices" android:name=".activity.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/measurement_streams" android:name=".activity.DashboardActivity" android:theme="@style/AirCastingTheme" android:screenOrientation="portrait"/>
+    <activity android:label="@string/measurement_streams" android:name=".activity.DashboardActivity" android:theme="@style/AirCastingTheme" android:screenOrientation="portrait" android:launchMode="singleTask"/>
 
     <activity android:label="@string/backend_settings" android:name=".activity.settings.BackendSettingsActivity" android:theme="@style/Dialog"/>
 
