@@ -2,6 +2,7 @@ package pl.llp.aircasting.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
@@ -64,6 +65,11 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onPrepareOptionsMenu(menu);
 
         MenuInflater inflater = getDelegate().getMenuInflater();
+        DashboardListFragment listFragment = (DashboardListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        if (listFragment.isAdapterSet() == false) {
+            return true;
+        }
 
         if (!sessionManager.isRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
