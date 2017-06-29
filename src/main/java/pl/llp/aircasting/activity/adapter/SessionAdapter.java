@@ -60,12 +60,7 @@ public class SessionAdapter extends ArrayAdapter
 
   private void fillIcons(View view, Session session) {
     ImageView imageView = (ImageView) view.findViewById(R.id.session_icon);
-
-    if (session.getType().equals("FixedSession")) {
-      imageView.setImageResource(R.drawable.session_fixed_icon);
-    } else {
-      imageView.setImageResource(R.drawable.session_mobile_icon);
-    }
+    imageView.setImageResource(session.getDrawable());
   }
 
   private void fillStats(View view, Session session) {

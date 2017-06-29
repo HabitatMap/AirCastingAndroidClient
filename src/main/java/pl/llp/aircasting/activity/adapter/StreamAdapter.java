@@ -153,7 +153,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 //        Boolean currentVisibility = statsVisibility.get(sensor.toString());
 //        if (currentVisibility == null) {
 //            currentVisibility = false;
-//        }
 //        statsVisibility.put(sensor.toString(), !currentVisibility && !firstStatsVisible);
 //        firstStatsVisible = false;
 //        update();
@@ -173,7 +172,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
 //        Boolean statsVisible = statsVisibility.get(sensor.tostring());
 //        if (statsvisible == null) statsvisible = false;
 
-        streamViewHelper.updateMeasurements(sensor, view);
+        streamViewHelper.updateMeasurements(sensor, view, position);
 //        initializeButtons(view, sensor);
 //        view.setOnClickListener(this);
 //
