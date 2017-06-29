@@ -55,6 +55,12 @@ public class ResourceHelper
   @InjectResource(R.drawable.round_bottom_grey) Drawable smallGreyGauge;
   @InjectResource(R.drawable.round_bottom_grey_big) Drawable bigGreyGauge;
 
+  @InjectResource(R.drawable.stream_value_grey) Drawable streamValueGrey;
+  @InjectResource(R.drawable.stream_value_green) Drawable streamValueGreen;
+  @InjectResource(R.drawable.stream_value_yellow) Drawable streamValueYellow;
+  @InjectResource(R.drawable.stream_value_orange) Drawable streamValueOrange;
+  @InjectResource(R.drawable.stream_value_red) Drawable streamValueRed;
+
   @InjectResource(R.color.green) int green;
   @InjectResource(R.color.orange) int orange;
   @InjectResource(R.color.yellow) int yellow;
@@ -121,6 +127,20 @@ public class ResourceHelper
       case VERY_LOW:
       default:
         return dotGreen;
+    }
+  }
+
+  public Drawable getStreamValueBackground(Sensor sensor, double value) {
+    switch (getLevel(sensor, value)) {
+      case TOO_LOW:
+      case VERY_LOW:
+        return streamValueGreen;
+      case LOW:
+        return streamValueYellow;
+      case MID:
+        return streamValueOrange;
+      default:
+        return streamValueRed;
     }
   }
 
