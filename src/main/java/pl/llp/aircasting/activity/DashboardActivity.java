@@ -97,30 +97,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     @Override
-    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.graph_button:
-//                if (adapter.getCount() == 1) {
-//                    startActivity(new Intent(this, GraphActivity.class));
-//                } else {
-//                    Toast.makeText(this, R.string.drag_to_graph_stream, Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//            case R.id.heat_map_button:
-//                if (adapter.getCount() == 1) {
-//                    if (sessionManager.isLocationless()) {
-//                        Toast.makeText(DashboardActivity.this, R.string.cant_map_without_gps, Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        context.startActivity(new Intent(DashboardActivity.this, AirCastingMapActivity.class));
-//                    }
-//                } else {
-//                    Toast.makeText(context, R.string.drag_to_map_stream, Toast.LENGTH_LONG).show();
-//                }
-//                break;
-//        }
-    }
-
-    @Override
     public void onProfileClick(View view) {
         super.onProfileClick(view);
     }

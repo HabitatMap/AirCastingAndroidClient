@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
-public abstract class DashboardBaseActivity extends RoboActivityWithProgress implements View.OnClickListener {
+public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
     @Inject LocationManager locationManager;
