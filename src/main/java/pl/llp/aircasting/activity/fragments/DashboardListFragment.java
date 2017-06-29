@@ -71,16 +71,16 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         adapter.stop();
     }
 
+    public boolean isAdapterSet() {
+        return getListAdapter() != null;
+    }
+
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.dashboard_microphone:
-//                StreamFragment idleSessionFragment = new StreamFragment();
-//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//                transaction.replace(R.id.fragment_container, idleSessionFragment);
-//                transaction.addToBackStack(null);
-//                transaction.commit();
                 setListAdapter(adapter);
+                getActivity().invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
