@@ -120,11 +120,6 @@ public class SessionManager
     setSession(newSession);
   }
 
-  public void refreshUnits() {
-      if (state.recording().isJustShowingCurrentValues())
-          setSession(new Session());
-  }
-
   void setSession(@NotNull Session session)
   {
     Preconditions.checkNotNull(session, "Cannot set null session");
@@ -135,6 +130,10 @@ public class SessionManager
   public boolean isSessionSaved()
   {
     return state.recording().isShowingOldSession();
+  }
+
+  public boolean sessionHasTitle() {
+    return getSession().getTitle() != null;
   }
 
   public void updateSession(Session from) {

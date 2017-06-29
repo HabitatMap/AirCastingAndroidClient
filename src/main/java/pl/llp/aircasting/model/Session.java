@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.Nullable;
+import pl.llp.aircasting.R;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -62,6 +63,7 @@ public class Session implements Serializable
   @Expose @SerializedName("end_time") private Date end;
 
   @Expose private String type = "MobileSession";
+  @Expose private int drawable = R.drawable.session_mobile_icon;
   @Expose private boolean isIndoor;
 
   @Expose private double latitude;
@@ -345,6 +347,7 @@ public class Session implements Serializable
   public void setFixed(boolean isFixed) {
     if (isFixed) {
       this.type = "FixedSession";
+      this.drawable = R.drawable.session_fixed_icon;
     }
     else {
       this.type = "MobileSession";
@@ -353,6 +356,10 @@ public class Session implements Serializable
 
   public String getType() {
     return this.type;
+  }
+
+  public int getDrawable() {
+    return this.drawable;
   }
 
   public void setType(String type) {
