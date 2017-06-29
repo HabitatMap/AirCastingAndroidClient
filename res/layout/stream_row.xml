@@ -5,8 +5,8 @@
               android:layout_height="match_parent">
 
     <TextView android:id="@+id/session_title"
-              android:text="Session fragment"
               android:background="@color/dashboard_light_gray"
+              android:drawablePadding="4dp"
               android:textColor="@color/dashboard_text_gray"
               android:textSize="15dp"
               android:textAlignment="gravity"
@@ -55,7 +55,6 @@
                       android:layout_width="60dp"
                       android:textColor="@android:color/white"
                       android:textSize="20sp"
-                      android:background="@drawable/stream_value_background"
                       android:layout_gravity="center_vertical"
                       android:gravity="center_vertical|center_horizontal"/>
 

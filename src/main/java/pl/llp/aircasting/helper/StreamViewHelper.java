@@ -24,18 +24,11 @@ public class StreamViewHelper {
 
     public void updateMeasurements(Sensor sensor, View view) {
         int now = (int) sessionManager.getNow(sensor);
-
-//        View avgView = view.findViewById(R.id.avg_pane);
-//        View peakView = view.findViewById(R.id.peak_pane);
-//        View sensorDetails = view.findViewById(R.id.sensor_details);
-//        View sessionStats = view.findViewById(R.id.session_stats);
-
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
 
-        if (sensorManager.isSessionBeingViewed()) {
-            nowTextView.setBackgroundColor(resourceHelper.gray);
+        if (!sensorManager.isSessionBeingRecorded()) {
+            nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
         } else {
-            nowTextView.setText(String.valueOf(now));
             setBackground(sensor, nowTextView, now);
         }
 
@@ -45,6 +38,6 @@ public class StreamViewHelper {
     }
 
     private void setBackground(Sensor sensor, View view, double value) {
-        view.setBackgroundColor(resourceHelper.getColorAbsolute(sensor, value));
+        view.setBackgroundDrawable(resourceHelper.getStreamValueBackground(sensor, value));
     }
 }
