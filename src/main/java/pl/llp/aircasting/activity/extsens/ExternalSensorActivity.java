@@ -78,7 +78,7 @@ public class ExternalSensorActivity extends DialogActivity
                        ioio.startIfNecessary(connected, context);
 
                        Intents.restartSensors(context);
-                       Intents.startDashboardActivity(ExternalSensorActivity.this);
+                       Intents.startDashboardActivity(ExternalSensorActivity.this, true);
                      }
                    }).setNegativeButton("No", NoOp.dialogOnClick());
         AlertDialog dialog = builder.create();

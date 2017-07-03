@@ -1,8 +1,10 @@
 package pl.llp.aircasting.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.*;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
@@ -31,13 +33,18 @@ public class DashboardActivity extends DashboardBaseActivity {
                 return;
             }
 
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory);
-            dashboardListFragment.setArguments(getIntent().getExtras());
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, false);
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardListFragment).commit();
         }
 
         initToolbar("Dashboard");
         initNavigationDrawer();
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     @Override
@@ -48,6 +55,13 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (getIntent().hasExtra("startPopulated")) {
+            boolean startPopulated = getIntent().getExtras().getBoolean("startPopulated");
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, startPopulated);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
+        }
+
         Intents.startDatabaseWriterService(context);
 
         startSensors(context);

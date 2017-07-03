@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +31,14 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private Button sensorsButton;
     private StreamAdapterFactory adapterFactory;
     private StreamAdapter adapter;
+    private boolean startPopulated;
 
     public DashboardListFragment() {
     }
 
-    public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory) {
+    public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory, boolean startPopulated) {
         DashboardListFragment fragment = new DashboardListFragment();
-        fragment.setStreamAdapterFactory(adapterFactory);
+        fragment.setData(adapterFactory, startPopulated);
 
         return fragment;
     }
@@ -49,6 +51,10 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
 
         adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
+
+        if (startPopulated) {
+            setListAdapter(adapter);
+        }
 
         microphoneButton.setOnClickListener(this);
         sensorsButton.setOnClickListener(this);
@@ -88,7 +94,8 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         }
     }
 
-    private void setStreamAdapterFactory(StreamAdapterFactory adapterFactory) {
+    private void setData(StreamAdapterFactory adapterFactory, boolean startPopulated) {
         this.adapterFactory = adapterFactory;
+        this.startPopulated = startPopulated;
     }
 }
