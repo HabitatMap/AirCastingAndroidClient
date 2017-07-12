@@ -1,9 +1,11 @@
 package pl.llp.aircasting.activity.adapter;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
@@ -58,12 +60,14 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     SessionManager sessionManager;
     SensorManager sensorManager;
     StreamViewHelper streamViewHelper;
+    DashboardChartManager dashboardChartManager;
 
     DashboardBaseActivity context;
     EventBus eventBus;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
+    private LineChart chart;
 
     // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
@@ -75,7 +79,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     private int invisiblePosition = -1;
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                         StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager) {
+                         StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager, DashboardChartManager dashboardChartManager) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
@@ -83,6 +87,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         this.sensorManager = sensorManager;
         this.sessionManager = sessionManager;
         this.streamViewHelper = streamViewHelper;
+        this.dashboardChartManager = dashboardChartManager;
     }
 
     /**
@@ -166,45 +171,19 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
-//        Boolean statsVisible = statsVisibility.get(sensor.tostring());
-//        if (statsvisible == null) statsvisible = false;
+        chart = (LineChart) view.findViewById(R.id.chart);
 
         streamViewHelper.updateMeasurements(sensor, view, position);
-//        initializeButtons(view, sensor);
-//        view.setOnClickListener(this);
-//
-//        view.setClickable(true);
-//        view.setFocusable(true);
-//        view.setTag(sensor);
 
-//        if (position == invisiblePosition) {
-//            view.setVisibility(View.INVISIBLE);
-//        } else {
-//            view.setVisibility(View.VISIBLE);
-//        }
+        if (sensorManager.isSessionBeingViewed() || sensorManager.isSessionBeingRecorded()) {
+            dashboardChartManager.drawChart(chart, sensor);
+        }
 
         return view;
     }
 
-//    private void initializeButtons(View view, Sensor sensor) {
-//        View deleteButton = view.findViewById(R.id.delete_stream);
-//
-//        deleteButton.setTag(sensor);
-//        deleteButton.setOnClickListener(this);
-//
-//        if (sensorManager.isSessionBeingRecorded()) {
-//            deleteButton.setVisibility(View.GONE);
-//        } else if (sensorManager.isSessionBeingViewed()) {
-//            deleteButton.setVisibility(View.VISIBLE);
-//        } else {
-//            deleteButton.setVisibility(View.GONE);
-//        }
-//
-//    }
-//
     private void update() {
         data.clear();
 
@@ -266,7 +245,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         } else {
             confirmDeletingSession(context);
         }
-
     }
 
     private void confirmDeletingSession(final DashboardBaseActivity context) {
@@ -283,7 +261,6 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
                 }).setNegativeButton("No", NoOp.dialogOnClick());
         AlertDialog dialog = b.create();
         dialog.show();
-
     }
 
     private void confirmDeletingStream(final DashboardBaseActivity context, final Sensor sensor) {

@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;
@@ -19,9 +20,10 @@ public class StreamAdapterFactory
   @Inject StreamViewHelper streamViewHelper;
   @Inject SessionManager sessionManager;
   @Inject SensorManager sensorManager;
+  @Inject DashboardChartManager dashboardChartManager;
 
   public StreamAdapter getAdapter(DashboardBaseActivity context) {
     return new StreamAdapter(context, new ArrayList<Map<String, Object>>(), eventBus,
-                             streamViewHelper, sensorManager, sessionManager);
+                             streamViewHelper, sensorManager, sessionManager, dashboardChartManager);
   }
 }

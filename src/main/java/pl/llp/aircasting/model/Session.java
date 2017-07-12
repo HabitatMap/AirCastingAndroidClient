@@ -358,9 +358,7 @@ public class Session implements Serializable
     return this.type;
   }
 
-  public int getDrawable() {
-    return this.drawable;
-  }
+  public int getDrawable() { return this.drawable; }
 
   public void setType(String type) {
     this.type = type;
