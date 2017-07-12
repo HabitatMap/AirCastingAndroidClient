@@ -7,6 +7,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
+import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
@@ -35,6 +36,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
+    @Inject DashboardChartManager dashboardChartManager;
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
@@ -90,6 +92,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     public synchronized void toggleAirCasting() {
         toggleAircastingHelper.toggleAirCasting();
+        dashboardChartManager.start();
         getDelegate().invalidateOptionsMenu();
     }
 

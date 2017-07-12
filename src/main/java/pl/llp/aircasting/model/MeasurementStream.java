@@ -1,10 +1,13 @@
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -32,6 +35,7 @@ public class MeasurementStream implements Serializable
   @Expose @SerializedName("unit_symbol") private String symbol;
 
   private Double sum = 0.0;
+  private Double frequency;
 
   @Expose @SerializedName("average_value") Double avg;
 
@@ -122,6 +126,31 @@ public class MeasurementStream implements Serializable
       return measurements;
   }
 
+  public List<Measurement> getMeasurementsForPeriod(int amount) {
+    calculateSamplingFrequency();
+
+    int measurementsInPeriod = (int) (60 / frequency) * amount;
+    return getLastMeasurements(measurementsInPeriod);
+  }
+
+  private void calculateSamplingFrequency() {
+    if (frequency != null) { return; }
+
+    double deltaSum = 0;
+    List<Measurement> sample = getLastMeasurements(5);
+
+    for (Measurement measurement : sample) {
+      if (sample.indexOf(measurement) == 4) { break; }
+
+      int nextMeasurementIndex = sample.indexOf(measurement) + 1;
+      double delta = sample.get(nextMeasurementIndex).getTime().getTime() - measurement.getTime().getTime();
+
+      deltaSum = deltaSum + delta;
+    }
+
+    frequency = deltaSum / (4 * 1000); // delta in millis
+  }
+
   public void add(Measurement measurement) {
     if(peak == null)
       peak = Double.NEGATIVE_INFINITY;
@@ -134,6 +163,9 @@ public class MeasurementStream implements Serializable
     }
     Optional<Double> average = Optional.fromNullable(avg);
     avg = average.or(0.0) + (value - average.or(0.0))/(measurements.size());
+    if (sensorName.contains("TGS")) {
+      Log.i("Frequency: " + sensorName, String.valueOf(measurement.getTime()));
+    }
 
     if(minLatitude == null) minLatitude = Double.POSITIVE_INFINITY;
     if(minLongitude == null) minLongitude = Double.POSITIVE_INFINITY;

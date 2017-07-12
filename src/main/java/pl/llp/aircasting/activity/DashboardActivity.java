@@ -69,7 +69,7 @@ public class DashboardActivity extends DashboardBaseActivity {
         if (getIntent().hasExtra("startPopulated")) {
             boolean startPopulated = getIntent().getExtras().getBoolean("startPopulated");
             DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, startPopulated);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
         }
     }
 
