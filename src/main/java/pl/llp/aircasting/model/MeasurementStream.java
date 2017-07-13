@@ -145,10 +145,16 @@ public class MeasurementStream implements Serializable
       int nextMeasurementIndex = sample.indexOf(measurement) + 1;
       double delta = sample.get(nextMeasurementIndex).getTime().getTime() - measurement.getTime().getTime();
 
-      deltaSum = deltaSum + delta;
+      deltaSum += delta;
     }
 
-    frequency = deltaSum / (4 * 1000); // delta in millis
+    double average = deltaSum / (4 * 1000);
+
+    if (average > 0) {
+      frequency = average;
+    } else {
+      frequency = -average;
+    }
   }
 
   public void add(Measurement measurement) {
@@ -163,9 +169,6 @@ public class MeasurementStream implements Serializable
     }
     Optional<Double> average = Optional.fromNullable(avg);
     avg = average.or(0.0) + (value - average.or(0.0))/(measurements.size());
-    if (sensorName.contains("TGS")) {
-      Log.i("Frequency: " + sensorName, String.valueOf(measurement.getTime()));
-    }
 
     if(minLatitude == null) minLatitude = Double.POSITIVE_INFINITY;
     if(minLongitude == null) minLongitude = Double.POSITIVE_INFINITY;
