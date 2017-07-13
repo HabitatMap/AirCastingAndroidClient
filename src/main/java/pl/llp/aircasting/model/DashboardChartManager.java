@@ -25,7 +25,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class DashboardChartManager {
     @Inject SessionManager sessionManager;
 
-    private final static int INTERVAL = 1000 * 60; // 1 minute
+    private final static int INTERVAL = 1000 * 5; // 1 minute
     private Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
@@ -98,6 +98,10 @@ public class DashboardChartManager {
             }
 
             entries.add(new Entry((float) xValue, (float) yValue));
+            if (entries.size() > 10) {
+                entries.remove(0);
+            }
+
             averages.put(sensorName, entries);
         }
     }
