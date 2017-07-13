@@ -176,10 +176,8 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         chart = (LineChart) view.findViewById(R.id.chart);
 
         streamViewHelper.updateMeasurements(sensor, view, position);
-
-        if (sensorManager.isSessionBeingViewed() || sensorManager.isSessionBeingRecorded()) {
-            dashboardChartManager.drawChart(chart, sensor);
-        }
+        dashboardChartManager.drawChart(chart, sensor);
+        chart.invalidate();
 
         return view;
     }

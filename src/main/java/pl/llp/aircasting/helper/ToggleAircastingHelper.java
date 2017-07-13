@@ -11,6 +11,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.RecordWithoutGPSAlert;
 import pl.llp.aircasting.activity.SaveSessionActivity;
 import pl.llp.aircasting.activity.StartFixedSessionActivity;
+import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -25,6 +26,7 @@ public class ToggleAircastingHelper {
     private SettingsHelper settingsHelper;
     private LocationManager locationManager;
     private LocationHelper locationHelper;
+    private DashboardChartManager dashboardChartManager;
 
     public ToggleAircastingHelper(Activity activity,
                                   SessionManager sessionManager,
@@ -32,7 +34,8 @@ public class ToggleAircastingHelper {
                                   LocationManager locationManager,
                                   LocationHelper locationHelper,
                                   AppCompatDelegate delegate,
-                                  Context context) {
+                                  Context context,
+                                  DashboardChartManager dashboardChartManager) {
         this.activity = activity;
         this.sessionManager = sessionManager;
         this.settingsHelper = settingsHelper;
@@ -40,6 +43,7 @@ public class ToggleAircastingHelper {
         this.locationHelper = locationHelper;
         this.delegate = delegate;
         this.context = context;
+        this.dashboardChartManager = dashboardChartManager;
     }
 
     public void toggleAirCasting() {
@@ -52,6 +56,7 @@ public class ToggleAircastingHelper {
 
     public void stopAirCasting() {
         Session session = sessionManager.getSession();
+        dashboardChartManager.stop();
 
         if (session.isFixed())
             stopFixedAirCasting(session);
@@ -86,6 +91,8 @@ public class ToggleAircastingHelper {
     }
 
     private void startAirCasting() {
+        dashboardChartManager.start();
+
         if (settingsHelper.isFixedSessionStreamingEnabled())
             startFixedAirCasting();
         else

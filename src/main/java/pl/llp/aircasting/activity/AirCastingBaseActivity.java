@@ -7,6 +7,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
+import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
 import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
@@ -40,7 +41,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject EventBus eventBus;
-    @Inject DashboardChartManager dashboardChartManager;
+    @Inject ToggleAircastingHelperFactory aircastingHelperFactory;
 
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
@@ -51,7 +52,6 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
     @Nullable
     @InjectView(R.id.zoom_out) Button zoomOut;
-
 
     private ToggleAircastingHelper toggleAircastingHelper;
     private boolean initialized = false;
@@ -99,8 +99,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     }
 
     private void initialize() {
-        toggleAircastingHelper = new ToggleAircastingHelper(this,
-                sessionManager, settingsHelper, locationManager, locationHelper, getDelegate(), context);
+        toggleAircastingHelper = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
 
         if (!initialized) {
             initialized = true;
@@ -114,7 +113,6 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
     public synchronized void toggleAirCasting() {
         toggleAircastingHelper.toggleAirCasting();
-        dashboardChartManager.start();
         getDelegate().invalidateOptionsMenu();
     }
 

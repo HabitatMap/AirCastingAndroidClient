@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model;
 
 import android.os.Handler;
+import android.util.Log;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -22,6 +23,8 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class DashboardChartManager {
+    @Inject SessionManager sessionManager;
+
     private final static int INTERVAL = 1000 * 60; // 1 minute
     private Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
@@ -33,9 +36,8 @@ public class DashboardChartManager {
         }
     };
 
-    @Inject SessionManager sessionManager;
-
     public void start() {
+        averages.clear();
         handler.postDelayed(updateEntriesTask, INTERVAL);
     }
 
@@ -57,17 +59,22 @@ public class DashboardChartManager {
         xAxis.setEnabled(false);
         xAxis.setEnabled(false);
         xAxis.setDrawLabels(true);
+        chart.setNoDataText("No data available yet");
 
         MeasurementStream stream = sessionManager.getMeasurementStream(sensor.getSensorName());
-        if (stream == null) { return; }
+        if (stream == null) {
+            chart.clear();
+            return;
+        }
 
         List<Entry> entries = getEntriesForStream(stream);
-        if (entries == null) { return; }
+        if (entries == null) {
+            return;
+        }
 
         LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + sensor.getUnit());
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
-        chart.invalidate();
     }
 
     private void updateEntries() {
