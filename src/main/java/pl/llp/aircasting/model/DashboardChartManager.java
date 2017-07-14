@@ -1,16 +1,17 @@
 package pl.llp.aircasting.model;
 
 import android.os.Handler;
-import android.util.Log;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,13 +26,13 @@ import static com.google.common.collect.Maps.newHashMap;
 public class DashboardChartManager {
     @Inject SessionManager sessionManager;
 
-    private final static int INTERVAL = 1000 * 5; // 1 minute
+    private final static int INTERVAL = 1000 * 60; // 1 minute
     private Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
         @Override
         public void run() {
-            updateEntries();
+            updateLiveEntries();
             handler.postDelayed(updateEntriesTask, INTERVAL);
         }
     };
@@ -67,6 +68,10 @@ public class DashboardChartManager {
             return;
         }
 
+        if (sessionManager.isSessionSaved()) {
+            prepareEntriesForViewing();
+        }
+
         List<Entry> entries = getEntriesForStream(stream);
         if (entries == null) {
             return;
@@ -77,7 +82,39 @@ public class DashboardChartManager {
         chart.setData(lineData);
     }
 
-    private void updateEntries() {
+    public void prepareEntriesForViewing() {
+        List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
+
+        for (MeasurementStream stream : streams) {
+            double xValue = 0;
+            String sensorName = stream.getSensorName();
+            List entries = new CopyOnWriteArrayList();
+            List<Measurement> measurements = stream.getMeasurementsForPeriod(10);
+            double measurementsInPeriod = 60 / stream.getFrequency();
+            List<List<Measurement>> periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
+            List<Measurement> lastPeriodData = periodData.get(periodData.size() - 1);
+
+            if (lastPeriodData.size() < measurementsInPeriod) {
+                periodData.remove(periodData.size() - 1);
+            }
+
+            if (periodData.size() > 0) {
+                for (List<Measurement> batch : periodData) {
+                    double yValue = getAverage(batch);
+                    entries.add(new Entry((float) xValue, (float) yValue));
+                    xValue++;
+                }
+            }
+
+            if (entries.size() == 0) {
+                return;
+            }
+
+            averages.put(sensorName, entries);
+        }
+    }
+
+    private void updateLiveEntries() {
         List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
@@ -114,7 +151,7 @@ public class DashboardChartManager {
         double sum = 0;
 
         for (Measurement measurement : measurements) {
-            sum = sum + measurement.getValue();
+            sum += measurement.getValue();
         }
 
         return (sum / measurements.size());

@@ -1,13 +1,10 @@
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -127,34 +124,26 @@ public class MeasurementStream implements Serializable
   }
 
   public List<Measurement> getMeasurementsForPeriod(int amount) {
-    calculateSamplingFrequency();
+    frequency = calculateSamplingFrequency();
 
     int measurementsInPeriod = (int) (60 / frequency) * amount;
     return getLastMeasurements(measurementsInPeriod);
   }
 
-  private void calculateSamplingFrequency() {
-    if (frequency != null) { return; }
+  private double calculateSamplingFrequency() {
+    if (frequency != null) { return frequency; }
 
     double deltaSum = 0;
     List<Measurement> sample = getLastMeasurements(5);
 
-    for (Measurement measurement : sample) {
-      if (sample.indexOf(measurement) == 4) { break; }
-
-      int nextMeasurementIndex = sample.indexOf(measurement) + 1;
-      double delta = sample.get(nextMeasurementIndex).getTime().getTime() - measurement.getTime().getTime();
-
+    for (int i = 0; i < sample.size() - 1; i++) {
+      double delta = sample.get(i + 1).getTime().getTime() - sample.get(i).getTime().getTime();
       deltaSum += delta;
     }
 
     double average = deltaSum / (4 * 1000);
 
-    if (average > 0) {
-      frequency = average;
-    } else {
-      frequency = -average;
-    }
+    return average;
   }
 
   public void add(Measurement measurement) {
@@ -167,6 +156,7 @@ public class MeasurementStream implements Serializable
     if (value > peak) {
       peak = value;
     }
+
     Optional<Double> average = Optional.fromNullable(avg);
     avg = average.or(0.0) + (value - average.or(0.0))/(measurements.size());
 
@@ -231,6 +221,13 @@ public class MeasurementStream implements Serializable
     double sum = getSum();
 
     return sum / (measurements.isEmpty() ? 1 : measurements.size());
+  }
+
+  public double getFrequency() {
+    if (frequency == null) {
+      frequency = calculateSamplingFrequency();
+    }
+    return frequency;
   }
 
   public void setPeak(double peak) {
