@@ -34,9 +34,10 @@ public class DashboardChartManager {
     @Inject SensorManager sensorManager;
 
     private final static int ENTRIES_MAX_SIZE = 10;
-    private final static int MOBILE_INTERVAL = 1000 * 60; // 1 minute
+    private final static int MOBILE_INTERVAL = 1000 * 10; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * 60; // 1 hour
     private int interval;
+    private Map<String, Boolean> shouldChartUpdate = newHashMap();
     private Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
@@ -78,8 +79,8 @@ public class DashboardChartManager {
             return;
         }
 
-        LineData lineData = prepareLineData(entries, sensor.getShortType(), stream);
-        chart.setData(lineData);
+        prepareLineData(chart, entries, sensor.getShortType(), stream);
+        chart.notifyDataSetChanged();
     }
 
     private void draw(LineChart chart, String descriptionText) {
@@ -120,17 +121,46 @@ public class DashboardChartManager {
         return sdf.format(time);
     }
 
-    private LineData prepareLineData(List entries, String unit, MeasurementStream stream) {
-        LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
-        ArrayList<Integer> colors = prepareDataSetColors(stream, entries);
+    private void prepareLineData(LineChart chart, List entries, String unit, MeasurementStream stream) {
+        if (shouldChartUpdate.get(stream.getSensorName()) == true) {
+            LineData lineData = chart.getLineData();
 
-        dataSet.setCircleColors(colors);
+            if (lineData == null) {
+                lineData = new LineData();
+            }
+
+            LineDataSet dataSet = (LineDataSet) lineData.getDataSetByIndex(0);
+
+            if (dataSet == null) {
+                dataSet = createDataSet(unit);
+            }
+
+            dataSet.addEntry((Entry) entries.get(entries.size() - 1));
+
+            Log.i(stream.getSensorName(), String.valueOf(entries.get(entries.size()-1)));
+
+            if (dataSet.getEntryCount() > 10) {
+                dataSet.removeEntry(0);
+            }
+
+            ArrayList<Integer> colors = prepareDataSetColors(stream, entries);
+            dataSet.setCircleColors(colors);
+
+            shouldChartUpdate.put(stream.getSensorName(), false);
+
+            lineData.removeDataSet(0);
+            lineData.addDataSet(dataSet);
+
+            lineData.setValueFormatter(new MyValueFormatter());
+            chart.setData(lineData);
+        }
+    }
+
+    private LineDataSet createDataSet(String unit) {
+        LineDataSet dataSet = new LineDataSet(null, "1 min Avg - " + unit);
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
-
-        LineData lineData = new LineData(dataSet);
-        lineData.setValueFormatter(new MyValueFormatter());
-        return lineData;
+        return dataSet;
     }
 
     private void prepareEntriesForViewing() {
@@ -138,7 +168,7 @@ public class DashboardChartManager {
 
         for (MeasurementStream stream : streams) {
             double xValue = 0;
-            double measurementsInPeriod = 60 / stream.getFrequency();
+            double measurementsInPeriod = 10 / stream.getFrequency();
             String sensorName = stream.getSensorName();
             List entries = new CopyOnWriteArrayList();
             List<Measurement> measurements = stream.getMeasurementsForPeriod(10);
@@ -196,6 +226,7 @@ public class DashboardChartManager {
             }
 
             averages.put(sensorName, entries);
+            shouldChartUpdate.put(sensorName, true);
         }
     }
 
