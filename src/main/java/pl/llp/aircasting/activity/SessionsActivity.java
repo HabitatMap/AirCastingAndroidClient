@@ -31,6 +31,7 @@ import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
@@ -58,6 +59,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   @Inject SessionAdapterFactory sessionAdapterFactory;
   @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
+  @Inject DashboardChartManager chartManager;
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Application context;
@@ -227,6 +229,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
       @Override
       protected Session doInBackground(Long... longs) {
         sessionManager.loadSession(longs[0], this);
+        chartManager.resetStaticCharts();
 
         return null;
       }

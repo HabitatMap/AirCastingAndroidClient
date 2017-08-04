@@ -33,17 +33,18 @@ public class DashboardChartManager {
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
 
-    private final static int ENTRIES_MAX_SIZE = 10;
-    private final static int MOBILE_INTERVAL = 1000 * 10; // 1 minute
+    private final static int MOBILE_INTERVAL = 1000 * 60; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * 60; // 1 hour
+    private int averagesCounter = 0;
     private int interval;
-    private Map<String, Boolean> shouldChartUpdate = newHashMap();
+    private Map<String, Boolean> newEntriesForStream = newHashMap();
+    private Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
         @Override
         public void run() {
-            updateLiveEntries();
+            allowChartUpdate();
             handler.postDelayed(updateEntriesTask, interval);
         }
     };
@@ -60,7 +61,8 @@ public class DashboardChartManager {
     }
 
     public void drawChart(LineChart chart, Sensor sensor) {
-        MeasurementStream stream = sessionManager.getMeasurementStream(sensor.getSensorName());
+        String sensorName = sensor.getSensorName();
+        MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
 
         draw(chart, descriptionText);
@@ -70,17 +72,21 @@ public class DashboardChartManager {
             return;
         }
 
-        if (sessionManager.isSessionSaved()) {
-            prepareEntriesForViewing();
+        if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(sensorName)) {
+            averagesCounter = 10;
+            updateChart(chart, sensor.getShortType(),sensorName);
         }
 
-        List<Entry> entries = getEntriesForStream(stream);
-        if (entries == null) {
+        if (!shouldDynamicChartUpdate(sensorName)) {
             return;
         }
 
-        prepareLineData(chart, entries, sensor.getShortType(), stream);
+        updateChart(chart, sensor.getShortType(), sensorName);
         chart.notifyDataSetChanged();
+    }
+
+    public void resetStaticCharts() {
+        staticChartGeneratedForStream.clear();
     }
 
     private void draw(LineChart chart, String descriptionText) {
@@ -108,7 +114,7 @@ public class DashboardChartManager {
 
     private String getDescription(MeasurementStream stream) {
         double time;
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
         if (sessionManager.isSessionSaved()) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
@@ -118,62 +124,59 @@ public class DashboardChartManager {
             time = calendar.getTime().getTime();
         }
 
-        return sdf.format(time);
+        return dateFormat.format(time);
     }
 
-    private void prepareLineData(LineChart chart, List entries, String unit, MeasurementStream stream) {
-        if (shouldChartUpdate.get(stream.getSensorName()) == true) {
-            LineData lineData = chart.getLineData();
+    private void updateChart(LineChart chart, String unit, String sensorName) {
+        LineData lineData = chart.getLineData();
 
-            if (lineData == null) {
-                lineData = new LineData();
-            }
-
-            LineDataSet dataSet = (LineDataSet) lineData.getDataSetByIndex(0);
-
-            if (dataSet == null) {
-                dataSet = createDataSet(unit);
-            }
-
-            dataSet.addEntry((Entry) entries.get(entries.size() - 1));
-
-            Log.i(stream.getSensorName(), String.valueOf(entries.get(entries.size()-1)));
-
-            if (dataSet.getEntryCount() > 10) {
-                dataSet.removeEntry(0);
-            }
-
-            ArrayList<Integer> colors = prepareDataSetColors(stream, entries);
-            dataSet.setCircleColors(colors);
-
-            shouldChartUpdate.put(stream.getSensorName(), false);
-
-            lineData.removeDataSet(0);
-            lineData.addDataSet(dataSet);
-
-            lineData.setValueFormatter(new MyValueFormatter());
-            chart.setData(lineData);
+        if (lineData == null) {
+            lineData = new LineData();
         }
+
+        lineData.removeDataSet(0);
+        LineDataSet dataSet = prepareDataSet(unit, sensorName);
+
+        List entries = getEntriesForStream(sensorName);
+        if (entries == null) {
+            return;
+        }
+
+        ArrayList<Integer> colors = prepareDataSetColors(sensorName, entries);
+        dataSet.setCircleColors(colors);
+
+        newEntriesForStream.put(sensorName, false);
+        staticChartGeneratedForStream.put(sensorName, true);
+
+        lineData.removeDataSet(0);
+        lineData.addDataSet(dataSet);
+        lineData.setValueFormatter(new MyValueFormatter());
+
+        chart.setData(lineData);
     }
 
-    private LineDataSet createDataSet(String unit) {
-        LineDataSet dataSet = new LineDataSet(null, "1 min Avg - " + unit);
+    private LineDataSet prepareDataSet(String unit, String sensorName) {
+        if (averagesCounter > 0) {
+            prepareEntries();
+        }
+        List<Entry> entries = getEntriesForStream(sensorName);
+        LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
+
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
         return dataSet;
     }
 
-    private void prepareEntriesForViewing() {
+    private void prepareEntries() {
         List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
             double xValue = 0;
-            double measurementsInPeriod = 10 / stream.getFrequency();
+            double measurementsInPeriod = 60 / stream.getFrequency();
             String sensorName = stream.getSensorName();
             List entries = new CopyOnWriteArrayList();
-            List<Measurement> measurements = stream.getMeasurementsForPeriod(10);
+            List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
             List<List<Measurement>> periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
-
             trimIncompletePeriodData(periodData, measurementsInPeriod);
 
             if (periodData.size() > 0) {
@@ -200,63 +203,55 @@ public class DashboardChartManager {
         }
     }
 
-    private void updateLiveEntries() {
+    private void allowChartUpdate() {
         List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
-            double xValue, yValue;
-            List entries;
             String sensorName = stream.getSensorName();
+            newEntriesForStream.put(sensorName, true);
+        }
 
-            List<Measurement> measurements = stream.getMeasurementsForPeriod(1);
-            yValue = getAverage(measurements);
-
-            if (averages.containsKey(sensorName)) {
-                entries = averages.get(sensorName);
-                Entry lastEntry = (Entry) entries.get(entries.size() - 1);
-                xValue = lastEntry.getX() + 1;
-            } else {
-                entries = new CopyOnWriteArrayList();
-                xValue = 0;
-            }
-
-            entries.add(new Entry((float) xValue, (float) yValue));
-            if (entries.size() > ENTRIES_MAX_SIZE) {
-                entries.remove(0);
-            }
-
-            averages.put(sensorName, entries);
-            shouldChartUpdate.put(sensorName, true);
+        if (averagesCounter <= 10) {
+            averagesCounter++;
         }
     }
 
-    private ArrayList<Integer> prepareDataSetColors(MeasurementStream stream, List<Entry> entries) {
+    private ArrayList<Integer> prepareDataSetColors(String sensorName, List<Entry> entries) {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
-            Sensor sensor = sensorManager.getSensorByName(stream.getSensorName());
+            Sensor sensor = sensorManager.getSensorByName(sensorName);
             colors.add(resourceHelper.getColorAbsolute(sensor, entry.getY()));
         }
 
         return colors;
     }
 
-    private List<Entry> getEntriesForStream(MeasurementStream stream) {
-        return averages.get(stream.getSensorName());
+    private List<Entry> getEntriesForStream(String sensorName) {
+        return averages.get(sensorName);
     }
 
     private double getAverage(List<Measurement> measurements) {
         double sum = 0;
+        Iterator<Measurement> iter = measurements.iterator();
 
-        for (Measurement measurement : measurements) {
+        while (iter.hasNext()) {
+            Measurement measurement = iter.next();
             sum += measurement.getValue();
         }
 
         return Math.round((sum / measurements.size()));
     }
 
-    public class MyValueFormatter implements IValueFormatter {
+    private boolean shouldDynamicChartUpdate(String sensorName) {
+        return newEntriesForStream.containsKey(sensorName) && newEntriesForStream.get(sensorName) == true;
+    }
 
+    private boolean shouldStaticChartUpdate(String sensorName) {
+        return !staticChartGeneratedForStream.containsKey(sensorName);
+    }
+
+    public class MyValueFormatter implements IValueFormatter {
         private DecimalFormat mFormat;
 
         public MyValueFormatter() {
