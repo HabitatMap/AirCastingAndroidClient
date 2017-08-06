@@ -1,9 +1,14 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
+import android.widget.ListView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.helper.NoOp;
@@ -231,6 +236,9 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         switch (view.getId()) {
             case R.id.delete_stream:
                 deleteStream(context, sensor);
+                break;
+            case R.id.chart:
+                context.startActivity(new Intent(context, ChartOptionsActivity.class));
                 break;
         }
 

@@ -1,7 +1,11 @@
 package pl.llp.aircasting.model;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -15,6 +19,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.helper.ResourceHelper;
 
 import java.text.DecimalFormat;
@@ -32,6 +37,7 @@ public class DashboardChartManager {
     @Inject SessionManager sessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
+    @Inject Context context;
 
     private final static int MOBILE_INTERVAL = 1000 * 60; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * 60; // 1 hour
@@ -64,6 +70,12 @@ public class DashboardChartManager {
         String sensorName = sensor.getSensorName();
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
+        chart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(context, ChartOptionsActivity.class));
+            }
+        });
 
         draw(chart, descriptionText);
 

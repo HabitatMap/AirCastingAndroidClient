@@ -68,14 +68,6 @@ public class NavigationDrawerHelper {
                         activity.startActivity(new Intent(context, ExternalSensorActivity.class));
                         drawerLayout.closeDrawers();
                         break;
-                    case R.id.graph_button:
-                        activity.startActivity(new Intent(context, GraphActivity.class));
-                        drawerLayout.closeDrawers();
-                        break;
-                    case R.id.map_button:
-                        activity.startActivity(new Intent(context, AirCastingMapActivity.class));
-                        drawerLayout.closeDrawers();
-                        break;
                 }
                 return true;
             }

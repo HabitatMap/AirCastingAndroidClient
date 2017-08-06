@@ -228,8 +228,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
     new OpenSessionTask(this) {
       @Override
       protected Session doInBackground(Long... longs) {
-        sessionManager.loadSession(longs[0], this);
         chartManager.resetStaticCharts();
+        sessionManager.loadSession(longs[0], this);
 
         return null;
       }

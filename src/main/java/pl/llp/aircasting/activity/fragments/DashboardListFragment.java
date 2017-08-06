@@ -11,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
+import pl.llp.aircasting.model.DashboardChartManager;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
@@ -92,6 +95,11 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
                 break;
         }
+    }
+
+    @Override
+    public void onListItemClick(ListView listView, View view, int position, long id) {
+        getContext().startActivity(new Intent(getContext(), ChartOptionsActivity.class));
     }
 
     private void setData(StreamAdapterFactory adapterFactory, boolean startPopulated) {

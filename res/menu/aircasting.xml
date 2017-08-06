@@ -52,9 +52,5 @@
               android:icon="@drawable/menu_sensors_icon_black"
               android:title="Connect to external device"
         />
-        <item android:id="@+id/graph_button"
-              android:title="Graph"/>
-        <item android:id="@+id/map_button"
-              android:title="Map"/>
     </group>
 </menu>

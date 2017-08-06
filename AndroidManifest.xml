@@ -94,6 +94,8 @@
 
     <activity android:label="@string/measurement_streams" android:name=".activity.DashboardActivity" android:theme="@style/AirCastingTheme" android:screenOrientation="portrait" android:launchMode="singleTask"/>
 
+    <activity android:label="@string/stream_options" android:name=".activity.ChartOptionsActivity" android:theme="@style/Dialog" />
+
     <activity android:label="@string/backend_settings" android:name=".activity.settings.BackendSettingsActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/disable_maps" android:name=".activity.settings.DisableMapSettingsActivity" android:theme="@style/Dialog"/>
