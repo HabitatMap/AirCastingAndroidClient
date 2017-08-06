@@ -54,6 +54,8 @@
   <string name="high">High</string>
   <string name="ok">OK</string>
   <string name="email">Email</string>
+  <string name="graph">Graph</string>
+  <string name="map">Map</string>
 
   <string name="profile">Profile</string>
   <string name="average_threshold">Average sounds (dB)</string>
@@ -121,6 +123,7 @@
   <string name="session_options">Session options</string>
   <string name="discard_session">Discard session</string>
   <string name="session_details">Session details</string>
+  <string name="stream_options">Stream options</string>
   <string name="note">Note</string>
   <string name="sign_out">Sign out</string>
   <string name="contribute_to_crowd_map">Contribute to CrowdMap</string>
