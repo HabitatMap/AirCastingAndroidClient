@@ -109,6 +109,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         eventBus.unregister(this);
     }
 
+    public void resetStaticCharts() {
+        dashboardChartManager.resetStaticCharts();
+    }
+
     @Subscribe
     public void onEvent(SensorEvent event) {
         context.runOnUiThread(new Runnable() {
