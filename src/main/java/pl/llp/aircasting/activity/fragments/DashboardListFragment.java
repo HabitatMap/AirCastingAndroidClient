@@ -69,6 +69,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     public void onResume() {
         super.onResume();
 
+        adapter.resetStaticCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
     }
