@@ -3,9 +3,8 @@ package pl.llp.aircasting.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.*;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -20,6 +19,8 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
+    @Inject SensorManager sensorManager;
+    @Inject EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class DashboardActivity extends DashboardBaseActivity {
                 return;
             }
 
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, false);
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, sensorManager, eventBus, false);
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardListFragment).commit();
         }
 
@@ -68,7 +69,7 @@ public class DashboardActivity extends DashboardBaseActivity {
 
         if (getIntent().hasExtra("startPopulated")) {
             boolean startPopulated = getIntent().getExtras().getBoolean("startPopulated");
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, startPopulated);
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, sensorManager, eventBus, startPopulated);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
         }
     }

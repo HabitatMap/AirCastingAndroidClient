@@ -17,10 +17,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +40,7 @@ public class DashboardChartManager {
     @Inject SessionManager sessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
+    @Inject EventBus eventBus;
     @Inject Context context;
 
     private final static int MOBILE_INTERVAL = 1000 * 60; // 1 minute
@@ -66,13 +70,14 @@ public class DashboardChartManager {
         handler.removeCallbacks(updateEntriesTask);
     }
 
-    public void drawChart(LineChart chart, Sensor sensor) {
+    public void drawChart(LineChart chart, final Sensor sensor) {
         String sensorName = sensor.getSensorName();
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
         chart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                eventBus.post(new ViewStreamEvent(sensor));
                 context.startActivity(new Intent(context, ChartOptionsActivity.class));
             }
         });
@@ -86,7 +91,7 @@ public class DashboardChartManager {
 
         if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(sensorName)) {
             averagesCounter = 10;
-            updateChart(chart, sensor.getShortType(),sensorName);
+            updateChart(chart, sensor.getShortType(), sensorName);
         }
 
         if (!shouldDynamicChartUpdate(sensorName)) {
