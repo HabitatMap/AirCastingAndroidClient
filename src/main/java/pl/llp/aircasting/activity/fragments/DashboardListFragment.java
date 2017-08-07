@@ -1,29 +1,24 @@
 package pl.llp.aircasting.activity.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import pl.llp.aircasting.Intents;
+import android.widget.TextView;
+import com.google.common.eventbus.EventBus;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
-import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.model.DashboardChartManager;
-
-import static pl.llp.aircasting.Intents.startSensors;
-import static pl.llp.aircasting.Intents.stopSensors;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
 
 /**
  * Created by radek on 28/06/17.
@@ -34,14 +29,19 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private Button sensorsButton;
     private StreamAdapterFactory adapterFactory;
     private StreamAdapter adapter;
+    private EventBus eventBus;
+    private SensorManager sensorManager;
     private boolean startPopulated;
 
     public DashboardListFragment() {
     }
 
-    public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory, boolean startPopulated) {
+    public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory,
+                                                    SensorManager sensorManager,
+                                                    EventBus eventBus,
+                                                    boolean startPopulated) {
         DashboardListFragment fragment = new DashboardListFragment();
-        fragment.setData(adapterFactory, startPopulated);
+        fragment.setData(adapterFactory, sensorManager, eventBus, startPopulated);
 
         return fragment;
     }
@@ -100,11 +100,18 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
+        TextView sensorInfo = (TextView) view.findViewById(R.id.sensor_name);
+        String sensorName = (String) sensorInfo.getText();
+        Sensor sensor = sensorManager.getSensorByName(sensorName);
+
+        eventBus.post(new ViewStreamEvent(sensor));
         getContext().startActivity(new Intent(getContext(), ChartOptionsActivity.class));
     }
 
-    private void setData(StreamAdapterFactory adapterFactory, boolean startPopulated) {
+    private void setData(StreamAdapterFactory adapterFactory, SensorManager sensorManager, EventBus eventBus, boolean startPopulated) {
         this.adapterFactory = adapterFactory;
+        this.sensorManager = sensorManager;
+        this.eventBus = eventBus;
         this.startPopulated = startPopulated;
     }
 }
