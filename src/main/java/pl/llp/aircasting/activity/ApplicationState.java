@@ -11,6 +11,7 @@ public class ApplicationState
   public final SavingState saving = new SavingState();
   public final RecordingState recording = new RecordingState();
   public final SensorState sensorState = new SensorState();
+  public final MicrophoneState microphoneState = new MicrophoneState();
 
   public RecordingState recording()
   {
@@ -22,6 +23,15 @@ public class ApplicationState
     return saving;
   }
 
+  public SensorState sensors()
+  {
+    return sensorState;
+  }
+
+  public MicrophoneState microphoneState() {
+    return microphoneState;
+  }
+
   @Override
   public String toString()
   {
@@ -31,14 +41,10 @@ public class ApplicationState
         '}';
   }
 
-  public SensorState sensors()
-  {
-    return sensorState;
-  }
-
   public static class SensorState
   {
     States state;
+
 
     public void start()
     {
@@ -61,6 +67,8 @@ public class ApplicationState
       STOPPED,
     }
   }
+
+  public static class MicrophoneState extends SensorState {}
 
   public static class RecordingState
   {

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
@@ -62,6 +63,8 @@ public class NavigationDrawerHelper {
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.phone_microphone:
+                        sessionManager.startAudioSensor();
+                        Intents.startDashboardActivity(activity, true);
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.external_sensors:

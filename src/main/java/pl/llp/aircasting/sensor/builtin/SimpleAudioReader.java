@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -56,6 +57,7 @@ public class SimpleAudioReader extends AudioReader.Listener
   @Inject SignalPower signalPower;
   @Inject EventBus eventBus;
   @Inject CalibrationHelper calibrationHelper;
+  @Inject ApplicationState state;
 
   /**
    * @return A Sensor representing the internal microphone
@@ -74,6 +76,7 @@ public class SimpleAudioReader extends AudioReader.Listener
   public void stop()
   {
     audioReader.stopReader();
+    state.microphoneState().stop();
   }
 
   @Override

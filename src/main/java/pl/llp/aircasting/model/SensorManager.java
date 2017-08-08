@@ -6,7 +6,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;

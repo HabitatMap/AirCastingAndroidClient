@@ -21,6 +21,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject SessionManager sessionManager;
     @Inject SensorManager sensorManager;
     @Inject EventBus eventBus;
+    @Inject ApplicationState state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,5 +121,9 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     public void onProfileClick(View view) {
         super.onProfileClick(view);
+    }
+
+    public void connectPhoneMicrophone() {
+        sessionManager.startAudioSensor();
     }
 }
