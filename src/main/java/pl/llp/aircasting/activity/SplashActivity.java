@@ -47,7 +47,6 @@ public class SplashActivity extends Activity {
             protected Void doInBackground(Void... voids) {
                 // This may take some time
                 long startTime = System.currentTimeMillis();
-                Intents.startSensors(getApplication());
 
                 long sleepTime = sleepTime(startTime);
                 sleep(sleepTime);

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.google.common.eventbus.EventBus;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
+import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
@@ -89,8 +90,10 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.dashboard_microphone:
+                DashboardActivity activity = (DashboardActivity) getActivity();
+                activity.connectPhoneMicrophone();
                 setListAdapter(adapter);
-                getActivity().invalidateOptionsMenu();
+                activity.invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
@@ -108,7 +111,10 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         getContext().startActivity(new Intent(getContext(), ChartOptionsActivity.class));
     }
 
-    private void setData(StreamAdapterFactory adapterFactory, SensorManager sensorManager, EventBus eventBus, boolean startPopulated) {
+    private void setData(StreamAdapterFactory adapterFactory,
+                         SensorManager sensorManager,
+                         EventBus eventBus,
+                         boolean startPopulated) {
         this.adapterFactory = adapterFactory;
         this.sensorManager = sensorManager;
         this.eventBus = eventBus;

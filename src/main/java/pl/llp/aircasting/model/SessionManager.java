@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -159,9 +160,24 @@ public class SessionManager
     {
       locationHelper.start();
 
-      audioReader.start();
       externalSensors.start();
       state.sensors().start();
+    }
+  }
+
+  public void startAudioSensor() {
+    if (!state.microphoneState().started()) {
+      Log.i("audio: ", "started");
+      audioReader.start();
+      state.microphoneState().start();
+    }
+  }
+
+  public void stopAudioSensor() {
+    if (state.microphoneState().started()) {
+      Log.i("audio: ", "stopped");
+      audioReader.stop();
+      state.microphoneState().stop();
     }
   }
 
@@ -170,14 +186,14 @@ public class SessionManager
     if (state.recording().isRecording())
     {
       paused = true;
-      audioReader.stop();
+      stopAudioSensor();
     }
   }
 
   public synchronized void continueSession() {
     if (paused) {
       paused = false;
-      audioReader.start();
+      startAudioSensor();
     }
   }
 
@@ -188,7 +204,7 @@ public class SessionManager
       return;
     }
     locationHelper.stop();
-    audioReader.stop();
+    state.microphoneState().stop();
     state.sensors().stop();
   }
 
