@@ -28,6 +28,8 @@ import pl.llp.aircasting.model.SessionManager;
 import android.content.Intent;
 import android.os.IBinder;
 import com.google.inject.Inject;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
+import pl.llp.aircasting.sensor.external.ExternalSensors;
 import roboguice.service.RoboService;
 
 public class SensorService extends RoboService
@@ -35,6 +37,7 @@ public class SensorService extends RoboService
   public static final int ACTIVE_SENSORS_ID = 2;
 
   @Inject SessionManager sessionManager;
+  @Inject ExternalSensors externalSensors;
 
   @Override
   public IBinder onBind(Intent intent)
@@ -58,6 +61,10 @@ public class SensorService extends RoboService
         {
           stopSelf();
         }
+        break;
+      case Intents.DISCONNECT_SENSORS:
+        sessionManager.stopSensors();
+        externalSensors.disconnectAllSensors();
         break;
       case Intents.RESTART_SENSORS:
         sessionManager.restartSensors();

@@ -167,7 +167,6 @@ public class SessionManager
 
   public void startAudioSensor() {
     if (!state.microphoneState().started()) {
-      Log.i("audio: ", "started");
       audioReader.start();
       state.microphoneState().start();
     }
@@ -175,7 +174,6 @@ public class SessionManager
 
   public void stopAudioSensor() {
     if (state.microphoneState().started()) {
-      Log.i("audio: ", "stopped");
       audioReader.stop();
       state.microphoneState().stop();
     }
