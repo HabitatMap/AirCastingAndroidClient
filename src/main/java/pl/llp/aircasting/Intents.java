@@ -57,6 +57,7 @@ public final class Intents
   public static final int START_SENSORS = 0;
   public static final int STOP_SENSORS = 1;
   public static final int RESTART_SENSORS = 2;
+  public static final int DISCONNECT_SENSORS = 3;
   public static final int UNKNOWN = -1;
 
   public static final String SESSION_ID = "session_id";
@@ -98,6 +99,13 @@ public final class Intents
   public static void stopSensors(Context context) {
     Intent intent = new Intent(context, SensorService.class);
     intent.putExtra(SESSION_SERVICE_TASK, STOP_SENSORS);
+
+    context.startService(intent);
+  }
+
+  public static void disconnectAllSensors(Context context) {
+    Intent intent = new Intent(context, SensorService.class);
+    intent.putExtra(SESSION_SERVICE_TASK, DISCONNECT_SENSORS);
 
     context.startService(intent);
   }

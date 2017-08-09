@@ -20,14 +20,15 @@
 package pl.llp.aircasting.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 
 public class SplashActivity extends Activity {
-
     public static final int MIN_SPLASH_TIME = 1000;
 
     @Override
@@ -47,6 +48,7 @@ public class SplashActivity extends Activity {
             protected Void doInBackground(Void... voids) {
                 // This may take some time
                 long startTime = System.currentTimeMillis();
+                Intents.disconnectAllSensors(getApplication());
 
                 long sleepTime = sleepTime(startTime);
                 sleep(sleepTime);

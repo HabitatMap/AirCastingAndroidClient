@@ -110,6 +110,15 @@ public class ExternalSensors
     }
   }
 
+  public void disconnectAllSensors() {
+    Iterable<ExternalSensorDescriptor> descriptors = settings.knownSensors();
+
+    for (ExternalSensorDescriptor descriptor : descriptors)
+    {
+        disconnect(descriptor.getAddress());
+    }
+  }
+
   public boolean knows(String address)
   {
     if(SimpleAudioReader.SENSOR_ADDRESS_BUILTIN.equals(address))
