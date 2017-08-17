@@ -110,6 +110,10 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         dashboardChartManager.resetStaticCharts();
     }
 
+    public void resetDynamicCharts() {
+        dashboardChartManager.resetDynamicCharts(sensors.keySet());
+    }
+
     @Subscribe
     public void onEvent(SensorEvent event) {
         context.runOnUiThread(new Runnable() {

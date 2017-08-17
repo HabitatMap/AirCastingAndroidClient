@@ -126,8 +126,12 @@ public class MeasurementStream implements Serializable
   public List<Measurement> getMeasurementsForPeriod(int amount) {
     frequency = calculateSamplingFrequency();
 
-    int measurementsInPeriod = (int) (60 / frequency) * amount;
-    return getLastMeasurements(measurementsInPeriod);
+    try {
+      int measurementsInPeriod = (int) (60 / frequency) * amount;
+      return getLastMeasurements(measurementsInPeriod);
+    } catch (IndexOutOfBoundsException e) {
+        return getMeasurementsForPeriod(amount - 1);
+    }
   }
 
   private double calculateSamplingFrequency() {
