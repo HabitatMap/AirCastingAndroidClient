@@ -2,7 +2,6 @@ package pl.llp.aircasting.model;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +22,7 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
+import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -43,10 +42,12 @@ public class DashboardChartManager {
     @Inject EventBus eventBus;
     @Inject Context context;
 
+    private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MOBILE_INTERVAL = 1000 * 60; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * 60; // 1 hour
     private int averagesCounter = 0;
     private int interval;
+    private Map<String, Boolean> shouldUseExistingEntries = newHashMap();
     private Map<String, Boolean> newEntriesForStream = newHashMap();
     private Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private Map<String, List> averages = newHashMap();
@@ -66,7 +67,10 @@ public class DashboardChartManager {
     }
 
     public void stop() {
+        averagesCounter = 0;
         averages.clear();
+        newEntriesForStream.clear();
+        staticChartGeneratedForStream.clear();
         handler.removeCallbacks(updateEntriesTask);
     }
 
@@ -94,54 +98,12 @@ public class DashboardChartManager {
             updateChart(chart, sensor.getShortType(), sensorName);
         }
 
-        if (!shouldDynamicChartUpdate(sensorName)) {
+        if (shouldDynamicChartUpdate(sensorName) || chartHasMissingData(chart)) {
+            updateChart(chart, sensor.getShortType(), sensorName);
+            chart.notifyDataSetChanged();
+        } else {
             return;
         }
-
-        updateChart(chart, sensor.getShortType(), sensorName);
-        chart.notifyDataSetChanged();
-    }
-
-    public void resetStaticCharts() {
-        staticChartGeneratedForStream.clear();
-    }
-
-    private void draw(LineChart chart, String descriptionText) {
-        YAxis leftAxis = chart.getAxisLeft();
-        YAxis rightAxis = chart.getAxisRight();
-        XAxis xAxis = chart.getXAxis();
-        Legend legend = chart.getLegend();
-
-        leftAxis.setEnabled(false);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setDrawLabels(false);
-        rightAxis.setEnabled(false);
-        rightAxis.setDrawGridLines(false);
-        rightAxis.setDrawLabels(false);
-        xAxis.setEnabled(false);
-        xAxis.setDrawLabels(true);
-        legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
-
-        Description desc = new Description();
-        desc.setText(descriptionText);
-        desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
-        chart.setDescription(desc);
-        chart.setNoDataText("No data available yet");
-    }
-
-    private String getDescription(MeasurementStream stream) {
-        double time;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-
-        if (sessionManager.isSessionSaved()) {
-            Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
-            time = lastMeasurement.getTime().getTime();
-        } else {
-            Calendar calendar = Calendar.getInstance();
-            time = calendar.getTime().getTime();
-        }
-
-        return dateFormat.format(time);
     }
 
     private void updateChart(LineChart chart, String unit, String sensorName) {
@@ -172,52 +134,103 @@ public class DashboardChartManager {
         chart.setData(lineData);
     }
 
+    public void resetStaticCharts() {
+        staticChartGeneratedForStream.clear();
+    }
+
+    public void resetDynamicCharts(Set<String> sensors) {
+        for (String sensorName : sensors) {
+            newEntriesForStream.put(sensorName, true);
+            shouldUseExistingEntries.put(sensorName, true);
+        }
+    }
+
+    private void draw(LineChart chart, String descriptionText) {
+        YAxis leftAxis = chart.getAxisLeft();
+        YAxis rightAxis = chart.getAxisRight();
+        XAxis xAxis = chart.getXAxis();
+        Legend legend = chart.getLegend();
+
+        leftAxis.setEnabled(false);
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setDrawLabels(false);
+        rightAxis.setEnabled(false);
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setDrawLabels(false);
+        xAxis.setEnabled(false);
+        xAxis.setDrawLabels(true);
+        legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+
+        Description desc = new Description();
+        desc.setText(descriptionText);
+        desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
+        chart.setDescription(desc);
+        chart.setNoDataText("No data available yet");
+    }
+
     private LineDataSet prepareDataSet(String unit, String sensorName) {
-        if (averagesCounter > 0) {
-            prepareEntries();
+        if (averagesCounter > 0 && !useExistingEntries(sensorName)) {
+            prepareEntries(sensorName);
         }
         List<Entry> entries = getEntriesForStream(sensorName);
         LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
+        shouldUseExistingEntries.put(sensorName, false);
 
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
         return dataSet;
     }
 
-    private void prepareEntries() {
-        List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
+    private void prepareEntries(String sensorName) {
+        MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
+        List<List<Measurement>> periodData, trimmedData;
+        double xValue = 0;
+        double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
+        List entries = new CopyOnWriteArrayList();
 
-        for (MeasurementStream stream : streams) {
-            double xValue = 0;
-            double measurementsInPeriod = 60 / stream.getFrequency();
-            String sensorName = stream.getSensorName();
-            List entries = new CopyOnWriteArrayList();
-            List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
-            List<List<Measurement>> periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
-            trimIncompletePeriodData(periodData, measurementsInPeriod);
+        List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
+        periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
+//        trimmedData = trimIncompletePeriodData(periodData, measurementsInPeriod);
 
-            if (periodData.size() > 0) {
-                for (List<Measurement> batch : periodData) {
-                    double yValue = getAverage(batch);
+        if (periodData.size() > 0) {
+            for (List<Measurement> dataChunk : periodData) {
+                if (dataChunk.size() > (int) measurementsInPeriod - 3) {
+                    double yValue = getAverage(dataChunk);
                     entries.add(new Entry((float) xValue, (float) yValue));
                     xValue++;
+                } else {
+                    continue;
                 }
             }
-
-            if (entries.size() == 0) {
-                return;
-            }
-
-            averages.put(sensorName, entries);
         }
+
+        if (entries.size() == 0) {
+            return;
+        }
+
+        averages.put(sensorName, entries);
     }
 
-    private void trimIncompletePeriodData(List<List<Measurement>> periodData, double measurementsInPeriod) {
+    private double getAverage(List<Measurement> measurements) {
+        MeasurementAggregator aggregator = new MeasurementAggregator();
+
+        synchronized (measurements) {
+            for (Measurement measurement : measurements) {
+                aggregator.add(measurement);
+            }
+        }
+
+        return Math.round(aggregator.getAverage().getValue());
+    }
+
+    private List<List<Measurement>> trimIncompletePeriodData(List<List<Measurement>> periodData, double measurementsInPeriod) {
         List<Measurement> lastPeriodData = periodData.get(periodData.size() - 1);
 
-        if (lastPeriodData.size() < measurementsInPeriod) {
+        if (lastPeriodData.size() < ((int) measurementsInPeriod - 3)) {
             periodData.remove(periodData.size() - 1);
         }
+
+        return periodData;
     }
 
     private void allowChartUpdate() {
@@ -228,7 +241,7 @@ public class DashboardChartManager {
             newEntriesForStream.put(sensorName, true);
         }
 
-        if (averagesCounter <= 10) {
+        if (averagesCounter < 10) {
             averagesCounter++;
         }
     }
@@ -248,24 +261,40 @@ public class DashboardChartManager {
         return averages.get(sensorName);
     }
 
-    private double getAverage(List<Measurement> measurements) {
-        double sum = 0;
-        Iterator<Measurement> iter = measurements.iterator();
-
-        while (iter.hasNext()) {
-            Measurement measurement = iter.next();
-            sum += measurement.getValue();
-        }
-
-        return Math.round((sum / measurements.size()));
-    }
-
     private boolean shouldDynamicChartUpdate(String sensorName) {
         return newEntriesForStream.containsKey(sensorName) && newEntriesForStream.get(sensorName) == true;
     }
 
     private boolean shouldStaticChartUpdate(String sensorName) {
         return !staticChartGeneratedForStream.containsKey(sensorName);
+    }
+
+    private boolean useExistingEntries(String sensorName) {
+        return shouldUseExistingEntries.containsKey(sensorName) && shouldUseExistingEntries.get(sensorName) == true;
+    }
+
+    private boolean chartHasMissingData(LineChart chart) {
+        if (averagesCounter > 0) {
+            if (chart.getLineData() == null || chart.getLineData().getEntryCount() != averagesCounter) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getDescription(MeasurementStream stream) {
+        double time;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+
+        if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(stream.getSensorName())) {
+            Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
+            time = lastMeasurement.getTime().getTime();
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            time = calendar.getTime().getTime();
+        }
+
+        return dateFormat.format(time);
     }
 
     public class MyValueFormatter implements IValueFormatter {

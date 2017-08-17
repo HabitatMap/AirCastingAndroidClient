@@ -151,10 +151,12 @@ public class SensorManager
   }
 
   public void setSensorsStatusesToDefaultsFromSettings() {
-    if (settingsHelper.isSoundLevelMeasurementsDisabled())
-      sensors.get(SensorName.from("Phone Microphone")).disable();
-    else
-      sensors.get(SensorName.from("Phone Microphone")).enable();
+    if (getSensorByName("Phone Microphone") != null) {
+      if (settingsHelper.isSoundLevelMeasurementsDisabled())
+        sensors.get(SensorName.from("Phone Microphone")).disable();
+      else
+        sensors.get(SensorName.from("Phone Microphone")).enable();
+    }
   }
 
   public boolean isSensorToggleable(Sensor sensor) {

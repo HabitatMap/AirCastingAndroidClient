@@ -50,18 +50,17 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.dashboard_list_fragment, container, false);
-
-        microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
-        sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
-
         adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
 
         if (startPopulated) {
             setListAdapter(adapter);
         }
 
-        microphoneButton.setOnClickListener(this);
-        sensorsButton.setOnClickListener(this);
+        microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
+        sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
+
+        if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
+        if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
 
         return view;
     }
@@ -71,6 +70,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         super.onResume();
 
         adapter.resetStaticCharts();
+        adapter.resetDynamicCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
     }
