@@ -1,7 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.activity.DashboardBaseActivity;
-import pl.llp.aircasting.model.DashboardChartManager;
+import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.SessionManager;

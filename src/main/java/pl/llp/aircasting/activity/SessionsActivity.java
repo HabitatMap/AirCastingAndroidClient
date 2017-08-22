@@ -31,7 +31,7 @@ import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.DashboardChartManager;
+import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;

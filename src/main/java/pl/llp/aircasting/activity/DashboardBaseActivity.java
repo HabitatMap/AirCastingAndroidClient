@@ -1,26 +1,21 @@
 package pl.llp.aircasting.activity;
 
 import android.os.AsyncTask;
-import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
-import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.google.inject.internal.Nullable;
 import pl.llp.aircasting.storage.UnfinishedSessionChecker;
-import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
-    @Inject LocationManager locationManager;
     @Inject SessionManager sessionManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;

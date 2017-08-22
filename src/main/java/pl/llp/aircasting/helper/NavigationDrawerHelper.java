@@ -46,7 +46,7 @@ public class NavigationDrawerHelper {
                             sessionManager.resetSession(sessionId);
                         }
                         Intent intent = new Intent(context, DashboardActivity.class);
-                        intent.putExtra("startingAircasting", true);
+                        intent.putExtra("startPopulated", true);
                         activity.startActivity(intent);
                         drawerLayout.closeDrawers();
                         break;

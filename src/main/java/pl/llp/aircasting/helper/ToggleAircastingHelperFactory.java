@@ -5,7 +5,6 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatDelegate;
 import com.google.inject.Inject;
-import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.SessionManager;
 
 /**
