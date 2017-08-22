@@ -8,7 +8,6 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
-import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;

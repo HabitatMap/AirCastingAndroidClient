@@ -11,7 +11,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.RecordWithoutGPSAlert;
 import pl.llp.aircasting.activity.SaveSessionActivity;
 import pl.llp.aircasting.activity.StartFixedSessionActivity;
-import pl.llp.aircasting.model.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 

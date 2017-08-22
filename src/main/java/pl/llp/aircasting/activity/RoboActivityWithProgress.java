@@ -172,11 +172,6 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
         eventManager.fire(new OnContentChangedEvent());
     }
 
-//    @Override
-//    public Object onRetainNonConfigurationInstance() {
-//        return task;
-//    }
-
     @Override
     public void hideProgressDialog() {
         try {
