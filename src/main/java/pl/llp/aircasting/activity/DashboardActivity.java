@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -19,8 +20,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject SessionManager sessionManager;
-    @Inject SensorManager sensorManager;
-    @Inject EventBus eventBus;
     @Inject ApplicationState state;
 
     @Override
@@ -31,12 +30,8 @@ public class DashboardActivity extends DashboardBaseActivity {
         setContentView(R.layout.dashboard);
 
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, sensorManager, eventBus, false);
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, dashboardListFragment).commit();
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
         }
 
         initToolbar("Dashboard");
@@ -55,24 +50,18 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    public void onPostResume() {
         invalidateOptionsMenu();
+        if (getIntent().hasExtra("startPopulated") && getIntent().getExtras().getBoolean("startPopulated")) {
+            state.dashboardState().populate();
+        }
 
         Intents.startDatabaseWriterService(context);
         startSensors(context);
-    }
 
-    @Override
-    public void onResumeFragments() {
-        super.onResumeFragments();
-
-        if (getIntent().hasExtra("startPopulated")) {
-            boolean startPopulated = getIntent().getExtras().getBoolean("startPopulated");
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, sensorManager, eventBus, startPopulated);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
-        }
+        DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
+        super.onPostResume();
     }
 
     @Override
@@ -89,7 +78,7 @@ public class DashboardActivity extends DashboardBaseActivity {
         MenuInflater inflater = getDelegate().getMenuInflater();
         DashboardListFragment listFragment = (DashboardListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
-        if (listFragment.isAdapterSet() == false) {
+        if (!listFragment.isAdapterSet()) {
             return true;
         }
 
