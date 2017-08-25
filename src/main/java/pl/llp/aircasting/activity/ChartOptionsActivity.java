@@ -12,7 +12,7 @@ import roboguice.inject.InjectView;
 /**
  * Created by radek on 04/08/17.
  */
-public class ChartOptionsActivity extends DialogActivity implements View.OnClickListener {
+public class StreamOptionsActivity extends DialogActivity implements View.OnClickListener {
     @Inject Context context;
     @InjectView(R.id.graph_button) Button graphButton;
     @InjectView(R.id.map_button) Button mapButton;
