@@ -50,14 +50,19 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onPostResume() {
+        Intents.startDatabaseWriterService(context);
+        startSensors(context);
         invalidateOptionsMenu();
+
         if (getIntent().hasExtra("startPopulated") && getIntent().getExtras().getBoolean("startPopulated")) {
             state.dashboardState().populate();
         }
-
-        Intents.startDatabaseWriterService(context);
-        startSensors(context);
 
         DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
