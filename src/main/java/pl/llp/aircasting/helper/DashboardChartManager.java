@@ -42,15 +42,15 @@ public class DashboardChartManager {
     @Inject Context context;
 
     private final static int INTERVAL_IN_SECONDS = 60;
+    private final static int MAX_AVERAGES_AMOUNT = 10;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
-    private int averagesCounter = 0;
-    private int interval;
-    private Map<String, Boolean> shouldUseExistingEntries = newHashMap();
-    private Map<String, Boolean> newEntriesForStream = newHashMap();
-    private Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
-    private Map<String, Boolean> preparingEntriesForStream = newHashMap();
-    private Map<String, List> averages = newHashMap();
+    private static int averagesCounter = 0;
+    private static int interval;
+    private static Map<String, Boolean> shouldUseExistingEntries = newHashMap();
+    private static Map<String, Boolean> newEntriesForStream = newHashMap();
+    private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
+    private static Map<String, List> averages = newHashMap();
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
         @Override
@@ -77,7 +77,6 @@ public class DashboardChartManager {
         newEntriesForStream.clear();
         shouldUseExistingEntries.clear();
         resetStaticCharts();
-        preparingEntriesForStream.clear();
     }
 
     public void drawChart(LineChart chart, final Sensor sensor) {
@@ -100,21 +99,21 @@ public class DashboardChartManager {
         }
 
         if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(sensorName)) {
-            averagesCounter = 10;
+            averagesCounter = MAX_AVERAGES_AMOUNT;
             prepareEntries(sensorName);
-            updateChart(chart, sensor.getShortType(), sensorName);
+            updateChartData(chart, sensor.getShortType(), sensorName);
             staticChartGeneratedForStream.put(sensorName, true);
         }
 
         if (shouldDynamicChartUpdate(sensorName) || chartHasMissingData(chart)) {
-            updateChart(chart, sensor.getShortType(), sensorName);
+            updateChartData(chart, sensor.getShortType(), sensorName);
             chart.notifyDataSetChanged();
         } else {
             return;
         }
     }
 
-    private void updateChart(LineChart chart, String unit, String sensorName) {
+    private void updateChartData(LineChart chart, String unit, String sensorName) {
         LineData lineData = chart.getLineData();
 
         if (lineData == null) {
@@ -187,65 +186,47 @@ public class DashboardChartManager {
     }
 
     private void prepareEntries(String sensorName) {
-        if (!preparingEntriesInProgress(sensorName)) {
-            preparingEntriesForStream.put(sensorName, true);
-            MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
-            List<List<Measurement>> periodData, trimmedData;
-            double xValue = 0;
-            double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
-            List entries = new CopyOnWriteArrayList();
+        MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
+        List<List<Measurement>> periodData;
+        double xValue = 0;
+        double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
+        List entries = new CopyOnWriteArrayList();
+        List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
+        periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
 
-            List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
-            periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
-            trimmedData = trimIncompletePeriodData(periodData, measurementsInPeriod);
-
-            if (periodData.size() > 0) {
-                for (List<Measurement> dataChunk : trimmedData) {
-                    double yValue = getAverage(dataChunk);
-                    entries.add(new Entry((float) xValue, (float) yValue));
-                    xValue++;
+        if (periodData.size() > 0) {
+            synchronized (periodData) {
+                for (List<Measurement> dataChunk : periodData) {
+                    if (dataChunk.size() > measurementsInPeriod - 3) {
+                        double yValue = getAverage(dataChunk);
+                        entries.add(new Entry((float) xValue, (float) yValue));
+                        xValue++;
+                    }
                 }
             }
-
-            if (entries.size() == 0) {
-                return;
-            }
-
-            averages.put(sensorName, entries);
-            preparingEntriesForStream.put(sensorName, false);
         }
-    }
 
-    private boolean preparingEntriesInProgress(String sensorName) {
-        return preparingEntriesForStream.containsKey(sensorName) && preparingEntriesForStream.get(sensorName) == true;
+        if (entries.size() == 0) {
+            return;
+        }
+
+        averages.put(sensorName, entries);
     }
 
     private double getAverage(List<Measurement> measurements) {
         MeasurementAggregator aggregator = new MeasurementAggregator();
 
-        synchronized (measurements) {
-            for (Measurement measurement : measurements) {
-                aggregator.add(measurement);
-            }
+        for (int i = 0; i < measurements.size(); i++) {
+            aggregator.add(measurements.get(i));
         }
 
         return Math.round(aggregator.getAverage().getValue());
     }
 
-    private List<List<Measurement>> trimIncompletePeriodData(List<List<Measurement>> periodData, double measurementsInPeriod) {
-        List<Measurement> lastPeriodData = periodData.get(periodData.size() - 1);
-
-        if (lastPeriodData.size() < ((int) measurementsInPeriod - 3)) {
-            periodData.remove(periodData.size() - 1);
-        }
-
-        return periodData;
-    }
-
     private void allowChartUpdate() {
         List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
 
-        if (averagesCounter < 10) {
+        if (averagesCounter < MAX_AVERAGES_AMOUNT) {
             averagesCounter++;
         }
 
