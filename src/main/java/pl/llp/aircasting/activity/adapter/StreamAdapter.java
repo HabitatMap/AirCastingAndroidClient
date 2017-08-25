@@ -184,6 +184,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
         Map<String, Object> state = data.get(position);
         Sensor sensor = (Sensor) state.get(SENSOR);
         chart = (LineChart) view.findViewById(R.id.chart);
+        chart.setAlwaysDrawnWithCacheEnabled(true);
 
         streamViewHelper.updateMeasurements(sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor);
