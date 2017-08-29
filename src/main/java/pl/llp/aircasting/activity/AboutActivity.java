@@ -127,6 +127,7 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
     public void initToolbar() {
       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
       toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+      toolbar.setContentInsetStartWithNavigation(0);
 
       delegate.setSupportActionBar(toolbar);
       delegate.setTitle("About");

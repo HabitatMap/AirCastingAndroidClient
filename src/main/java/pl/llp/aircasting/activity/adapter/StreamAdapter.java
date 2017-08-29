@@ -55,7 +55,7 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
             return ComparisonChain.start()
                     .compare(leftSensor.isEnabled() ? 0 : 1, rightSensor.isEnabled() ? 0 : 1)
                     .compare(getPosition(left), getPosition(right))
-                    .compare(leftTitle, rightTitle).result();
+                    .compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
         }
     };
 
