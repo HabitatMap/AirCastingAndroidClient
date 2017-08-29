@@ -67,6 +67,7 @@ public class RoboListActivityWithProgress extends RoboListActivity implements Ac
     public void initToolbar(String title) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
+        toolbar.setContentInsetStartWithNavigation(0);
         getDelegate().setSupportActionBar(toolbar);
         getDelegate().setTitle(title);
     }

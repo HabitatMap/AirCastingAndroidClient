@@ -3,6 +3,7 @@ package pl.llp.aircasting.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -18,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.*;
@@ -42,7 +44,7 @@ public class DashboardChartManager {
     @Inject Context context;
 
     private final static int INTERVAL_IN_SECONDS = 60;
-    private final static int MAX_AVERAGES_AMOUNT = 10;
+    private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
     private static int averagesCounter = 0;
@@ -105,7 +107,7 @@ public class DashboardChartManager {
             staticChartGeneratedForStream.put(sensorName, true);
         }
 
-        if (shouldDynamicChartUpdate(sensorName) || chartHasMissingData(chart)) {
+        if (shouldDynamicChartUpdate(sensorName) || chartHasMissingData(chart, sensorName)) {
             updateChartData(chart, sensor.getShortType(), sensorName);
             chart.notifyDataSetChanged();
         } else {
@@ -120,15 +122,16 @@ public class DashboardChartManager {
             lineData = new LineData();
         }
 
-        lineData.removeDataSet(0);
-        LineDataSet dataSet = prepareDataSet(unit, sensorName);
-
         List entries = getEntriesForStream(sensorName);
         if (entries == null) {
             return;
         }
 
+        lineData.removeDataSet(0);
+        LineDataSet dataSet = prepareDataSet(unit, sensorName);
+
         ArrayList<Integer> colors = prepareDataSetColors(sensorName, entries);
+        Log.i("entries: ", String.valueOf(entries));
         dataSet.setCircleColors(colors);
 
         newEntriesForStream.put(sensorName, false);
@@ -157,6 +160,7 @@ public class DashboardChartManager {
         YAxis rightAxis = chart.getAxisRight();
         XAxis xAxis = chart.getXAxis();
         Legend legend = chart.getLegend();
+        Description desc = new Description();
 
         leftAxis.setEnabled(false);
         leftAxis.setDrawGridLines(false);
@@ -166,29 +170,41 @@ public class DashboardChartManager {
         rightAxis.setDrawLabels(false);
         xAxis.setEnabled(false);
         xAxis.setDrawLabels(true);
+        xAxis.setAxisMinimum(0);
+        xAxis.setAxisMaximum(8);
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
 
-        Description desc = new Description();
         desc.setText(descriptionText);
         desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
         chart.setDescription(desc);
-        chart.setNoDataText("No data available yet");
+        chart.setNoDataText("");
+        chart.setPinchZoom(false);
     }
 
     private LineDataSet prepareDataSet(String unit, String sensorName) {
         List<Entry> entries = getEntriesForStream(sensorName);
         LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
+
         shouldUseExistingEntries.put(sensorName, false);
 
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
+        dataSet.setLineWidth(3);
+        dataSet.setValueTextSize(8);
+        dataSet.setDrawHighlightIndicators(false);
+
+        if (!sessionManager.isRecording()) {
+            int color = context.getResources().getColor(R.color.gray);
+            dataSet.setColor(color);
+        }
+
         return dataSet;
     }
 
     private void prepareEntries(String sensorName) {
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         List<List<Measurement>> periodData;
-        double xValue = 0;
+        double xValue = 8;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
         List entries = new CopyOnWriteArrayList();
         List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
@@ -196,11 +212,11 @@ public class DashboardChartManager {
 
         if (periodData.size() > 0) {
             synchronized (periodData) {
-                for (List<Measurement> dataChunk : periodData) {
+                for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
                     if (dataChunk.size() > measurementsInPeriod - 3) {
                         double yValue = getAverage(dataChunk);
                         entries.add(new Entry((float) xValue, (float) yValue));
-                        xValue++;
+                        xValue--;
                     }
                 }
             }
@@ -210,7 +226,7 @@ public class DashboardChartManager {
             return;
         }
 
-        averages.put(sensorName, entries);
+        averages.put(sensorName, Lists.reverse(entries));
     }
 
     private double getAverage(List<Measurement> measurements) {
@@ -260,8 +276,8 @@ public class DashboardChartManager {
         return !staticChartGeneratedForStream.containsKey(sensorName);
     }
 
-    private boolean chartHasMissingData(LineChart chart) {
-        if (averagesCounter > 0) {
+    private boolean chartHasMissingData(LineChart chart, String sensorName) {
+        if (averagesCounter > 0 && !staticChartGeneratedForStream.containsKey(sensorName)) {
             if (chart.getLineData() == null || chart.getLineData().getEntryCount() != averagesCounter) {
                 return true;
             }
@@ -273,7 +289,7 @@ public class DashboardChartManager {
         double time;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-        if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(stream.getSensorName())) {
+        if (sessionManager.isSessionSaved()) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
             time = lastMeasurement.getTime().getTime();
         } else {

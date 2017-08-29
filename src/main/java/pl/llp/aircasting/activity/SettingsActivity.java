@@ -88,6 +88,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     root.addView(toolbar, 0); // insert at top
 
     toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_material));
+    toolbar.setContentInsetStartWithNavigation(0);
     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
