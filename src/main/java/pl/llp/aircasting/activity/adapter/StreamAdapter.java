@@ -7,6 +7,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
@@ -182,9 +183,17 @@ public class StreamAdapter extends SimpleAdapter implements View.OnClickListener
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> state = data.get(position);
-        Sensor sensor = (Sensor) state.get(SENSOR);
+        final Sensor sensor = (Sensor) state.get(SENSOR);
         chart = (LineChart) view.findViewById(R.id.chart);
         chart.setAlwaysDrawnWithCacheEnabled(true);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventBus.post(new ViewStreamEvent(sensor));
+                context.startActivity(new Intent(context, ChartOptionsActivity.class));
+            }
+        });
 
         streamViewHelper.updateMeasurements(sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor);
