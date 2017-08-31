@@ -3,7 +3,6 @@ package pl.llp.aircasting.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -85,12 +84,14 @@ public class DashboardChartManager {
         String sensorName = sensor.getSensorName();
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
+
         chart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 eventBus.post(new ViewStreamEvent(sensor));
                 context.startActivity(new Intent(context, ChartOptionsActivity.class));
             }
+
         });
 
         draw(chart, descriptionText);
@@ -131,7 +132,6 @@ public class DashboardChartManager {
         LineDataSet dataSet = prepareDataSet(unit, sensorName);
 
         ArrayList<Integer> colors = prepareDataSetColors(sensorName, entries);
-        Log.i("entries: ", String.valueOf(entries));
         dataSet.setCircleColors(colors);
 
         newEntriesForStream.put(sensorName, false);
@@ -173,9 +173,11 @@ public class DashboardChartManager {
         xAxis.setAxisMinimum(0);
         xAxis.setAxisMaximum(8);
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+        legend.setTextSize(10);
 
         desc.setText(descriptionText);
         desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
+        desc.setTextSize(10);
         chart.setDescription(desc);
         chart.setNoDataText("");
         chart.setPinchZoom(false);
@@ -190,7 +192,7 @@ public class DashboardChartManager {
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
         dataSet.setLineWidth(3);
-        dataSet.setValueTextSize(8);
+        dataSet.setValueTextSize(10);
         dataSet.setDrawHighlightIndicators(false);
 
         if (!sessionManager.isRecording()) {
