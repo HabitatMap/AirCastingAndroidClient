@@ -3,9 +3,7 @@ package pl.llp.aircasting.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -28,14 +26,17 @@ public class DashboardActivity extends DashboardBaseActivity {
 
         Intents.startDatabaseWriterService(context);
         setContentView(R.layout.dashboard);
+        initToolbar("Dashboard");
+        initNavigationDrawer();
 
         if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+
             DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
         }
-
-        initToolbar("Dashboard");
-        initNavigationDrawer();
     }
 
     @Override
@@ -64,15 +65,12 @@ public class DashboardActivity extends DashboardBaseActivity {
             state.dashboardState().populate();
         }
 
-        DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commitAllowingStateLoss();
         super.onPostResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         stopSensors(context);
     }
 

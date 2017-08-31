@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
+        setListAdapter(adapter);
 
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
         if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
@@ -54,28 +56,23 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        super.onResume();
-        adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
-
-        if (state.dashboardState.isPopulated()) {
+        if (state.dashboardState().isPopulated()) {
             setListAdapter(adapter);
         }
 
-        adapter.start();
+        adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
+
         adapter.resetStaticCharts();
         adapter.resetDynamicCharts();
+        adapter.start();
         adapter.notifyDataSetChanged();
+
+        super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        adapter.stop();
-    }
-
-    public boolean isAdapterSet() {
-        return getListAdapter() != null;
     }
 
     @Override
@@ -92,6 +89,10 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
                 break;
         }
+    }
+
+    public boolean isAdapterSet() {
+        return getListAdapter() != null;
     }
 
     private void setData(StreamAdapterFactory adapterFactory,
