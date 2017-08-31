@@ -41,13 +41,16 @@
                           android:layout_weight="10"
                           android:background="@color/gray"/>
 
-                <TextView android:layout_width="80dp"
-                          android:layout_height="wrap_content"
-                          android:paddingTop="3dp"
-                          android:paddingRight="1dp"
-                          android:text="Last Second"
-                          android:layout_alignParentRight="true"
-                          android:textStyle="bold"/>
+                    <TextView android:layout_width="80dp"
+                              android:layout_height="wrap_content"
+                              android:paddingLeft="6dp"
+                              android:paddingRight="6dp"
+                              android:gravity="center"
+                              android:layout_alignParentRight="true"
+                              android:layout_marginTop="20dp"
+                              android:layout_marginRight="3dp"
+                              android:text="Last Second"
+                              android:textStyle="bold"/>
 
             </RelativeLayout>
 
@@ -65,12 +68,12 @@
                               android:layout_height="match_parent"
                               android:orientation="vertical"
                               android:layout_marginRight="3dp"
-                              android:layout_marginTop="-20dp">
+                              android:layout_marginTop="7dp">
+
 
                     <TextView android:id="@+id/now"
                               android:layout_height="80dp"
                               android:layout_width="80dp"
-                              android:layout_marginTop="45dp"
                               android:textColor="@android:color/white"
                               android:textSize="25sp"
                               android:layout_gravity="center"
