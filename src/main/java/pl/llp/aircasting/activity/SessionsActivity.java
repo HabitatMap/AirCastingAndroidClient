@@ -63,6 +63,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Application context;
+  @Inject ApplicationState state;
   @Inject EventBus eventBus;
 
   @Inject UncalibratedMeasurementCalibrator calibrator;
@@ -228,7 +229,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
     new OpenSessionTask(this) {
       @Override
       protected Session doInBackground(Long... longs) {
-        chartManager.resetStaticCharts();
         sessionManager.loadSession(longs[0], this);
 
         return null;
@@ -238,6 +238,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
       protected void onPostExecute(Session session) {
         super.onPostExecute(session);
 
+        chartManager.resetStaticCharts();
         startSessionView();
       }
     }.execute(id);

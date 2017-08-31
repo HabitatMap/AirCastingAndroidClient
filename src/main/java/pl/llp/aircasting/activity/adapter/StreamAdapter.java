@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import android.content.Intent;
+import android.util.Log;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
