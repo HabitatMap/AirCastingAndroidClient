@@ -24,7 +24,7 @@ public class ChartOptionsActivity extends DialogActivity implements View.OnClick
 
         graphButton.setOnClickListener(this);
         mapButton.setOnClickListener(this);
-    }
+   }
 
     @Override
     public void onClick(View view) {
