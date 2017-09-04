@@ -92,6 +92,13 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case Intents.CHOOSE_SESSION_TYPE:
+                if (resultCode == R.id.mobile_session_button) {
+                    toggleAircastingHelper.startMobileAirCasting();
+                } else {
+                    toggleAircastingHelper.startFixedAirCasting();
+                }
+                break;
             case Intents.SAVE_DIALOG:
                 startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
                 break;

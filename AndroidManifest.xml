@@ -63,6 +63,8 @@
     <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
+    
+    <activity android:label="@string/choose_session_type" android:name=".activity.ChooseSessionTypeActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/session_options" android:name=".activity.OpenMobileSessionActivity" android:theme="@style/Dialog"/>
 
@@ -101,6 +103,8 @@
     <activity android:label="@string/disable_maps" android:name=".activity.settings.DisableMapSettingsActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/start_fixed_session" android:name=".activity.StartFixedSessionActivity" android:theme="@style/Dialog"/>
+
+    <activity android:label="@string/start_mobile_session" android:name=".activity.StartMobileSessionActivity" android:theme="@style/Dialog"/>
 
     <!-- Services -->
     <service android:name=".service.SensorService"/>

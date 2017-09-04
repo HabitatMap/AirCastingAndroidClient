@@ -8,9 +8,8 @@ import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.RecordWithoutGPSAlert;
-import pl.llp.aircasting.activity.SaveSessionActivity;
-import pl.llp.aircasting.activity.StartFixedSessionActivity;
+import pl.llp.aircasting.activity.*;
+import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 
@@ -23,14 +22,14 @@ public class ToggleAircastingHelper {
     private Activity activity;
     private SessionManager sessionManager;
     private SettingsHelper settingsHelper;
-    private LocationManager locationManager;
+    private SensorManager sensorManager;
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
     public ToggleAircastingHelper(Activity activity,
                                   SessionManager sessionManager,
                                   SettingsHelper settingsHelper,
-                                  LocationManager locationManager,
+                                  SensorManager sensorManager,
                                   LocationHelper locationHelper,
                                   AppCompatDelegate delegate,
                                   Context context,
@@ -38,7 +37,7 @@ public class ToggleAircastingHelper {
         this.activity = activity;
         this.sessionManager = sessionManager;
         this.settingsHelper = settingsHelper;
-        this.locationManager = locationManager;
+        this.sensorManager = sensorManager;
         this.locationHelper = locationHelper;
         this.delegate = delegate;
         this.context = context;
@@ -49,18 +48,28 @@ public class ToggleAircastingHelper {
         if (sessionManager.isSessionStarted()) {
             stopAirCasting();
         } else {
-            startAirCasting();
+            if (sensorManager.getSensorByName("Phone Microphone") == null) {
+                chooseSessionType();
+            } else {
+                startMobileAirCasting();
+            }
         }
+    }
+
+    private void chooseSessionType() {
+        Intent intent = new Intent(activity, ChooseSessionTypeActivity.class);
+        activity.startActivityForResult(intent, Intents.CHOOSE_SESSION_TYPE);
     }
 
     public void stopAirCasting() {
         Session session = sessionManager.getSession();
         dashboardChartManager.stop();
 
-        if (session.isFixed())
+        if (session.isFixed()) {
             stopFixedAirCasting(session);
-        else
+        } else {
             stopMobileAirCasting(session);
+        }
     }
 
     private void stopMobileAirCasting(Session session) {
@@ -89,45 +98,19 @@ public class ToggleAircastingHelper {
         }
     }
 
-    private void startAirCasting() {
+    public void startMobileAirCasting() {
         dashboardChartManager.start();
 
-        if (settingsHelper.isFixedSessionStreamingEnabled())
-            startFixedAirCasting();
-        else
-            startMobileAirCasting();
+        activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
     }
 
-    private void startMobileAirCasting() {
-        if (settingsHelper.areMapsDisabled()) {
-            sessionManager.startMobileSession(true);
-        } else {
-            if (locationHelper.getLastLocation() == null) {
-                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(context, delegate, sessionManager, true);
-                recordAlert.display();
-                return;
-            } else {
-                sessionManager.startMobileSession(false);
+    public void startFixedAirCasting() {
+        dashboardChartManager.start();
 
-                if (settingsHelper.hasNoCredentials()) {
-                    Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-                }
-
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    if (locationHelper.hasNoGPSFix()) {
-                        Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    }
-
-    private void startFixedAirCasting() {
-        if (settingsHelper.hasNoCredentials())
+        if (settingsHelper.hasNoCredentials()) {
             Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-        else
+        } else {
             activity.startActivity(new Intent(activity, StartFixedSessionActivity.class));
+        }
     }
 }

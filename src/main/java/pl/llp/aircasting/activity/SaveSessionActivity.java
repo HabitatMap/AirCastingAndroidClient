@@ -53,12 +53,17 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    Session session = sessionManager.getSession();
     sessionManager.pauseSession();
 
     setContentView(R.layout.session_details);
 
     saveButton.setOnClickListener(this);
     discardButton.setOnClickListener(this);
+
+    sessionTitle.setText(session.getTitle());
+    sessionTags.setText(session.getTags());
+    sessionDescription.setText(session.getDescription());
 
     if (settingsHelper.isContributingToCrowdMap()) {
       discardButton.setVisibility(View.GONE);
