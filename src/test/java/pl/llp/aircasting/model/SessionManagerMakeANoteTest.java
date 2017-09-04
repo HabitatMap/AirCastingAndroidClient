@@ -53,7 +53,7 @@ public class SessionManagerMakeANoteTest
     sessionManager.locationHelper = mock(LocationHelper.class);
     when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
     sessionManager.eventBus = mock(EventBus.class);
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(null, null, null, false);
 
     date = new Date();
   }

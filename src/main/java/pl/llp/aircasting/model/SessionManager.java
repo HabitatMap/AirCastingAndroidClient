@@ -331,9 +331,14 @@ public class SessionManager
     eventBus.post(new SessionChangeEvent(session));
   }
 
-  public void startMobileSession(boolean locationLess)
+  public void startMobileSession(String title, String tags, String description, boolean locationLess)
   {
-    startSession(new Session(false), locationLess);
+    Session newSession = new Session(false);
+    newSession.setTitle(title);
+    newSession.setTags(tags);
+    newSession.setDescription(description);
+
+    startSession(newSession, locationLess);
   }
 
   public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)

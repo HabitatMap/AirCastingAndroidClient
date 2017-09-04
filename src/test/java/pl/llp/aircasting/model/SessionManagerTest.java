@@ -65,6 +65,10 @@ public class SessionManagerTest
   SensorEvent lastEvent;
   ProgressListener progressListener;
 
+  private String title;
+  private String tags;
+  private String description;
+
   private void mockSensors()
   {
     sessionManager.locationHelper = mock(LocationHelper.class);
@@ -113,7 +117,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateMeasurementStreams()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
 
@@ -126,7 +130,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateOnlyOneStreamPerSensor()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
     triggerMeasurement();
@@ -137,7 +141,7 @@ public class SessionManagerTest
   @Test
   public void shouldCreateAStreamForEachSensor()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
     SensorEvent event = new SensorEvent("CERN", "LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
@@ -150,7 +154,7 @@ public class SessionManagerTest
   @Test
   public void shouldAllowAccessToAParticularStream()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
 
@@ -204,7 +208,7 @@ public class SessionManagerTest
   @Test
   public void shouldStoreMeasurements()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement(22);
 
@@ -216,7 +220,7 @@ public class SessionManagerTest
   @Test
   public void measurements_withoutLocation_should_get_a_fake()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     sessionManager.session.setLocationless(true);
     when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
@@ -279,7 +283,7 @@ public class SessionManagerTest
   @Test
   public void shouldNotStopSensorsDuringASession()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     sessionManager.stopSensors();
 
     verify(sessionManager.locationHelper, never()).stop();
@@ -290,7 +294,7 @@ public class SessionManagerTest
   @Test
   public void shouldStartASession()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     verify(sessionManager.locationHelper, times(2)).start();
     verify(sessionManager.audioReader).start();
@@ -300,7 +304,7 @@ public class SessionManagerTest
   @Test
   public void shouldDiscardASession()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     sessionManager.getSession().setId(1234);
 
     triggerMeasurement(13.5);
@@ -360,7 +364,7 @@ public class SessionManagerTest
   @Test
   public void shouldSetSessionStart()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     int oneSecond = 1000;
     assertThat(new Date().getTime() - sessionManager.session.getStart().getTime() < oneSecond, equalTo(true));
@@ -372,7 +376,7 @@ public class SessionManagerTest
     // given
 
     // when
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
 
     // then
     org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isTrue();
@@ -382,7 +386,7 @@ public class SessionManagerTest
   public void stopSession_should_changeRecordingState() throws Exception
   {
       // given
-      sessionManager.startMobileSession(false);
+      sessionManager.startMobileSession(title, tags, description, false);
 
       // when
       sessionManager.stopSession();
@@ -395,7 +399,7 @@ public class SessionManagerTest
   @Test
   public void shouldSetSessionEnd()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     triggerMeasurement();
 
     sessionManager.finishSession(0);
@@ -448,7 +452,7 @@ public class SessionManagerTest
   @Test
   public void shouldJustDeleteNotesIfSessionInProgress()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     Note note = sessionManager.makeANote(null, null, null);
 
     sessionManager.deleteNote(note);
@@ -459,7 +463,7 @@ public class SessionManagerTest
   @Test
   public void afterDeletingNotesShouldHaveNewNumbers()
   {
-    sessionManager.startMobileSession(false);
+    sessionManager.startMobileSession(title, tags, description, false);
     Note note1 = sessionManager.makeANote(null, "Note1", null);
     Note note2 = sessionManager.makeANote(null, "Note2", null);
 

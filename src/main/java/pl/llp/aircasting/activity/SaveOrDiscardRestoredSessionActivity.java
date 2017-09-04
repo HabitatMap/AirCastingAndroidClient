@@ -25,7 +25,6 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
 
   @Inject SessionManager sessionManager;
   @Inject SettingsHelper settingsHelper;
-  @Inject MetadataHelper metadataHelper;
 
   @Inject ApplicationState state;
 
@@ -35,9 +34,14 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    Session session = sessionManager.getSession();
     sessionManager.pauseSession();
 
     setContentView(R.layout.save_lost_session);
+
+    sessionTitle.setText(session.getTitle());
+    sessionTags.setText(session.getTags());
+    sessionDescription.setText(session.getDescription());
 
     saveButton.setOnClickListener(this);
     discardButton.setOnClickListener(this);

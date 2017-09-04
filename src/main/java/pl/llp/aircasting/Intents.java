@@ -52,6 +52,7 @@ public final class Intents
   public static final int SAVE_DIALOG = 0;
   public static final int EDIT_SESSION = 1;
   public static final int TAKE_PICTURE = 2;
+  public static final int CHOOSE_SESSION_TYPE = 3;
 
   public static final String SESSION_SERVICE_TASK = "session_service_task";
   public static final int START_SENSORS = 0;

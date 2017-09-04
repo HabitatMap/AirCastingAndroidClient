@@ -10,12 +10,24 @@ public class RecordWithoutGPSAlert {
     private Context context;
     private AppCompatDelegate delegate;
     private SessionManager sessionManager;
+    private String sessionTitle;
+    private String sessionTags;
+    private String sessionDescription;
     private boolean withoutLocation;
 
-    public RecordWithoutGPSAlert(Context context, AppCompatDelegate delegate, SessionManager sessionManager, boolean withoutLocation) {
+    public RecordWithoutGPSAlert(String title,
+                                 String tags,
+                                 String description,
+                                 Context context,
+                                 AppCompatDelegate delegate,
+                                 SessionManager sessionManager,
+                                 boolean withoutLocation) {
         this.context = context;
         this.delegate = delegate;
         this.sessionManager = sessionManager;
+        this.sessionTitle = title;
+        this.sessionTags = tags;
+        this.sessionDescription = description;
         this.withoutLocation = withoutLocation;
     }
 
@@ -26,7 +38,7 @@ public class RecordWithoutGPSAlert {
             public void onClick(DialogInterface dialogInterface, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        sessionManager.startMobileSession(withoutLocation);
+                        sessionManager.startMobileSession(sessionTitle, sessionTags, sessionDescription, withoutLocation);
                         delegate.invalidateOptionsMenu();
                         break;
 
