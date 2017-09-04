@@ -359,7 +359,7 @@ public class SettingsHelper
     return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
   }
 
-  public boolean isFixedSessionStreamingEnabled() {
+    public boolean isFixedSessionStreamingEnabled() {
     return preferences.getBoolean(FIXED_SESSIONS_STREAMING, DEFAULT_FIXED_SESSIONS_STREAMING);
   }
 }

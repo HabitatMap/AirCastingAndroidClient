@@ -120,6 +120,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     @Override
+    public void onPostResume() {
+        super.onPostResume();
+        getDelegate().invalidateOptionsMenu();
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 

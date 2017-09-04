@@ -81,6 +81,12 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
   }
 
   @Override
+  public void onPostResume() {
+    super.onPostResume();
+    getDelegate().invalidateOptionsMenu();
+  }
+
+  @Override
   protected void onPause() {
     super.onPause();
     measurementPresenter.unregisterListener(this);
