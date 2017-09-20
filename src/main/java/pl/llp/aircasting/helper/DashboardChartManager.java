@@ -1,9 +1,7 @@
 package pl.llp.aircasting.helper;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
-import android.view.View;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -15,12 +13,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ChartOptionsActivity;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.activity.adapter.StreamAdapter;
+import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
@@ -39,8 +37,8 @@ public class DashboardChartManager {
     @Inject SessionManager sessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
-    @Inject EventBus eventBus;
     @Inject Context context;
+    @Inject StreamAdapterFactory streamAdapterFactory;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
@@ -48,6 +46,7 @@ public class DashboardChartManager {
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
     private static int averagesCounter = 0;
     private static int interval;
+    private static StreamAdapter adapter;
     private static Map<String, Boolean> shouldUseExistingEntries = newHashMap();
     private static Map<String, Boolean> newEntriesForStream = newHashMap();
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
@@ -77,7 +76,7 @@ public class DashboardChartManager {
         averages.clear();
         newEntriesForStream.clear();
         shouldUseExistingEntries.clear();
-        resetStaticCharts();
+        resetAllStaticCharts();
     }
 
     public void drawChart(LineChart chart, final Sensor sensor) {
@@ -85,14 +84,9 @@ public class DashboardChartManager {
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
 
-        chart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new ViewStreamEvent(sensor));
-                context.startActivity(new Intent(context, ChartOptionsActivity.class));
-            }
-
-        });
+        if (adapter == null) {
+            adapter = streamAdapterFactory.getAdapter((DashboardBaseActivity) context);
+        }
 
         draw(chart, descriptionText);
 
@@ -144,8 +138,14 @@ public class DashboardChartManager {
         chart.setData(lineData);
     }
 
-    public void resetStaticCharts() {
+    public void resetAllStaticCharts() {
         staticChartGeneratedForStream.clear();
+    }
+
+    public void resetSpecificStaticCharts(String[] sensors) {
+        for (String sensorName : sensors) {
+            staticChartGeneratedForStream.remove(sensorName);
+        }
     }
 
     public void resetDynamicCharts(Set<String> sensors) {
@@ -178,9 +178,13 @@ public class DashboardChartManager {
         desc.setText(descriptionText);
         desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
         desc.setTextSize(10);
+
         chart.setDescription(desc);
         chart.setNoDataText("");
         chart.setPinchZoom(false);
+        chart.setTouchEnabled(false);
+        chart.setDragEnabled(false);
+        chart.setDoubleTapToZoomEnabled(false);
     }
 
     private LineDataSet prepareDataSet(String unit, String sensorName) {

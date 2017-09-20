@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -135,6 +136,10 @@ public class SensorManager
     SensorName sensorName = SensorName.from(name);
     Sensor sensor = sensors.get(sensorName);
     return sensor;
+  }
+
+  public boolean anySensorConnected() {
+    return !getSensors().isEmpty();
   }
 
   /**

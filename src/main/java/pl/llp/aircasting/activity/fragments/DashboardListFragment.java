@@ -1,25 +1,36 @@
 package pl.llp.aircasting.activity.fragments;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
+import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.view.DashboardListView;
+
+import static android.content.Context.VIBRATOR_SERVICE;
 
 /**
  * Created by radek on 28/06/17.
  */
-public class DashboardListFragment extends ListFragment implements View.OnClickListener {
+public class DashboardListFragment extends ListFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private View view;
     private Button microphoneButton;
     private Button sensorsButton;
@@ -46,7 +57,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
-        setListAdapter(adapter);
 
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
         if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
@@ -57,12 +67,17 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     @Override
     public void onResume() {
         if (state.dashboardState().isPopulated()) {
+            adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
             setListAdapter(adapter);
+            adapter.forceUpdate();
         }
+
+        DashboardListView listView = (DashboardListView) getListView();
+        listView.setOnItemClickListener(this);
 
         adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
 
-        adapter.resetStaticCharts();
+        adapter.resetAllStaticCharts();
         adapter.resetDynamicCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
@@ -82,7 +97,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 DashboardActivity activity = (DashboardActivity) getActivity();
                 activity.connectPhoneMicrophone();
                 setListAdapter(adapter);
-                state.dashboardState.populate();
+                state.dashboardState().populate();
                 activity.invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
@@ -95,9 +110,17 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         return getListAdapter() != null;
     }
 
-    private void setData(StreamAdapterFactory adapterFactory,
-                         ApplicationState state) {
+    private void setData(StreamAdapterFactory adapterFactory, ApplicationState state) {
         this.adapterFactory = adapterFactory;
         this.state = state;
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        DashboardActivity activity = (DashboardActivity) getActivity();
+        View item = getListAdapter().getView(position, view, parent);
+
+        activity.viewChartOptions(item);
+    }
 }
+
