@@ -1,15 +1,20 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -22,10 +27,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
@@ -72,10 +74,14 @@ public class StreamAdapter extends SimpleAdapter {
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
     private LineChart chart;
+    private int streamDeleteMessage;
 
     // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
-    private boolean streamsReordered = false;
+    private static boolean streamsReordered;
+    private static boolean reorderInProgress = false;
+    private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
+    private static Comparator comparator;
 
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
@@ -120,14 +126,29 @@ public class StreamAdapter extends SimpleAdapter {
         dashboardChartManager.resetSpecificStaticCharts(sensorNames);
     }
 
+    public void startReorder() {
+        reorderInProgress = true;
+    }
+
+    public void stopReorder() {
+        reorderInProgress = false;
+    }
+
     @Subscribe
-    public void onEvent(final SensorEvent event) {
+    public void onEvent(SensorEvent event) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                update();
+                if (!reorderInProgress) {
+                    update();
+                }
             }
         });
+    }
+
+    @Subscribe
+    public void onEvent(SessionLoadedEvent event) {
+        clearedStreams.remove(event.getSession().getId());
     }
 
     public void forceUpdate() {
@@ -163,7 +184,6 @@ public class StreamAdapter extends SimpleAdapter {
     private void update() {
         data.clear();
         prepareData();
-        Comparator comparator;
 
         if (streamsReordered) {
             comparator = positionComparator;
@@ -173,14 +193,21 @@ public class StreamAdapter extends SimpleAdapter {
         }
 
         sort(data, comparator);
+        resetAllStaticCharts();
 
         notifyDataSetChanged();
     }
 
     private void prepareData() {
         List<Sensor> sensors = sensorManager.getSensors();
+        long sessionId = sessionManager.getSession().getId();
+        List<String> clearedStreamsForSession = clearedStreams.get(sessionId);
 
         for (Sensor sensor : sensors) {
+            if (clearedStreamsForSession != null && clearedStreamsForSession.contains(sensor.toString())) {
+                continue;
+            }
+
             Map<String, Object> map = prepareItem(sensor);
 
             map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
@@ -222,15 +249,53 @@ public class StreamAdapter extends SimpleAdapter {
         return getPosition(stream, positions);
     }
 
-    private void deleteStream(DashboardBaseActivity context, Sensor sensor) {
-        if (sessionManager.getSession().getActiveMeasurementStreams().size() > 1) {
-            confirmDeletingStream(context, sensor);
+    public void clearStream(int position) {
+        Sensor sensor = (Sensor) data.get(position).get(SENSOR);
+        String sensorName = sensor.toString();
+        long sessionId = sessionManager.getSession().getId();
+
+        if (!clearedStreams.containsKey(sessionId)) {
+            clearedStreams.put(sessionId, new ArrayList<String>());
+        }
+        clearedStreams.get(sessionId).add(sensorName);
+        streamsReordered = true;
+        update();
+    }
+
+    public void deleteStream(View streamView) {
+        if (canStreamBeDeleted()) {
+            TextView sensorTitle = (TextView) streamView.findViewById(R.id.sensor_name);
+            String sensorName = (String) sensorTitle.getText();
+            Sensor sensor = sensorManager.getSensorByName(sensorName);
+
+            if (sessionManager.getSession().getActiveMeasurementStreams().size() > 1) {
+                confirmDeletingStream(sensor);
+            } else {
+                confirmDeletingSession();
+            }
         } else {
-            confirmDeletingSession(context);
+            Toast.makeText(context, streamDeleteMessage, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void confirmDeletingSession(final DashboardBaseActivity context) {
+    private boolean canStreamBeDeleted() {
+        if (sessionManager.isSessionSaved()) {
+            return true;
+        } else if (sessionManager.isRecording()) {
+            if (sessionManager.getSession().isFixed()) {
+                return true;
+            } else {
+                streamDeleteMessage = R.string.wrong_session_type;
+                return false;
+            }
+        } else if (!sessionManager.isSessionStarted()) {
+            streamDeleteMessage = R.string.cannot_delete_stream;
+            return false;
+        }
+        return false;
+    }
+
+    private void confirmDeletingSession() {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("This is the only stream, delete session?").
                 setCancelable(true).
@@ -246,7 +311,7 @@ public class StreamAdapter extends SimpleAdapter {
         dialog.show();
     }
 
-    private void confirmDeletingStream(final DashboardBaseActivity context, final Sensor sensor) {
+    private void confirmDeletingStream(final Sensor sensor) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("Delete stream?").
                 setCancelable(true).

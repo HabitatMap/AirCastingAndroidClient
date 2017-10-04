@@ -58,6 +58,8 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
 
+        setListAdapter(adapter);
+
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
         if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
 
@@ -67,7 +69,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     @Override
     public void onResume() {
         if (state.dashboardState().isPopulated()) {
-            adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
             setListAdapter(adapter);
             adapter.forceUpdate();
         }
@@ -97,7 +98,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 DashboardActivity activity = (DashboardActivity) getActivity();
                 activity.connectPhoneMicrophone();
                 setListAdapter(adapter);
-                state.dashboardState().populate();
+                state.dashboardState.populate();
                 activity.invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
