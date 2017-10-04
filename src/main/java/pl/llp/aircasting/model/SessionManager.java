@@ -401,8 +401,7 @@ public class SessionManager
       cleanup();
   }
 
-  public void deleteSession()
-  {
+  public void deleteSession() {
     Long sessionId = session.getId();
     sessionRepository.markSessionForRemoval(sessionId);
     discardSession(sessionId);

@@ -138,10 +138,6 @@ public class SensorManager
     return sensor;
   }
 
-  public boolean anySensorConnected() {
-    return !getSensors().isEmpty();
-  }
-
   /**
    * @param sensor toggle enabled/disabled status of this Sensor
    */

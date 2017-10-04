@@ -92,9 +92,11 @@ public class DashboardActivity extends DashboardBaseActivity {
 
         if (!sessionManager.isRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
-        } else {
+        } else if (sessionManager.isRecording()){
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
             inflater.inflate(R.menu.toolbar_make_note, menu);
+        } else {
+            return true;
         }
 
         return true;

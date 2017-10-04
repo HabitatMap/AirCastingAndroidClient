@@ -15,24 +15,20 @@ public abstract class AbstractSensor
   protected final BluetoothDevice device;
   private Thread thread;
 
-  public AbstractSensor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter)
-  {
+  public AbstractSensor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter adapter) {
     this.descriptor = descriptor;
     this.eventBus = eventBus;
     this.adapter = adapter;
 
-    if(descriptor == null || eventBus == null || adapter == null)
-    {
+    if (descriptor == null || eventBus == null || adapter == null) {
       throw new NullPointerException("Cannot have nulls!");
     }
 
     this.device = adapter.getRemoteDevice(descriptor.getAddress());
   }
 
-  public void start()
-  {
-    if(thread == null)
-    {
+  public void start() {
+    if (thread == null) {
       thread = new Thread(new Runnable()
       {
         @Override
@@ -41,15 +37,14 @@ public abstract class AbstractSensor
           BluetoothConnector connector = new BluetoothConnector(adapter, device, eventBus);
           BluetoothSocket socket = getSocket(connector);
           injectSocket(socket);
-          if (connector.connect(socket) != null)
-          {
+          if (connector.connect(socket) != null) {
             startWorking();
           }
         }
       });
     }
-    if(State.NEW.equals(thread.getState()))
-    {
+
+    if(State.NEW.equals(thread.getState())) {
       thread.start();
     }
   }
@@ -63,8 +58,7 @@ public abstract class AbstractSensor
 
   protected abstract void injectSocket(BluetoothSocket socket);
 
-  public void stop()
-  {
+  public void stop() {
     eventBus.post(new SensorStoppedEvent(descriptor));
     thread = null;
     customStop();

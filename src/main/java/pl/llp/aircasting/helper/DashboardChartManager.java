@@ -16,8 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.DashboardBaseActivity;
-import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.view.presenter.MeasurementAggregator;
@@ -38,7 +36,6 @@ public class DashboardChartManager {
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
     @Inject Context context;
-    @Inject StreamAdapterFactory streamAdapterFactory;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
@@ -46,7 +43,6 @@ public class DashboardChartManager {
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
     private static int averagesCounter = 0;
     private static int interval;
-    private static StreamAdapter adapter;
     private static Map<String, Boolean> shouldUseExistingEntries = newHashMap();
     private static Map<String, Boolean> newEntriesForStream = newHashMap();
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
@@ -83,10 +79,6 @@ public class DashboardChartManager {
         String sensorName = sensor.getSensorName();
         MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
-
-        if (adapter == null) {
-            adapter = streamAdapterFactory.getAdapter((DashboardBaseActivity) context);
-        }
 
         draw(chart, descriptionText);
 
