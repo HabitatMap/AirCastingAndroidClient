@@ -245,6 +245,8 @@
   <string name="start_indoor_session">Start indoor session</string>
   <string name="start_outdoor_session">Start outdoor session</string>
   <string name="google_play_services_not_available">This feature requires Google Play Services installed on the device.</string>
+  <string name="connect_phone_mic">Connect to phone microphone</string>
+  <string name="connect_external_device">Connect to external device</string>
 
   <string name="drawer_open">Open</string>
   <string name="drawer_close">Close</string>
