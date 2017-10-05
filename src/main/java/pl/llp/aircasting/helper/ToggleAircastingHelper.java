@@ -3,7 +3,6 @@ package pl.llp.aircasting.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 import pl.llp.aircasting.Intents;
@@ -62,7 +61,7 @@ public class ToggleAircastingHelper {
     }
 
     public void stopAirCasting() {
-        Session session = sessionManager.getSession();
+        Session session = sessionManager.getCurrentSession();
         dashboardChartManager.stop();
 
         if (session.isFixed()) {

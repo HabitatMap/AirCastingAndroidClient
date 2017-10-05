@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
@@ -58,7 +57,7 @@ public class DashboardChartManager {
 
     public void start() {
         resetState();
-        interval = sessionManager.getSession().isFixed() ? FIXED_INTERVAL : MOBILE_INTERVAL;
+        interval = sessionManager.getCurrentSession().isFixed() ? FIXED_INTERVAL : MOBILE_INTERVAL;
         handler.postDelayed(updateEntriesTask, interval);
     }
 

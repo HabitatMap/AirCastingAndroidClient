@@ -80,7 +80,7 @@ public class SessionManager
   @Inject TelephonyManager telephonyManager;
   @Inject SensorManager sensorManager;
 
-  @NotNull Session session = new Session();
+  @NotNull Session currentSession = new Session();
 
   @Inject ExternalSensors externalSensors;
   @Inject ContinuousTracker tracker;
@@ -108,8 +108,8 @@ public class SessionManager
   }
 
   @NotNull
-  public Session getSession() {
-    return session;
+  public Session getCurrentSession() {
+    return currentSession;
   }
 
   public void loadSession(long sessionId, @NotNull ProgressListener listener)
@@ -123,7 +123,7 @@ public class SessionManager
   void setSession(@NotNull Session session)
   {
     Preconditions.checkNotNull(session, "Cannot set null session");
-    this.session = session;
+    this.currentSession = session;
     notifyNewSession(session);
   }
 
@@ -133,7 +133,7 @@ public class SessionManager
   }
 
   public boolean sessionHasId() {
-    return getSession().getId() != null;
+    return getCurrentSession().getId() != null;
   }
 
   public void updateSession(Session from) {
@@ -151,7 +151,7 @@ public class SessionManager
   }
 
   public Iterable<Note> getNotes() {
-    return getSession().getNotes();
+    return getCurrentSession().getNotes();
   }
 
   public void startSensors() {
@@ -212,7 +212,7 @@ public class SessionManager
 
   public boolean canSessionHaveNotes()
   {
-    return !session.isFixed();
+    return !currentSession.isFixed();
   }
 
   public void setContribute(long sessionId, boolean shouldContribute) {
@@ -249,12 +249,12 @@ public class SessionManager
   {
     Location location = locationHelper.getLastLocation();
 
-    if(session.isFixed())
+    if(currentSession.isFixed())
     {
-      location.setLatitude(session.getLatitude());
-      location.setLongitude(session.getLongitude());
+      location.setLatitude(currentSession.getLatitude());
+      location.setLongitude(currentSession.getLongitude());
     }
-    else if(session.isLocationless())
+    else if(currentSession.isLocationless())
     {
       location = new Location("fake");
       location.setLatitude(TOTALLY_FAKE_COORDINATE);
@@ -268,12 +268,12 @@ public class SessionManager
   {
     String sensorName = event.getSensorName();
 
-    if (!session.hasStream(sensorName)) {
+    if (!currentSession.hasStream(sensorName)) {
       MeasurementStream stream = event.stream();
       tracker.addStream(stream);
     }
 
-    MeasurementStream stream = session.getStream(sensorName);
+    MeasurementStream stream = currentSession.getStream(sensorName);
     if(stream.isVisible())
     {
       stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
@@ -283,16 +283,16 @@ public class SessionManager
   }
 
   public Note getNote(int i) {
-    return session.getNotes().get(i);
+    return currentSession.getNotes().get(i);
   }
 
   public void deleteNote(Note note)
   {
-    tracker.deleteNote(session, note);
+    tracker.deleteNote(currentSession, note);
   }
 
   public int getNoteCount() {
-    return session.getNotes().size();
+    return currentSession.getNotes().size();
   }
 
   public void restartSensors() {
@@ -300,17 +300,17 @@ public class SessionManager
   }
 
   public Collection<MeasurementStream> getMeasurementStreams() {
-    return newArrayList(session.getActiveMeasurementStreams());
+    return newArrayList(currentSession.getActiveMeasurementStreams());
   }
 
   public MeasurementStream getMeasurementStream(String sensorName) {
-    return session.getStream(sensorName);
+    return currentSession.getStream(sensorName);
   }
 
   @VisibleForTesting
   void discardSession()
   {
-    Long sessionId = getSession().getId();
+    Long sessionId = getCurrentSession().getId();
     discardSession(sessionId);
   }
 
@@ -362,24 +362,24 @@ public class SessionManager
 
   private void startSession(Session newSession, boolean locationLess)
   {
-    eventBus.post(new SessionStartedEvent(getSession()));
+    eventBus.post(new SessionStartedEvent(getCurrentSession()));
     setSession(newSession);
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
 
-    if(!tracker.startTracking(getSession(), locationLess))
+    if(!tracker.startTracking(getCurrentSession(), locationLess))
       cleanup();
   }
 
   public void stopSession()
   {
-    tracker.stopTracking(getSession());
+    tracker.stopTracking(getCurrentSession());
     locationHelper.stop();
     state.recording().stopRecording();
     notificationHelper.hideRecordingNotification();
-    eventBus.post(new SessionStoppedEvent(getSession()));
+    eventBus.post(new SessionStoppedEvent(getCurrentSession()));
   }
 
   public void finishSession(long sessionId) {
@@ -401,7 +401,7 @@ public class SessionManager
   }
 
   public void deleteSession() {
-    Long sessionId = session.getId();
+    Long sessionId = currentSession.getId();
     sessionRepository.markSessionForRemoval(sessionId);
     discardSession(sessionId);
   }
@@ -420,8 +420,8 @@ public class SessionManager
   public double getAvg(Sensor sensor) {
     String sensorName = sensor.getSensorName();
 
-    if (session.hasStream(sensorName)) {
-      return session.getStream(sensorName).getAvg();
+    if (currentSession.hasStream(sensorName)) {
+      return currentSession.getStream(sensorName).getAvg();
     } else {
       return 0;
     }
@@ -430,8 +430,8 @@ public class SessionManager
   public double getPeak(Sensor sensor) {
     String sensorName = sensor.getSensorName();
 
-    if (session.hasStream(sensorName)) {
-      return session.getStream(sensorName).getPeak();
+    if (currentSession.hasStream(sensorName)) {
+      return currentSession.getStream(sensorName).getPeak();
     } else {
       return 0;
     }
@@ -440,8 +440,8 @@ public class SessionManager
   public List<Measurement> getMeasurements(Sensor sensor) {
     String name = sensor.getSensorName();
 
-    if (session.hasStream(name)) {
-      MeasurementStream stream = session.getStream(name);
+    if (currentSession.hasStream(name)) {
+      MeasurementStream stream = currentSession.getStream(name);
       return stream.getMeasurements();
     } else {
       return newArrayList();
@@ -462,13 +462,13 @@ public class SessionManager
       Logger.w("No stream for sensor [" + sensorName + "]");
       return;
     }
-    sessionRepository.deleteStream(session, stream);
-    session.removeStream(stream);
+    sessionRepository.deleteStream(currentSession, stream);
+    currentSession.removeStream(stream);
   }
 
   public boolean isLocationless()
   {
-    return session.isLocationless();
+    return currentSession.isLocationless();
   }
 
   public void setTitleTagsDescription(long sessionId, String title, String tags, String description)
@@ -488,7 +488,7 @@ public class SessionManager
         ContentValues values = new ContentValues();
         values.put(DBConstants.NOTE_TEXT, currentNote.getText());
         @Language("SQLite")
-        String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + session.getId();
+        String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + currentSession.getId();
         writableDatabase.update(DBConstants.NOTE_TABLE_NAME, values, whereClause, null);
         return null;
       }
@@ -496,14 +496,14 @@ public class SessionManager
   }
 
   public void continueStreamingSession(Session session, boolean locationLess) {
-    eventBus.post(new SessionStartedEvent(getSession()));
+    eventBus.post(new SessionStartedEvent(getCurrentSession()));
     setSession(session);
     locationHelper.start();
     startSensors();
     state.recording().startRecording();
     notificationHelper.showRecordingNotification();
 
-    if(!tracker.continueTracking(getSession(), locationLess))
+    if(!tracker.continueTracking(getCurrentSession(), locationLess))
       cleanup();
   }
 }

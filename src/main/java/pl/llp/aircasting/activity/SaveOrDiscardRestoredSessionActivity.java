@@ -2,7 +2,6 @@ package pl.llp.aircasting.activity;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
@@ -34,7 +33,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Session session = sessionManager.getSession();
+    Session session = sessionManager.getCurrentSession();
     sessionManager.pauseSession();
 
     setContentView(R.layout.save_lost_session);
@@ -75,7 +74,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
       case R.id.save_button:
       {
         fillSessionDetails(sessionId);
-        Session session = sessionManager.getSession();
+        Session session = sessionManager.getCurrentSession();
         if(session.isLocationless())
         {
           sessionManager.finishSession(sessionId);

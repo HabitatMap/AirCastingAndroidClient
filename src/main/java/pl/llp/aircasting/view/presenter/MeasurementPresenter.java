@@ -228,7 +228,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
       // when user opens the graph with fixed session (since fixed sessions are often much longer).
-      if(sessionManager.getSession().isFixed())
+      if(sessionManager.getCurrentSession().isFixed())
         measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
       else
         measurements = stream.getMeasurements();

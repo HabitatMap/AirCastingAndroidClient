@@ -188,7 +188,7 @@ public class SessionManagerTest
     when(stream.getAvg()).thenReturn(10.0);
     String name = sensor.getSensorName();
     when(stream.getSensorName()).thenReturn(name);
-    sessionManager.session.add(stream);
+    sessionManager.currentSession.add(stream);
 
     assertThat(sessionManager.getAvg(sensor), equalTo(10.0));
   }
@@ -200,7 +200,7 @@ public class SessionManagerTest
     when(stream.getPeak()).thenReturn(11.0);
     String name = sensor.getSensorName();
     when(stream.getSensorName()).thenReturn(name);
-    sessionManager.session.add(stream);
+    sessionManager.currentSession.add(stream);
 
     assertThat(sessionManager.getPeak(sensor), equalTo(11.0));
   }
@@ -221,13 +221,13 @@ public class SessionManagerTest
   public void measurements_withoutLocation_should_get_a_fake()
   {
     sessionManager.startMobileSession(title, tags, description, false);
-    sessionManager.session.setLocationless(true);
+    sessionManager.currentSession.setLocationless(true);
     when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
     triggerMeasurement();
 
     assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(false));
-    assertThat(sessionManager.getSession().isLocationless(), equalTo(true));
+    assertThat(sessionManager.getCurrentSession().isLocationless(), equalTo(true));
   }
 
   @Test
@@ -305,7 +305,7 @@ public class SessionManagerTest
   public void shouldDiscardASession()
   {
     sessionManager.startMobileSession(title, tags, description, false);
-    sessionManager.getSession().setId(1234);
+    sessionManager.getCurrentSession().setId(1234);
 
     triggerMeasurement(13.5);
     sessionManager.discardSession();
@@ -333,7 +333,7 @@ public class SessionManagerTest
   @Test
   public void shouldNotifyListenersOnSessionClobber()
   {
-    sessionManager.getSession().setId(1234);
+    sessionManager.getCurrentSession().setId(1234);
     sessionManager.discardSession();
 
     verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
@@ -354,7 +354,7 @@ public class SessionManagerTest
   @Test
   public void shouldNotAddMeasurementsToASavedSession()
   {
-    sessionManager.session = new Session();
+    sessionManager.currentSession = new Session();
 
     triggerMeasurement(10);
 
@@ -367,7 +367,7 @@ public class SessionManagerTest
     sessionManager.startMobileSession(title, tags, description, false);
 
     int oneSecond = 1000;
-    assertThat(new Date().getTime() - sessionManager.session.getStart().getTime() < oneSecond, equalTo(true));
+    assertThat(new Date().getTime() - sessionManager.currentSession.getStart().getTime() < oneSecond, equalTo(true));
   }
 
   @Test
@@ -476,13 +476,13 @@ public class SessionManagerTest
   @Test
   public void shouldMarkNotesToBeDeletedForSavedSessions()
   {
-    sessionManager.session = mock(Session.class);
-    when(sessionManager.session.getId()).thenReturn(1234L);
+    sessionManager.currentSession = mock(Session.class);
+    when(sessionManager.currentSession.getId()).thenReturn(1234L);
     Note note = new Note(null, null, location, null, 10);
 
     sessionManager.deleteNote(note);
 
-    verify(sessionManager.session).deleteNote(note);
+    verify(sessionManager.currentSession).deleteNote(note);
   }
 
   @Test

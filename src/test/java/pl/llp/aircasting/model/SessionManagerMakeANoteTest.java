@@ -65,7 +65,7 @@ public class SessionManagerMakeANoteTest
 
     sessionManager.makeANote(date, "Note text", "some file");
 
-    assertThat(sessionManager.getSession().getNotes()).contains(expected);
+    assertThat(sessionManager.getCurrentSession().getNotes()).contains(expected);
   }
 
   @Test
@@ -85,7 +85,7 @@ public class SessionManagerMakeANoteTest
     sessionManager.makeANote(date, "first", null);
     sessionManager.makeANote(date, "second", null);
 
-    Session session = sessionManager.session;
+    Session session = sessionManager.currentSession;
     assertThat(session.getNotes()).contains(expected1, expected2);
   }
 }

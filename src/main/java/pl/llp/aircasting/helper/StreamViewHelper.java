@@ -46,7 +46,7 @@ public class StreamViewHelper {
     }
 
     private void setTitleView(TextView sessionTitle) {
-        Session session = sessionManager.getSession();
+        Session session = sessionManager.getCurrentSession();
 
         if (sensorManager.isSessionBeingRecorded()) {
             sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
