@@ -14,7 +14,6 @@ import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -199,12 +198,21 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void prepareData() {
+        long sessionId;
+        List<String> clearedStreamsForSession = new ArrayList<String>();
         List<Sensor> sensors = sensorManager.getSensors();
-        long sessionId = sessionManager.getSession().getId();
-        List<String> clearedStreamsForSession = clearedStreams.get(sessionId);
+
+        if (sensors.isEmpty()) {
+            return;
+        }
+
+        if (sessionManager.sessionHasId()) {
+            sessionId = sessionManager.getSession().getId();
+            clearedStreamsForSession = clearedStreams.get(sessionId);
+        }
 
         for (Sensor sensor : sensors) {
-            if (clearedStreamsForSession != null && clearedStreamsForSession.contains(sensor.toString())) {
+            if (sensorIsHidden(sensor, clearedStreamsForSession)) {
                 continue;
             }
 
@@ -216,6 +224,10 @@ public class StreamAdapter extends SimpleAdapter {
 
             data.add(map);
         }
+    }
+
+    private boolean sensorIsHidden(Sensor sensor, @Nullable List<String> clearedStreamsForSession) {
+        return clearedStreamsForSession != null && clearedStreamsForSession.contains(sensor.toString());
     }
 
     private void preparePositions() {

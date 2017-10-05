@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -133,8 +132,8 @@ public class SessionManager
     return state.recording().isShowingOldSession();
   }
 
-  public boolean sessionHasTitle() {
-    return getSession().getTitle() != null;
+  public boolean sessionHasId() {
+    return getSession().getId() != null;
   }
 
   public void updateSession(Session from) {

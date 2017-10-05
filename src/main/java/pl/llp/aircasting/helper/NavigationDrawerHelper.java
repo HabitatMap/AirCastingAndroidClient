@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,12 +40,6 @@ public class NavigationDrawerHelper {
 
                 switch (menuItem.getItemId()){
                     case R.id.dashboard:
-                        if (sessionManager.isSessionSaved())
-                        {
-                            Session session = sessionManager.getSession();
-                            Long sessionId = session.getId();
-                            sessionManager.resetSession(sessionId);
-                        }
                         Intent intent = new Intent(context, DashboardActivity.class);
                         intent.putExtra("startPopulated", true);
                         activity.startActivity(intent);
