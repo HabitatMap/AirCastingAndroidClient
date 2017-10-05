@@ -63,447 +63,416 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
-public class SessionManager
-{
-  public static final double TOTALLY_FAKE_COORDINATE = 200;
+public class SessionManager {
+    public static final double TOTALLY_FAKE_COORDINATE = 200;
 
-  @Inject SimpleAudioReader audioReader;
-  @Inject EventBus eventBus;
+    @Inject SimpleAudioReader audioReader;
+    @Inject EventBus eventBus;
 
-  @Inject SessionRepository sessionRepository;
-  @Inject DatabaseTaskQueue dbQueue;
+    @Inject SessionRepository sessionRepository;
+    @Inject DatabaseTaskQueue dbQueue;
 
-  @Inject LocationHelper locationHelper;
-  @Inject NotificationHelper notificationHelper;
+    @Inject LocationHelper locationHelper;
+    @Inject NotificationHelper notificationHelper;
 
-  @Inject Application applicationContext;
-  @Inject TelephonyManager telephonyManager;
-  @Inject SensorManager sensorManager;
+    @Inject Application applicationContext;
+    @Inject TelephonyManager telephonyManager;
+    @Inject SensorManager sensorManager;
 
-  @NotNull Session currentSession = new Session();
+    @NotNull Session currentSession = new Session();
 
-  @Inject ExternalSensors externalSensors;
-  @Inject ContinuousTracker tracker;
+    @Inject ExternalSensors externalSensors;
+    @Inject ContinuousTracker tracker;
 
-  @Inject ApplicationState state;
+    @Inject ApplicationState state;
 
-  private Map<String, Double> recentMeasurements = newHashMap();
+    private Map<String, Double> recentMeasurements = newHashMap();
 
-  private boolean paused;
+    private boolean paused;
 
-  @Inject
-  public void init() {
-    telephonyManager.listen(new PhoneStateListener() {
-      @Override
-      public void onCallStateChanged(int state, String incomingNumber) {
-        if (state == TelephonyManager.CALL_STATE_IDLE) {
-          continueSession();
-        } else {
-          pauseSession();
+    @Inject
+    public void init() {
+        telephonyManager.listen(new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                if (state == TelephonyManager.CALL_STATE_IDLE) {
+                    continueSession();
+                } else {
+                    pauseSession();
+                }
+            }
+        }, PhoneStateListener.LISTEN_CALL_STATE);
+
+        eventBus.register(this);
+    }
+
+    @NotNull
+    public Session getCurrentSession() {
+        return currentSession;
+    }
+
+    public void loadSession(long sessionId, @NotNull ProgressListener listener) {
+        Preconditions.checkNotNull(listener);
+        Session newSession = sessionRepository.loadFully(sessionId, listener);
+        state.recording().startShowingOldSession();
+        setSession(newSession);
+    }
+
+    void setSession(@NotNull Session session) {
+        Preconditions.checkNotNull(session, "Cannot set null session");
+        this.currentSession = session;
+        notifyNewSession(session);
+    }
+
+    public boolean isSessionSaved() {
+        return state.recording().isShowingOldSession();
+    }
+
+    public boolean sessionHasId() {
+        return getCurrentSession().getId() != null;
+    }
+
+    public void updateSession(Session from) {
+        Preconditions.checkNotNull(from.getId(), "Unsaved session?");
+        setTitleTagsDescription(from.getId(), from.getTitle(),
+                from.getTags(),
+                from.getDescription());
+    }
+
+    public Note makeANote(Date date, String text, String picturePath) {
+        Note note = new Note(date, text, locationHelper.getLastLocation(), picturePath);
+
+        tracker.addNote(note);
+        return note;
+    }
+
+    public Iterable<Note> getNotes() {
+        return getCurrentSession().getNotes();
+    }
+
+    public void startSensors() {
+        if (!state.sensors().started()) {
+            locationHelper.start();
+            externalSensors.start();
+            state.sensors().start();
         }
-      }
-    }, PhoneStateListener.LISTEN_CALL_STATE);
-
-    eventBus.register(this);
-  }
-
-  @NotNull
-  public Session getCurrentSession() {
-    return currentSession;
-  }
-
-  public void loadSession(long sessionId, @NotNull ProgressListener listener)
-  {
-    Preconditions.checkNotNull(listener);
-    Session newSession = sessionRepository.loadFully(sessionId, listener);
-    state.recording().startShowingOldSession();
-    setSession(newSession);
-  }
-
-  void setSession(@NotNull Session session)
-  {
-    Preconditions.checkNotNull(session, "Cannot set null session");
-    this.currentSession = session;
-    notifyNewSession(session);
-  }
-
-  public boolean isSessionSaved()
-  {
-    return state.recording().isShowingOldSession();
-  }
-
-  public boolean sessionHasId() {
-    return getCurrentSession().getId() != null;
-  }
-
-  public void updateSession(Session from) {
-    Preconditions.checkNotNull(from.getId(), "Unsaved session?");
-    setTitleTagsDescription(from.getId(), from.getTitle(),
-                            from.getTags(),
-                            from.getDescription());
-  }
-
-  public Note makeANote(Date date, String text, String picturePath) {
-    Note note = new Note(date, text, locationHelper.getLastLocation(), picturePath);
-
-    tracker.addNote(note);
-    return note;
-  }
-
-  public Iterable<Note> getNotes() {
-    return getCurrentSession().getNotes();
-  }
-
-  public void startSensors() {
-    if (!state.sensors().started())
-    {
-      locationHelper.start();
-
-      externalSensors.start();
-      state.sensors().start();
-    }
-  }
-
-  public void startAudioSensor() {
-    if (!state.microphoneState().started()) {
-      audioReader.start();
-      state.microphoneState().start();
-    }
-  }
-
-  public void stopAudioSensor() {
-    if (state.microphoneState().started()) {
-      audioReader.stop();
-      state.microphoneState().stop();
-    }
-  }
-
-  public synchronized void pauseSession()
-  {
-    if (state.recording().isRecording())
-    {
-      paused = true;
-      stopAudioSensor();
-    }
-  }
-
-  public synchronized void continueSession() {
-    if (paused) {
-      paused = false;
-      startAudioSensor();
-    }
-  }
-
-  public void stopSensors()
-  {
-    if (state.recording().isRecording())
-    {
-      return;
-    }
-    locationHelper.stop();
-    state.microphoneState().stop();
-    state.sensors().stop();
-  }
-
-  public boolean isRecording()
-  {
-    return state.recording().isRecording();
-  }
-
-  public boolean canSessionHaveNotes()
-  {
-    return !currentSession.isFixed();
-  }
-
-  public void setContribute(long sessionId, boolean shouldContribute) {
-    tracker.setContribute(sessionId, shouldContribute);
-  }
-
-  @Subscribe
-  public synchronized void onEvent(SensorEvent event)
-  {
-    double value = event.getValue();
-    String sensorName = event.getSensorName();
-    Sensor sensor = sensorManager.getSensorByName(sensorName);
-    recentMeasurements.put(sensorName, value);
-
-    Location location = getLocation();
-    if (location != null && sensor != null && sensor.isEnabled())
-    {
-      double latitude = location.getLatitude();
-      double longitude = location.getLongitude();
-      Measurement measurement = new Measurement(latitude, longitude, value, event.getMeasuredValue(), event.getDate());
-      if (state.recording().isRecording())
-      {
-        MeasurementStream stream = prepareStream(event);
-        tracker.addMeasurement(sensor, stream, measurement);
-      }
-      else
-      {
-        eventBus.post(new MeasurementEvent(measurement, sensor));
-      }
-    }
-  }
-
-  private Location getLocation()
-  {
-    Location location = locationHelper.getLastLocation();
-
-    if(currentSession.isFixed())
-    {
-      location.setLatitude(currentSession.getLatitude());
-      location.setLongitude(currentSession.getLongitude());
-    }
-    else if(currentSession.isLocationless())
-    {
-      location = new Location("fake");
-      location.setLatitude(TOTALLY_FAKE_COORDINATE);
-      location.setLongitude(TOTALLY_FAKE_COORDINATE);
     }
 
-    return location;
-  }
-
-  private MeasurementStream prepareStream(SensorEvent event)
-  {
-    String sensorName = event.getSensorName();
-
-    if (!currentSession.hasStream(sensorName)) {
-      MeasurementStream stream = event.stream();
-      tracker.addStream(stream);
+    public void startAudioSensor() {
+        if (!state.microphoneState().started()) {
+            audioReader.start();
+            state.microphoneState().start();
+        }
     }
 
-    MeasurementStream stream = currentSession.getStream(sensorName);
-    if(stream.isVisible())
-    {
-      stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
+    public void stopAudioSensor() {
+        if (state.microphoneState().started()) {
+            audioReader.stop();
+            state.microphoneState().stop();
+        }
     }
 
-    return stream;
-  }
-
-  public Note getNote(int i) {
-    return currentSession.getNotes().get(i);
-  }
-
-  public void deleteNote(Note note)
-  {
-    tracker.deleteNote(currentSession, note);
-  }
-
-  public int getNoteCount() {
-    return currentSession.getNotes().size();
-  }
-
-  public void restartSensors() {
-    externalSensors.start();
-  }
-
-  public Collection<MeasurementStream> getMeasurementStreams() {
-    return newArrayList(currentSession.getActiveMeasurementStreams());
-  }
-
-  public MeasurementStream getMeasurementStream(String sensorName) {
-    return currentSession.getStream(sensorName);
-  }
-
-  @VisibleForTesting
-  void discardSession()
-  {
-    Long sessionId = getCurrentSession().getId();
-    discardSession(sessionId);
-  }
-
-  public synchronized double getNow(Sensor sensor) {
-    if (state.recording().isRecording()) {
-      return tracker.getNow(sensor);
-    }
-    else {
-      if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-        return 0;
-      }
-      return recentMeasurements.get(sensor.getSensorName());
-    }
-  }
-
-  private void notifyNewSession(Session session) {
-    eventBus.post(new SessionChangeEvent(session));
-  }
-
-  public void startMobileSession(String title, String tags, String description, boolean locationLess)
-  {
-    Session newSession = new Session(false);
-    newSession.setTitle(title);
-    newSession.setTags(tags);
-    newSession.setDescription(description);
-
-    startSession(newSession, locationLess);
-  }
-
-  public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng)
-  {
-    Session newSession = new Session(true);
-    newSession.setTitle(title);
-    newSession.setTags(tags);
-    newSession.setDescription(description);
-    newSession.setIndoor(isIndoor);
-
-    if(latlng == null) {
-      newSession.setLatitude(TOTALLY_FAKE_COORDINATE);
-      newSession.setLongitude(TOTALLY_FAKE_COORDINATE);
-    }
-    else {
-      newSession.setLatitude(latlng.latitude);
-      newSession.setLongitude(latlng.longitude);
+    public synchronized void pauseSession() {
+        if (state.recording().isRecording()) {
+            paused = true;
+            stopAudioSensor();
+        }
     }
 
-    startSession(newSession, true);
-  }
-
-  private void startSession(Session newSession, boolean locationLess)
-  {
-    eventBus.post(new SessionStartedEvent(getCurrentSession()));
-    setSession(newSession);
-    locationHelper.start();
-    startSensors();
-    state.recording().startRecording();
-    notificationHelper.showRecordingNotification();
-
-    if(!tracker.startTracking(getCurrentSession(), locationLess))
-      cleanup();
-  }
-
-  public void stopSession()
-  {
-    tracker.stopTracking(getCurrentSession());
-    locationHelper.stop();
-    state.recording().stopRecording();
-    notificationHelper.hideRecordingNotification();
-    eventBus.post(new SessionStoppedEvent(getCurrentSession()));
-  }
-
-  public void finishSession(long sessionId) {
-    synchronized (this) {
-      tracker.complete(sessionId);
-      Intents.triggerSync(applicationContext);
+    public synchronized void continueSession() {
+        if (paused) {
+            paused = false;
+            startAudioSensor();
+        }
     }
-    cleanup();
-  }
 
-  public void discardSession(long sessionId) {
-      tracker.discard(sessionId);
-      cleanup();
-  }
+    public void stopSensors() {
+        if (state.recording().isRecording()) {
+            return;
+        }
 
-  public void resetSession(long sessionId) {
-      tracker.stopTracking();
-      cleanup();
-  }
-
-  public void deleteSession() {
-    Long sessionId = currentSession.getId();
-    sessionRepository.markSessionForRemoval(sessionId);
-    discardSession(sessionId);
-  }
-
-  private void cleanup() {
-    locationHelper.stop();
-    state.recording().stopRecording();
-    setSession(new Session());
-    notificationHelper.hideRecordingNotification();
-  }
-
-  public boolean isSessionStarted() {
-    return state.recording().isRecording();
-  }
-
-  public double getAvg(Sensor sensor) {
-    String sensorName = sensor.getSensorName();
-
-    if (currentSession.hasStream(sensorName)) {
-      return currentSession.getStream(sensorName).getAvg();
-    } else {
-      return 0;
+        locationHelper.stop();
+        state.microphoneState().stop();
+        state.sensors().stop();
     }
-  }
 
-  public double getPeak(Sensor sensor) {
-    String sensorName = sensor.getSensorName();
-
-    if (currentSession.hasStream(sensorName)) {
-      return currentSession.getStream(sensorName).getPeak();
-    } else {
-      return 0;
+    public boolean isRecording() {
+        return state.recording().isRecording();
     }
-  }
 
-  public List<Measurement> getMeasurements(Sensor sensor) {
-    String name = sensor.getSensorName();
-
-    if (currentSession.hasStream(name)) {
-      MeasurementStream stream = currentSession.getStream(name);
-      return stream.getMeasurements();
-    } else {
-      return newArrayList();
+    public boolean canSessionHaveNotes() {
+        return !currentSession.isFixed();
     }
-  }
 
-  public void deleteSensorStream(Sensor sensor)
-  {
-    String sensorName = sensor.getSensorName();
-    deleteSensorStream(sensorName);
-  }
-
-  void deleteSensorStream(String sensorName)
-  {
-    MeasurementStream stream = getMeasurementStream(sensorName);
-    if(stream == null)
-    {
-      Logger.w("No stream for sensor [" + sensorName + "]");
-      return;
+    public void setContribute(long sessionId, boolean shouldContribute) {
+        tracker.setContribute(sessionId, shouldContribute);
     }
-    sessionRepository.deleteStream(currentSession, stream);
-    currentSession.removeStream(stream);
-  }
 
-  public boolean isLocationless()
-  {
-    return currentSession.isLocationless();
-  }
+    @Subscribe
+    public synchronized void onEvent(SensorEvent event) {
+        double value = event.getValue();
+        String sensorName = event.getSensorName();
+        Sensor sensor = sensorManager.getSensorByName(sensorName);
+        recentMeasurements.put(sensorName, value);
 
-  public void setTitleTagsDescription(long sessionId, String title, String tags, String description)
-  {
-    tracker.setTitle(sessionId, title);
-    tracker.setTags(sessionId, tags);
-    tracker.setDescription(sessionId, description);
-  }
+        Location location = getLocation();
+        if (location != null && sensor != null && sensor.isEnabled()) {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            Measurement measurement = new Measurement(latitude, longitude, value, event.getMeasuredValue(), event.getDate());
 
-  public void updateNote(final Note currentNote)
-  {
-    dbQueue.add(new WritableDatabaseTask<Void>()
-    {
-      @Override
-      public Void execute(SQLiteDatabase writableDatabase)
-      {
-        ContentValues values = new ContentValues();
-        values.put(DBConstants.NOTE_TEXT, currentNote.getText());
-        @Language("SQLite")
-        String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + currentSession.getId();
-        writableDatabase.update(DBConstants.NOTE_TABLE_NAME, values, whereClause, null);
-        return null;
-      }
-    });
-  }
+            if (state.recording().isRecording()) {
+                MeasurementStream stream = prepareStream(event);
+                tracker.addMeasurement(sensor, stream, measurement);
+            } else {
+                eventBus.post(new MeasurementEvent(measurement, sensor));
+            }
+        }
+    }
 
-  public void continueStreamingSession(Session session, boolean locationLess) {
-    eventBus.post(new SessionStartedEvent(getCurrentSession()));
-    setSession(session);
-    locationHelper.start();
-    startSensors();
-    state.recording().startRecording();
-    notificationHelper.showRecordingNotification();
+    private Location getLocation() {
+        Location location = locationHelper.getLastLocation();
 
-    if(!tracker.continueTracking(getCurrentSession(), locationLess))
-      cleanup();
-  }
+        if(currentSession.isFixed()) {
+            location.setLatitude(currentSession.getLatitude());
+            location.setLongitude(currentSession.getLongitude());
+        } else if (currentSession.isLocationless()) {
+            location = new Location("fake");
+            location.setLatitude(TOTALLY_FAKE_COORDINATE);
+            location.setLongitude(TOTALLY_FAKE_COORDINATE);
+        }
+
+        return location;
+    }
+
+    private MeasurementStream prepareStream(SensorEvent event) {
+        String sensorName = event.getSensorName();
+
+        if (!currentSession.hasStream(sensorName)) {
+            MeasurementStream stream = event.stream();
+            tracker.addStream(stream);
+        }
+
+        MeasurementStream stream = currentSession.getStream(sensorName);
+        if(stream.isVisible()) {
+            stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
+        }
+
+        return stream;
+    }
+
+    public Note getNote(int i) {
+        return currentSession.getNotes().get(i);
+    }
+
+    public void deleteNote(Note note) {
+        tracker.deleteNote(currentSession, note);
+    }
+
+    public int getNoteCount() {
+        return currentSession.getNotes().size();
+    }
+
+    public void restartSensors() {
+        externalSensors.start();
+    }
+
+    public Collection<MeasurementStream> getMeasurementStreams() {
+        return newArrayList(currentSession.getActiveMeasurementStreams());
+    }
+
+    public MeasurementStream getMeasurementStream(String sensorName) {
+        return currentSession.getStream(sensorName);
+    }
+
+    @VisibleForTesting
+    void discardSession() {
+        Long sessionId = getCurrentSession().getId();
+        discardSession(sessionId);
+    }
+
+    public synchronized double getNow(Sensor sensor) {
+        if (state.recording().isRecording()) {
+            return tracker.getNow(sensor);
+        } else {
+            if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+                return 0;
+            }
+
+            return recentMeasurements.get(sensor.getSensorName());
+        }
+    }
+
+    private void notifyNewSession(Session session) {
+        eventBus.post(new SessionChangeEvent(session));
+    }
+
+    public void startMobileSession(String title, String tags, String description, boolean locationLess) {
+        Session newSession = new Session(false);
+        newSession.setTitle(title);
+        newSession.setTags(tags);
+        newSession.setDescription(description);
+
+        startSession(newSession, locationLess);
+    }
+
+    public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng) {
+        Session newSession = new Session(true);
+        newSession.setTitle(title);
+        newSession.setTags(tags);
+        newSession.setDescription(description);
+        newSession.setIndoor(isIndoor);
+
+        if(latlng == null) {
+            newSession.setLatitude(TOTALLY_FAKE_COORDINATE);
+            newSession.setLongitude(TOTALLY_FAKE_COORDINATE);
+        } else {
+            newSession.setLatitude(latlng.latitude);
+            newSession.setLongitude(latlng.longitude);
+        }
+
+        startSession(newSession, true);
+    }
+
+    private void startSession(Session newSession, boolean locationLess) {
+        eventBus.post(new SessionStartedEvent(getCurrentSession()));
+        setSession(newSession);
+        locationHelper.start();
+        startSensors();
+        state.recording().startRecording();
+        notificationHelper.showRecordingNotification();
+
+        if (!tracker.startTracking(getCurrentSession(), locationLess)) {
+            cleanup();
+        }
+    }
+
+    public void stopSession() {
+        tracker.stopTracking(getCurrentSession());
+        locationHelper.stop();
+        state.recording().stopRecording();
+        notificationHelper.hideRecordingNotification();
+        eventBus.post(new SessionStoppedEvent(getCurrentSession()));
+    }
+
+    public void finishSession(long sessionId) {
+        synchronized (this) {
+            tracker.complete(sessionId);
+            Intents.triggerSync(applicationContext);
+        }
+
+        cleanup();
+    }
+
+    public void discardSession(long sessionId) {
+        tracker.discard(sessionId);
+        cleanup();
+    }
+
+    public void resetSession(long sessionId) {
+        tracker.stopTracking();
+        cleanup();
+    }
+
+    public void deleteSession() {
+        Long sessionId = currentSession.getId();
+        sessionRepository.markSessionForRemoval(sessionId);
+        discardSession(sessionId);
+    }
+
+    private void cleanup() {
+        locationHelper.stop();
+        state.recording().stopRecording();
+        setSession(new Session());
+        notificationHelper.hideRecordingNotification();
+    }
+
+    public boolean isSessionStarted() {
+        return state.recording().isRecording();
+    }
+
+    public double getAvg(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (currentSession.hasStream(sensorName)) {
+            return currentSession.getStream(sensorName).getAvg();
+        } else {
+            return 0;
+        }
+    }
+
+    public double getPeak(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (currentSession.hasStream(sensorName)) {
+            return currentSession.getStream(sensorName).getPeak();
+        } else {
+            return 0;
+        }
+    }
+
+    public List<Measurement> getMeasurements(Sensor sensor) {
+        String name = sensor.getSensorName();
+
+        if (currentSession.hasStream(name)) {
+            MeasurementStream stream = currentSession.getStream(name);
+            return stream.getMeasurements();
+        } else {
+            return newArrayList();
+        }
+    }
+
+    public void deleteSensorStream(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+        deleteSensorStream(sensorName);
+    }
+
+    void deleteSensorStream(String sensorName) {
+        MeasurementStream stream = getMeasurementStream(sensorName);
+
+        if (stream == null) {
+            Logger.w("No stream for sensor [" + sensorName + "]");
+            return;
+        }
+
+        sessionRepository.deleteStream(currentSession, stream);
+        currentSession.removeStream(stream);
+    }
+
+    public boolean isLocationless() {
+        return currentSession.isLocationless();
+    }
+
+    public void setTitleTagsDescription(long sessionId, String title, String tags, String description) {
+        tracker.setTitle(sessionId, title);
+        tracker.setTags(sessionId, tags);
+        tracker.setDescription(sessionId, description);
+    }
+
+    public void updateNote(final Note currentNote) {
+        dbQueue.add(new WritableDatabaseTask<Void>() {
+            @Override
+            public Void execute(SQLiteDatabase writableDatabase) {
+                ContentValues values = new ContentValues();
+                values.put(DBConstants.NOTE_TEXT, currentNote.getText());
+                @Language("SQLite")
+                String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + currentSession.getId();
+                writableDatabase.update(DBConstants.NOTE_TABLE_NAME, values, whereClause, null);
+                return null;
+            }
+        });
+    }
+
+    public void continueStreamingSession(Session session, boolean locationLess) {
+        eventBus.post(new SessionStartedEvent(getCurrentSession()));
+        setSession(session);
+        locationHelper.start();
+        startSensors();
+        state.recording().startRecording();
+        notificationHelper.showRecordingNotification();
+
+        if(!tracker.continueTracking(getCurrentSession(), locationLess)) {
+            cleanup();
+        }
+    }
 }
