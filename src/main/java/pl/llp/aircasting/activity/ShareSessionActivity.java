@@ -80,7 +80,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
       long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
       session = sessionRepository.loadShallow(sessionId);
     } else {
-      session = sessionManager.getSession();
+      session = sessionManager.getCurrentSession();
     }
     if(session.isLocationless())
     {
@@ -117,7 +117,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
 
   private void shareFile() {
     if (sessionManager.isRecording()) {
-      session = sessionManager.getSession();
+      session = sessionManager.getCurrentSession();
       prepareAndShare();
     } else {
       loadSession();

@@ -83,7 +83,7 @@ public class MeasurementPresenterTest
     presenter.sessionManager = mockSessionManager();
     when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
     when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
-    when(presenter.sessionManager.getSession()).thenReturn(session);
+    when(presenter.sessionManager.getCurrentSession()).thenReturn(session);
 
     listener = mock(MeasurementPresenter.Listener.class);
     presenter.registerListener(listener);

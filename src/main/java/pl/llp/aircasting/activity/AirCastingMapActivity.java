@@ -301,7 +301,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private void showSession() {
         if (sessionManager.isSessionSaved() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getSession());
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getCurrentSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
             mapView.getController().animateTo(boundingBox.getCenter());

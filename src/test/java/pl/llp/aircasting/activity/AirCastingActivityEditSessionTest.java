@@ -51,7 +51,7 @@ public class AirCastingActivityEditSessionTest {
         activity.sessionManager = mock(SessionManager.class);
         session = mock(Session.class);
         data = mock(Intent.class);
-        when(activity.sessionManager.getSession()).thenReturn(session);
+        when(activity.sessionManager.getCurrentSession()).thenReturn(session);
         activity.routeOverlay = mock(RouteOverlay.class);
     }
 

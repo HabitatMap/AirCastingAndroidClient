@@ -50,8 +50,8 @@ public class SessionManagerUpdateSessionTest
   public void setup()
   {
     sessionManager.sessionRepository = mock(SessionRepository.class);
-    sessionManager.session = new Session();
-    sessionManager.session.add(new MeasurementStream());
+    sessionManager.currentSession = new Session();
+    sessionManager.currentSession.add(new MeasurementStream());
     session = new Session();
     session.setTitle(NEW_TITLE);
     session.setId(ANY_ID);

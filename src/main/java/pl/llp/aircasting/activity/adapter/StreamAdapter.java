@@ -1,6 +1,5 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
@@ -207,7 +206,7 @@ public class StreamAdapter extends SimpleAdapter {
         }
 
         if (sessionManager.sessionHasId()) {
-            sessionId = sessionManager.getSession().getId();
+            sessionId = sessionManager.getCurrentSession().getId();
             clearedStreamsForSession = clearedStreams.get(sessionId);
         }
 
@@ -264,7 +263,7 @@ public class StreamAdapter extends SimpleAdapter {
     public void clearStream(int position) {
         Sensor sensor = (Sensor) data.get(position).get(SENSOR);
         String sensorName = sensor.toString();
-        long sessionId = sessionManager.getSession().getId();
+        long sessionId = sessionManager.getCurrentSession().getId();
 
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
@@ -280,7 +279,7 @@ public class StreamAdapter extends SimpleAdapter {
             String sensorName = (String) sensorTitle.getText();
             Sensor sensor = sensorManager.getSensorByName(sensorName);
 
-            if (sessionManager.getSession().getActiveMeasurementStreams().size() > 1) {
+            if (sessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
                 confirmDeletingStream(sensor);
             } else {
                 confirmDeletingSession();
@@ -294,7 +293,7 @@ public class StreamAdapter extends SimpleAdapter {
         if (sessionManager.isSessionSaved()) {
             return true;
         } else if (sessionManager.isRecording()) {
-            if (sessionManager.getSession().isFixed()) {
+            if (sessionManager.getCurrentSession().isFixed()) {
                 return true;
             } else {
                 streamDeleteMessage = R.string.wrong_session_type;
