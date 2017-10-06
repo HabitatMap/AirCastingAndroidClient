@@ -40,6 +40,7 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.model.MeasurementStream;
 
@@ -190,7 +191,7 @@ public class DashboardListView extends ListView {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(LINE_THICKNESS);
-        paint.setColor(Color.BLUE);
+        paint.setColor(R.color.toolbar_blue);
 
         can.drawBitmap(bitmap, 0, 0, null);
         can.drawRect(rect, paint);
