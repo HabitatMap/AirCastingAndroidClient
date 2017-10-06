@@ -60,7 +60,7 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
             sessionManager.startMobileSession(title, tags, description, true);
         } else {
             if (locationHelper.getLastLocation() == null) {
-                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, description, context, delegate, sessionManager, true);
+                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, description, this, delegate, sessionManager, true);
                 recordAlert.display();
                 return;
             } else {

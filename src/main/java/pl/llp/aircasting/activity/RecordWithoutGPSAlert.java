@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,7 +8,7 @@ import android.support.v7.app.AppCompatDelegate;
 import pl.llp.aircasting.model.SessionManager;
 
 public class RecordWithoutGPSAlert {
-    private Context context;
+    private Activity activity;
     private AppCompatDelegate delegate;
     private SessionManager sessionManager;
     private String sessionTitle;
@@ -18,11 +19,11 @@ public class RecordWithoutGPSAlert {
     public RecordWithoutGPSAlert(String title,
                                  String tags,
                                  String description,
-                                 Context context,
+                                 Activity activity,
                                  AppCompatDelegate delegate,
                                  SessionManager sessionManager,
                                  boolean withoutLocation) {
-        this.context = context;
+        this.activity = activity;
         this.delegate = delegate;
         this.sessionManager = sessionManager;
         this.sessionTitle = title;
@@ -40,6 +41,7 @@ public class RecordWithoutGPSAlert {
                     case DialogInterface.BUTTON_POSITIVE:
                         sessionManager.startMobileSession(sessionTitle, sessionTags, sessionDescription, withoutLocation);
                         delegate.invalidateOptionsMenu();
+                        activity.finish();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -48,7 +50,7 @@ public class RecordWithoutGPSAlert {
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage("Without location data you can't map your session or contribute it to the CrowdMap")
                 .setPositiveButton("Continue", dialogOnClickListener)
                 .setNegativeButton("Cancel", dialogOnClickListener).show();
