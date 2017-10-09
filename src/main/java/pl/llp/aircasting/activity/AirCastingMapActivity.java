@@ -114,7 +114,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
-        if (!sessionManager.isSessionSaved()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             mapView.getOverlays().add(locationOverlay);
         }
     }
@@ -152,7 +152,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         MenuInflater inflater = getDelegate().getMenuInflater();
 
-        if (!sessionManager.isRecording()) {
+        if (!sessionManager.isSessionRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
         } else {
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
@@ -258,7 +258,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private boolean shouldShowRoute() {
         return settingsHelper.isShowRoute() &&
-                (sessionManager.isRecording() || sessionManager.isSessionSaved());
+                (sessionManager.isSessionRecording() || sessionManager.isSessionBeingViewed());
     }
 
     private void initializeMap() {
@@ -300,7 +300,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void showSession() {
-        if (sessionManager.isSessionSaved() && zoomToSession) {
+        if (sessionManager.isSessionBeingViewed() && zoomToSession) {
             LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getCurrentSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
@@ -372,7 +372,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void updateRoute() {
-        if (settingsHelper.isShowRoute() && sessionManager.isRecording()) {
+        if (settingsHelper.isShowRoute() && sessionManager.isSessionRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
         }

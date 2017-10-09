@@ -86,7 +86,7 @@ public class DashboardChartManager {
             return;
         }
 
-        if (sessionManager.isSessionSaved() && shouldStaticChartUpdate(sensorName)) {
+        if (sessionManager.isSessionBeingViewed() && shouldStaticChartUpdate(sensorName)) {
             averagesCounter = MAX_AVERAGES_AMOUNT;
             prepareEntries(sensorName);
             updateChartData(chart, sensor.getShortType(), sensorName);
@@ -190,7 +190,7 @@ public class DashboardChartManager {
         dataSet.setValueTextSize(10);
         dataSet.setDrawHighlightIndicators(false);
 
-        if (!sessionManager.isRecording()) {
+        if (!sessionManager.isSessionRecording()) {
             int color = context.getResources().getColor(R.color.gray);
             dataSet.setColor(color);
         }
@@ -286,7 +286,7 @@ public class DashboardChartManager {
         double time;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-        if (sessionManager.isSessionSaved()) {
+        if (sessionManager.isSessionBeingViewed()) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
             time = lastMeasurement.getTime().getTime();
         } else {

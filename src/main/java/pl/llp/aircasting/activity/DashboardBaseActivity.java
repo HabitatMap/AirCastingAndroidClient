@@ -48,7 +48,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         initialize();
         locationHelper.start();
 
-        if (!sessionManager.isSessionSaved()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             Intents.startSensors(context);
         }
 
@@ -63,7 +63,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        if (!sessionManager.isSessionSaved()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             Intents.stopSensors(context);
         }
 
@@ -131,7 +131,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     private boolean shouldCheckForUnfinishedSessions()
     {
-        if(sessionManager.isRecording())
+        if(sessionManager.isSessionRecording())
             return false;
 
         if(state.saving().isSaving())

@@ -63,7 +63,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         initialize();
         locationHelper.start();
 
-        if (!sessionManager.isSessionSaved()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             Intents.startSensors(context);
         }
 
@@ -78,7 +78,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     protected void onPause() {
         super.onPause();
 
-        if (!sessionManager.isSessionSaved()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             Intents.stopSensors(context);
         }
 
@@ -157,7 +157,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
     private boolean shouldCheckForUnfinishedSessions()
     {
-        if(sessionManager.isRecording())
+        if(sessionManager.isSessionRecording())
             return false;
 
         if(state.saving().isSaving())

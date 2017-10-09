@@ -14,7 +14,7 @@ public class NowValueVisibilityManager
 
   int getVisibility()
   {
-    boolean shouldDisplay = sessionManager.isRecording() || !sessionManager.isSessionSaved();
+    boolean shouldDisplay = sessionManager.isSessionRecording() || !sessionManager.isSessionBeingViewed();
     int visibility = shouldDisplay ? View.VISIBLE : View.GONE;
     return visibility;
   }

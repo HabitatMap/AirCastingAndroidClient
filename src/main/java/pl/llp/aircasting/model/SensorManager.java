@@ -1,7 +1,6 @@
 package pl.llp.aircasting.model;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -68,7 +67,7 @@ public class SensorManager {
         Sensor visibleSensor = getVisibleSensor();
         if (visibleSensor != null && visibleSensor.matches(getSensorByName(event.getSensorName()))) {
             MeasurementLevel level = null;
-            if (sessionManager.isSessionSaved()) {
+            if (sessionManager.isSessionBeingViewed()) {
                 level = MeasurementLevel.TOO_LOW;
             } else {
                 double now = (int) sessionManager.getNow(visibleSensor);
@@ -199,7 +198,7 @@ public class SensorManager {
     }
 
     public boolean isSessionBeingViewed() {
-        return sessionManager.isSessionSaved();
+        return sessionManager.isSessionBeingViewed();
     }
 
     @Subscribe

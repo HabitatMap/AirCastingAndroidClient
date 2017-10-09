@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.activity;
 
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -98,7 +97,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     MenuInflater inflater = getDelegate().getMenuInflater();
 
-    if (!sessionManager.isRecording()) {
+    if (!sessionManager.isSessionRecording()) {
       inflater.inflate(R.menu.toolbar_start_recording, menu);
     } else {
       inflater.inflate(R.menu.toolbar_stop_recording, menu);
