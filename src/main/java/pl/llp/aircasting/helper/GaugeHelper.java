@@ -67,7 +67,7 @@ public class GaugeHelper
     updateLabel(avgTextView, avgText, avgSize);
     updateLabel(peakTextView, peakText, peakSize);
 
-    boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionSaved();
+    boolean hasStats = sessionManager.isSessionStarted() || sessionManager.isSessionBeingViewed();
     if (hasStats && sensor.isEnabled())
     {
       int avg = (int) sessionManager.getAvg(sensor);

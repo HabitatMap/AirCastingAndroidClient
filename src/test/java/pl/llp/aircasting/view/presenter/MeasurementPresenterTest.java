@@ -215,7 +215,7 @@ public class MeasurementPresenterTest
     presenter.getFullView();
     presenter.sessionManager = mockSessionManager();
     when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
-    when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
     triggerMeasurement(measurement1);
@@ -229,7 +229,7 @@ public class MeasurementPresenterTest
     presenter.getFullView();
     presenter.sessionManager = mockSessionManager();
     when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
-    when(presenter.sessionManager.isSessionSaved()).thenReturn(true);
+    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
     triggerMeasurement(measurement1);
@@ -240,7 +240,7 @@ public class MeasurementPresenterTest
   @Test
   public void fullViewShouldBeEmptyWithoutASession()
   {
-    when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
+    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
     when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
 
     triggerMeasurement(measurement1);
@@ -251,7 +251,7 @@ public class MeasurementPresenterTest
   @Test
   public void timelineViewShouldBeEmptyWithoutASession()
   {
-    when(presenter.sessionManager.isSessionSaved()).thenReturn(false);
+    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
     when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
 
     assertThat(presenter.getTimelineView()).isEmpty();

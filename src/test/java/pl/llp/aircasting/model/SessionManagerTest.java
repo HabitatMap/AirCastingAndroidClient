@@ -346,7 +346,7 @@ public class SessionManagerTest
     doReturn(new Session()).when(sessionManager.sessionRepository)
         .loadFully(anyLong(), Matchers.<ProgressListener>anyObject()); 
 
-    sessionManager.loadSession(0, progressListener);
+    sessionManager.loadSessionForViewing(0, progressListener);
 
     verify(sessionManager, atLeastOnce()).setSession(any(Session.class));
   }

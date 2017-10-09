@@ -124,8 +124,20 @@ public class SessionManager {
         notifyNewSession(session);
     }
 
-    public boolean isSessionSaved() {
+    public boolean isSessionBeingViewed() {
         return state.recording().isShowingOldSession();
+    }
+
+    public boolean isSessionRecording() {
+        return state.recording().isRecording();
+    }
+
+    public boolean isSessionIdle() {
+        return !isSessionBeingViewed() && !isSessionRecording();
+    }
+
+    public boolean canSessionHaveNotes() {
+        return !currentSession.isFixed();
     }
 
     public boolean sessionHasId() {
@@ -194,14 +206,6 @@ public class SessionManager {
         locationHelper.stop();
         state.microphoneState().stop();
         state.sensors().stop();
-    }
-
-    public boolean isRecording() {
-        return state.recording().isRecording();
-    }
-
-    public boolean canSessionHaveNotes() {
-        return !currentSession.isFixed();
     }
 
     public void setContribute(long sessionId, boolean shouldContribute) {
