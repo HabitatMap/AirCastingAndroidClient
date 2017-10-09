@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
@@ -80,6 +81,7 @@ public class SessionManager {
     @Inject SensorManager sensorManager;
 
     @NotNull Session currentSession = new Session();
+    private Map<Long, Session> sessionsForViewing = newHashMap();
 
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
@@ -111,11 +113,15 @@ public class SessionManager {
         return currentSession;
     }
 
-    public void loadSession(long sessionId, @NotNull ProgressListener listener) {
+    public Map<Long, Session> getSessionsForViewing() {
+        return sessionsForViewing;
+    }
+
+    public void loadSessionForViewing(long sessionId, @NotNull ProgressListener listener) {
         Preconditions.checkNotNull(listener);
         Session newSession = sessionRepository.loadFully(sessionId, listener);
         state.recording().startShowingOldSession();
-        setSession(newSession);
+        sessionsForViewing.put(sessionId, newSession);
     }
 
     void setSession(@NotNull Session session) {
