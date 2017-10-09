@@ -40,6 +40,7 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -340,36 +341,48 @@ public class DashboardListView extends ListView {
                     sBoundEvaluator, offScreenBounds);
 
             if (swipedLeft) {
-                swipeInProgress = true;
-                getStreamAdapter().deleteStream(mobileView);
-                mobileView.setVisibility(GONE);
-                hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        touchEventsEnded();
-                    }
-                });
-                hoverViewAnimator.setDuration(MOVE_DURATION * 4);
-                hoverViewAnimator.start();
+                if (getStreamAdapter().canStreamBeClearedOrDeleted()) {
+                    swipeInProgress = true;
+                    getStreamAdapter().deleteStream(mobileView);
+
+                    mobileView.setVisibility(GONE);
+
+                    hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            touchEventsEnded();
+                        }
+                    });
+                    hoverViewAnimator.setDuration(MOVE_DURATION * 4);
+                    hoverViewAnimator.start();
+                } else {
+                    touchEventsEnded();
+                    Toast.makeText(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT).show();
+                }
             } else if (swipedRight) {
-                swipeInProgress = true;
-                swipeRightInProgress = true;
+                if (getStreamAdapter().canStreamBeClearedOrDeleted()) {
+                    swipeInProgress = true;
+                    swipeRightInProgress = true;
 
-                mobileView.setVisibility(GONE);
+                    mobileView.setVisibility(GONE);
 
-                hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
-                    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        getStreamAdapter().clearStream(getPositionForView(mobileView));
-                        touchEventsEnded();
-                        mobileView.setVisibility(VISIBLE);
-                    }
-                });
-                hoverViewAnimator.setDuration(MOVE_DURATION * 4);
-                hoverViewAnimator.start();
+                    hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
+                        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            getStreamAdapter().clearStream(getPositionForView(mobileView));
+                            touchEventsEnded();
+                            mobileView.setVisibility(VISIBLE);
+                        }
+                    });
+                    hoverViewAnimator.setDuration(MOVE_DURATION * 4);
+                    hoverViewAnimator.start();
+                } else {
+                    touchEventsEnded();
+                    Toast.makeText(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

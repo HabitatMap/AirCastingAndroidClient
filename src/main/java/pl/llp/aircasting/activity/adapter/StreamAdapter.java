@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
@@ -72,7 +73,7 @@ public class StreamAdapter extends SimpleAdapter {
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
     private LineChart chart;
-    private int streamDeleteMessage;
+    public int streamDeleteMessage;
 
     // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
@@ -80,7 +81,6 @@ public class StreamAdapter extends SimpleAdapter {
     private static boolean reorderInProgress = false;
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static Comparator comparator;
-
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
                          StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager, DashboardChartManager dashboardChartManager) {
@@ -261,9 +261,11 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     public void clearStream(int position) {
+        long sessionId;
+
         Sensor sensor = (Sensor) data.get(position).get(SENSOR);
         String sensorName = sensor.toString();
-        long sessionId = sessionManager.getCurrentSession().getId();
+        sessionId = sessionManager.getCurrentSession().getId();
 
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
@@ -274,36 +276,36 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     public void deleteStream(View streamView) {
-        if (canStreamBeDeleted()) {
-            TextView sensorTitle = (TextView) streamView.findViewById(R.id.sensor_name);
-            String sensorName = (String) sensorTitle.getText();
-            Sensor sensor = sensorManager.getSensorByName(sensorName);
+        TextView sensorTitle = (TextView) streamView.findViewById(R.id.sensor_name);
+        String sensorName = (String) sensorTitle.getText();
+        Sensor sensor = sensorManager.getSensorByName(sensorName);
 
-            if (sessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
-                confirmDeletingStream(sensor);
-            } else {
-                confirmDeletingSession();
-            }
+        if (sessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
+            confirmDeletingStream(sensor);
         } else {
-            Toast.makeText(context, streamDeleteMessage, Toast.LENGTH_SHORT).show();
+            confirmDeletingSession();
         }
     }
 
-    private boolean canStreamBeDeleted() {
-        if (sessionManager.isSessionSaved()) {
-            return true;
-        } else if (sessionManager.isRecording()) {
+    public boolean canStreamBeClearedOrDeleted() {
+        if (sessionManager.isSessionRecording()) {
             if (sessionManager.getCurrentSession().isFixed()) {
                 return true;
             } else {
                 streamDeleteMessage = R.string.wrong_session_type;
                 return false;
             }
-        } else if (!sessionManager.isSessionStarted()) {
+        } else if (sessionManager.isSessionBeingViewed()) {
+            return true;
+        } else if (sessionManager.isSessionIdle()) {
             streamDeleteMessage = R.string.cannot_delete_stream;
             return false;
         }
         return false;
+    }
+
+    public int getStreamDeleteMessage() {
+        return streamDeleteMessage;
     }
 
     private void confirmDeletingSession() {

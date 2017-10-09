@@ -220,8 +220,8 @@
   <string name="session_sync_failed">Session sync failed, check your network connection</string>
   <string name="disable_maps_description">Allows you to record sessions without a GPS fix. Sessions recorded when maps are disabled are saved to your Android device, but they are not saved to aircasting.org. As a result, when signing out of the app these sessions will be erased.  Email sessions as CSV files to prevent data loss.</string>
   <string name="no_location_warning">Turn on your GPS or find some sky if you want to map your session.</string>
-  <string name="wrong_session_type">You can\'t delete a stream for a recording mobile session</string>
-  <string name="cannot_delete_stream">You can\'t delete this stream - you should view a session or start streaming a new one</string>
+  <string name="wrong_session_type">You can\'t clear or delete a stream for a recording mobile session</string>
+  <string name="cannot_delete_stream">You can\'t clear or delete this stream - you should view a session or start streaming a new one</string>
 
   <string name="center_map">Center Map</string>
   <string name="record_session">Start Recording</string>
