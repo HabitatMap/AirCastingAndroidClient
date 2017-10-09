@@ -82,7 +82,7 @@ public class MeasurementPresenterTest
 
     presenter.sessionManager = mockSessionManager();
     when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
-    when(presenter.sessionManager.isSessionStarted()).thenReturn(true);
+    when(presenter.sessionManager.isSessionRecording()).thenReturn(true);
     when(presenter.sessionManager.getCurrentSession()).thenReturn(session);
 
     listener = mock(MeasurementPresenter.Listener.class);
@@ -96,7 +96,7 @@ public class MeasurementPresenterTest
   private SessionManager mockSessionManager()
   {
     SessionManager result = mock(SessionManager.class);
-    when(result.isSessionStarted()).thenReturn(true);
+    when(result.isSessionRecording()).thenReturn(true);
     return result;
   }
 
@@ -214,7 +214,7 @@ public class MeasurementPresenterTest
   {
     presenter.getFullView();
     presenter.sessionManager = mockSessionManager();
-    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
     when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
@@ -228,7 +228,7 @@ public class MeasurementPresenterTest
   {
     presenter.getFullView();
     presenter.sessionManager = mockSessionManager();
-    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
     when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
@@ -241,7 +241,7 @@ public class MeasurementPresenterTest
   public void fullViewShouldBeEmptyWithoutASession()
   {
     when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
-    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
 
     triggerMeasurement(measurement1);
 
@@ -252,7 +252,7 @@ public class MeasurementPresenterTest
   public void timelineViewShouldBeEmptyWithoutASession()
   {
     when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
-    when(presenter.sessionManager.isSessionStarted()).thenReturn(false);
+    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
 
     assertThat(presenter.getTimelineView()).isEmpty();
   }

@@ -17,11 +17,8 @@ import pl.llp.aircasting.model.SessionManager;
  * To change this template use File | Settings | File Templates.
  */
 public class StreamViewHelper {
-
     @Inject SessionManager sessionManager;
-    @Inject SensorManager sensorManager;
     @Inject ResourceHelper resourceHelper;
-
 
     public void updateMeasurements(Sensor sensor, View view, int position) {
         int now = (int) sessionManager.getNow(sensor);
@@ -34,13 +31,13 @@ public class StreamViewHelper {
             setTitleView(sessionTitle);
         }
 
-        if (!sensorManager.isSessionBeingRecorded()) {
+        if (!sessionManager.isSessionRecording()) {
             nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
         } else {
             setBackground(sensor, nowTextView, now);
         }
 
-        if (!sensorManager.isSessionBeingViewed()) {
+        if (!sessionManager.isSessionBeingViewed()) {
             nowTextView.setText(String.valueOf(now));
         }
     }
@@ -48,10 +45,10 @@ public class StreamViewHelper {
     private void setTitleView(TextView sessionTitle) {
         Session session = sessionManager.getCurrentSession();
 
-        if (sensorManager.isSessionBeingRecorded()) {
+        if (sessionManager.isSessionRecording()) {
             sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
             sessionTitle.setText("Recording session");
-        } else if (sensorManager.isSessionBeingViewed()) {
+        } else if (sessionManager.isSessionBeingViewed()) {
             sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
             sessionTitle.setText(session.getTitle());
         }

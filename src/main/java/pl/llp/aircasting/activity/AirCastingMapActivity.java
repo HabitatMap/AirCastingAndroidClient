@@ -392,7 +392,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Override
     public void onAveragedMeasurement(Measurement measurement) {
-        if (sessionManager.isSessionStarted()) {
+        if (sessionManager.isSessionRecording()) {
             if (!settingsHelper.isAveraging()) {
                 traceOverlay.update(measurement);
             } else if (lastMeasurement != null) {

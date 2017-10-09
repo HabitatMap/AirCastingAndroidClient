@@ -60,7 +60,7 @@ public class SensorServiceTest {
     @Test
     public void shouldStopMeasurementsWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.sessionManager.isSessionStarted()).thenReturn(false);
+        when(sensorService.sessionManager.isSessionRecording()).thenReturn(false);
 
         sensorService.onStartCommand(intent, 0, 0);
 
@@ -70,7 +70,7 @@ public class SensorServiceTest {
     @Test
     public void shouldStopSelfWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.sessionManager.isSessionStarted()).thenReturn(false);
+        when(sensorService.sessionManager.isSessionRecording()).thenReturn(false);
         sensorService = spy(sensorService);
 
         sensorService.onStartCommand(intent, 0, 0);

@@ -277,7 +277,7 @@ public class SessionManagerTest
 
     verify(sessionManager.audioReader).stop();
     verify(sessionManager.locationHelper).stop();
-    assertThat(sessionManager.isSessionStarted(), equalTo(false));
+    assertThat(sessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Test
@@ -288,7 +288,7 @@ public class SessionManagerTest
 
     verify(sessionManager.locationHelper, never()).stop();
     verify(sessionManager.audioReader, never()).stop();
-    assertThat(sessionManager.isSessionStarted(), equalTo(true));
+    assertThat(sessionManager.isSessionRecording(), equalTo(true));
   }
 
   @Test
@@ -298,7 +298,7 @@ public class SessionManagerTest
 
     verify(sessionManager.locationHelper, times(2)).start();
     verify(sessionManager.audioReader).start();
-    assertThat(sessionManager.isSessionStarted(), equalTo(true));
+    assertThat(sessionManager.isSessionRecording(), equalTo(true));
   }
 
   @Test
@@ -314,7 +314,7 @@ public class SessionManagerTest
     verify(sessionManager.locationHelper).stop();
     verify(sessionManager.sessionRepository, never()).save(Mockito.any(Session.class));
     assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
-    assertThat(sessionManager.isSessionStarted(), equalTo(false));
+    assertThat(sessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Ignore("Fix session persistence")
@@ -327,7 +327,7 @@ public class SessionManagerTest
     verify(sessionManager.audioReader, never()).stop();
     verify(sessionManager.locationHelper).stop();
     verify(sessionManager.sessionRepository).save(Mockito.any(Session.class));
-    assertThat(sessionManager.isSessionStarted(), equalTo(false));
+    assertThat(sessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Test

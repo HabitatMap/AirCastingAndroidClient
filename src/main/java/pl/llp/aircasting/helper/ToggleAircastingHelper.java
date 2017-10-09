@@ -44,7 +44,7 @@ public class ToggleAircastingHelper {
     }
 
     public void toggleAirCasting() {
-        if (sessionManager.isSessionStarted()) {
+        if (sessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
             if (sensorManager.getSensorByName("Phone Microphone") == null) {

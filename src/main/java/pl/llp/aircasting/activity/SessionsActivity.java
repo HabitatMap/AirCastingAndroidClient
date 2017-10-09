@@ -221,7 +221,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   }
 
   private void viewSession(long id) {
-    if (sessionManager.isSessionStarted()) {
+    if (sessionManager.isSessionRecording()) {
       Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
       return;
     }

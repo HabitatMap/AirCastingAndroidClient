@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
@@ -149,6 +148,10 @@ public class SessionManager {
 
     public boolean sessionHasId() {
         return getCurrentSession().getId() != null;
+    }
+
+    public boolean isLocationless() {
+        return currentSession.isLocationless();
     }
 
     public void updateSession(Session from) {
@@ -398,10 +401,6 @@ public class SessionManager {
         notificationHelper.hideRecordingNotification();
     }
 
-    public boolean isSessionStarted() {
-        return state.recording().isRecording();
-    }
-
     public double getAvg(Sensor sensor) {
         String sensorName = sensor.getSensorName();
 
@@ -448,10 +447,6 @@ public class SessionManager {
 
         sessionRepository.deleteStream(currentSession, stream);
         currentSession.removeStream(stream);
-    }
-
-    public boolean isLocationless() {
-        return currentSession.isLocationless();
     }
 
     public void setTitleTagsDescription(long sessionId, String title, String tags, String description) {
