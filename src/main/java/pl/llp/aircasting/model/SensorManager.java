@@ -187,18 +187,10 @@ public class SensorManager {
         }
     }
 
-    public boolean isSessionBeingRecorded() {
-        return sessionManager.isSessionStarted();
-    }
-
     public void deleteSensorFromCurrentSession(Sensor sensor) {
         String sensorName = sensor.getSensorName();
         sensors.remove(SensorName.from(sensorName));
         sessionManager.deleteSensorStream(sensor);
-    }
-
-    public boolean isSessionBeingViewed() {
-        return sessionManager.isSessionBeingViewed();
     }
 
     @Subscribe

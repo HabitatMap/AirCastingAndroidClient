@@ -28,7 +28,6 @@ import pl.llp.aircasting.model.SessionManager;
 import android.content.Intent;
 import android.os.IBinder;
 import com.google.inject.Inject;
-import pl.llp.aircasting.sensor.external.ExternalSensor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import roboguice.service.RoboService;
 
@@ -57,7 +56,7 @@ public class SensorService extends RoboService
         break;
       case Intents.STOP_SENSORS:
         sessionManager.stopSensors();
-        if (!sessionManager.isSessionStarted())
+        if (!sessionManager.isSessionRecording())
         {
           stopSelf();
         }
