@@ -121,6 +121,7 @@ public class SessionManager {
         Preconditions.checkNotNull(listener);
         Session newSession = sessionRepository.loadFully(sessionId, listener);
         state.recording().startShowingOldSession();
+        setSession(newSession);
         sessionsForViewing.put(sessionId, newSession);
     }
 
