@@ -37,9 +37,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
-public class SessionManagerMakeANoteTest
+public class CurrentSessionManagerMakeANoteTest
 {
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   private Location location;
   private Date date;
 
@@ -50,10 +51,10 @@ public class SessionManagerMakeANoteTest
     location.setLatitude(50);
     location.setLongitude(20);
 
-    sessionManager.locationHelper = mock(LocationHelper.class);
-    when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
-    sessionManager.eventBus = mock(EventBus.class);
-    sessionManager.startMobileSession(null, null, null, false);
+    currentSessionManager.locationHelper = mock(LocationHelper.class);
+    when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(location);
+    currentSessionManager.eventBus = mock(EventBus.class);
+    currentSessionManager.startMobileSession(null, null, null, false);
 
     date = new Date();
   }
@@ -63,9 +64,9 @@ public class SessionManagerMakeANoteTest
   {
     Note expected = new Note(date, "Note text", location, "some file");
 
-    sessionManager.makeANote(date, "Note text", "some file");
+    currentSessionManager.makeANote(date, "Note text", "some file");
 
-    assertThat(sessionManager.getCurrentSession().getNotes()).contains(expected);
+    assertThat(currentSessionManager.getCurrentSession().getNotes()).contains(expected);
   }
 
   @Test
@@ -73,7 +74,7 @@ public class SessionManagerMakeANoteTest
   {
     Note expected = new Note(date, "Note text", location, "some file", 0);
 
-    assertThat(sessionManager.makeANote(date, "Note text", "some file")).isEqualTo(expected);
+    assertThat(currentSessionManager.makeANote(date, "Note text", "some file")).isEqualTo(expected);
   }
 
   @Test
@@ -82,10 +83,10 @@ public class SessionManagerMakeANoteTest
     Note expected1 = new Note(date, "first", location, null, 0);
     Note expected2 = new Note(date, "second", location, null, 1);
 
-    sessionManager.makeANote(date, "first", null);
-    sessionManager.makeANote(date, "second", null);
+    currentSessionManager.makeANote(date, "first", null);
+    currentSessionManager.makeANote(date, "second", null);
 
-    Session session = sessionManager.currentSession;
+    Session session = currentSessionManager.currentSession;
     assertThat(session.getNotes()).contains(expected1, expected2);
   }
 }

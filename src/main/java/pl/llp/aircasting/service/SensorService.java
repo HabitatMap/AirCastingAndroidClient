@@ -23,7 +23,7 @@ import android.app.Notification;
 import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.content.Intent;
 import android.os.IBinder;
@@ -35,7 +35,7 @@ public class SensorService extends RoboService
 {
   public static final int ACTIVE_SENSORS_ID = 2;
 
-  @Inject SessionManager sessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject ExternalSensors externalSensors;
 
   @Override
@@ -52,21 +52,21 @@ public class SensorService extends RoboService
     switch (Intents.getSensorServiceTask(intent))
     {
       case Intents.START_SENSORS:
-        sessionManager.startSensors();
+        currentSessionManager.startSensors();
         break;
       case Intents.STOP_SENSORS:
-        sessionManager.stopSensors();
-        if (!sessionManager.isSessionRecording())
+        currentSessionManager.stopSensors();
+        if (!currentSessionManager.isSessionRecording())
         {
           stopSelf();
         }
         break;
       case Intents.DISCONNECT_SENSORS:
-        sessionManager.stopSensors();
+        currentSessionManager.stopSensors();
         externalSensors.disconnectAllSensors();
         break;
       case Intents.RESTART_SENSORS:
-        sessionManager.restartSensors();
+        currentSessionManager.restartSensors();
         break;
     }
 

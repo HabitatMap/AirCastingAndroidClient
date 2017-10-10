@@ -23,7 +23,7 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -40,7 +40,8 @@ import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 public class LocationOverlay extends Overlay {
     @Inject ResourceHelper resourceHelper;
     @Inject LocationHelper locationHelper;
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject SensorManager sensorManager;
 
     @Override
@@ -51,7 +52,7 @@ public class LocationOverlay extends Overlay {
 
         Location location = locationHelper.getLastLocation();
         Sensor sensor = sensorManager.getVisibleSensor();
-        double value = sessionManager.getNow(sensor);
+        double value = currentSessionManager.getNow(sensor);
 
         if (location != null) {
             Drawable bullet = resourceHelper.getLocationBullet(sensor, value);
@@ -65,6 +66,6 @@ public class LocationOverlay extends Overlay {
 
   private boolean shouldSkipDrawing()
   {
-    return sessionManager.isLocationless();
+    return currentSessionManager.isLocationless();
   }
 }

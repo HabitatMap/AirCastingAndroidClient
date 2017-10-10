@@ -26,7 +26,7 @@ import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.app.Application;
 import android.content.Intent;
@@ -49,7 +49,8 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
     public static final String PHOTO_PATH = "picture_path";
     public static final String PHOTO_ATTACHED = "photo_attached";
 
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject PhotoHelper photoHelper;
     @Inject Application context;
@@ -118,7 +119,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
       }
       switch (view.getId()) {
             case R.id.save_button:
-                sessionManager.makeANote(date, text, photoPath);
+                currentSessionManager.makeANote(date, text, photoPath);
                 finish();
                 break;
             case R.id.attach_photo:

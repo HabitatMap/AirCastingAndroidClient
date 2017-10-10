@@ -29,7 +29,7 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 
 import com.google.inject.Inject;
@@ -80,10 +80,10 @@ public class MeasurementPresenterTest
 
     session = mock(Session.class);
 
-    presenter.sessionManager = mockSessionManager();
-    when(presenter.sessionManager.getMeasurementStream("LHC")).thenReturn(stream);
-    when(presenter.sessionManager.isSessionRecording()).thenReturn(true);
-    when(presenter.sessionManager.getCurrentSession()).thenReturn(session);
+    presenter.currentSessionManager = mockSessionManager();
+    when(presenter.currentSessionManager.getMeasurementStream("LHC")).thenReturn(stream);
+    when(presenter.currentSessionManager.isSessionRecording()).thenReturn(true);
+    when(presenter.currentSessionManager.getCurrentSession()).thenReturn(session);
 
     listener = mock(MeasurementPresenter.Listener.class);
     presenter.registerListener(listener);
@@ -93,9 +93,9 @@ public class MeasurementPresenterTest
     EVENT = new SessionChangeEvent(new Session());
   }
 
-  private SessionManager mockSessionManager()
+  private CurrentSessionManager mockSessionManager()
   {
-    SessionManager result = mock(SessionManager.class);
+    CurrentSessionManager result = mock(CurrentSessionManager.class);
     when(result.isSessionRecording()).thenReturn(true);
     return result;
   }
@@ -140,7 +140,7 @@ public class MeasurementPresenterTest
     state.recording().startRecording();
     presenter.setZoom(4000);
     presenter.getTimelineView();
-    presenter.sessionManager = mockSessionManager();
+    presenter.currentSessionManager = mockSessionManager();
 
     triggerMeasurement(measurement1);
     List<Measurement> result = presenter.getTimelineView();
@@ -201,7 +201,7 @@ public class MeasurementPresenterTest
   {
     state.recording().startRecording();
     presenter.getFullView();
-    presenter.sessionManager = mockSessionManager();
+    presenter.currentSessionManager = mockSessionManager();
 
     triggerMeasurement(measurement1);
     List<Measurement> result = presenter.getFullView();
@@ -213,9 +213,9 @@ public class MeasurementPresenterTest
   public void shouldNotUpdateWhenViewingASession()
   {
     presenter.getFullView();
-    presenter.sessionManager = mockSessionManager();
-    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
-    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
+    presenter.currentSessionManager = mockSessionManager();
+    when(presenter.currentSessionManager.isSessionRecording()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
     triggerMeasurement(measurement1);
@@ -227,9 +227,9 @@ public class MeasurementPresenterTest
   public void shouldOnlyUpdateFromVisibleSensorEvents()
   {
     presenter.getFullView();
-    presenter.sessionManager = mockSessionManager();
-    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
-    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(true);
+    presenter.currentSessionManager = mockSessionManager();
+    when(presenter.currentSessionManager.isSessionRecording()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionBeingViewed()).thenReturn(true);
 
     presenter.onEvent(EVENT);
     triggerMeasurement(measurement1);
@@ -240,8 +240,8 @@ public class MeasurementPresenterTest
   @Test
   public void fullViewShouldBeEmptyWithoutASession()
   {
-    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
-    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionBeingViewed()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionRecording()).thenReturn(false);
 
     triggerMeasurement(measurement1);
 
@@ -251,8 +251,8 @@ public class MeasurementPresenterTest
   @Test
   public void timelineViewShouldBeEmptyWithoutASession()
   {
-    when(presenter.sessionManager.isSessionBeingViewed()).thenReturn(false);
-    when(presenter.sessionManager.isSessionRecording()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionBeingViewed()).thenReturn(false);
+    when(presenter.currentSessionManager.isSessionRecording()).thenReturn(false);
 
     assertThat(presenter.getTimelineView()).isEmpty();
   }

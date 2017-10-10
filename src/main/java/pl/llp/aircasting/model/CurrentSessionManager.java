@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -63,7 +64,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
-public class SessionManager {
+public class CurrentSessionManager {
     public static final double TOTALLY_FAKE_COORDINATE = 200;
 
     @Inject SimpleAudioReader audioReader;
@@ -80,7 +81,6 @@ public class SessionManager {
     @Inject SensorManager sensorManager;
 
     @NotNull Session currentSession = new Session();
-    private Map<Long, Session> sessionsForViewing = newHashMap();
 
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
@@ -110,18 +110,6 @@ public class SessionManager {
     @NotNull
     public Session getCurrentSession() {
         return currentSession;
-    }
-
-    public Map<Long, Session> getSessionsForViewing() {
-        return sessionsForViewing;
-    }
-
-    public void loadSessionForViewing(long sessionId, @NotNull ProgressListener listener) {
-        Preconditions.checkNotNull(listener);
-        Session newSession = sessionRepository.loadFully(sessionId, listener);
-        state.recording().startShowingOldSession();
-        setSession(newSession);
-        sessionsForViewing.put(sessionId, newSession);
     }
 
     void setSession(@NotNull Session session) {
@@ -477,7 +465,7 @@ public class SessionManager {
         state.recording().startRecording();
         notificationHelper.showRecordingNotification();
 
-        if(!tracker.continueTracking(getCurrentSession(), locationLess)) {
+        if (!tracker.continueTracking(getCurrentSession(), locationLess)) {
             cleanup();
         }
     }

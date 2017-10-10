@@ -27,8 +27,8 @@ import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.CSVHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ShareHelper;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 
 import android.app.Application;
@@ -53,7 +53,8 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
   @InjectResource(R.string.session_file_template) String shareText;
 
   @Inject ShareHelper shareHelper;
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject CSVHelper csvHelper;
   @Inject SessionRepository sessionRepository;
   @Inject SettingsHelper settingsHelper;
@@ -80,7 +81,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
       long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
       session = sessionRepository.loadShallow(sessionId);
     } else {
-      session = sessionManager.getCurrentSession();
+      session = currentSessionManager.getCurrentSession();
     }
     if(session.isLocationless())
     {
@@ -116,8 +117,8 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
   }
 
   private void shareFile() {
-    if (sessionManager.isSessionRecording()) {
-      session = sessionManager.getCurrentSession();
+    if (currentSessionManager.isSessionRecording()) {
+      session = currentSessionManager.getCurrentSession();
       prepareAndShare();
     } else {
       loadSession();

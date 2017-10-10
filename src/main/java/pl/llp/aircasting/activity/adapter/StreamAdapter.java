@@ -2,7 +2,6 @@ package pl.llp.aircasting.activity.adapter;
 
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
@@ -14,7 +13,7 @@ import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
 import android.app.AlertDialog;
@@ -62,7 +61,7 @@ public class StreamAdapter extends SimpleAdapter {
         }
     };
 
-    SessionManager sessionManager;
+    CurrentSessionManager currentSessionManager;
     SensorManager sensorManager;
     StreamViewHelper streamViewHelper;
     DashboardChartManager dashboardChartManager;
@@ -83,13 +82,13 @@ public class StreamAdapter extends SimpleAdapter {
     private static Comparator comparator;
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                         StreamViewHelper streamViewHelper, SensorManager sensorManager, SessionManager sessionManager, DashboardChartManager dashboardChartManager) {
+                         StreamViewHelper streamViewHelper, SensorManager sensorManager, CurrentSessionManager currentSessionManager, DashboardChartManager dashboardChartManager) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
         this.sensorManager = sensorManager;
-        this.sessionManager = sessionManager;
+        this.currentSessionManager = currentSessionManager;
         this.streamViewHelper = streamViewHelper;
         this.dashboardChartManager = dashboardChartManager;
     }
@@ -191,6 +190,7 @@ public class StreamAdapter extends SimpleAdapter {
         }
 
         sort(data, comparator);
+        Log.i("data: ", String.valueOf(data));
         resetAllStaticCharts();
 
         notifyDataSetChanged();
@@ -205,8 +205,8 @@ public class StreamAdapter extends SimpleAdapter {
             return;
         }
 
-        if (sessionManager.sessionHasId()) {
-            sessionId = sessionManager.getCurrentSession().getId();
+        if (currentSessionManager.sessionHasId()) {
+            sessionId = currentSessionManager.getCurrentSession().getId();
             clearedStreamsForSession = clearedStreams.get(sessionId);
         }
 
@@ -265,7 +265,7 @@ public class StreamAdapter extends SimpleAdapter {
 
         Sensor sensor = (Sensor) data.get(position).get(SENSOR);
         String sensorName = sensor.toString();
-        sessionId = sessionManager.getCurrentSession().getId();
+        sessionId = currentSessionManager.getCurrentSession().getId();
 
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
@@ -280,7 +280,7 @@ public class StreamAdapter extends SimpleAdapter {
         String sensorName = (String) sensorTitle.getText();
         Sensor sensor = sensorManager.getSensorByName(sensorName);
 
-        if (sessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
+        if (currentSessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
             confirmDeletingStream(sensor);
         } else {
             confirmDeletingSession();
@@ -288,16 +288,16 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     public boolean canStreamBeClearedOrDeleted() {
-        if (sessionManager.isSessionRecording()) {
-            if (sessionManager.getCurrentSession().isFixed()) {
+        if (currentSessionManager.isSessionRecording()) {
+            if (currentSessionManager.getCurrentSession().isFixed()) {
                 return true;
             } else {
                 streamDeleteMessage = R.string.wrong_session_type;
                 return false;
             }
-        } else if (sessionManager.isSessionBeingViewed()) {
+        } else if (currentSessionManager.isSessionBeingViewed()) {
             return true;
-        } else if (sessionManager.isSessionIdle()) {
+        } else if (currentSessionManager.isSessionIdle()) {
             streamDeleteMessage = R.string.cannot_delete_stream;
             return false;
         }
@@ -315,7 +315,7 @@ public class StreamAdapter extends SimpleAdapter {
                 setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        sessionManager.deleteSession();
+                        currentSessionManager.deleteSession();
                         Intents.triggerSync(context);
                         Intents.sessions(context, context);
                     }

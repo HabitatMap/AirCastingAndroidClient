@@ -34,7 +34,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import roboguice.inject.InjectView;
 
 public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener
@@ -49,7 +49,8 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
 
   @Inject Application context;
 
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
 
   int PLACE_PICKER_REQUEST = 1;
 
@@ -112,7 +113,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
 
-    sessionManager.startFixedSession(title, tags, description, isIndoor, latlng);
+    currentSessionManager.startFixedSession(title, tags, description, isIndoor, latlng);
 
     finish();
   }

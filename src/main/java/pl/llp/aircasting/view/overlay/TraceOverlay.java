@@ -63,7 +63,7 @@ public class TraceOverlay extends BufferingOverlay<Measurement>
 
   private boolean shouldSkipDrawing()
   {
-    return sessionManager.isLocationless();
+    return currentSessionManager.isLocationless();
   }
 
   @Override

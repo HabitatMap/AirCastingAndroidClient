@@ -5,9 +5,8 @@ import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,11 +16,12 @@ import pl.llp.aircasting.model.SessionManager;
  * To change this template use File | Settings | File Templates.
  */
 public class StreamViewHelper {
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
 
     public void updateMeasurements(Sensor sensor, View view, int position) {
-        int now = (int) sessionManager.getNow(sensor);
+        int now = (int) currentSessionManager.getNow(sensor);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
         TextView sessionTitle = (TextView) view.findViewById(R.id.session_title);
 
@@ -31,24 +31,24 @@ public class StreamViewHelper {
             setTitleView(sessionTitle);
         }
 
-        if (!sessionManager.isSessionRecording()) {
+        if (!currentSessionManager.isSessionRecording()) {
             nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
         } else {
             setBackground(sensor, nowTextView, now);
         }
 
-        if (!sessionManager.isSessionBeingViewed()) {
+        if (!currentSessionManager.isSessionBeingViewed()) {
             nowTextView.setText(String.valueOf(now));
         }
     }
 
     private void setTitleView(TextView sessionTitle) {
-        Session session = sessionManager.getCurrentSession();
+        Session session = currentSessionManager.getCurrentSession();
 
-        if (sessionManager.isSessionRecording()) {
+        if (currentSessionManager.isSessionRecording()) {
             sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
             sessionTitle.setText("Recording session");
-        } else if (sessionManager.isSessionBeingViewed()) {
+        } else if (currentSessionManager.isSessionBeingViewed()) {
             sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
             sessionTitle.setText(session.getTitle());
         }

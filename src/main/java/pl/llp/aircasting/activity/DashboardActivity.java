@@ -20,7 +20,8 @@ import static pl.llp.aircasting.Intents.stopSensors;
 public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject ApplicationState state;
     @Inject EventBus eventBus;
     @Inject SensorManager sensorManager;
@@ -90,9 +91,9 @@ public class DashboardActivity extends DashboardBaseActivity {
             return true;
         }
 
-        if (!sessionManager.isSessionRecording()) {
+        if (!currentSessionManager.isSessionRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
-        } else if (sessionManager.isSessionRecording()){
+        } else if (currentSessionManager.isSessionRecording()){
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
             inflater.inflate(R.menu.toolbar_make_note, menu);
         } else {
@@ -123,7 +124,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     public void connectPhoneMicrophone() {
-        sessionManager.startAudioSensor();
+        currentSessionManager.startAudioSensor();
     }
 
     public void viewChartOptions(View view) {

@@ -3,8 +3,7 @@ package pl.llp.aircasting.helper;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.text.TextPaint;
 import android.util.TypedValue;
@@ -23,7 +22,8 @@ public class GaugeHelper
   public static final int MARGIN = 2;
 
   @Inject ResourceHelper resourceHelper;
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
 
   @Inject EventBus eventBus;
 
@@ -44,7 +44,7 @@ public class GaugeHelper
     View nowContainer = view.findViewById(R.id.now_container);
     nowContainer.setVisibility(nowManager.getVisibility());
 
-    int now = (int) sessionManager.getNow(sensor);
+    int now = (int) currentSessionManager.getNow(sensor);
     updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
 
     String nowText = String.format(nowLabel, sensor.getShortType());
@@ -65,11 +65,11 @@ public class GaugeHelper
     updateLabel(avgTextView, avgText, avgSize);
     updateLabel(peakTextView, peakText, peakSize);
 
-    boolean hasStats = sessionManager.isSessionRecording() || sessionManager.isSessionBeingViewed();
+    boolean hasStats = currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed();
     if (hasStats && sensor.isEnabled())
     {
-      int avg = (int) sessionManager.getAvg(sensor);
-      int peak = (int) sessionManager.getPeak(sensor);
+      int avg = (int) currentSessionManager.getAvg(sensor);
+      int peak = (int) currentSessionManager.getPeak(sensor);
 
       updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
       updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
@@ -117,7 +117,7 @@ public class GaugeHelper
 
     textView.setText(valueOf(value));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-    if (sessionManager.isSessionRecording() || sessionManager.isSessionBeingViewed()) {
+    if (currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed()) {
       textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
     } else {
       textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));

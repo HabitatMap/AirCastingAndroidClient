@@ -31,7 +31,8 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class DashboardChartManager {
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject SensorManager sensorManager;
     @Inject Context context;
@@ -57,7 +58,7 @@ public class DashboardChartManager {
 
     public void start() {
         resetState();
-        interval = sessionManager.getCurrentSession().isFixed() ? FIXED_INTERVAL : MOBILE_INTERVAL;
+        interval = currentSessionManager.getCurrentSession().isFixed() ? FIXED_INTERVAL : MOBILE_INTERVAL;
         handler.postDelayed(updateEntriesTask, interval);
     }
 
@@ -76,7 +77,7 @@ public class DashboardChartManager {
 
     public void drawChart(LineChart chart, final Sensor sensor) {
         String sensorName = sensor.getSensorName();
-        MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
+        MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
         String descriptionText = getDescription(stream);
 
         draw(chart, descriptionText);
@@ -86,7 +87,7 @@ public class DashboardChartManager {
             return;
         }
 
-        if (sessionManager.isSessionBeingViewed() && shouldStaticChartUpdate(sensorName)) {
+        if (currentSessionManager.isSessionBeingViewed() && shouldStaticChartUpdate(sensorName)) {
             averagesCounter = MAX_AVERAGES_AMOUNT;
             prepareEntries(sensorName);
             updateChartData(chart, sensor.getShortType(), sensorName);
@@ -190,7 +191,7 @@ public class DashboardChartManager {
         dataSet.setValueTextSize(10);
         dataSet.setDrawHighlightIndicators(false);
 
-        if (!sessionManager.isSessionRecording()) {
+        if (!currentSessionManager.isSessionRecording()) {
             int color = context.getResources().getColor(R.color.gray);
             dataSet.setColor(color);
         }
@@ -199,7 +200,7 @@ public class DashboardChartManager {
     }
 
     private void prepareEntries(String sensorName) {
-        MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
+        MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
         List<List<Measurement>> periodData;
         double xValue = 8;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
@@ -237,7 +238,7 @@ public class DashboardChartManager {
     }
 
     private void allowChartUpdate() {
-        List<MeasurementStream> streams = (List) sessionManager.getMeasurementStreams();
+        List<MeasurementStream> streams = (List) currentSessionManager.getMeasurementStreams();
 
         if (averagesCounter < MAX_AVERAGES_AMOUNT) {
             averagesCounter++;
@@ -286,7 +287,7 @@ public class DashboardChartManager {
         double time;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-        if (sessionManager.isSessionBeingViewed()) {
+        if (currentSessionManager.isSessionBeingViewed()) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
             time = lastMeasurement.getTime().getTime();
         } else {

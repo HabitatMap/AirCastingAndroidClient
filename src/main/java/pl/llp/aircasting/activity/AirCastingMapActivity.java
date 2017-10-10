@@ -114,7 +114,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
-        if (!sessionManager.isSessionBeingViewed()) {
+        if (!currentSessionManager.isSessionBeingViewed()) {
             mapView.getOverlays().add(locationOverlay);
         }
     }
@@ -152,7 +152,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         MenuInflater inflater = getDelegate().getMenuInflater();
 
-        if (!sessionManager.isSessionRecording()) {
+        if (!currentSessionManager.isSessionRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
         } else {
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
@@ -234,7 +234,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         if (shouldShowRoute()) {
             Sensor sensor = sensorManager.getVisibleSensor();
-            List<Measurement> measurements = sessionManager.getMeasurements(sensor);
+            List<Measurement> measurements = currentSessionManager.getMeasurements(sensor);
 
             for (Measurement measurement : measurements) {
                 GeoPoint geoPoint = geoPoint(measurement);
@@ -258,7 +258,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private boolean shouldShowRoute() {
         return settingsHelper.isShowRoute() &&
-                (sessionManager.isSessionRecording() || sessionManager.isSessionBeingViewed());
+                (currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed());
     }
 
     private void initializeMap() {
@@ -300,8 +300,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void showSession() {
-        if (sessionManager.isSessionBeingViewed() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(sessionManager.getCurrentSession());
+        if (currentSessionManager.isSessionBeingViewed() && zoomToSession) {
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(currentSessionManager.getCurrentSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
             mapView.getController().animateTo(boundingBox.getCenter());
@@ -311,7 +311,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void refreshNotes() {
         noteOverlay.clear();
-        for (Note note : sessionManager.getNotes()) {
+        for (Note note : currentSessionManager.getNotes()) {
             noteOverlay.add(note);
         }
     }
@@ -372,7 +372,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void updateRoute() {
-        if (settingsHelper.isShowRoute() && sessionManager.isSessionRecording()) {
+        if (settingsHelper.isShowRoute() && currentSessionManager.isSessionRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
         }
@@ -392,7 +392,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Override
     public void onAveragedMeasurement(Measurement measurement) {
-        if (sessionManager.isSessionRecording()) {
+        if (currentSessionManager.isSessionRecording()) {
             if (!settingsHelper.isAveraging()) {
                 traceOverlay.update(measurement);
             } else if (lastMeasurement != null) {

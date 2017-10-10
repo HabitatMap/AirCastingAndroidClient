@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import static org.mockito.Mockito.*;
 
@@ -44,7 +44,7 @@ public class SensorServiceTest {
 
     @Before
     public void setup() {
-        sensorService.sessionManager = mock(SessionManager.class);
+        sensorService.currentSessionManager = mock(CurrentSessionManager.class);
         intent = new Intent(mock(Context.class), SensorService.class);
     }
 
@@ -54,23 +54,23 @@ public class SensorServiceTest {
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.sessionManager).startSensors();
+        verify(sensorService.currentSessionManager).startSensors();
     }
 
     @Test
     public void shouldStopMeasurementsWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.sessionManager.isSessionRecording()).thenReturn(false);
+        when(sensorService.currentSessionManager.isSessionRecording()).thenReturn(false);
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.sessionManager).stopSensors();
+        verify(sensorService.currentSessionManager).stopSensors();
     }
 
     @Test
     public void shouldStopSelfWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.sessionManager.isSessionRecording()).thenReturn(false);
+        when(sensorService.currentSessionManager.isSessionRecording()).thenReturn(false);
         sensorService = spy(sensorService);
 
         sensorService.onStartCommand(intent, 0, 0);
