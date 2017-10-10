@@ -23,7 +23,7 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.view.overlay.RouteOverlay;
 
 import android.content.Intent;
@@ -48,10 +48,10 @@ public class AirCastingActivityEditSessionTest {
 
     @Before
     public void setup() {
-        activity.sessionManager = mock(SessionManager.class);
+        activity.currentSessionManager = mock(CurrentSessionManager.class);
         session = mock(Session.class);
         data = mock(Intent.class);
-        when(activity.sessionManager.getCurrentSession()).thenReturn(session);
+        when(activity.currentSessionManager.getCurrentSession()).thenReturn(session);
         activity.routeOverlay = mock(RouteOverlay.class);
     }
 
@@ -61,7 +61,7 @@ public class AirCastingActivityEditSessionTest {
 
         activity.onActivityResult(Intents.EDIT_SESSION, R.id.save_button, data);
 
-        verify(activity.sessionManager).updateSession(session);
+        verify(activity.currentSessionManager).updateSession(session);
     }
 
     @Test
@@ -70,6 +70,6 @@ public class AirCastingActivityEditSessionTest {
 
         activity.onActivityResult(Intents.EDIT_SESSION, R.id.discard_button, data);
 
-        verify(activity.sessionManager, never()).updateSession(Mockito.any(Session.class));
+        verify(activity.currentSessionManager, never()).updateSession(Mockito.any(Session.class));
     }
 }

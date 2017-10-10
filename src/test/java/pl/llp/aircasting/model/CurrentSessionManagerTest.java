@@ -54,10 +54,10 @@ import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
-public class SessionManagerTest
+public class CurrentSessionManagerTest
 {
   @Inject
-  SessionManager sessionManager;
+  CurrentSessionManager currentSessionManager;
 
   Location location;
   Sensor sensor;
@@ -71,18 +71,18 @@ public class SessionManagerTest
 
   private void mockSensors()
   {
-    sessionManager.locationHelper = mock(LocationHelper.class);
-    sessionManager.audioReader = mock(SimpleAudioReader.class);
-    sessionManager.externalSensors = mock(ExternalSensors.class);
-    sessionManager.eventBus = mock(EventBus.class);
-    sessionManager.sensorManager = mock(SensorManager.class);
+    currentSessionManager.locationHelper = mock(LocationHelper.class);
+    currentSessionManager.audioReader = mock(SimpleAudioReader.class);
+    currentSessionManager.externalSensors = mock(ExternalSensors.class);
+    currentSessionManager.eventBus = mock(EventBus.class);
+    currentSessionManager.sensorManager = mock(SensorManager.class);
 
     sensor = mock(Sensor.class);
     when(sensor.isEnabled()).thenReturn(true);
     when(sensor.getSensorName()).thenReturn("LHC");
 
-    when(sessionManager.locationHelper.getLastLocation()).thenReturn(location);
-    when(sessionManager.sensorManager.getSensorByName(Mockito.any(String.class))).thenReturn(sensor);
+    when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(location);
+    when(currentSessionManager.sensorManager.getSensorByName(Mockito.any(String.class))).thenReturn(sensor);
   }
 
   @Before
@@ -91,7 +91,7 @@ public class SessionManagerTest
     location = new Location(LocationManager.GPS_PROVIDER);
     location.setLatitude(50);
     location.setLongitude(20);
-    sessionManager.sessionRepository = mock(SessionRepository.class);
+    currentSessionManager.sessionRepository = mock(SessionRepository.class);
 
     mockSensors();
     progressListener = mock(ProgressListener.class);
@@ -101,7 +101,7 @@ public class SessionManagerTest
   {
 
     lastEvent = New.sensorEvent(name, value);
-    sessionManager.onEvent(lastEvent);
+    currentSessionManager.onEvent(lastEvent);
   }
 
   private void triggerMeasurement(double value)
@@ -117,12 +117,12 @@ public class SessionManagerTest
   @Test
   public void shouldCreateMeasurementStreams()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
 
     MeasurementStream expected = lastEvent.stream();
-    Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
+    Collection<MeasurementStream> streams = currentSessionManager.getMeasurementStreams();
 
     assertThat(streams, hasItem(expected));
   }
@@ -130,36 +130,36 @@ public class SessionManagerTest
   @Test
   public void shouldCreateOnlyOneStreamPerSensor()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
     triggerMeasurement();
 
-    assertThat(sessionManager.getMeasurementStreams().size(), equalTo(1));
+    assertThat(currentSessionManager.getMeasurementStreams().size(), equalTo(1));
   }
 
   @Test
   public void shouldCreateAStreamForEachSensor()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
     SensorEvent event = new SensorEvent("CERN", "LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
-    sessionManager.onEvent(event);
+    currentSessionManager.onEvent(event);
 
     MeasurementStream expected = event.stream();
-    assertThat(sessionManager.getMeasurementStreams(), hasItem(expected));
+    assertThat(currentSessionManager.getMeasurementStreams(), hasItem(expected));
   }
 
   @Test
   public void shouldAllowAccessToAParticularStream()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement();
 
-    MeasurementStream expected = Iterables.getOnlyElement(sessionManager.getMeasurementStreams());
-    assertThat(sessionManager.getMeasurementStream("LHC") == expected, equalTo(true));
+    MeasurementStream expected = Iterables.getOnlyElement(currentSessionManager.getMeasurementStreams());
+    assertThat(currentSessionManager.getMeasurementStream("LHC") == expected, equalTo(true));
   }
 
   @Test
@@ -171,14 +171,14 @@ public class SessionManagerTest
     Sensor sensor2 = mock(Sensor.class);
     when(sensor2.getSensorName()).thenReturn("LHC2");
 
-    assertThat(sessionManager.getNow(sensor), equalTo(150.0));
-    assertThat(sessionManager.getNow(sensor2), equalTo(123.0));
+    assertThat(currentSessionManager.getNow(sensor), equalTo(150.0));
+    assertThat(currentSessionManager.getNow(sensor2), equalTo(123.0));
   }
 
   @Test
   public void shouldAssumeLastMeasurementIsZeroByDefault()
   {
-    assertThat(sessionManager.getNow(sensor), equalTo(0.0));
+    assertThat(currentSessionManager.getNow(sensor), equalTo(0.0));
   }
 
   @Test
@@ -188,9 +188,9 @@ public class SessionManagerTest
     when(stream.getAvg()).thenReturn(10.0);
     String name = sensor.getSensorName();
     when(stream.getSensorName()).thenReturn(name);
-    sessionManager.currentSession.add(stream);
+    currentSessionManager.currentSession.add(stream);
 
-    assertThat(sessionManager.getAvg(sensor), equalTo(10.0));
+    assertThat(currentSessionManager.getAvg(sensor), equalTo(10.0));
   }
 
   @Test
@@ -200,45 +200,45 @@ public class SessionManagerTest
     when(stream.getPeak()).thenReturn(11.0);
     String name = sensor.getSensorName();
     when(stream.getSensorName()).thenReturn(name);
-    sessionManager.currentSession.add(stream);
+    currentSessionManager.currentSession.add(stream);
 
-    assertThat(sessionManager.getPeak(sensor), equalTo(11.0));
+    assertThat(currentSessionManager.getPeak(sensor), equalTo(11.0));
   }
 
   @Test
   public void shouldStoreMeasurements()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     triggerMeasurement(22);
 
     Measurement expected = new Measurement(location.getLatitude(), location.getLongitude(), 22);
-    org.fest.assertions.Assertions.assertThat(sessionManager.getMeasurementStream("LHC").getMeasurements())
+    org.fest.assertions.Assertions.assertThat(currentSessionManager.getMeasurementStream("LHC").getMeasurements())
                        .contains(expected);
   }
 
   @Test
   public void measurements_withoutLocation_should_get_a_fake()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
-    sessionManager.currentSession.setLocationless(true);
-    when(sessionManager.locationHelper.getLastLocation()).thenReturn(null);
+    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.currentSession.setLocationless(true);
+    when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
     triggerMeasurement();
 
-    assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(false));
-    assertThat(sessionManager.getCurrentSession().isLocationless(), equalTo(true));
+    assertThat(currentSessionManager.getMeasurementStreams().isEmpty(), equalTo(false));
+    assertThat(currentSessionManager.getCurrentSession().isLocationless(), equalTo(true));
   }
 
   @Test
   public void shouldSkipMeasurementsFromDisabledStreams()
   {
-    sessionManager.state.recording().startRecording();
+    currentSessionManager.state.recording().startRecording();
     when(sensor.isEnabled()).thenReturn(false);
 
     triggerMeasurement();
 
-    assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+    assertThat(currentSessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
   }
 
   @Test
@@ -246,75 +246,75 @@ public class SessionManagerTest
   {
     triggerMeasurement(11);
 
-    verify(sessionManager.eventBus).post(Mockito.any(MeasurementEvent.class));
+    verify(currentSessionManager.eventBus).post(Mockito.any(MeasurementEvent.class));
   }
 
   @Test
   public void shouldStartSensors()
   {
-    sessionManager.startSensors();
+    currentSessionManager.startSensors();
 
-    verify(sessionManager.locationHelper).start();
-    verify(sessionManager.audioReader).start();
-    verify(sessionManager.externalSensors).start();
+    verify(currentSessionManager.locationHelper).start();
+    verify(currentSessionManager.audioReader).start();
+    verify(currentSessionManager.externalSensors).start();
   }
 
   @Test
   public void shouldOnlyStartSensorsOnce()
   {
-    sessionManager.startSensors();
-    sessionManager.startSensors();
+    currentSessionManager.startSensors();
+    currentSessionManager.startSensors();
 
-    verify(sessionManager.locationHelper, atMost(1)).start();
-    verify(sessionManager.audioReader, atMost(1)).start();
+    verify(currentSessionManager.locationHelper, atMost(1)).start();
+    verify(currentSessionManager.audioReader, atMost(1)).start();
   }
 
   @Test
   public void shouldStopSensors()
   {
-    sessionManager.startSensors();
-    sessionManager.stopSensors();
+    currentSessionManager.startSensors();
+    currentSessionManager.stopSensors();
 
-    verify(sessionManager.audioReader).stop();
-    verify(sessionManager.locationHelper).stop();
-    assertThat(sessionManager.isSessionRecording(), equalTo(false));
+    verify(currentSessionManager.audioReader).stop();
+    verify(currentSessionManager.locationHelper).stop();
+    assertThat(currentSessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Test
   public void shouldNotStopSensorsDuringASession()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
-    sessionManager.stopSensors();
+    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.stopSensors();
 
-    verify(sessionManager.locationHelper, never()).stop();
-    verify(sessionManager.audioReader, never()).stop();
-    assertThat(sessionManager.isSessionRecording(), equalTo(true));
+    verify(currentSessionManager.locationHelper, never()).stop();
+    verify(currentSessionManager.audioReader, never()).stop();
+    assertThat(currentSessionManager.isSessionRecording(), equalTo(true));
   }
 
   @Test
   public void shouldStartASession()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
-    verify(sessionManager.locationHelper, times(2)).start();
-    verify(sessionManager.audioReader).start();
-    assertThat(sessionManager.isSessionRecording(), equalTo(true));
+    verify(currentSessionManager.locationHelper, times(2)).start();
+    verify(currentSessionManager.audioReader).start();
+    assertThat(currentSessionManager.isSessionRecording(), equalTo(true));
   }
 
   @Test
   public void shouldDiscardASession()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
-    sessionManager.getCurrentSession().setId(1234);
+    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.getCurrentSession().setId(1234);
 
     triggerMeasurement(13.5);
-    sessionManager.discardSession();
+    currentSessionManager.discardSession();
 
-    verify(sessionManager.audioReader, never()).stop();
-    verify(sessionManager.locationHelper).stop();
-    verify(sessionManager.sessionRepository, never()).save(Mockito.any(Session.class));
-    assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
-    assertThat(sessionManager.isSessionRecording(), equalTo(false));
+    verify(currentSessionManager.audioReader, never()).stop();
+    verify(currentSessionManager.locationHelper).stop();
+    verify(currentSessionManager.sessionRepository, never()).save(Mockito.any(Session.class));
+    assertThat(currentSessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+    assertThat(currentSessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Ignore("Fix session persistence")
@@ -322,52 +322,52 @@ public class SessionManagerTest
   public void shouldStopASession()
   {
     triggerMeasurement(11);
-    sessionManager.finishSession(0);
+    currentSessionManager.finishSession(0);
 
-    verify(sessionManager.audioReader, never()).stop();
-    verify(sessionManager.locationHelper).stop();
-    verify(sessionManager.sessionRepository).save(Mockito.any(Session.class));
-    assertThat(sessionManager.isSessionRecording(), equalTo(false));
+    verify(currentSessionManager.audioReader, never()).stop();
+    verify(currentSessionManager.locationHelper).stop();
+    verify(currentSessionManager.sessionRepository).save(Mockito.any(Session.class));
+    assertThat(currentSessionManager.isSessionRecording(), equalTo(false));
   }
 
   @Test
   public void shouldNotifyListenersOnSessionClobber()
   {
-    sessionManager.getCurrentSession().setId(1234);
-    sessionManager.discardSession();
+    currentSessionManager.getCurrentSession().setId(1234);
+    currentSessionManager.discardSession();
 
-    verify(sessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
+    verify(currentSessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
   }
 
   @Test
   public void isCalibrating()
   {
-    sessionManager = spy(sessionManager);
-    doReturn(new Session()).when(sessionManager.sessionRepository)
+    currentSessionManager = spy(currentSessionManager);
+    doReturn(new Session()).when(currentSessionManager.sessionRepository)
         .loadFully(anyLong(), Matchers.<ProgressListener>anyObject()); 
 
-    sessionManager.loadSessionForViewing(0, progressListener);
+    currentSessionManager.loadSessionForViewing(0, progressListener);
 
-    verify(sessionManager, atLeastOnce()).setSession(any(Session.class));
+    verify(currentSessionManager, atLeastOnce()).setSession(any(Session.class));
   }
 
   @Test
   public void shouldNotAddMeasurementsToASavedSession()
   {
-    sessionManager.currentSession = new Session();
+    currentSessionManager.currentSession = new Session();
 
     triggerMeasurement(10);
 
-    assertThat(sessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
+    assertThat(currentSessionManager.getMeasurementStreams().isEmpty(), equalTo(true));
   }
 
   @Test
   public void shouldSetSessionStart()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     int oneSecond = 1000;
-    assertThat(new Date().getTime() - sessionManager.currentSession.getStart().getTime() < oneSecond, equalTo(true));
+    assertThat(new Date().getTime() - currentSessionManager.currentSession.getStart().getTime() < oneSecond, equalTo(true));
   }
 
   @Test
@@ -376,35 +376,35 @@ public class SessionManagerTest
     // given
 
     // when
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
 
     // then
-    org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isTrue();
+    org.fest.assertions.Assertions.assertThat(currentSessionManager.state.recording().isRecording()).isTrue();
   }
 
   @Test
   public void stopSession_should_changeRecordingState() throws Exception
   {
       // given
-      sessionManager.startMobileSession(title, tags, description, false);
+      currentSessionManager.startMobileSession(title, tags, description, false);
 
       // when
-      sessionManager.stopSession();
+      currentSessionManager.stopSession();
 
       // then
-    org.fest.assertions.Assertions.assertThat(sessionManager.state.recording().isRecording()).isFalse();
+    org.fest.assertions.Assertions.assertThat(currentSessionManager.state.recording().isRecording()).isFalse();
   }
 
   @Ignore("needs to check if finishing creates a proper task")
   @Test
   public void shouldSetSessionEnd()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, description, false);
     triggerMeasurement();
 
-    sessionManager.finishSession(0);
+    currentSessionManager.finishSession(0);
 
-    verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
+    verify(currentSessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
       @Override
       public boolean matches(Object o)
@@ -427,9 +427,9 @@ public class SessionManagerTest
   public void shouldSaveAdditionalData()
   {
     triggerMeasurement(100);
-    sessionManager.finishSession(0);
+    currentSessionManager.finishSession(0);
 
-    verify(sessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
+    verify(currentSessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
       @Override
       public boolean matches(Object o)
@@ -452,23 +452,23 @@ public class SessionManagerTest
   @Test
   public void shouldJustDeleteNotesIfSessionInProgress()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
-    Note note = sessionManager.makeANote(null, null, null);
+    currentSessionManager.startMobileSession(title, tags, description, false);
+    Note note = currentSessionManager.makeANote(null, null, null);
 
-    sessionManager.deleteNote(note);
+    currentSessionManager.deleteNote(note);
 
-    assertThat(sessionManager.getNotes(), not(hasItem(note)));
+    assertThat(currentSessionManager.getNotes(), not(hasItem(note)));
   }
 
   @Test
   public void afterDeletingNotesShouldHaveNewNumbers()
   {
-    sessionManager.startMobileSession(title, tags, description, false);
-    Note note1 = sessionManager.makeANote(null, "Note1", null);
-    Note note2 = sessionManager.makeANote(null, "Note2", null);
+    currentSessionManager.startMobileSession(title, tags, description, false);
+    Note note1 = currentSessionManager.makeANote(null, "Note1", null);
+    Note note2 = currentSessionManager.makeANote(null, "Note2", null);
 
-    sessionManager.deleteNote(note1);
-    Note note3 = sessionManager.makeANote(null, "Note3", null);
+    currentSessionManager.deleteNote(note1);
+    Note note3 = currentSessionManager.makeANote(null, "Note3", null);
 
     assertThat(note3.getNumber(), not(equalTo(note2.getNumber())));
   }
@@ -476,21 +476,21 @@ public class SessionManagerTest
   @Test
   public void shouldMarkNotesToBeDeletedForSavedSessions()
   {
-    sessionManager.currentSession = mock(Session.class);
-    when(sessionManager.currentSession.getId()).thenReturn(1234L);
+    currentSessionManager.currentSession = mock(Session.class);
+    when(currentSessionManager.currentSession.getId()).thenReturn(1234L);
     Note note = new Note(null, null, location, null, 10);
 
-    sessionManager.deleteNote(note);
+    currentSessionManager.deleteNote(note);
 
-    verify(sessionManager.currentSession).deleteNote(note);
+    verify(currentSessionManager.currentSession).deleteNote(note);
   }
 
   @Test
   public void shouldRestartExternalSensor()
   {
-    sessionManager.restartSensors();
+    currentSessionManager.restartSensors();
 
-    verify(sessionManager.externalSensors).start();
+    verify(currentSessionManager.externalSensors).start();
   }
 
   @Test
@@ -498,12 +498,12 @@ public class SessionManagerTest
   {
     // given
     SensorEvent event = new SensorEvent("CERN", "LHC", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
-    sessionManager.onEvent(event);
+    currentSessionManager.onEvent(event);
 
     // when
-    sessionManager.deleteSensorStream(event.getSensorName());
+    currentSessionManager.deleteSensorStream(event.getSensorName());
 
     // then (shouldn't crash)
-    sessionManager.onEvent(event);
+    currentSessionManager.onEvent(event);
   }
 }

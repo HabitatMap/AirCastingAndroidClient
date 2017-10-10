@@ -97,7 +97,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     MenuInflater inflater = getDelegate().getMenuInflater();
 
-    if (!sessionManager.isSessionRecording()) {
+    if (!currentSessionManager.isSessionRecording()) {
       inflater.inflate(R.menu.toolbar_start_recording, menu);
     } else {
       inflater.inflate(R.menu.toolbar_stop_recording, menu);
@@ -164,7 +164,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
         ArrayList<Measurement> measurements = newArrayList(measurementPresenter.getTimelineView());
-        ArrayList<Note> notes = newArrayList(sessionManager.getNotes());
+        ArrayList<Note> notes = newArrayList(currentSessionManager.getNotes());
 
         plot.update(sensorManager.getVisibleSensor(), measurements, notes);
 

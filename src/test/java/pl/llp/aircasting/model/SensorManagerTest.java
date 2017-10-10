@@ -31,7 +31,8 @@ public class SensorManagerTest
 {
   @Inject SensorManager sensorManager;
 
-  @Mock SessionManager sessionManager;
+  @Mock
+  CurrentSessionManager currentSessionManager;
 
   private Sensor SOME_SENSOR;
   private SensorEvent sensorEvent;
@@ -41,8 +42,8 @@ public class SensorManagerTest
   public void setup() {
     SESSION_CHANGED = new SessionChangeEvent(new Session());
     sensorManager.eventBus = mock(EventBus.class);
-    sensorManager.sessionManager = sessionManager;
-    sessionManager.state = new ApplicationState();
+    sensorManager.currentSessionManager = currentSessionManager;
+    currentSessionManager.state = new ApplicationState();
 
     sensorEvent = New.sensorEvent();
     SOME_SENSOR = new Sensor(sensorEvent);
@@ -79,7 +80,7 @@ public class SensorManagerTest
 
   @Test
   public void should_clear_sensor_info_on_session_change() {
-    when(sessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
+    when(currentSessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
 
     sensorManager.onEvent(SESSION_CHANGED);
 
@@ -106,10 +107,10 @@ public class SensorManagerTest
   @Test
   public void should_not_update_sensors_when_viewing_a_session()
   {
-    sessionManager.state = sensorManager.state;
-    sessionManager.state.recording().startShowingOldSession();
+    currentSessionManager.state = sensorManager.state;
+    currentSessionManager.state.recording().startShowingOldSession();
 
-    when(sessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
+    when(currentSessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
     sensorManager.onEvent(SESSION_CHANGED);
 
     sensorManager.onEvent(sensorEvent);
@@ -120,9 +121,9 @@ public class SensorManagerTest
   @Test
   public void should_use_one_of_the_sensors_as_visible_when_viewing_a_session()
   {
-    sessionManager.state.recording().startShowingOldSession();
+    currentSessionManager.state.recording().startShowingOldSession();
     MeasurementStream stream = New.stream();
-    when(sessionManager.getMeasurementStreams()).thenReturn(newArrayList(stream));
+    when(currentSessionManager.getMeasurementStreams()).thenReturn(newArrayList(stream));
 
     sensorManager.onEvent(SESSION_CHANGED);
 

@@ -7,8 +7,8 @@ import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
@@ -48,7 +49,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         initialize();
         locationHelper.start();
 
-        if (!sessionManager.isSessionBeingViewed()) {
+        if (!currentSessionManager.isSessionBeingViewed()) {
             Intents.startSensors(context);
         }
 
@@ -63,7 +64,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        if (!sessionManager.isSessionBeingViewed()) {
+        if (!currentSessionManager.isSessionBeingViewed()) {
             Intents.stopSensors(context);
         }
 
@@ -105,7 +106,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
             case Intents.EDIT_SESSION:
                 if (resultCode == R.id.save_button) {
                     Session session = Intents.editSessionResult(data);
-                    sessionManager.updateSession(session);
+                    currentSessionManager.updateSession(session);
                 }
                 break;
             default:
@@ -131,7 +132,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     private boolean shouldCheckForUnfinishedSessions()
     {
-        if(sessionManager.isSessionRecording())
+        if(currentSessionManager.isSessionRecording())
             return false;
 
         if(state.saving().isSaving())

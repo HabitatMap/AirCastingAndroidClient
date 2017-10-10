@@ -37,41 +37,42 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith(InjectedTestRunner.class)
-public class SessionManagerUpdateSessionTest
+public class SessionManagerUpdateCurrentSessionTest
 {
   public static final int ANY_ID = 3;
   public static final String NEW_TITLE = "New title";
 
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject ContinuousTracker tracker;
   private Session session;
 
   @Before
   public void setup()
   {
-    sessionManager.sessionRepository = mock(SessionRepository.class);
-    sessionManager.currentSession = new Session();
-    sessionManager.currentSession.add(new MeasurementStream());
+    currentSessionManager.sessionRepository = mock(SessionRepository.class);
+    currentSessionManager.currentSession = new Session();
+    currentSessionManager.currentSession.add(new MeasurementStream());
     session = new Session();
     session.setTitle(NEW_TITLE);
     session.setId(ANY_ID);
 
     tracker = spy(tracker);
-    sessionManager.tracker = tracker;
+    currentSessionManager.tracker = tracker;
   }
 
   @Test
   public void shouldKeepMeasurements()
   {
-    sessionManager.updateSession(session);
+    currentSessionManager.updateSession(session);
 
-    assertThat(sessionManager.getMeasurementStreams().size(), equalTo(1));
+    assertThat(currentSessionManager.getMeasurementStreams().size(), equalTo(1));
   }
 
   @Test
   public void shouldSaveTheSession()
   {
-    sessionManager.updateSession(session);
+    currentSessionManager.updateSession(session);
 
     verify(tracker).setTitle(anyLong(), anyString());
   }

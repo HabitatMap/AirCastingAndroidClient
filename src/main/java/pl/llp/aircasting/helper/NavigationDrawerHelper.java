@@ -7,7 +7,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,14 +16,14 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 /**
  * Created by radek on 09/06/17.
  */
 public class NavigationDrawerHelper {
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
 
@@ -58,7 +57,7 @@ public class NavigationDrawerHelper {
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.phone_microphone:
-                        sessionManager.startAudioSensor();
+                        currentSessionManager.startAudioSensor();
                         Intents.startDashboardActivity(activity, true);
                         drawerLayout.closeDrawers();
                         break;

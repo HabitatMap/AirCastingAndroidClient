@@ -22,7 +22,7 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,7 +34,8 @@ import roboguice.inject.InjectView;
 
 public class ContributeActivity extends DialogActivity
 {
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject Context context;
   @Inject SettingsHelper settingsHelper;
 
@@ -69,7 +70,7 @@ public class ContributeActivity extends DialogActivity
       @Override
       public void onClick(View v)
       {
-        sessionManager.setContribute(sessionId, true);
+        currentSessionManager.setContribute(sessionId, true);
         saveSession(sessionId);
         finish();
       }
@@ -79,7 +80,7 @@ public class ContributeActivity extends DialogActivity
       @Override
       public void onClick(View v)
       {
-        sessionManager.setContribute(sessionId, false);
+        currentSessionManager.setContribute(sessionId, false);
         saveSession(sessionId);
         finish();
       }
@@ -89,13 +90,13 @@ public class ContributeActivity extends DialogActivity
   @Override
   public void onBackPressed()
   {
-    sessionManager.continueSession();
+    currentSessionManager.continueSession();
     finish();
   }
 
   private void saveSession(long sessionId)
   {
     //noinspection unchecked
-    sessionManager.finishSession(sessionId);
+    currentSessionManager.finishSession(sessionId);
   }
 }

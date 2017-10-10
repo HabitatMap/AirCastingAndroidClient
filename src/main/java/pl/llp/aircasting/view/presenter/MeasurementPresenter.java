@@ -24,11 +24,8 @@ import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
@@ -64,7 +61,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private static final long SCROLL_TIMEOUT = 1000;
   private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
 
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
@@ -218,7 +216,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     Stopwatch stopwatch = new Stopwatch().start();
 
     String sensorName = sensor.getSensorName();
-    MeasurementStream stream = sessionManager.getMeasurementStream(sensorName);
+    MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
     Iterable<Measurement> measurements;
     if (stream == null)
     {
@@ -228,7 +226,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
       // when user opens the graph with fixed session (since fixed sessions are often much longer).
-      if(sessionManager.getCurrentSession().isFixed())
+      if(currentSessionManager.getCurrentSession().isFixed())
         measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
       else
         measurements = stream.getMeasurements();

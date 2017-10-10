@@ -2,15 +2,14 @@ package pl.llp.aircasting.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatDelegate;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 public class RecordWithoutGPSAlert {
     private Activity activity;
     private AppCompatDelegate delegate;
-    private SessionManager sessionManager;
+    private CurrentSessionManager currentSessionManager;
     private String sessionTitle;
     private String sessionTags;
     private String sessionDescription;
@@ -21,11 +20,11 @@ public class RecordWithoutGPSAlert {
                                  String description,
                                  Activity activity,
                                  AppCompatDelegate delegate,
-                                 SessionManager sessionManager,
+                                 CurrentSessionManager currentSessionManager,
                                  boolean withoutLocation) {
         this.activity = activity;
         this.delegate = delegate;
-        this.sessionManager = sessionManager;
+        this.currentSessionManager = currentSessionManager;
         this.sessionTitle = title;
         this.sessionTags = tags;
         this.sessionDescription = description;
@@ -39,7 +38,7 @@ public class RecordWithoutGPSAlert {
             public void onClick(DialogInterface dialogInterface, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        sessionManager.startMobileSession(sessionTitle, sessionTags, sessionDescription, withoutLocation);
+                        currentSessionManager.startMobileSession(sessionTitle, sessionTags, sessionDescription, withoutLocation);
                         delegate.invalidateOptionsMenu();
                         activity.finish();
                         break;

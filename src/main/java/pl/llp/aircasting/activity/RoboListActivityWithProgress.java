@@ -17,7 +17,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.helper.NavigationDrawerHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import roboguice.activity.RoboListActivity;
 
 /**
@@ -27,7 +27,8 @@ import roboguice.activity.RoboListActivity;
  * Time: 3:19 PM
  */
 public class RoboListActivityWithProgress extends RoboListActivity implements ActivityWithProgress, AppCompatCallback {
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject NavigationDrawerHelper navigationDrawerHelper;
     @Inject Context context;

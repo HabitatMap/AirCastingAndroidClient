@@ -1,6 +1,6 @@
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.view.View;
 import com.google.inject.Inject;
@@ -10,11 +10,12 @@ import com.google.inject.Inject;
  */
 public class NowValueVisibilityManager
 {
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
 
   int getVisibility()
   {
-    boolean shouldDisplay = sessionManager.isSessionRecording() || !sessionManager.isSessionBeingViewed();
+    boolean shouldDisplay = currentSessionManager.isSessionRecording() || !currentSessionManager.isSessionBeingViewed();
     int visibility = shouldDisplay ? View.VISIBLE : View.GONE;
     return visibility;
   }

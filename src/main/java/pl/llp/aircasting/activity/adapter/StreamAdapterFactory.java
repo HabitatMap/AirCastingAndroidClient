@@ -4,7 +4,7 @@ import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -18,12 +18,13 @@ public class StreamAdapterFactory
 {
   @Inject EventBus eventBus;
   @Inject StreamViewHelper streamViewHelper;
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject SensorManager sensorManager;
   @Inject DashboardChartManager dashboardChartManager;
 
   public StreamAdapter getAdapter(DashboardBaseActivity context) {
     return new StreamAdapter(context, new ArrayList<Map<String, Object>>(), eventBus,
-                             streamViewHelper, sensorManager, sessionManager, dashboardChartManager);
+                             streamViewHelper, sensorManager, currentSessionManager, dashboardChartManager);
   }
 }

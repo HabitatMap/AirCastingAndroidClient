@@ -33,7 +33,7 @@ import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.storage.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.storage.repository.SessionRepository;
@@ -60,7 +60,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
   @Inject DashboardChartManager chartManager;
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Application context;
   @Inject ApplicationState state;
@@ -206,7 +207,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
 
   private void continueAircastingSession(long id) {
     Session session = sessionRepository.loadShallow(id);
-    sessionManager.continueStreamingSession(session, true);
+    currentSessionManager.continueStreamingSession(session, true);
   }
 
   private void editSession(long id) {
@@ -221,7 +222,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   }
 
   private void viewSession(long id) {
-    if (sessionManager.isSessionRecording()) {
+    if (currentSessionManager.isSessionRecording()) {
       Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
       return;
     }
@@ -229,7 +230,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
     new OpenSessionTask(this) {
       @Override
       protected Session doInBackground(Long... longs) {
-        sessionManager.loadSessionForViewing(longs[0], this);
+        currentSessionManager.loadSessionForViewing(longs[0], this);
 
         return null;
       }
@@ -245,7 +246,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   }
 
   private void startSessionView() {
-    eventBus.post(new SessionLoadedEvent(sessionManager.getCurrentSession()));
+    eventBus.post(new SessionLoadedEvent(currentSessionManager.getCurrentSession()));
     Intents.startDashboardActivity(this, true);
   }
 

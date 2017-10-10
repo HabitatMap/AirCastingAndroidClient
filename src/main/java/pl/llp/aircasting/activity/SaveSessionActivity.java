@@ -22,8 +22,8 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 
 import android.os.Bundle;
 import android.view.View;
@@ -41,7 +41,8 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   @InjectView(R.id.session_tags) EditText sessionTags;
   @InjectView(R.id.session_description) EditText sessionDescription;
 
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
 
   @Inject ApplicationState state;
@@ -52,8 +53,8 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Session session = sessionManager.getCurrentSession();
-    sessionManager.pauseSession();
+    Session session = currentSessionManager.getCurrentSession();
+    currentSessionManager.pauseSession();
 
     setContentView(R.layout.session_details);
 
@@ -85,7 +86,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   @Override
   public void onBackPressed()
   {
-    sessionManager.continueSession();
+    currentSessionManager.continueSession();
     finish();
   }
 
@@ -97,13 +98,13 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
       case R.id.save_button:
       {
         fillSessionDetails(sessionId);
-        Session session = sessionManager.getCurrentSession();
+        Session session = currentSessionManager.getCurrentSession();
         if(session.isLocationless()) {
-          sessionManager.finishSession(sessionId);
+          currentSessionManager.finishSession(sessionId);
         }
         else if (settingsHelper.isContributingToCrowdMap()) {
-          sessionManager.setContribute(sessionId, true);
-          sessionManager.finishSession(sessionId);
+          currentSessionManager.setContribute(sessionId, true);
+          currentSessionManager.finishSession(sessionId);
         }
         else {
           Intents.contribute(this, sessionId);
@@ -112,7 +113,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
       }
       case R.id.discard_button:
       {
-        sessionManager.discardSession(sessionId);
+        currentSessionManager.discardSession(sessionId);
         break;
       }
     }
@@ -124,7 +125,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
-    sessionManager.setTitleTagsDescription(sessionId, title, tags, description);
+    currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
   }
 }
 

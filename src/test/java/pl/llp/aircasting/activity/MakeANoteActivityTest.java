@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 
 import java.io.IOException;
 
@@ -53,7 +53,7 @@ public class MakeANoteActivityTest {
     public void setup() throws IOException {
         activity.onCreate(null);
 
-        activity.sessionManager = mock(SessionManager.class);
+        activity.currentSessionManager = mock(CurrentSessionManager.class);
         activity.locationHelper = mock(LocationHelper.class);
 
         location = new Location("TEST");
@@ -69,7 +69,7 @@ public class MakeANoteActivityTest {
 
         click(activity, R.id.save_button);
 
-        verify(activity.sessionManager).makeANote(activity.date, "Note text", null);
+        verify(activity.currentSessionManager).makeANote(activity.date, "Note text", null);
     }
 
     @Test

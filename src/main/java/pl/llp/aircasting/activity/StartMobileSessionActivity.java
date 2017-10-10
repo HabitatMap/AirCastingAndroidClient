@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.model.SessionManager;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import roboguice.inject.InjectView;
 
 /**
@@ -25,7 +25,8 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject Application context;
-    @Inject SessionManager sessionManager;
+    @Inject
+    CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject LocationManager locationManager;
 
@@ -57,14 +58,14 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
         String description = sessionDescription.getText().toString();
 
         if (settingsHelper.areMapsDisabled()) {
-            sessionManager.startMobileSession(title, tags, description, true);
+            currentSessionManager.startMobileSession(title, tags, description, true);
         } else {
             if (locationHelper.getLastLocation() == null) {
-                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, description, this, delegate, sessionManager, true);
+                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, description, this, delegate, currentSessionManager, true);
                 recordAlert.display();
                 return;
             } else {
-                sessionManager.startMobileSession(title, tags, description, false);
+                currentSessionManager.startMobileSession(title, tags, description, false);
                 showWarnings();
             }
         }

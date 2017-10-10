@@ -3,8 +3,8 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 
 import android.os.Bundle;
 import android.view.View;
@@ -22,7 +22,8 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   @InjectView(R.id.session_tags) EditText sessionTags;
   @InjectView(R.id.session_description) EditText sessionDescription;
 
-  @Inject SessionManager sessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
 
   @Inject ApplicationState state;
@@ -33,8 +34,8 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Session session = sessionManager.getCurrentSession();
-    sessionManager.pauseSession();
+    Session session = currentSessionManager.getCurrentSession();
+    currentSessionManager.pauseSession();
 
     setContentView(R.layout.save_lost_session);
 
@@ -62,7 +63,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   @Override
   public void onBackPressed()
   {
-    sessionManager.discardSession(sessionId);
+    currentSessionManager.discardSession(sessionId);
     finish();
   }
 
@@ -74,10 +75,10 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
       case R.id.save_button:
       {
         fillSessionDetails(sessionId);
-        Session session = sessionManager.getCurrentSession();
+        Session session = currentSessionManager.getCurrentSession();
         if(session.isLocationless())
         {
-          sessionManager.finishSession(sessionId);
+          currentSessionManager.finishSession(sessionId);
         }
         else
         {
@@ -87,7 +88,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
       }
       case R.id.discard_button:
       {
-        sessionManager.discardSession(sessionId);
+        currentSessionManager.discardSession(sessionId);
         break;
       }
     }
@@ -99,6 +100,6 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();
     String description = sessionDescription.getText().toString();
-    sessionManager.setTitleTagsDescription(sessionId, title, tags, description);
+    currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
   }
 }

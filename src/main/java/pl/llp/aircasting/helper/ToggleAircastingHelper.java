@@ -8,9 +8,9 @@ import android.widget.Toast;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
+import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.SessionManager;
 
 /**
  * Created by radek on 21/06/17.
@@ -19,14 +19,14 @@ public class ToggleAircastingHelper {
     public AppCompatDelegate delegate;
     private Context context;
     private Activity activity;
-    private SessionManager sessionManager;
+    private CurrentSessionManager currentSessionManager;
     private SettingsHelper settingsHelper;
     private SensorManager sensorManager;
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
     public ToggleAircastingHelper(Activity activity,
-                                  SessionManager sessionManager,
+                                  CurrentSessionManager currentSessionManager,
                                   SettingsHelper settingsHelper,
                                   SensorManager sensorManager,
                                   LocationHelper locationHelper,
@@ -34,7 +34,7 @@ public class ToggleAircastingHelper {
                                   Context context,
                                   DashboardChartManager dashboardChartManager) {
         this.activity = activity;
-        this.sessionManager = sessionManager;
+        this.currentSessionManager = currentSessionManager;
         this.settingsHelper = settingsHelper;
         this.sensorManager = sensorManager;
         this.locationHelper = locationHelper;
@@ -44,7 +44,7 @@ public class ToggleAircastingHelper {
     }
 
     public void toggleAirCasting() {
-        if (sessionManager.isSessionRecording()) {
+        if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
             if (sensorManager.getSensorByName("Phone Microphone") == null) {
@@ -61,7 +61,7 @@ public class ToggleAircastingHelper {
     }
 
     public void stopAirCasting() {
-        Session session = sessionManager.getCurrentSession();
+        Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
 
         if (session.isFixed()) {
@@ -76,9 +76,9 @@ public class ToggleAircastingHelper {
         Long sessionId = session.getId();
         if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
-            sessionManager.discardSession(sessionId);
+            currentSessionManager.discardSession(sessionId);
         } else {
-            sessionManager.stopSession();
+            currentSessionManager.stopSession();
             Intent intent = new Intent(activity, SaveSessionActivity.class);
             intent.putExtra(Intents.SESSION_ID, sessionId);
             activity.startActivityForResult(intent, Intents.SAVE_DIALOG);
@@ -90,10 +90,10 @@ public class ToggleAircastingHelper {
         Long sessionId = session.getId();
         if (session.isEmpty()) {
             Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
-            sessionManager.discardSession(sessionId);
+            currentSessionManager.discardSession(sessionId);
         } else {
-            sessionManager.stopSession();
-            sessionManager.finishSession(sessionId);
+            currentSessionManager.stopSession();
+            currentSessionManager.finishSession(sessionId);
         }
     }
 

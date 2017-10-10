@@ -242,11 +242,11 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     }
 
     public void noteClicked(int index) {
-        int total = sessionManager.getNoteCount();
+        int total = currentSessionManager.getNoteCount();
         if (total == 0) return;
         index = ((index % total) + total) % total;
 
-        currentNote = sessionManager.getNote(index);
+        currentNote = currentSessionManager.getNote(index);
 
         showNoteViewer();
 
@@ -293,8 +293,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (sessionManager.isSessionBeingViewed()) {
-                    sessionManager.updateNote(currentNote);
+                if (currentSessionManager.isSessionBeingViewed()) {
+                    currentSessionManager.updateNote(currentNote);
                     triggerSync(context);
                 }
                 return null;
@@ -313,7 +313,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
-                sessionManager.deleteNote(currentNote);
+                currentSessionManager.deleteNote(currentNote);
                 triggerSync(context);
 
                 return null;
