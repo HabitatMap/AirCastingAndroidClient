@@ -16,6 +16,7 @@ import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
+import pl.llp.aircasting.sensor.VisibleSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 
@@ -44,17 +45,18 @@ public class CurrentSessionSensorManager {
     @Inject ApplicationState state;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
+    @Inject VisibleSensor visibleSensor;
 
+    final static long CURRENT_SESSION_FAKE_ID = -1;
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
-    private volatile Sensor visibleSensor = AUDIO_SENSOR;
-    private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
     private volatile Map<SensorName, Sensor> currentSessionSensors = newConcurrentMap();
     private volatile Set<Sensor> disabled = newHashSet();
 
     @Inject
     public void init() {
         eventBus.register(this);
+        visibleSensor.set(AUDIO_SENSOR, CURRENT_SESSION_FAKE_ID);
     }
 
     @Subscribe
@@ -97,9 +99,10 @@ public class CurrentSessionSensorManager {
     @Subscribe
     public void onEvent(ViewStreamEvent event) {
         String sensorName = event.getSensor().getSensorName();
-        visibleSensor = sensors.get(SensorName.from(sensorName));
-        if(visibleSensor == null) visibleSensor = AUDIO_SENSOR;
-        eventBus.post(new StreamUpdateEvent(visibleSensor));
+        Long sessionId = event.getSessionId();
+        visibleSensor.set(currentSessionSensors.get(SensorName.from(sensorName)), sessionId);
+        if(visibleSensor.getSensor() == null) visibleSensor.set(AUDIO_SENSOR, sessionId);
+        eventBus.post(new StreamUpdateEvent(visibleSensor.getSensor()));
     }
 
     @Subscribe
@@ -108,8 +111,8 @@ public class CurrentSessionSensorManager {
     }
 
     public Sensor getVisibleSensor() {
-        String sensorName = visibleSensor.getSensorName();
-        Sensor sensor = sensors.get(SensorName.from(sensorName));
+        String sensorName = visibleSensor.getSensor().getSensorName();
+        Sensor sensor = currentSessionSensors.get(SensorName.from(sensorName));
         return sensor != null ? sensor : AUDIO_SENSOR;
     }
 
@@ -197,10 +200,10 @@ public class CurrentSessionSensorManager {
         }
 
         currentSessionSensors = newSensors;
-        String sensorName = visibleSensor.getSensorName();
+        String sensorName = visibleSensor.getSensor().getSensorName();
 
         if (!currentSessionSensors.containsKey(SensorName.from(sensorName))) {
-            eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor()));
+            eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor(), CURRENT_SESSION_FAKE_ID));
         }
     }
 }

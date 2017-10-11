@@ -1,16 +1,23 @@
 package pl.llp.aircasting.event.ui;
 
+import org.jetbrains.annotations.Nullable;
 import pl.llp.aircasting.model.Sensor;
 
 public class ViewStreamEvent {
     private Sensor sensor;
+    @Nullable Long sessionId;
 
-    public ViewStreamEvent(Sensor sensor) {
+    public ViewStreamEvent(Sensor sensor, @Nullable Long sessionId) {
         this.sensor = sensor;
+        this.sessionId = sessionId;
     }
 
     public Sensor getSensor() {
         return sensor;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
     }
 
     @Override
