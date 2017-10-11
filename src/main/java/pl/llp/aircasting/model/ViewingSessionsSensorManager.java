@@ -21,6 +21,7 @@ import static com.google.inject.internal.Lists.newArrayList;
 @Singleton
 public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
+    @Inject VisibleSensor visibleSensor;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
 
@@ -51,7 +52,7 @@ public class ViewingSessionsSensorManager {
             String name = sensor.getSensorName();
             sessionSensors.put(SensorName.from(name), sensor);
 
-            visibleSensor = sensor;
+            visibleSensor.set(sensor, null);
         }
     }
 }
