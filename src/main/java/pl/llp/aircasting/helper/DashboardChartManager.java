@@ -34,7 +34,8 @@ public class DashboardChartManager {
     @Inject
     CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
-    @Inject SensorManager sensorManager;
+    @Inject
+    CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
 
     private final static int INTERVAL_IN_SECONDS = 60;
@@ -255,7 +256,7 @@ public class DashboardChartManager {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
-            Sensor sensor = sensorManager.getSensorByName(sensorName);
+            Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
             colors.add(resourceHelper.getColorAbsolute(sensor, entry.getY()));
         }
 

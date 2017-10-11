@@ -2,12 +2,12 @@ package pl.llp.aircasting.activity.events;
 
 import pl.llp.aircasting.model.Session;
 
-public class SessionChangeEvent
+public class SessionAddedEvent
 {
   private final Session session;
   private final Throwable origin;
 
-  public SessionChangeEvent(Session session)
+  public SessionAddedEvent(Session session)
   {
     this.origin = new Throwable();
     this.session = session;

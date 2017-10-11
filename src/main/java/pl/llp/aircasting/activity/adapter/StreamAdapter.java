@@ -11,8 +11,8 @@ import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.StreamViewHelper;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -62,7 +62,7 @@ public class StreamAdapter extends SimpleAdapter {
     };
 
     CurrentSessionManager currentSessionManager;
-    SensorManager sensorManager;
+    CurrentSessionSensorManager currentSessionSensorManager;
     StreamViewHelper streamViewHelper;
     DashboardChartManager dashboardChartManager;
 
@@ -82,12 +82,12 @@ public class StreamAdapter extends SimpleAdapter {
     private static Comparator comparator;
 
     public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                         StreamViewHelper streamViewHelper, SensorManager sensorManager, CurrentSessionManager currentSessionManager, DashboardChartManager dashboardChartManager) {
+                         StreamViewHelper streamViewHelper, CurrentSessionSensorManager currentSessionSensorManager, CurrentSessionManager currentSessionManager, DashboardChartManager dashboardChartManager) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
-        this.sensorManager = sensorManager;
+        this.currentSessionSensorManager = currentSessionSensorManager;
         this.currentSessionManager = currentSessionManager;
         this.streamViewHelper = streamViewHelper;
         this.dashboardChartManager = dashboardChartManager;
@@ -199,7 +199,7 @@ public class StreamAdapter extends SimpleAdapter {
     private void prepareData() {
         long sessionId;
         List<String> clearedStreamsForSession = new ArrayList<String>();
-        List<Sensor> sensors = sensorManager.getSensors();
+        List<Sensor> sensors = currentSessionSensorManager.getSensors();
 
         if (sensors.isEmpty()) {
             return;
@@ -278,7 +278,7 @@ public class StreamAdapter extends SimpleAdapter {
     public void deleteStream(View streamView) {
         TextView sensorTitle = (TextView) streamView.findViewById(R.id.sensor_name);
         String sensorName = (String) sensorTitle.getText();
-        Sensor sensor = sensorManager.getSensorByName(sensorName);
+        Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
 
         if (currentSessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
             confirmDeletingStream(sensor);
@@ -331,7 +331,7 @@ public class StreamAdapter extends SimpleAdapter {
                 setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        sensorManager.deleteSensorFromCurrentSession(sensor);
+                        currentSessionSensorManager.deleteSensorFromCurrentSession(sensor);
                         update();
                         Intents.triggerSync(context);
                     }

@@ -1,31 +1,21 @@
 package pl.llp.aircasting.activity.fragments;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.ChartOptionsActivity;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
-import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.view.DashboardListView;
-
-import static android.content.Context.VIBRATOR_SERVICE;
 
 /**
  * Created by radek on 28/06/17.

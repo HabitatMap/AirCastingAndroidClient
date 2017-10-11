@@ -21,8 +21,8 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.graphics.Canvas;
@@ -42,7 +42,8 @@ public class LocationOverlay extends Overlay {
     @Inject LocationHelper locationHelper;
     @Inject
     CurrentSessionManager currentSessionManager;
-    @Inject SensorManager sensorManager;
+    @Inject
+    CurrentSessionSensorManager currentSessionSensorManager;
 
     @Override
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {
@@ -51,7 +52,7 @@ public class LocationOverlay extends Overlay {
       if(shouldSkipDrawing()) return;
 
         Location location = locationHelper.getLastLocation();
-        Sensor sensor = sensorManager.getVisibleSensor();
+        Sensor sensor = currentSessionSensorManager.getVisibleSensor();
         double value = currentSessionManager.getNow(sensor);
 
         if (location != null) {

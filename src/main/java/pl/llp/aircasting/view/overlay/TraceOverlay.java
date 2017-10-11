@@ -22,9 +22,9 @@ package pl.llp.aircasting.view.overlay;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
 
 import android.graphics.Canvas;
@@ -43,7 +43,8 @@ public class TraceOverlay extends BufferingOverlay<Measurement>
 {
   @Inject MeasurementPresenter measurementPresenter;
   @Inject ResourceHelper resourceHelper;
-  @Inject SensorManager sensorManager;
+  @Inject
+  CurrentSessionSensorManager currentSessionSensorManager;
   @Inject SoundHelper soundHelper;
 
   @Override
@@ -75,7 +76,7 @@ public class TraceOverlay extends BufferingOverlay<Measurement>
   private void drawPoint(Canvas canvas, Projection projection, Measurement measurement)
   {
     double value = measurement.getValue();
-    Sensor sensor = sensorManager.getVisibleSensor();
+    Sensor sensor = currentSessionSensorManager.getVisibleSensor();
 
     if (soundHelper.shouldDisplay(sensor, value)) {
       Drawable bullet = resourceHelper.getBulletAbsolute(sensor, value);

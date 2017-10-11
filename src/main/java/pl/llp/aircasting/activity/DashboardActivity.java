@@ -24,7 +24,8 @@ public class DashboardActivity extends DashboardBaseActivity {
     CurrentSessionManager currentSessionManager;
     @Inject ApplicationState state;
     @Inject EventBus eventBus;
-    @Inject SensorManager sensorManager;
+    @Inject
+    CurrentSessionSensorManager currentSessionSensorManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +131,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void viewChartOptions(View view) {
         TextView sensorTitle = (TextView) view.findViewById(R.id.sensor_name);
         String sensorName = (String) sensorTitle.getText();
-        Sensor sensor = sensorManager.getSensorByName(sensorName);
+        Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
 
         eventBus.post(new ViewStreamEvent(sensor));
         startActivity(new Intent(context, ChartOptionsActivity.class));

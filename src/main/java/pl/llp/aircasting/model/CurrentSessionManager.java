@@ -19,11 +19,10 @@
  */
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.android.Logger;
@@ -34,7 +33,6 @@ import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
-import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
@@ -78,7 +76,7 @@ public class CurrentSessionManager {
 
     @Inject Application applicationContext;
     @Inject TelephonyManager telephonyManager;
-    @Inject SensorManager sensorManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
 
     @NotNull Session currentSession = new Session();
 
@@ -128,10 +126,6 @@ public class CurrentSessionManager {
 
     public boolean isSessionIdle() {
         return !isSessionBeingViewed() && !isSessionRecording();
-    }
-
-    public boolean canSessionHaveNotes() {
-        return !currentSession.isFixed();
     }
 
     public boolean sessionHasId() {
@@ -214,7 +208,7 @@ public class CurrentSessionManager {
     public synchronized void onEvent(SensorEvent event) {
         double value = event.getValue();
         String sensorName = event.getSensorName();
-        Sensor sensor = sensorManager.getSensorByName(sensorName);
+        Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
         recentMeasurements.put(sensorName, value);
 
         Location location = getLocation();
@@ -306,7 +300,7 @@ public class CurrentSessionManager {
     }
 
     private void notifyNewSession(Session session) {
-        eventBus.post(new SessionChangeEvent(session));
+        eventBus.post(new SessionAddedEvent(session));
     }
 
     public void startMobileSession(String title, String tags, String description, boolean locationLess) {
