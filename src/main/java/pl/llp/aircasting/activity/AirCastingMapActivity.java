@@ -28,7 +28,7 @@ import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.api.AveragesDriver;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
@@ -233,7 +233,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            Sensor sensor = sensorManager.getVisibleSensor();
+            Sensor sensor = currentSessionSensorManager.getVisibleSensor();
             List<Measurement> measurements = currentSessionManager.getMeasurements(sensor);
 
             for (Measurement measurement : measurements) {
@@ -343,7 +343,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Override
     @Subscribe
-    public void onEvent(SessionChangeEvent event) {
+    public void onEvent(SessionAddedEvent event) {
         super.onEvent(event);
         refreshNotes();
         mapView.invalidate();
@@ -478,7 +478,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
             int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            return averagesDriver.index(sensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+            return averagesDriver.index(currentSessionSensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
         }
 

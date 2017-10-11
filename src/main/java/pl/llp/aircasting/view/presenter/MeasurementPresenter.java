@@ -20,7 +20,7 @@
 package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -61,12 +61,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   private static final long SCROLL_TIMEOUT = 1000;
   private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
 
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
-  @Inject SensorManager sensorManager;
+  @Inject CurrentSessionSensorManager currentSessionSensorManager;
   @Inject MeasurementAggregator aggregator;
 
   private CopyOnWriteArrayList<Measurement> fullView = null;
@@ -82,11 +81,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   @Inject private ApplicationState state;
 
-    public void setSensor(Sensor sensor) {
-        this.sensor = sensor;
+  public void setSensor(Sensor sensor) {
+    this.sensor = sensor;
     }
 
-    private Sensor sensor = SimpleAudioReader.getSensor();
+  private Sensor sensor = SimpleAudioReader.getSensor();
 
   @Inject
   public void init()
@@ -187,9 +186,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   }
 
   @Subscribe
-  public synchronized void onEvent(SessionChangeEvent event)
+  public synchronized void onEvent(SessionAddedEvent event)
   {
-    this.sensor = sensorManager.getVisibleSensor();
+    this.sensor = currentSessionSensorManager.getVisibleSensor();
     reset();
     anchor = 0;
   }

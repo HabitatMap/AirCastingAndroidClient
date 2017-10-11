@@ -4,7 +4,6 @@ import android.content.Context;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
@@ -36,10 +35,10 @@ import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 @Singleton
-public class SensorManager {
+public class CurrentSessionSensorManager {
     @Inject ResourceHelper resourceHelper;
     @Inject ExternalSensors externalSensors;
-    @Inject SessionManager sessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
 
     @Inject ApplicationState state;
@@ -49,7 +48,8 @@ public class SensorManager {
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
     private volatile Sensor visibleSensor = AUDIO_SENSOR;
-    private volatile Map<SensorName, Sensor> sensors = newConcurrentMap();
+    private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
+    private volatile Map<SensorName, Sensor> currentSessionSensors = newConcurrentMap();
     private volatile Set<Sensor> disabled = newHashSet();
 
     @Inject
@@ -67,17 +67,17 @@ public class SensorManager {
         Sensor visibleSensor = getVisibleSensor();
         if (visibleSensor != null && visibleSensor.matches(getSensorByName(event.getSensorName()))) {
             MeasurementLevel level = null;
-            if (sessionManager.isSessionBeingViewed()) {
+            if (currentSessionManager.isSessionBeingViewed()) {
                 level = MeasurementLevel.TOO_LOW;
             } else {
-                double now = (int) sessionManager.getNow(visibleSensor);
+                double now = (int) currentSessionManager.getNow(visibleSensor);
                 level = resourceHelper.getLevel(visibleSensor, now);
             }
             eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
         }
         // end of IOIO
 
-        if (sensors.containsKey(SensorName.from(event.getSensorName()))) {
+        if (currentSessionSensors.containsKey(SensorName.from(event.getSensorName()))) {
             return;
         }
 
@@ -88,8 +88,8 @@ public class SensorManager {
             }
             SensorName name = SensorName.from(sensor.getSensorName());
 
-            if (!sensors.containsKey(name)) {
-                sensors.put(name, sensor);
+            if (!currentSessionSensors.containsKey(name)) {
+                currentSessionSensors.put(name, sensor);
             }
         }
     }
@@ -115,13 +115,13 @@ public class SensorManager {
 
     public List<Sensor> getSensors() {
         ArrayList<Sensor> result = newArrayList();
-        result.addAll(sensors.values());
+        result.addAll(currentSessionSensors.values());
         return result;
     }
 
     public Sensor getSensorByName(String name) {
         SensorName sensorName = SensorName.from(name);
-        Sensor sensor = sensors.get(sensorName);
+        Sensor sensor = currentSessionSensors.get(sensorName);
         return sensor;
     }
 
@@ -130,7 +130,7 @@ public class SensorManager {
      */
     public void toggleSensor(Sensor sensor) {
         String name = sensor.getSensorName();
-        Sensor actualSensor = sensors.get(SensorName.from(name));
+        Sensor actualSensor = currentSessionSensors.get(SensorName.from(name));
 
         if (isSensorToggleable(actualSensor)) {
             actualSensor.toggle();
@@ -142,9 +142,9 @@ public class SensorManager {
     public void setSensorsStatusesToDefaultsFromSettings() {
         if (getSensorByName("Phone Microphone") != null) {
             if (settingsHelper.isSoundLevelMeasurementsDisabled()) {
-                sensors.get(SensorName.from("Phone Microphone")).disable();
+                currentSessionSensors.get(SensorName.from("Phone Microphone")).disable();
             } else {
-                sensors.get(SensorName.from("Phone Microphone")).enable();
+                currentSessionSensors.get(SensorName.from("Phone Microphone")).enable();
             }
         }
     }
@@ -162,35 +162,10 @@ public class SensorManager {
         setSensorsStatusesToDefaultsFromSettings();
     }
 
-    @Subscribe
-    public void onEvent(SessionChangeEvent event) {
-        disabled = newHashSet();
-        for (Sensor sensor : sensors.values()) {
-            if (!sensor.isEnabled()) {
-                disabled.add(sensor);
-            }
-        }
-
-        sensors = newConcurrentMap();
-        Session session = event.getSession();
-
-        for (MeasurementStream stream : session.getMeasurementStreams()) {
-            if (stream.isMarkedForRemoval()) {
-                continue;
-            }
-
-            Sensor sensor = new Sensor(stream);
-            String name = sensor.getSensorName();
-            sensors.put(SensorName.from(name), sensor);
-
-            visibleSensor = sensor;
-        }
-    }
-
     public void deleteSensorFromCurrentSession(Sensor sensor) {
         String sensorName = sensor.getSensorName();
-        sensors.remove(SensorName.from(sensorName));
-        sessionManager.deleteSensorStream(sensor);
+        currentSessionSensors.remove(SensorName.from(sensorName));
+        currentSessionManager.deleteSensorStream(sensor);
     }
 
     @Subscribe
@@ -200,7 +175,7 @@ public class SensorManager {
 
     public void disconnectSensors(ExternalSensorDescriptor descriptor) {
         String address = descriptor.getAddress();
-        Collection<MeasurementStream> streams = sessionManager.getMeasurementStreams();
+        Collection<MeasurementStream> streams = currentSessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
             if (address.equals(stream.getAddress())) {
@@ -209,7 +184,7 @@ public class SensorManager {
         }
 
         Set<SensorName> newSensorNames = newHashSet();
-        for (Map.Entry<SensorName, Sensor> entry : sensors.entrySet()) {
+        for (Map.Entry<SensorName, Sensor> entry : currentSessionSensors.entrySet()) {
             if (!address.equals(entry.getValue().getAddress())) {
                 newSensorNames.add(entry.getKey());
             }
@@ -217,14 +192,14 @@ public class SensorManager {
 
         Map<SensorName, Sensor> newSensors = newConcurrentMap();
         for (SensorName sensorName : newSensorNames) {
-            Sensor sensor = sensors.get(sensorName);
+            Sensor sensor = currentSessionSensors.get(sensorName);
             newSensors.put(sensorName, sensor);
         }
 
-        sensors = newSensors;
+        currentSessionSensors = newSensors;
         String sensorName = visibleSensor.getSensorName();
 
-        if (!sensors.containsKey(SensorName.from(sensorName))) {
+        if (!currentSessionSensors.containsKey(SensorName.from(sensorName))) {
             eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor()));
         }
     }

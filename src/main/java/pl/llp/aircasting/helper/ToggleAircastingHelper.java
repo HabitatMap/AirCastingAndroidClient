@@ -9,7 +9,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
-import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Session;
 
 /**
@@ -21,14 +21,14 @@ public class ToggleAircastingHelper {
     private Activity activity;
     private CurrentSessionManager currentSessionManager;
     private SettingsHelper settingsHelper;
-    private SensorManager sensorManager;
+    private CurrentSessionSensorManager currentSessionSensorManager;
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
     public ToggleAircastingHelper(Activity activity,
                                   CurrentSessionManager currentSessionManager,
                                   SettingsHelper settingsHelper,
-                                  SensorManager sensorManager,
+                                  CurrentSessionSensorManager currentSessionSensorManager,
                                   LocationHelper locationHelper,
                                   AppCompatDelegate delegate,
                                   Context context,
@@ -36,7 +36,7 @@ public class ToggleAircastingHelper {
         this.activity = activity;
         this.currentSessionManager = currentSessionManager;
         this.settingsHelper = settingsHelper;
-        this.sensorManager = sensorManager;
+        this.currentSessionSensorManager = currentSessionSensorManager;
         this.locationHelper = locationHelper;
         this.delegate = delegate;
         this.context = context;
@@ -47,7 +47,7 @@ public class ToggleAircastingHelper {
         if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
-            if (sensorManager.getSensorByName("Phone Microphone") == null) {
+            if (currentSessionSensorManager.getSensorByName("Phone Microphone") == null) {
                 chooseSessionType();
             } else {
                 startMobileAirCasting();

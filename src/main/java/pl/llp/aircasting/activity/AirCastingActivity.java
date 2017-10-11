@@ -22,7 +22,7 @@ package pl.llp.aircasting.activity;
 import android.net.Uri;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
@@ -33,9 +33,9 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -75,7 +75,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject ResourceHelper resourceHelper;
-    @Inject SensorManager sensorManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
@@ -98,7 +98,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         updateGauges();
         updateKeepScreenOn();
-        topBarHelper.updateTopBar(sensorManager.getVisibleSensor(), topBar);
+        topBarHelper.updateTopBar(currentSessionSensorManager.getVisibleSensor(), topBar);
         Intents.startIOIO(context);
         Intents.startDatabaseWriterService(context);
     }
@@ -145,7 +145,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
   protected void updateGauges()
   {
-    final Sensor visibleSensor = sensorManager.getVisibleSensor();
+    final Sensor visibleSensor = currentSessionSensorManager.getVisibleSensor();
     updateGaugeFaces(visibleSensor);
   }
 
@@ -173,7 +173,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
   }
 
   @Subscribe
-  public void onEvent(SessionChangeEvent event) {
+  public void onEvent(SessionAddedEvent event) {
     updateGauges();
   }
 
@@ -208,7 +208,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.top_bar:
-                Intents.thresholdsEditor(this, sensorManager.getVisibleSensor());
+                Intents.thresholdsEditor(this, currentSessionSensorManager.getVisibleSensor());
                 break;
             case R.id.note_save:
                 saveNote();

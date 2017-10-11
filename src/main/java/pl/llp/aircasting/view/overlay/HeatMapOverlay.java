@@ -21,9 +21,9 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.internal.Region;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -43,7 +43,8 @@ public class HeatMapOverlay extends Overlay
   @Inject SoundHelper soundHelper;
   @Inject ResourceHelper resourceHelper;
   @Inject Paint paint;
-  @Inject SensorManager sensors;
+  @Inject
+  CurrentSessionSensorManager sensors;
 
   private Iterable<Region> regions;
 

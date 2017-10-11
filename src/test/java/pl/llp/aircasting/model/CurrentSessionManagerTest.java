@@ -21,7 +21,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.activity.events.SessionChangeEvent;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
@@ -75,14 +75,14 @@ public class CurrentSessionManagerTest
     currentSessionManager.audioReader = mock(SimpleAudioReader.class);
     currentSessionManager.externalSensors = mock(ExternalSensors.class);
     currentSessionManager.eventBus = mock(EventBus.class);
-    currentSessionManager.sensorManager = mock(SensorManager.class);
+    currentSessionManager.currentSessionSensorManager = mock(CurrentSessionSensorManager.class);
 
     sensor = mock(Sensor.class);
     when(sensor.isEnabled()).thenReturn(true);
     when(sensor.getSensorName()).thenReturn("LHC");
 
     when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(location);
-    when(currentSessionManager.sensorManager.getSensorByName(Mockito.any(String.class))).thenReturn(sensor);
+    when(currentSessionManager.currentSessionSensorManager.getSensorByName(Mockito.any(String.class))).thenReturn(sensor);
   }
 
   @Before
@@ -336,7 +336,7 @@ public class CurrentSessionManagerTest
     currentSessionManager.getCurrentSession().setId(1234);
     currentSessionManager.discardSession();
 
-    verify(currentSessionManager.eventBus).post(Mockito.any(SessionChangeEvent.class));
+    verify(currentSessionManager.eventBus).post(Mockito.any(SessionAddedEvent.class));
   }
 
   @Test

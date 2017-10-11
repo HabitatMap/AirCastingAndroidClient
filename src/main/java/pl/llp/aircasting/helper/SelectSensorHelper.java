@@ -3,7 +3,7 @@ package pl.llp.aircasting.helper;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.SensorManager;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,7 +25,7 @@ public class SelectSensorHelper {
   public static final int DIALOG_ID = 175483;
 
   @InjectResource(R.string.select_sensor) String title;
-  @Inject SensorManager sensorManager;
+  @Inject CurrentSessionSensorManager currentSessionSensorManager;
   @Inject EventBus eventBus;
 
   /**
@@ -72,11 +72,11 @@ public class SelectSensorHelper {
 
   private int selectedSensorIndex(List<Sensor> sensors)
   {
-    return sensors.indexOf(sensorManager.getVisibleSensor());
+    return sensors.indexOf(currentSessionSensorManager.getVisibleSensor());
   }
 
   private List<Sensor> sortedSensors() {
-    final List<Sensor> sensors = sensorManager.getSensors();
+    final List<Sensor> sensors = currentSessionSensorManager.getSensors();
     sort(sensors, new Comparator<Sensor>() {
       @Override
       public int compare(Sensor sensor, Sensor sensor1) {
