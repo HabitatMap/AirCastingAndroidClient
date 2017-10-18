@@ -48,6 +48,9 @@ public class DashboardChartManager {
     private static Map<String, Boolean> newEntriesForStream = newHashMap();
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private static Map<String, List> averages = newHashMap();
+    private static String requestedSensorName;
+    private static long requestedSessionId;
+    private boolean isSessionRecording;
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
         @Override
@@ -77,6 +80,9 @@ public class DashboardChartManager {
     }
 
     public void drawChart(LineChart chart, final Sensor sensor, long sessionId) {
+        requestedSensorName = sensor.getSensorName();
+        requestedSessionId = sessionId;
+        isSessionRecording = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
         MeasurementStream stream = getStream();
         String descriptionText = getDescription(stream);
 
@@ -87,41 +93,48 @@ public class DashboardChartManager {
             return;
         }
 
-        if (currentSessionManager.isSessionBeingViewed() && shouldStaticChartUpdate(sensorName)) {
-            averagesCounter = MAX_AVERAGES_AMOUNT;
-            prepareEntries(sensorName);
-            updateChartData(chart, sensor.getShortType(), sensorName);
-            staticChartGeneratedForStream.put(sensorName, true);
-        }
+        initStaticChart(stream, chart, sensor);
+        updateChart(chart, sensor);
+    }
 
-        if (shouldDynamicChartUpdate(sensorName) || chartHasMissingData(chart, sensorName)) {
-            updateChartData(chart, sensor.getShortType(), sensorName);
-            chart.notifyDataSetChanged();
-        } else {
-            return;
+    private void initStaticChart(MeasurementStream stream, LineChart chart, Sensor sensor) {
+        if (!isSessionRecording && shouldStaticChartInitialize()) {
+            averagesCounter = MAX_AVERAGES_AMOUNT;
+            prepareEntries(stream);
+            updateChartData(chart, sensor.getShortType());
+            staticChartGeneratedForStream.put(getKey(requestedSensorName), true);
         }
     }
 
-    private void updateChartData(LineChart chart, String unit, String sensorName) {
+    private void updateChart(LineChart chart, Sensor sensor) {
+//        if (shouldDynamicChartUpdate() || chartHasMissingData(chart)) {
+            updateChartData(chart, sensor.getShortType());
+            chart.notifyDataSetChanged();
+//        } else {
+//            return;
+//        }
+    }
+
+    private void updateChartData(LineChart chart, String unit) {
         LineData lineData = chart.getLineData();
 
         if (lineData == null) {
             lineData = new LineData();
         }
 
-        List entries = getEntriesForStream(sensorName);
+        List entries = getEntriesForCurrentStream();
         if (entries == null) {
             return;
         }
 
         lineData.removeDataSet(0);
-        LineDataSet dataSet = prepareDataSet(unit, sensorName);
+        LineDataSet dataSet = prepareDataSet(unit);
 
-        ArrayList<Integer> colors = prepareDataSetColors(sensorName, entries);
+        ArrayList<Integer> colors = prepareDataSetColors(entries);
         dataSet.setCircleColors(colors);
 
-        newEntriesForStream.put(sensorName, false);
-        staticChartGeneratedForStream.put(sensorName, true);
+        newEntriesForStream.put(getKey(requestedSensorName), false);
+        staticChartGeneratedForStream.put(getKey(requestedSensorName), true);
 
         lineData.removeDataSet(0);
         lineData.addDataSet(dataSet);
@@ -136,14 +149,14 @@ public class DashboardChartManager {
 
     public void resetSpecificStaticCharts(String[] sensors) {
         for (String sensorName : sensors) {
-            staticChartGeneratedForStream.remove(sensorName);
+            staticChartGeneratedForStream.remove(getKey(sensorName));
         }
     }
 
     public void resetDynamicCharts(Set<String> sensors) {
         for (String sensorName : sensors) {
-            newEntriesForStream.put(sensorName, true);
-            shouldUseExistingEntries.put(sensorName, true);
+            newEntriesForStream.put(getKey(sensorName), true);
+            shouldUseExistingEntries.put(getKey(sensorName), true);
         }
     }
 
@@ -179,11 +192,11 @@ public class DashboardChartManager {
         chart.setDoubleTapToZoomEnabled(false);
     }
 
-    private LineDataSet prepareDataSet(String unit, String sensorName) {
-        List<Entry> entries = getEntriesForStream(sensorName);
+    private LineDataSet prepareDataSet(String unit) {
+        List<Entry> entries = getEntriesForCurrentStream();
         LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
 
-        shouldUseExistingEntries.put(sensorName, false);
+        shouldUseExistingEntries.put(getKey(requestedSensorName), false);
 
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
@@ -191,7 +204,7 @@ public class DashboardChartManager {
         dataSet.setValueTextSize(10);
         dataSet.setDrawHighlightIndicators(false);
 
-        if (!currentSessionManager.isSessionRecording()) {
+        if (!isSessionRecording) {
             int color = context.getResources().getColor(R.color.gray);
             dataSet.setColor(color);
         }
@@ -199,8 +212,7 @@ public class DashboardChartManager {
         return dataSet;
     }
 
-    private void prepareEntries(String sensorName) {
-        MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
+    private void prepareEntries(MeasurementStream stream) {
         List<List<Measurement>> periodData;
         double xValue = 8;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
@@ -224,7 +236,7 @@ public class DashboardChartManager {
             return;
         }
 
-        averages.put(sensorName, Lists.reverse(entries));
+        averages.put(getKey(requestedSensorName), Lists.reverse(entries));
     }
 
     private double getAverage(List<Measurement> measurements) {
@@ -246,12 +258,12 @@ public class DashboardChartManager {
 
         for (MeasurementStream stream : streams) {
             String sensorName = stream.getSensorName();
-            prepareEntries(sensorName);
-            newEntriesForStream.put(sensorName, true);
+            prepareEntries(stream);
+            newEntriesForStream.put(getKey(sensorName), true);
         }
-   }
+    }
 
-    private ArrayList<Integer> prepareDataSetColors(String sensorName, List<Entry> entries) {
+    private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
@@ -262,6 +274,13 @@ public class DashboardChartManager {
         return colors;
     }
 
+    private String getKey(String sensorName) {
+        return requestedSessionId + "_" + sensorName;
+    }
+
+    private List<Entry> getEntriesForCurrentStream() {
+        return averages.get(getKey(requestedSensorName));
+    }
 
     private MeasurementStream getStream() {
         MeasurementStream stream;
@@ -285,12 +304,16 @@ public class DashboardChartManager {
         return sensor;
     }
 
-    private boolean shouldStaticChartUpdate(String sensorName) {
-        return !staticChartGeneratedForStream.containsKey(sensorName);
+    private boolean shouldDynamicChartUpdate() {
+        return newEntriesForStream.containsKey(getKey(requestedSensorName)) && newEntriesForStream.get(getKey(requestedSensorName)) == true;
     }
 
-    private boolean chartHasMissingData(LineChart chart, String sensorName) {
-        if (averagesCounter > 0 && !staticChartGeneratedForStream.containsKey(sensorName)) {
+    private boolean shouldStaticChartInitialize() {
+        return !staticChartGeneratedForStream.containsKey(getKey(requestedSensorName));
+    }
+
+    private boolean chartHasMissingData(LineChart chart) {
+        if (averagesCounter > 0) {
             if (chart.getLineData() == null || chart.getLineData().getEntryCount() != averagesCounter) {
                 return true;
             }
@@ -302,7 +325,7 @@ public class DashboardChartManager {
         double time;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-        if (currentSessionManager.isSessionBeingViewed()) {
+        if (!isSessionRecording) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
             time = lastMeasurement.getTime().getTime();
         } else {
