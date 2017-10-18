@@ -61,8 +61,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   @Inject SelectSensorHelper selectSensorHelper;
   @Inject SessionRepository sessionRepository;
   @Inject DashboardChartManager chartManager;
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
+  @Inject ViewingSessionsManager viewingSessionsManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Application context;
   @Inject ApplicationState state;
@@ -223,15 +223,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   }
 
   private void viewSession(long id) {
-    if (currentSessionManager.isSessionRecording()) {
-      Toast.makeText(context, R.string.stop_aircasting, Toast.LENGTH_LONG).show();
-      return;
-    }
-
     new OpenSessionTask(this) {
       @Override
       protected Session doInBackground(Long... longs) {
-        currentSessionManager.loadSessionForViewing(longs[0], this);
+        viewingSessionsManager.loadSessionForViewing(longs[0], this);
 
         return null;
       }

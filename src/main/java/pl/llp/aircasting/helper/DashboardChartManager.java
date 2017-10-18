@@ -31,8 +31,8 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class DashboardChartManager {
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject ResourceHelper resourceHelper;
     @Inject
     CurrentSessionSensorManager currentSessionSensorManager;
@@ -263,8 +263,16 @@ public class DashboardChartManager {
         return colors;
     }
 
-    private List<Entry> getEntriesForStream(String sensorName) {
-        return averages.get(sensorName);
+
+    private MeasurementStream getStream() {
+        MeasurementStream stream;
+
+        if (isSessionRecording) {
+            stream = currentSessionManager.getMeasurementStream(requestedSensorName);
+        } else {
+            stream = viewingSessionsManager.getMeasurementStream(requestedSensorName, requestedSessionId);
+        }
+        return stream;
     }
 
     private boolean shouldDynamicChartUpdate(String sensorName) {
