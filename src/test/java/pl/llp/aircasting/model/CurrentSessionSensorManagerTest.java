@@ -55,7 +55,7 @@ public class CurrentSessionSensorManagerTest
   @Test
   public void shouldStoreSensorInformation()
   {
-    assertThat(currentSessionSensorManager.getSensors(), hasItem(SOME_SENSOR));
+    assertThat(currentSessionSensorManager.getSensorsList(), hasItem(SOME_SENSOR));
   }
 
   @Test
@@ -70,85 +70,5 @@ public class CurrentSessionSensorManagerTest
   @Test
   public void shouldReturnSensorsByName() {
     assertThat(currentSessionSensorManager.getSensorByName(SOME_SENSOR.getSensorName()), equalTo(SOME_SENSOR));
-  }
-
-  @Test
-  public void shouldStoreInformationAboutCurrentVisibleSensor() {
-    currentSessionSensorManager.onEvent(new ViewStreamEvent(SOME_SENSOR));
-
-    assertThat(currentSessionSensorManager.getVisibleSensor(), equalTo(SOME_SENSOR));
-  }
-
-  @Test
-  public void should_clear_sensor_info_on_session_change() {
-    when(currentSessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
-
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-
-    org.fest.assertions.Assertions.assertThat(currentSessionSensorManager.getSensors()).isEmpty();
-  }
-
-  @Test
-  public void should_read_sensor_info_from_new_session() {
-    MeasurementStream stream1 = New.stream();
-    MeasurementStream stream2 = spy(New.stream());
-    when(stream2.getSensorName()).thenReturn("Some random name");
-    SESSION_CHANGED.getSession().add(stream1);
-    SESSION_CHANGED.getSession().add(stream2);
-
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-
-    Sensor expected1 = new Sensor(stream1);
-    Sensor expected2 = new Sensor(stream2);
-
-    List<Sensor> sensors = currentSessionSensorManager.getSensors();
-    org.fest.assertions.Assertions.assertThat(sensors).contains(expected1, expected2);
-  }
-
-  @Test
-  public void should_not_update_sensors_when_viewing_a_session()
-  {
-    currentSessionManager.state = currentSessionSensorManager.state;
-    currentSessionManager.state.recording().startShowingOldSession();
-
-    when(currentSessionManager.getMeasurementStreams()).thenReturn(new ArrayList<MeasurementStream>());
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-
-    currentSessionSensorManager.onEvent(sensorEvent);
-
-    org.fest.assertions.Assertions.assertThat(currentSessionSensorManager.getSensors()).isEmpty();
-  }
-
-  @Test
-  public void should_use_one_of_the_sensors_as_visible_when_viewing_a_session()
-  {
-    currentSessionManager.state.recording().startShowingOldSession();
-    MeasurementStream stream = New.stream();
-    when(currentSessionManager.getMeasurementStreams()).thenReturn(newArrayList(stream));
-
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-
-    org.fest.assertions.Assertions.assertThat(currentSessionSensorManager.getVisibleSensor()).isEqualTo(SimpleAudioReader.getSensor());
-  }
-
-  @Test
-  public void should_not_lose_sensor_enabled_state() {
-    currentSessionSensorManager.onEvent(sensorEvent);
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-    currentSessionSensorManager.onEvent(sensorEvent);
-
-    Sensor sensor1 = currentSessionSensorManager.getSensorByName(SOME_SENSOR.getSensorName());
-    org.fest.assertions.Assertions.assertThat(sensor1.isEnabled()).isTrue();
-  }
-
-  @Test
-  public void should_not_lose_sensor_disabled_state() {
-    currentSessionSensorManager.onEvent(sensorEvent);
-    currentSessionSensorManager.toggleSensor(SOME_SENSOR);
-    currentSessionSensorManager.onEvent(SESSION_CHANGED);
-    currentSessionSensorManager.onEvent(sensorEvent);
-
-    Sensor sensor1 = currentSessionSensorManager.getSensorByName(SOME_SENSOR.getSensorName());
-    org.fest.assertions.Assertions.assertThat(sensor1.isEnabled()).isFalse();
   }
 }

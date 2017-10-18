@@ -31,7 +31,7 @@ public class StreamAdapterTest {
     @Before
     public void setup() {
         adapter = new StreamAdapter(mock(DashboardBaseActivity.class), new ArrayList<Map<String, Object>>(),
-                mock(EventBus.class), mock(StreamViewHelper.class), mock(CurrentSessionSensorManager.class), mock(CurrentSessionManager.class), mock(DashboardChartManager.class));
+                mock(EventBus.class), mock(StreamViewHelper.class), mock(CurrentSessionSensorManager.class), mock(ViewingSessionsSensorManager.class), mock(CurrentSessionManager.class), mock(DashboardChartManager.class));
 
         sensor = mock(Sensor.class);
 

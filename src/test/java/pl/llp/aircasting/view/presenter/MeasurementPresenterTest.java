@@ -27,7 +27,6 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
