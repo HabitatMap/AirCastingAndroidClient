@@ -14,6 +14,7 @@ import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.ViewingSessionsSensorManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
 import android.app.AlertDialog;
@@ -63,6 +64,7 @@ public class StreamAdapter extends SimpleAdapter {
 
     CurrentSessionManager currentSessionManager;
     CurrentSessionSensorManager currentSessionSensorManager;
+    ViewingSessionsSensorManager viewingSessionsSensorManager;
     StreamViewHelper streamViewHelper;
     DashboardChartManager dashboardChartManager;
 
@@ -81,13 +83,20 @@ public class StreamAdapter extends SimpleAdapter {
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static Comparator comparator;
 
-    public StreamAdapter(DashboardBaseActivity context, List<Map<String, Object>> data, EventBus eventBus,
-                         StreamViewHelper streamViewHelper, CurrentSessionSensorManager currentSessionSensorManager, CurrentSessionManager currentSessionManager, DashboardChartManager dashboardChartManager) {
+    public StreamAdapter(DashboardBaseActivity context,
+                         List<Map<String, Object>> data,
+                         EventBus eventBus,
+                         StreamViewHelper streamViewHelper,
+                         CurrentSessionSensorManager currentSessionSensorManager,
+                         ViewingSessionsSensorManager viewingSessionsSensorManager,
+                         CurrentSessionManager currentSessionManager,
+                         DashboardChartManager dashboardChartManager) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
         this.currentSessionSensorManager = currentSessionSensorManager;
+        this.viewingSessionsSensorManager = viewingSessionsSensorManager;
         this.currentSessionManager = currentSessionManager;
         this.streamViewHelper = streamViewHelper;
         this.dashboardChartManager = dashboardChartManager;
@@ -197,11 +206,12 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void prepareData() {
-        long sessionId;
-        List<String> clearedStreamsForSession = new ArrayList<String>();
-        List<Sensor> sensors = currentSessionSensorManager.getSensors();
+        Map<Long, Map<SensorName, Sensor>> allSensors = viewingSessionsSensorManager.getAllViewingSensors();
+        Map<SensorName, Sensor> currentSensors = currentSessionSensorManager.getSensorsMap();
 
-        if (sensors.isEmpty()) {
+        allSensors.put(Constants.CURRENT_SESSION_FAKE_ID, currentSensors);
+
+        if (allSensors.isEmpty()) {
             return;
         }
 
@@ -210,18 +220,21 @@ public class StreamAdapter extends SimpleAdapter {
             clearedStreamsForSession = clearedStreams.get(sessionId);
         }
 
-        for (Sensor sensor : sensors) {
-            if (sensorIsHidden(sensor, clearedStreamsForSession)) {
-                continue;
+        for (Map.Entry<Long, Map<SensorName, Sensor>> entry : allSensors.entrySet()) {
+            Long sessionId = entry.getKey();
+            Map<SensorName, Sensor> sensors = entry.getValue();
+
+            for (Sensor sensor : sensors.values()) {
+
+                HashMap<String, Object> map = new HashMap<String, Object>();
+
+                map.put(SESSION_ID, sessionId);
+                map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
+                map.put(SENSOR_NAME, sensor.getSensorName());
+                map.put(SENSOR, sensor);
+
+                data.add(map);
             }
-
-            Map<String, Object> map = prepareItem(sensor);
-
-            map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
-            map.put(SENSOR_NAME, sensor.getSensorName());
-            map.put(SENSOR, sensor);
-
-            data.add(map);
         }
     }
 

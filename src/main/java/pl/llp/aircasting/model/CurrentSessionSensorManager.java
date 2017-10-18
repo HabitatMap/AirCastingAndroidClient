@@ -109,16 +109,14 @@ public class CurrentSessionSensorManager {
         disconnectSensors(event.getDescriptor());
     }
 
-    public Sensor getVisibleSensor() {
-        String sensorName = visibleSensor.getSensor().getSensorName();
-        Sensor sensor = currentSessionSensors.get(SensorName.from(sensorName));
-        return sensor != null ? sensor : AUDIO_SENSOR;
-    }
-
-    public List<Sensor> getSensors() {
+    public List<Sensor> getSensorsList() {
         ArrayList<Sensor> result = newArrayList();
         result.addAll(currentSessionSensors.values());
         return result;
+    }
+
+    public Map<SensorName, Sensor> getSensorsMap() {
+        return currentSessionSensors;
     }
 
     public Sensor getSensorByName(String name) {
