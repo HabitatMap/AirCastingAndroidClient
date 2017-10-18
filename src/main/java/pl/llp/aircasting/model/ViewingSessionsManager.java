@@ -14,16 +14,32 @@ import static com.google.inject.internal.Maps.newHashMap;
 /**
  * Created by radek on 10/10/17.
  */
+@Singleton
 public class ViewingSessionsManager {
     @Inject ApplicationState state;
     @Inject SessionRepository sessionRepository;
+    @Inject EventBus eventBus;
 
-    private Map<Long, Session> sessionsForViewing = newHashMap();
+    private static Map<Long, Session> sessionsForViewing = newHashMap();
+
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
 
     public void loadSessionForViewing(long sessionId, @NotNull ProgressListener listener) {
         Preconditions.checkNotNull(listener);
         Session newSession = sessionRepository.loadFully(sessionId, listener);
         state.recording().startShowingOldSession();
         sessionsForViewing.put(sessionId, newSession);
+        notifyNewSession(newSession);
+    }
+
+    public MeasurementStream getMeasurementStream(String sensorName, long sessionId) {
+        return sessionsForViewing.get(sessionId).getStream(sensorName);
+    }
+
+    private void notifyNewSession(Session session) {
+        eventBus.post(new SessionAddedEvent(session));
     }
 }
