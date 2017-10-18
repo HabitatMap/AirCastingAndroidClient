@@ -26,6 +26,7 @@ public class SelectSensorHelper {
 
   @InjectResource(R.string.select_sensor) String title;
   @Inject CurrentSessionSensorManager currentSessionSensorManager;
+  @Inject VisibleSensor visibleSensor;
   @Inject EventBus eventBus;
 
   /**
@@ -72,7 +73,7 @@ public class SelectSensorHelper {
 
   private int selectedSensorIndex(List<Sensor> sensors)
   {
-    return sensors.indexOf(currentSessionSensorManager.getVisibleSensor());
+    return sensors.indexOf(visibleSensor.getSensor());
   }
 
   private List<Sensor> sortedSensors() {

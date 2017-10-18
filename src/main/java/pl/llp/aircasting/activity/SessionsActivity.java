@@ -34,6 +34,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 import pl.llp.aircasting.storage.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.storage.repository.SessionRepository;

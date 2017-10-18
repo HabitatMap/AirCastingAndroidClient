@@ -33,7 +33,6 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.events.MeasurementEvent;
@@ -49,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import pl.llp.aircasting.helper.VisibleSensor;
 import roboguice.inject.InjectView;
 
 import java.io.File;
@@ -74,8 +74,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject SelectSensorHelper selectSensorHelper;
+    @Inject VisibleSensor visibleSensor;
     @Inject ResourceHelper resourceHelper;
-    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
@@ -98,7 +98,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         updateGauges();
         updateKeepScreenOn();
-        topBarHelper.updateTopBar(currentSessionSensorManager.getVisibleSensor(), topBar);
+        topBarHelper.updateTopBar(visibleSensor.getSensor(), topBar);
         Intents.startIOIO(context);
         Intents.startDatabaseWriterService(context);
     }
@@ -145,13 +145,13 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
   protected void updateGauges()
   {
-    final Sensor visibleSensor = currentSessionSensorManager.getVisibleSensor();
-    updateGaugeFaces(visibleSensor);
+    final Sensor sensor = visibleSensor.getSensor();
+    updateGaugeFaces(sensor);
   }
 
   private void updateGaugeFaces(final Sensor visibleSensor)
   {
-    if(noUpdateInProgress.get())
+    if (noUpdateInProgress.get())
     {
       noUpdateInProgress.set(false);
       runOnUiThread(new Runnable()
@@ -208,7 +208,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.top_bar:
-                Intents.thresholdsEditor(this, currentSessionSensorManager.getVisibleSensor());
+                Intents.thresholdsEditor(this, visibleSensor.getSensor());
                 break;
             case R.id.note_save:
                 saveNote();

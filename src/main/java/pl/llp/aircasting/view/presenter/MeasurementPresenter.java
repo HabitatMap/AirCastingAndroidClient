@@ -27,6 +27,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.content.SharedPreferences;
@@ -65,7 +66,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
-  @Inject CurrentSessionSensorManager currentSessionSensorManager;
+  @Inject VisibleSensor visibleSensor;
   @Inject MeasurementAggregator aggregator;
 
   private CopyOnWriteArrayList<Measurement> fullView = null;
@@ -188,7 +189,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Subscribe
   public synchronized void onEvent(SessionAddedEvent event)
   {
-    this.sensor = currentSessionSensorManager.getVisibleSensor();
+    this.sensor = visibleSensor.getSensor();
     reset();
     anchor = 0;
   }
