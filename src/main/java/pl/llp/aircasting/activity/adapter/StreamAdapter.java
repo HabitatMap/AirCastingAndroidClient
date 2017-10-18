@@ -25,6 +25,7 @@ import android.widget.SimpleAdapter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.jetbrains.annotations.Nullable;
+import pl.llp.aircasting.model.internal.SensorName;
 
 import java.util.*;
 
@@ -35,6 +36,7 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String QUANTITY = "quantity";
     public static final String SENSOR_NAME = "sensorName";
     public static final String SENSOR = "sensor";
+    public static final String SESSION_ID = "session_id";
 
     private static final String[] FROM = new String[]{
             QUANTITY, SENSOR_NAME
@@ -178,10 +180,12 @@ public class StreamAdapter extends SimpleAdapter {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> state = data.get(position);
         final Sensor sensor = (Sensor) state.get(SENSOR);
+        final long sessionId = (Long) state.get(SESSION_ID);
         chart = (LineChart) view.findViewById(R.id.chart);
 
-        streamViewHelper.updateMeasurements(sensor, view, position);
-        dashboardChartManager.drawChart(chart, sensor);
+        view.setTag(R.id.session_id_tag, sessionId);
+        streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
+        dashboardChartManager.drawChart(chart, sensor, sessionId);
         chart.invalidate();
 
         return view;
@@ -199,7 +203,6 @@ public class StreamAdapter extends SimpleAdapter {
         }
 
         sort(data, comparator);
-        Log.i("data: ", String.valueOf(data));
         resetAllStaticCharts();
 
         notifyDataSetChanged();
@@ -207,6 +210,7 @@ public class StreamAdapter extends SimpleAdapter {
 
     private void prepareData() {
         Map<Long, Map<SensorName, Sensor>> allSensors = viewingSessionsSensorManager.getAllViewingSensors();
+//        List<String> clearedStreamsForSession = new ArrayList<String>();
         Map<SensorName, Sensor> currentSensors = currentSessionSensorManager.getSensorsMap();
 
         allSensors.put(Constants.CURRENT_SESSION_FAKE_ID, currentSensors);
@@ -215,17 +219,21 @@ public class StreamAdapter extends SimpleAdapter {
             return;
         }
 
-        if (currentSessionManager.sessionHasId()) {
-            sessionId = currentSessionManager.getCurrentSession().getId();
-            clearedStreamsForSession = clearedStreams.get(sessionId);
-        }
+//        if (currentSessionManager.sessionHasId()) {
+//            sessionId = currentSessionManager.getCurrentSession().getId();
+//            clearedStreamsForSession = clearedStreams.get(sessionId);
+//        }
 
         for (Map.Entry<Long, Map<SensorName, Sensor>> entry : allSensors.entrySet()) {
             Long sessionId = entry.getKey();
             Map<SensorName, Sensor> sensors = entry.getValue();
 
             for (Sensor sensor : sensors.values()) {
+//                if (sensorIsHidden(sensor, clearedStreamsForSession)) {
+//                    continue;
+//                }
 
+//                Map<String, Object> map = prepareItem(sensor);
                 HashMap<String, Object> map = new HashMap<String, Object>();
 
                 map.put(SESSION_ID, sessionId);
