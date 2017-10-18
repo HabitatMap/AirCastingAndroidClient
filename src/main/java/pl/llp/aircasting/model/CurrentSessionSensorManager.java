@@ -24,6 +24,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,13 +42,11 @@ public class CurrentSessionSensorManager {
     @Inject ExternalSensors externalSensors;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
-
     @Inject ApplicationState state;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
     @Inject VisibleSensor visibleSensor;
 
-    final static long CURRENT_SESSION_FAKE_ID = -1;
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
     private volatile Map<SensorName, Sensor> currentSessionSensors = newConcurrentMap();
@@ -56,7 +55,7 @@ public class CurrentSessionSensorManager {
     @Inject
     public void init() {
         eventBus.register(this);
-        visibleSensor.set(AUDIO_SENSOR, CURRENT_SESSION_FAKE_ID);
+        visibleSensor.set(AUDIO_SENSOR);
     }
 
     @Subscribe
@@ -200,7 +199,7 @@ public class CurrentSessionSensorManager {
         String sensorName = visibleSensor.getSensor().getSensorName();
 
         if (!currentSessionSensors.containsKey(SensorName.from(sensorName))) {
-            eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor(), CURRENT_SESSION_FAKE_ID));
+            eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor(), Constants.CURRENT_SESSION_FAKE_ID));
         }
     }
 }

@@ -12,6 +12,8 @@ public class Constants
   public static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
   public static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
 
+  public static final long CURRENT_SESSION_FAKE_ID = -1;
+
   public static final String TAG = "AirCasting";
   public static final String PERFORMANCE_TAG = "AirCasting/Performance";
   public static final String DB_PERFORMANCE_TAG = "AirCasting/Performance/Db";

@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
 import java.text.DecimalFormat;
