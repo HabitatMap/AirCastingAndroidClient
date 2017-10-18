@@ -36,6 +36,7 @@ import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.llp.aircasting.helper.VisibleSensor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,9 +72,9 @@ public class MeasurementPresenterTest
     sensor = mock(Sensor.class);
     when(sensor.getSensorName()).thenReturn("LHC");
 
-    presenter.currentSessionSensorManager = mock(CurrentSessionSensorManager.class);
-    when(presenter.currentSessionSensorManager.getVisibleSensor()).thenReturn(sensor);
-    presenter.onEvent(new ViewStreamEvent(sensor));
+    presenter.visibleSensor = mock(VisibleSensor.class);
+    when(presenter.visibleSensor.getSensor()).thenReturn(sensor);
+    presenter.onEvent(new ViewStreamEvent(sensor, null));
 
     stream = mock(MeasurementStream.class);
     when(stream.getMeasurements()).thenReturn(measurements);

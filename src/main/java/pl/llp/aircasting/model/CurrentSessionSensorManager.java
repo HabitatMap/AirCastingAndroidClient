@@ -16,7 +16,7 @@ import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
-import pl.llp.aircasting.sensor.VisibleSensor;
+import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 
@@ -66,16 +66,16 @@ public class CurrentSessionSensorManager {
         }
 
         // IOIO
-        Sensor visibleSensor = getVisibleSensor();
-        if (visibleSensor != null && visibleSensor.matches(getSensorByName(event.getSensorName()))) {
+        Sensor currentSensor = visibleSensor.getSensor();
+        if (visibleSensor != null && currentSensor.matches(getSensorByName(event.getSensorName()))) {
             MeasurementLevel level = null;
             if (currentSessionManager.isSessionBeingViewed()) {
                 level = MeasurementLevel.TOO_LOW;
             } else {
-                double now = (int) currentSessionManager.getNow(visibleSensor);
-                level = resourceHelper.getLevel(visibleSensor, now);
+                double now = (int) currentSessionManager.getNow(currentSensor);
+                level = resourceHelper.getLevel(currentSensor, now);
             }
-            eventBus.post(new MeasurementLevelEvent(visibleSensor, level));
+            eventBus.post(new MeasurementLevelEvent(currentSensor, level));
         }
         // end of IOIO
 
@@ -99,9 +99,8 @@ public class CurrentSessionSensorManager {
     @Subscribe
     public void onEvent(ViewStreamEvent event) {
         String sensorName = event.getSensor().getSensorName();
-        Long sessionId = event.getSessionId();
-        visibleSensor.set(currentSessionSensors.get(SensorName.from(sensorName)), sessionId);
-        if(visibleSensor.getSensor() == null) visibleSensor.set(AUDIO_SENSOR, sessionId);
+        visibleSensor.set(currentSessionSensors.get(SensorName.from(sensorName)));
+        if (visibleSensor.getSensor() == null) visibleSensor.set(AUDIO_SENSOR);
         eventBus.post(new StreamUpdateEvent(visibleSensor.getSensor()));
     }
 

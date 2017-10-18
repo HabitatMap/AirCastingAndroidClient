@@ -39,6 +39,7 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.internal.Region;
+import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
@@ -84,6 +85,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
     @Inject RouteOverlay routeOverlay;
+    @Inject VisibleSensor visibleSensor;
 
     public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
@@ -233,7 +235,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            Sensor sensor = currentSessionSensorManager.getVisibleSensor();
+            Sensor sensor = visibleSensor.getSensor();
             List<Measurement> measurements = currentSessionManager.getMeasurements(sensor);
 
             for (Measurement measurement : measurements) {
@@ -478,7 +480,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
             int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            return averagesDriver.index(currentSessionSensorManager.getVisibleSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+            return averagesDriver.index(visibleSensor.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
         }
 

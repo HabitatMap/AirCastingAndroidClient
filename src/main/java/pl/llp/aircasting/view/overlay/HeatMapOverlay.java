@@ -21,7 +21,6 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SoundHelper;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.internal.Region;
 import pl.llp.aircasting.model.Sensor;
 
@@ -33,6 +32,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
+import pl.llp.aircasting.helper.VisibleSensor;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 
@@ -43,8 +43,7 @@ public class HeatMapOverlay extends Overlay
   @Inject SoundHelper soundHelper;
   @Inject ResourceHelper resourceHelper;
   @Inject Paint paint;
-  @Inject
-  CurrentSessionSensorManager sensors;
+  @Inject VisibleSensor visibleSensor;
 
   private Iterable<Region> regions;
 
@@ -55,14 +54,14 @@ public class HeatMapOverlay extends Overlay
 
     Projection projection = view.getProjection();
 
-    Sensor visibleSensor = sensors.getVisibleSensor();
+    Sensor sensor =  visibleSensor.getSensor();
     for (Region region : regions)
     {
       double value = region.getValue();
 
-      if (soundHelper.shouldDisplay(visibleSensor, value))
+      if (soundHelper.shouldDisplay(sensor, value))
       {
-        int color = resourceHelper.getColorAbsolute(visibleSensor, value);
+        int color = resourceHelper.getColorAbsolute(sensor, value);
 
         paint.setColor(color);
         paint.setAlpha(ALPHA);

@@ -21,7 +21,6 @@ package pl.llp.aircasting.view.overlay;
 
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.CurrentSessionManager;
 
@@ -33,6 +32,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.inject.Inject;
+import pl.llp.aircasting.helper.VisibleSensor;
 
 import static pl.llp.aircasting.helper.LocationConversionHelper.geoPoint;
 import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
@@ -40,10 +40,8 @@ import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 public class LocationOverlay extends Overlay {
     @Inject ResourceHelper resourceHelper;
     @Inject LocationHelper locationHelper;
-    @Inject
-    CurrentSessionManager currentSessionManager;
-    @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject VisibleSensor visibleSensor;
 
     @Override
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {
@@ -52,7 +50,7 @@ public class LocationOverlay extends Overlay {
       if(shouldSkipDrawing()) return;
 
         Location location = locationHelper.getLastLocation();
-        Sensor sensor = currentSessionSensorManager.getVisibleSensor();
+        Sensor sensor = visibleSensor.getSensor();
         double value = currentSessionManager.getNow(sensor);
 
         if (location != null) {

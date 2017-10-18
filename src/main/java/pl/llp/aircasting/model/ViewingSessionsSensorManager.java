@@ -1,12 +1,13 @@
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
-import pl.llp.aircasting.sensor.VisibleSensor;
+import pl.llp.aircasting.helper.VisibleSensor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class ViewingSessionsSensorManager {
             String name = sensor.getSensorName();
             sessionSensors.put(SensorName.from(name), sensor);
 
-            visibleSensor.set(sensor, null);
+            visibleSensor.set(sensor);
         }
     }
 }

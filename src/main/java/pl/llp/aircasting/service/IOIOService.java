@@ -3,7 +3,6 @@ package pl.llp.aircasting.service;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -19,6 +18,7 @@ import ioio.lib.util.BaseIOIOLooper;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.IOIOLooperProvider;
 import ioio.lib.util.android.IOIOAndroidApplicationHelper;
+import pl.llp.aircasting.helper.VisibleSensor;
 import roboguice.service.RoboService;
 
 import java.util.List;
@@ -26,8 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IOIOService extends RoboService implements IOIOLooperProvider
 {
-  @Inject
-  CurrentSessionSensorManager currentSessionSensorManager;
+  @Inject VisibleSensor visibleSensor;
   @Inject SoundHelper soundHelper;
   @Inject EventBus eventBus;
   @Inject SettingsHelper settings;
@@ -105,8 +104,8 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   @Subscribe
   public void onEvent(MeasurementLevelEvent event)
   {
-    Sensor visibleSensor = currentSessionSensorManager.getVisibleSensor();
-    if(visibleSensor.matches(event.getSensor()))
+    Sensor currentSensor = visibleSensor.getSensor();
+    if(currentSensor.matches(event.getSensor()))
     {
       MeasurementLevel level = event.getLevel();
       switch (level)
