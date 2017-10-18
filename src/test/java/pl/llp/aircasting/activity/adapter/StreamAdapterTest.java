@@ -13,6 +13,7 @@ import com.google.common.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.llp.aircasting.model.ViewingSessionsSensorManager;
 
 import java.util.ArrayList;
 import java.util.Map;

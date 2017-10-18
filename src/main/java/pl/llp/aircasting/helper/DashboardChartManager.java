@@ -33,9 +33,9 @@ import static com.google.common.collect.Maps.newHashMap;
 public class DashboardChartManager {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject ViewingSessionsSensorManager viewingSessionsSensorManager;
     @Inject ResourceHelper resourceHelper;
-    @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
 
     private final static int INTERVAL_IN_SECONDS = 60;
@@ -76,9 +76,8 @@ public class DashboardChartManager {
         resetAllStaticCharts();
     }
 
-    public void drawChart(LineChart chart, final Sensor sensor) {
-        String sensorName = sensor.getSensorName();
-        MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
+    public void drawChart(LineChart chart, final Sensor sensor, long sessionId) {
+        MeasurementStream stream = getStream();
         String descriptionText = getDescription(stream);
 
         draw(chart, descriptionText);
@@ -256,7 +255,7 @@ public class DashboardChartManager {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
-            Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
+            Sensor sensor = getSensor();
             colors.add(resourceHelper.getColorAbsolute(sensor, entry.getY()));
         }
 
@@ -275,8 +274,15 @@ public class DashboardChartManager {
         return stream;
     }
 
-    private boolean shouldDynamicChartUpdate(String sensorName) {
-        return newEntriesForStream.containsKey(sensorName) && newEntriesForStream.get(sensorName) == true;
+    private Sensor getSensor() {
+        Sensor sensor;
+
+        if (isSessionRecording) {
+            sensor = currentSessionSensorManager.getSensorByName(requestedSensorName);
+        } else {
+            sensor = viewingSessionsSensorManager.getSensorByName(requestedSensorName, requestedSessionId);
+        }
+        return sensor;
     }
 
     private boolean shouldStaticChartUpdate(String sensorName) {

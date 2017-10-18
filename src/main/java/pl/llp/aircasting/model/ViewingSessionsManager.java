@@ -1,9 +1,13 @@
 package pl.llp.aircasting.model;
 
+import android.util.Log;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 

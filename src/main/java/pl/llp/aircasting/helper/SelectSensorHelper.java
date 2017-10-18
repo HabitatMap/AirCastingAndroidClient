@@ -77,7 +77,7 @@ public class SelectSensorHelper {
   }
 
   private List<Sensor> sortedSensors() {
-    final List<Sensor> sensors = currentSessionSensorManager.getSensors();
+    final List<Sensor> sensors = currentSessionSensorManager.getSensorsList();
     sort(sensors, new Comparator<Sensor>() {
       @Override
       public int compare(Sensor sensor, Sensor sensor1) {

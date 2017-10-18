@@ -9,12 +9,10 @@ import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.helper.VisibleSensor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newConcurrentMap;
-import static com.google.inject.internal.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * Created by radek on 10/10/17.
@@ -31,18 +29,18 @@ public class ViewingSessionsSensorManager {
         eventBus.register(this);
     }
 
-    public List<Sensor> getSensorsForSession(Long sessionId) {
-        ArrayList<Sensor> result = newArrayList();
-        result.addAll(viewingSessionsSensors.get(sessionId).values());
-        return result;
+    public Map<Long, Map<SensorName, Sensor>> getAllViewingSensors() {
+        return viewingSessionsSensors;
+    }
+
+    public Sensor getSensorByName(String sensorName, long sessionId) {
+        return viewingSessionsSensors.get(sessionId).get(SensorName.from(sensorName));
     }
 
     @Subscribe
     public void onEvent(SessionAddedEvent event) {
         Session session = event.getSession();
-        Map<SensorName, Sensor> sessionSensors = viewingSessionsSensors.get(session.getId());
-
-        viewingSessionsSensors = newConcurrentMap();
+        Map<SensorName, Sensor> sessionSensors = newHashMap();
 
         for (MeasurementStream stream : session.getMeasurementStreams()) {
             if (stream.isMarkedForRemoval()) {
@@ -50,10 +48,11 @@ public class ViewingSessionsSensorManager {
             }
 
             Sensor sensor = new Sensor(stream);
-            String name = sensor.getSensorName();
-            sessionSensors.put(SensorName.from(name), sensor);
+            sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
 
             visibleSensor.set(sensor);
         }
+
+        viewingSessionsSensors.put(event.getSession().getId(), sessionSensors);
     }
 }
