@@ -340,18 +340,6 @@ public class CurrentSessionManagerTest
   }
 
   @Test
-  public void isCalibrating()
-  {
-    currentSessionManager = spy(currentSessionManager);
-    doReturn(new Session()).when(currentSessionManager.sessionRepository)
-        .loadFully(anyLong(), Matchers.<ProgressListener>anyObject()); 
-
-    currentSessionManager.loadSessionForViewing(0, progressListener);
-
-    verify(currentSessionManager, atLeastOnce()).setSession(any(Session.class));
-  }
-
-  @Test
   public void shouldNotAddMeasurementsToASavedSession()
   {
     currentSessionManager.currentSession = new Session();
