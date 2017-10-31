@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.view.View;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.StreamViewHelper;

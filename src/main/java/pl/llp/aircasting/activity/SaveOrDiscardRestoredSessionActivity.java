@@ -22,8 +22,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
   @InjectView(R.id.session_tags) EditText sessionTags;
   @InjectView(R.id.session_description) EditText sessionDescription;
 
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
 
   @Inject ApplicationState state;

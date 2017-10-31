@@ -4,17 +4,13 @@ import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.helper.ToggleAircastingHelper;
-import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
+import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.widget.Button;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -35,10 +31,8 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject Context context;
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
-    @Inject LocationManager locationManager;
-    @Inject
-    CurrentSessionManager currentSessionManager;
-    VisibleSession visibleSession;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject VisibleSession visibleSession;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject EventBus eventBus;

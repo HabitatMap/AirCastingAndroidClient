@@ -26,8 +26,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;

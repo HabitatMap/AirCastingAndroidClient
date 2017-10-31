@@ -34,8 +34,7 @@ import roboguice.inject.InjectView;
 
 public class ContributeActivity extends DialogActivity
 {
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject Context context;
   @Inject SettingsHelper settingsHelper;
 

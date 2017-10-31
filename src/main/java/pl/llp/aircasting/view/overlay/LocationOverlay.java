@@ -41,8 +41,7 @@ public class LocationOverlay extends Overlay {
     @Inject ResourceHelper resourceHelper;
     @Inject LocationHelper locationHelper;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject
-    VisibleSession visibleSession;
+    @Inject VisibleSession visibleSession;
 
     @Override
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {

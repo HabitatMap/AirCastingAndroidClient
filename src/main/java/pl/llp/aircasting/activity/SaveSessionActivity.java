@@ -41,8 +41,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   @InjectView(R.id.session_tags) EditText sessionTags;
   @InjectView(R.id.session_description) EditText sessionDescription;
 
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
 
   @Inject ApplicationState state;

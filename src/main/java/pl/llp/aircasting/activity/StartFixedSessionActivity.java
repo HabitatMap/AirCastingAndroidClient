@@ -48,9 +48,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
   @InjectView(R.id.session_description) EditText sessionDescription;
 
   @Inject Application context;
-
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
 
   int PLACE_PICKER_REQUEST = 1;
 

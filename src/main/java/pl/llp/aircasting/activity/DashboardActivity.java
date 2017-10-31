@@ -19,12 +19,9 @@ import static pl.llp.aircasting.Intents.stopSensors;
 public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
-    @Inject
-    CurrentSessionManager currentSessionManager;
-    @Inject ApplicationState state;
-    @Inject EventBus eventBus;
-    @Inject
-    VisibleSession visibleSession;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject ApplicationState applicationState;
+    @Inject VisibleSession visibleSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

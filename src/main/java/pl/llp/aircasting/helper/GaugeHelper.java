@@ -22,8 +22,7 @@ public class GaugeHelper
 
   @Inject ResourceHelper resourceHelper;
   @Inject CurrentSessionManager currentSessionManager;
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
 
   @InjectResource(R.string.avg_label_template) String avgLabel;
   @InjectResource(R.string.now_label_template) String nowLabel;

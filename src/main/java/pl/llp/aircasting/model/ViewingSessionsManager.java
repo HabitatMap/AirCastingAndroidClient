@@ -1,6 +1,5 @@
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

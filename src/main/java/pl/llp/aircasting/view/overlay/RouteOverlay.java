@@ -52,8 +52,7 @@ public class RouteOverlay extends Overlay
 
   @Inject PathSmoother pathSmoother;
   @Inject ResourceHelper resourceHelper;
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
 
   private List<GeoPoint> points = newArrayList();
   private List<GeoPoint> pendingPoints = newArrayList();

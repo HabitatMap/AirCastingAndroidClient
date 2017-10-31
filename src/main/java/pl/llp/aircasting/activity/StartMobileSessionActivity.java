@@ -25,8 +25,7 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject Application context;
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject LocationManager locationManager;
 

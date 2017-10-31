@@ -1,7 +1,5 @@
 package pl.llp.aircasting.helper;
 
-import pl.llp.aircasting.model.CurrentSessionManager;
-
 import android.view.View;
 import com.google.inject.Inject;
 
@@ -10,8 +8,7 @@ import com.google.inject.Inject;
  */
 public class NowValueVisibilityManager
 {
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
 
   int getVisibility()
   {
