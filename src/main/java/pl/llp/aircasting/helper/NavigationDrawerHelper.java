@@ -22,8 +22,7 @@ import pl.llp.aircasting.model.CurrentSessionManager;
  * Created by radek on 09/06/17.
  */
 public class NavigationDrawerHelper {
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
 

@@ -26,14 +26,8 @@ import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
-import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.helper.FormatHelper;
-import pl.llp.aircasting.helper.GaugeHelper;
-import pl.llp.aircasting.helper.PhotoHelper;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.helper.SelectSensorHelper;
-import pl.llp.aircasting.helper.TopBarHelper;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
+import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.events.MeasurementEvent;
@@ -74,8 +68,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject SelectSensorHelper selectSensorHelper;
-    @Inject
-    VisibleSession visibleSession;
+    @Inject VisibleSession visibleSession;
     @Inject ResourceHelper resourceHelper;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
@@ -160,7 +153,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         @Override
         public void run()
         {
-
           gaugeHelper.updateGauges(visibleSensor, gauges);
           noUpdateInProgress.set(true);
         }

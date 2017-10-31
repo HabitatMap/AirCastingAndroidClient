@@ -85,8 +85,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
     @Inject RouteOverlay routeOverlay;
-    @Inject
-    VisibleSession visibleSession;
+    @Inject VisibleSession visibleSession;
 
     public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;

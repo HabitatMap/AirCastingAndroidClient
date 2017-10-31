@@ -41,8 +41,7 @@ import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 
 public class TraceOverlay extends BufferingOverlay<Measurement>
 {
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
   @Inject MeasurementPresenter measurementPresenter;
   @Inject ResourceHelper resourceHelper;
   @Inject SoundHelper soundHelper;

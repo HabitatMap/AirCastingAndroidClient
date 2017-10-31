@@ -11,12 +11,10 @@ import pl.llp.aircasting.model.CurrentSessionManager;
  * Created by radek on 13/07/17.
  */
 public class ToggleAircastingHelperFactory {
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject LocationHelper locationHelper;
-    @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
 

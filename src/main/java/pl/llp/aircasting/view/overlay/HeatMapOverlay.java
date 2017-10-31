@@ -43,8 +43,7 @@ public class HeatMapOverlay extends Overlay
   @Inject SoundHelper soundHelper;
   @Inject ResourceHelper resourceHelper;
   @Inject Paint paint;
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
 
   private Iterable<Region> regions;
 

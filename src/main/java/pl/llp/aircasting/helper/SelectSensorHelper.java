@@ -2,7 +2,6 @@ package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,10 +22,8 @@ public class SelectSensorHelper {
   public static final int DIALOG_ID = 175483;
 
   @InjectResource(R.string.select_sensor) String title;
-  @Inject
-  VisibleSession visibleSession;
-  @Inject
-  SessionDataFactory sessionData;
+  @Inject VisibleSession visibleSession;
+  @Inject SessionDataFactory sessionData;
 
   /**
    * Prepare a dialog displaying a list of sensors, allowing the user to select

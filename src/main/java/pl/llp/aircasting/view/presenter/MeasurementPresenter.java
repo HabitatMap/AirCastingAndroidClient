@@ -67,11 +67,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
   @Inject MeasurementAggregator aggregator;
-  @Inject
-  SessionDataFactory sessionData;
+  @Inject SessionDataFactory sessionData;
 
   private CopyOnWriteArrayList<Measurement> fullView = null;
   private int measurementsSize;

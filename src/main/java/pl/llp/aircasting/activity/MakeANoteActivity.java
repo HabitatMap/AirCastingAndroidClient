@@ -22,7 +22,6 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
@@ -38,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 import java.io.IOException;
@@ -49,21 +47,15 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
     public static final String PHOTO_PATH = "picture_path";
     public static final String PHOTO_ATTACHED = "photo_attached";
 
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
     @Inject PhotoHelper photoHelper;
     @Inject Application context;
-
-    @Inject CalibrationHelper calibrationHelper;
 
     @InjectView(R.id.attach_photo) Button attachPhoto;
     @InjectView(R.id.note_text) EditText noteText;
     @InjectView(R.id.save_button) Button save;
     @InjectView(R.id.date) TextView dateText;
-
-    @InjectResource(R.string.im_aircasting) String imAircasting;
-    @InjectResource(R.string.share_with) String shareWith;
 
     boolean photoAttached;
     String photoPath;

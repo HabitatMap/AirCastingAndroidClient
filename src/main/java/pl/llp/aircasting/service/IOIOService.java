@@ -2,7 +2,6 @@ package pl.llp.aircasting.service;
 
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
@@ -26,9 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IOIOService extends RoboService implements IOIOLooperProvider
 {
-  @Inject SoundHelper soundHelper;
-  @Inject
-  VisibleSession visibleSession;
+  @Inject VisibleSession visibleSession;
   @Inject EventBus eventBus;
   @Inject SettingsHelper settings;
 

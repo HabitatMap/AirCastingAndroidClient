@@ -53,8 +53,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
   @InjectResource(R.string.session_file_template) String shareText;
 
   @Inject ShareHelper shareHelper;
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject CSVHelper csvHelper;
   @Inject SessionRepository sessionRepository;
   @Inject SettingsHelper settingsHelper;

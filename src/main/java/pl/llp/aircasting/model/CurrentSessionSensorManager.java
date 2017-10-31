@@ -22,7 +22,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +39,6 @@ public class CurrentSessionSensorManager {
     @Inject ExternalSensors externalSensors;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
-    @Inject ApplicationState state;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
     @Inject VisibleSession visibleSession;

@@ -33,10 +33,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class DashboardChartManager {
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject ViewingSessionsManager viewingSessionsManager;
-    @Inject ViewingSessionsSensorManager viewingSessionsSensorManager;
     @Inject ResourceHelper resourceHelper;
-    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
     @Inject
     SessionDataFactory sessionData;

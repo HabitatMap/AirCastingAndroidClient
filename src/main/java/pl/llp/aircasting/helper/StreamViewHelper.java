@@ -1,15 +1,12 @@
 package pl.llp.aircasting.helper;
 
-import android.app.Application;
 import android.view.View;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.CurrentSessionManager;
-import pl.llp.aircasting.util.Constants;
 
 /**
  * Created with IntelliJ IDEA.
