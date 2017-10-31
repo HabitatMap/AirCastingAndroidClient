@@ -38,6 +38,8 @@ public class DashboardChartManager {
     @Inject ResourceHelper resourceHelper;
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
+    @Inject
+    SessionDataFactory sessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
@@ -284,24 +286,13 @@ public class DashboardChartManager {
     }
 
     private MeasurementStream getStream() {
-        MeasurementStream stream;
-
-        if (isSessionRecording) {
-            stream = currentSessionManager.getMeasurementStream(requestedSensorName);
-        } else {
-            stream = viewingSessionsManager.getMeasurementStream(requestedSensorName, requestedSessionId);
-        }
+        MeasurementStream stream = sessionData.getStream(requestedSensorName, requestedSessionId);
         return stream;
     }
 
     private Sensor getSensor() {
-        Sensor sensor;
+        Sensor sensor = sessionData.getSensor(requestedSensorName, requestedSessionId);
 
-        if (isSessionRecording) {
-            sensor = currentSessionSensorManager.getSensorByName(requestedSensorName);
-        } else {
-            sensor = viewingSessionsSensorManager.getSensorByName(requestedSensorName, requestedSessionId);
-        }
         return sensor;
     }
 
