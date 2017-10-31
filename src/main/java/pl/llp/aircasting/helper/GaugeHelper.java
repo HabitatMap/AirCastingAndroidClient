@@ -22,10 +22,9 @@ public class GaugeHelper
   public static final int MARGIN = 2;
 
   @Inject ResourceHelper resourceHelper;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject
-  CurrentSessionManager currentSessionManager;
-
-  @Inject EventBus eventBus;
+  VisibleSession visibleSession;
 
   @InjectResource(R.string.avg_label_template) String avgLabel;
   @InjectResource(R.string.now_label_template) String nowLabel;
@@ -65,7 +64,7 @@ public class GaugeHelper
     updateLabel(avgTextView, avgText, avgSize);
     updateLabel(peakTextView, peakText, peakSize);
 
-    boolean hasStats = currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed();
+    boolean hasStats = visibleSession.isCurrentSessionVisible();
     if (hasStats && sensor.isEnabled())
     {
       int avg = (int) currentSessionManager.getAvg(sensor);
@@ -117,7 +116,7 @@ public class GaugeHelper
 
     textView.setText(valueOf(value));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-    if (currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed()) {
+    if (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible()) {
       textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
     } else {
       textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));

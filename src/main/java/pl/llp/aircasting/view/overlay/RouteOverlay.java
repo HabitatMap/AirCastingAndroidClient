@@ -23,7 +23,7 @@ import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.util.map.PathSmoother;
 
 import android.graphics.Canvas;
@@ -52,9 +52,8 @@ public class RouteOverlay extends Overlay
 
   @Inject PathSmoother pathSmoother;
   @Inject ResourceHelper resourceHelper;
-
   @Inject
-  CurrentSessionManager currentSessionManager;
+  VisibleSession visibleSession;
 
   private List<GeoPoint> points = newArrayList();
   private List<GeoPoint> pendingPoints = newArrayList();
@@ -124,7 +123,7 @@ public class RouteOverlay extends Overlay
 
   private boolean skipDrawing()
   {
-    return this.skipDrawing || currentSessionManager.isLocationless();
+    return this.skipDrawing || visibleSession.isSessionLocationless();
   }
 
   private boolean isRefreshRequired(MapView view) {

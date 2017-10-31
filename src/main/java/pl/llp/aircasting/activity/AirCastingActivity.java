@@ -48,7 +48,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import pl.llp.aircasting.helper.VisibleSensor;
 import roboguice.inject.InjectView;
 
 import java.io.File;
@@ -74,7 +73,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject SelectSensorHelper selectSensorHelper;
-    @Inject VisibleSensor visibleSensor;
+    @Inject
+    VisibleSession visibleSession;
     @Inject ResourceHelper resourceHelper;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
@@ -98,7 +98,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         updateGauges();
         updateKeepScreenOn();
-        topBarHelper.updateTopBar(visibleSensor.getSensor(), topBar);
+        topBarHelper.updateTopBar(visibleSession.getSensor(), topBar);
         Intents.startIOIO(context);
         Intents.startDatabaseWriterService(context);
     }
@@ -145,7 +145,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
   protected void updateGauges()
   {
-    final Sensor sensor = visibleSensor.getSensor();
+    final Sensor sensor = visibleSession.getSensor();
     updateGaugeFaces(sensor);
   }
 
@@ -208,7 +208,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.top_bar:
-                Intents.thresholdsEditor(this, visibleSensor.getSensor());
+                Intents.thresholdsEditor(this, visibleSession.getSensor());
                 break;
             case R.id.note_save:
                 saveNote();
@@ -242,11 +242,11 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     }
 
     public void noteClicked(int index) {
-        int total = currentSessionManager.getNoteCount();
+        int total = visibleSession.getSessionNoteCount();
         if (total == 0) return;
         index = ((index % total) + total) % total;
 
-        currentNote = currentSessionManager.getNote(index);
+        currentNote = visibleSession.getSessionNote(index);
 
         showNoteViewer();
 
@@ -293,7 +293,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (currentSessionManager.isSessionBeingViewed()) {
+                if (visibleSession.isViewingSessionVisible()) {
                     currentSessionManager.updateNote(currentNote);
                     triggerSync(context);
                 }

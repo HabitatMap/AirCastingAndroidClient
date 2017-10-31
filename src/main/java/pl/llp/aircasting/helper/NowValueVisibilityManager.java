@@ -11,11 +11,11 @@ import com.google.inject.Inject;
 public class NowValueVisibilityManager
 {
   @Inject
-  CurrentSessionManager currentSessionManager;
+  VisibleSession visibleSession;
 
   int getVisibility()
   {
-    boolean shouldDisplay = currentSessionManager.isSessionRecording() || !currentSessionManager.isSessionBeingViewed();
+    boolean shouldDisplay = visibleSession.isCurrentSessionVisible();
     int visibility = shouldDisplay ? View.VISIBLE : View.GONE;
     return visibility;
   }

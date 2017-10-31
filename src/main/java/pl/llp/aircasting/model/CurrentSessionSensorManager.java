@@ -8,6 +8,7 @@ import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.events.MeasurementLevelEvent;
@@ -16,7 +17,6 @@ import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
-import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 
@@ -45,7 +45,7 @@ public class CurrentSessionSensorManager {
     @Inject ApplicationState state;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
-    @Inject VisibleSensor visibleSensor;
+    @Inject VisibleSession visibleSession;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
@@ -55,25 +55,15 @@ public class CurrentSessionSensorManager {
     @Inject
     public void init() {
         eventBus.register(this);
-        visibleSensor.set(AUDIO_SENSOR);
     }
 
     @Subscribe
     public void onEvent(SensorEvent event) {
-        if (state.recording().isShowingOldSession()) {
-            return;
-        }
-
         // IOIO
-        Sensor currentSensor = visibleSensor.getSensor();
-        if (visibleSensor != null && currentSensor.matches(getSensorByName(event.getSensorName()))) {
-            MeasurementLevel level = null;
-            if (currentSessionManager.isSessionBeingViewed()) {
-                level = MeasurementLevel.TOO_LOW;
-            } else {
-                double now = (int) currentSessionManager.getNow(currentSensor);
-                level = resourceHelper.getLevel(currentSensor, now);
-            }
+        Sensor currentSensor = visibleSession.getSensor();
+        if (visibleSession.getSession() != null && currentSensor.matches(getSensorByName(event.getSensorName()))) {
+            double now = (int) currentSessionManager.getNow(currentSensor);
+            MeasurementLevel level = resourceHelper.getLevel(currentSensor, now);
             eventBus.post(new MeasurementLevelEvent(currentSensor, level));
         }
         // end of IOIO
@@ -196,10 +186,10 @@ public class CurrentSessionSensorManager {
         }
 
         currentSessionSensors = newSensors;
-        String sensorName = visibleSensor.getSensor().getSensorName();
+        String sensorName = visibleSession.getSensor().getSensorName();
 
         if (!currentSessionSensors.containsKey(SensorName.from(sensorName))) {
-            eventBus.post(new ViewStreamEvent(SimpleAudioReader.getSensor(), Constants.CURRENT_SESSION_FAKE_ID));
+            visibleSession.setSensor(AUDIO_SENSOR.getSensorName());
         }
     }
 }

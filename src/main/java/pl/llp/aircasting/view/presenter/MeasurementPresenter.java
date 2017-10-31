@@ -23,11 +23,11 @@ import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
-import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.content.SharedPreferences;
@@ -66,7 +66,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Inject SettingsHelper settingsHelper;
   @Inject SharedPreferences preferences;
   @Inject EventBus eventBus;
-  @Inject VisibleSensor visibleSensor;
+  @Inject
+  VisibleSession visibleSession;
   @Inject MeasurementAggregator aggregator;
 
   private CopyOnWriteArrayList<Measurement> fullView = null;
@@ -226,7 +227,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     {
       // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
       // when user opens the graph with fixed session (since fixed sessions are often much longer).
-      if(currentSessionManager.getCurrentSession().isFixed())
+      if(visibleSession.getSession().isFixed())
         measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
       else
         measurements = stream.getMeasurements();

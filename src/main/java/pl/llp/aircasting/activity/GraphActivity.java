@@ -64,7 +64,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.graph);
-    measurementPresenter.setSensor(visibleSensor.getSensor());
+    measurementPresenter.setSensor(visibleSession.getSensor());
 
     initToolbar("Graph");
     initNavigationDrawer();
@@ -164,9 +164,9 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         zoomOut.setEnabled(measurementPresenter.canZoomOut());
 
         ArrayList<Measurement> measurements = newArrayList(measurementPresenter.getTimelineView());
-        ArrayList<Note> notes = newArrayList(currentSessionManager.getNotes());
+        ArrayList<Note> notes = newArrayList(visibleSession.getSessionNotes());
 
-        plot.update(visibleSensor.getSensor(), measurements, notes);
+        plot.update(visibleSession.getSensor(), measurements, notes);
 
         scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
         scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);

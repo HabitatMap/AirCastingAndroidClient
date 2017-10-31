@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.events.SessionAddedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
-import pl.llp.aircasting.helper.VisibleSensor;
 
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
-    @Inject VisibleSensor visibleSensor;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
 

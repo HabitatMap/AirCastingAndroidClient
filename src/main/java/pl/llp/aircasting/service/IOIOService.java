@@ -1,5 +1,6 @@
 package pl.llp.aircasting.service;
 
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.SoundHelper;
 import pl.llp.aircasting.model.Sensor;
@@ -18,7 +19,6 @@ import ioio.lib.util.BaseIOIOLooper;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.IOIOLooperProvider;
 import ioio.lib.util.android.IOIOAndroidApplicationHelper;
-import pl.llp.aircasting.helper.VisibleSensor;
 import roboguice.service.RoboService;
 
 import java.util.List;
@@ -26,8 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IOIOService extends RoboService implements IOIOLooperProvider
 {
-  @Inject VisibleSensor visibleSensor;
   @Inject SoundHelper soundHelper;
+  @Inject
+  VisibleSession visibleSession;
   @Inject EventBus eventBus;
   @Inject SettingsHelper settings;
 
@@ -104,7 +105,7 @@ public class IOIOService extends RoboService implements IOIOLooperProvider
   @Subscribe
   public void onEvent(MeasurementLevelEvent event)
   {
-    Sensor currentSensor = visibleSensor.getSensor();
+    Sensor currentSensor = visibleSession.getSensor();
     if(currentSensor.matches(event.getSensor()))
     {
       MeasurementLevel level = event.getLevel();

@@ -25,9 +25,9 @@ public class SelectSensorHelper {
   public static final int DIALOG_ID = 175483;
 
   @InjectResource(R.string.select_sensor) String title;
-  @Inject CurrentSessionSensorManager currentSessionSensorManager;
-  @Inject VisibleSensor visibleSensor;
   @Inject EventBus eventBus;
+  @Inject
+  VisibleSession visibleSession;
 
   /**
    * Prepare a dialog displaying a list of sensors, allowing the user to select
@@ -49,6 +49,7 @@ public class SelectSensorHelper {
             ViewStreamEvent event = new ViewStreamEvent(sensor);
 
             eventBus.post(event);
+            visibleSession.setSensor(sensor.getSensorName());
 
             context.removeDialog(DIALOG_ID);
           }
@@ -73,7 +74,7 @@ public class SelectSensorHelper {
 
   private int selectedSensorIndex(List<Sensor> sensors)
   {
-    return sensors.indexOf(visibleSensor.getSensor());
+    return sensors.indexOf(visibleSession.getSensor());
   }
 
   private List<Sensor> sortedSensors() {
