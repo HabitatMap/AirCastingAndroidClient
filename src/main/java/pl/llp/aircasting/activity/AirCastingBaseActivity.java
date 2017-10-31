@@ -38,6 +38,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject LocationManager locationManager;
     @Inject
     CurrentSessionManager currentSessionManager;
+    VisibleSession visibleSession;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject EventBus eventBus;
@@ -64,7 +65,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         initialize();
         locationHelper.start();
 
-        if (!currentSessionManager.isSessionBeingViewed()) {
+        if (!visibleSession.isViewingSessionVisible()) {
             Intents.startSensors(context);
         }
 
@@ -79,7 +80,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     protected void onPause() {
         super.onPause();
 
-        if (!currentSessionManager.isSessionBeingViewed()) {
+        if (!visibleSession.isViewingSessionVisible()) {
             Intents.stopSensors(context);
         }
 
@@ -158,7 +159,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
     private boolean shouldCheckForUnfinishedSessions()
     {
-        if(currentSessionManager.isSessionRecording())
+        if(visibleSession.isVisibleSessionRecording())
             return false;
 
         if(state.saving().isSaving())

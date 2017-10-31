@@ -12,6 +12,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 
 import static pl.llp.aircasting.Intents.startSensors;
@@ -25,7 +26,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject ApplicationState state;
     @Inject EventBus eventBus;
     @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
+    VisibleSession visibleSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +132,10 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void viewChartOptions(View view) {
         TextView sensorTitle = (TextView) view.findViewById(R.id.sensor_name);
         String sensorName = (String) sensorTitle.getText();
-        Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
+        Long sessionId = (Long) view.getTag(R.id.session_id_tag);
+
+        visibleSession.setSession(sessionId);
+        visibleSession.setSensor(sensorName);
 
         eventBus.post(new ViewStreamEvent(sensor));
         startActivity(new Intent(context, ChartOptionsActivity.class));

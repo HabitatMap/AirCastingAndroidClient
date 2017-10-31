@@ -35,11 +35,11 @@ import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.StreamUpdateEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.internal.Region;
-import pl.llp.aircasting.helper.VisibleSensor;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.view.AirCastingMapView;
 import pl.llp.aircasting.view.MapIdleDetector;
@@ -85,7 +85,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Inject TraceOverlay traceOverlay;
     @Inject MeasurementPresenter measurementPresenter;
     @Inject RouteOverlay routeOverlay;
-    @Inject VisibleSensor visibleSensor;
+    @Inject
+    VisibleSession visibleSession;
 
     public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
@@ -116,7 +117,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
-        if (!currentSessionManager.isSessionBeingViewed()) {
+        if (!visibleSession.isViewingSessionVisible()) {
             mapView.getOverlays().add(locationOverlay);
         }
     }
@@ -235,8 +236,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         routeOverlay.clear();
 
         if (shouldShowRoute()) {
-            Sensor sensor = visibleSensor.getSensor();
-            List<Measurement> measurements = currentSessionManager.getMeasurements(sensor);
+            Sensor sensor = visibleSession.getSensor();
+            List<Measurement> measurements = visibleSession.getMeasurements(sensor);
 
             for (Measurement measurement : measurements) {
                 GeoPoint geoPoint = geoPoint(measurement);
@@ -260,7 +261,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private boolean shouldShowRoute() {
         return settingsHelper.isShowRoute() &&
-                (currentSessionManager.isSessionRecording() || currentSessionManager.isSessionBeingViewed());
+                (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible());
     }
 
     private void initializeMap() {
@@ -302,8 +303,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void showSession() {
-        if (currentSessionManager.isSessionBeingViewed() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(currentSessionManager.getCurrentSession());
+        if (visibleSession.isViewingSessionVisible() && zoomToSession) {
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(visibleSession.getSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
             mapView.getController().animateTo(boundingBox.getCenter());
@@ -313,7 +314,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void refreshNotes() {
         noteOverlay.clear();
-        for (Note note : currentSessionManager.getNotes()) {
+        for (Note note : visibleSession.getSessionNotes()) {
             noteOverlay.add(note);
         }
     }
@@ -480,7 +481,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
             int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            return averagesDriver.index(visibleSensor.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+            return averagesDriver.index(visibleSession.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
                     southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
         }
 

@@ -28,6 +28,7 @@ import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -84,6 +85,7 @@ public class CurrentSessionManager {
     @Inject ContinuousTracker tracker;
 
     @Inject ApplicationState state;
+    @Inject VisibleSession visibleSession;
 
     private Map<String, Double> recentMeasurements = newHashMap();
 
@@ -91,6 +93,8 @@ public class CurrentSessionManager {
 
     @Inject
     public void init() {
+        visibleSession.setSession(Constants.CURRENT_SESSION_FAKE_ID);
+
         telephonyManager.listen(new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
@@ -128,14 +132,6 @@ public class CurrentSessionManager {
         return !isSessionBeingViewed() && !isSessionRecording();
     }
 
-    public boolean sessionHasId() {
-        return getCurrentSession().getId() != null;
-    }
-
-    public boolean isLocationless() {
-        return currentSession.isLocationless();
-    }
-
     public void updateSession(Session from) {
         Preconditions.checkNotNull(from.getId(), "Unsaved session?");
         setTitleTagsDescription(from.getId(), from.getTitle(),
@@ -148,10 +144,6 @@ public class CurrentSessionManager {
 
         tracker.addNote(note);
         return note;
-    }
-
-    public Iterable<Note> getNotes() {
-        return getCurrentSession().getNotes();
     }
 
     public void startSensors() {
@@ -257,16 +249,8 @@ public class CurrentSessionManager {
         return stream;
     }
 
-    public Note getNote(int i) {
-        return currentSession.getNotes().get(i);
-    }
-
     public void deleteNote(Note note) {
         tracker.deleteNote(currentSession, note);
-    }
-
-    public int getNoteCount() {
-        return currentSession.getNotes().size();
     }
 
     public void restartSensors() {
@@ -400,17 +384,6 @@ public class CurrentSessionManager {
             return currentSession.getStream(sensorName).getPeak();
         } else {
             return 0;
-        }
-    }
-
-    public List<Measurement> getMeasurements(Sensor sensor) {
-        String name = sensor.getSensorName();
-
-        if (currentSession.hasStream(name)) {
-            MeasurementStream stream = currentSession.getStream(name);
-            return stream.getMeasurements();
-        } else {
-            return newArrayList();
         }
     }
 
