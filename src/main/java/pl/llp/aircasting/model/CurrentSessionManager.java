@@ -22,7 +22,7 @@ package pl.llp.aircasting.model;
 import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.android.Logger;
@@ -284,7 +284,7 @@ public class CurrentSessionManager {
     }
 
     private void notifyNewSession(Session session) {
-        eventBus.post(new SessionAddedEvent(session));
+        eventBus.post(new VisibleSessionUpdatedEvent(session));
     }
 
     public void startMobileSession(String title, String tags, String description, boolean locationLess) {

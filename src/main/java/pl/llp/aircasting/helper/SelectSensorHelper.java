@@ -1,7 +1,6 @@
 package pl.llp.aircasting.helper;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 
@@ -11,7 +10,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.Nullable;
 import roboguice.inject.InjectResource;
@@ -25,7 +23,6 @@ public class SelectSensorHelper {
   public static final int DIALOG_ID = 175483;
 
   @InjectResource(R.string.select_sensor) String title;
-  @Inject EventBus eventBus;
   @Inject
   VisibleSession visibleSession;
 
@@ -46,9 +43,6 @@ public class SelectSensorHelper {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             Sensor sensor = sensors.get(which);
-            ViewStreamEvent event = new ViewStreamEvent(sensor);
-
-            eventBus.post(event);
             visibleSession.setSensor(sensor.getSensorName());
 
             context.removeDialog(DIALOG_ID);
