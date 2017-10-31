@@ -49,7 +49,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         initialize();
         locationHelper.start();
 
-        if (!currentSessionManager.isSessionBeingViewed()) {
+        if (currentSessionManager.isSessionPresent()) {
             Intents.startSensors(context);
         }
 
@@ -64,7 +64,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        if (!currentSessionManager.isSessionBeingViewed()) {
+        if (currentSessionManager.isSessionPresent()) {
             Intents.stopSensors(context);
         }
 

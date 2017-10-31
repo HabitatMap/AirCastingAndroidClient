@@ -20,6 +20,7 @@
 package pl.llp.aircasting.model;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.sun.tools.javac.code.Attribute;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
@@ -53,10 +54,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import pl.llp.aircasting.util.Constants;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -118,6 +119,10 @@ public class CurrentSessionManager {
         Preconditions.checkNotNull(session, "Cannot set null session");
         this.currentSession = session;
         notifyNewSession(session);
+    }
+
+    public boolean isSessionPresent() {
+        return getCurrentSession() != null;
     }
 
     public boolean isSessionBeingViewed() {
