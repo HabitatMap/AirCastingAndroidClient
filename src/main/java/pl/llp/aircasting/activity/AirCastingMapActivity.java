@@ -28,12 +28,12 @@ import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.api.AveragesDriver;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
-import pl.llp.aircasting.event.ui.StreamUpdateEvent;
+import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.Measurement;
@@ -330,7 +330,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Subscribe
     @Override
-    public void onEvent(StreamUpdateEvent event) {
+    public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
 
         runOnUiThread(new Runnable() {
@@ -346,7 +346,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Override
     @Subscribe
-    public void onEvent(SessionAddedEvent event) {
+    public void onEvent(VisibleSessionUpdatedEvent event) {
         super.onEvent(event);
         refreshNotes();
         mapView.invalidate();

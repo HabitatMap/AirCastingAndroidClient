@@ -9,10 +9,10 @@ import pl.llp.aircasting.model.Sensor;
  * Time: 12:30
  * To change this template use File | Settings | File Templates.
  */
-public class StreamUpdateEvent {
+public class VisibleStreamUpdatedEvent {
     private Sensor sensor;
 
-    public StreamUpdateEvent(Sensor sensor) {
+    public VisibleStreamUpdatedEvent(Sensor sensor) {
         this.sensor = sensor;
     }
 

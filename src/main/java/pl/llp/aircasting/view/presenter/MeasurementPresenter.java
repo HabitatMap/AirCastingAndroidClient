@@ -20,9 +20,9 @@
 package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
@@ -188,15 +188,15 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   }
 
   @Subscribe
-  public synchronized void onEvent(SessionAddedEvent event)
+  public synchronized void onEvent(VisibleSessionUpdatedEvent event)
   {
-    this.sensor = visibleSensor.getSensor();
+    this.sensor = visibleSession.getSensor();
     reset();
     anchor = 0;
   }
 
   @Subscribe
-  public synchronized void onEvent(ViewStreamEvent event)
+  public synchronized void onEvent(VisibleStreamUpdatedEvent event)
   {
     this.sensor = event.getSensor();
     reset();

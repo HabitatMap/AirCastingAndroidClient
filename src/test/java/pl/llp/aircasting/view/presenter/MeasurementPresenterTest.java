@@ -21,8 +21,8 @@ package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
+import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
@@ -55,7 +55,7 @@ public class MeasurementPresenterTest
   private MeasurementStream stream;
   private Session session;
   private Sensor sensor;
-  private SessionAddedEvent EVENT;
+  private VisibleSessionUpdatedEvent EVENT;
 
   @Inject ApplicationState state;
 
@@ -71,9 +71,9 @@ public class MeasurementPresenterTest
     sensor = mock(Sensor.class);
     when(sensor.getSensorName()).thenReturn("LHC");
 
-    presenter.onEvent(new ViewStreamEvent(sensor, null));
     presenter.visibleSession = mock(VisibleSession.class);
     when(presenter.visibleSession.getSensor()).thenReturn(sensor);
+    presenter.onEvent(new VisibleStreamUpdatedEvent(sensor));
 
     stream = mock(MeasurementStream.class);
     when(stream.getMeasurements()).thenReturn(measurements);
@@ -90,7 +90,7 @@ public class MeasurementPresenterTest
 
     presenter.settingsHelper = mock(SettingsHelper.class);
     when(presenter.settingsHelper.getAveragingTime()).thenReturn(1);
-    EVENT = new SessionAddedEvent(new Session());
+    EVENT = new VisibleSessionUpdatedEvent(new Session());
   }
 
   private CurrentSessionManager mockSessionManager()

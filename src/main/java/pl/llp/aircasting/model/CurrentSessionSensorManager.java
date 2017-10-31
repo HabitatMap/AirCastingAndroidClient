@@ -6,8 +6,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.event.ui.StreamUpdateEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -83,14 +81,6 @@ public class CurrentSessionSensorManager {
                 currentSessionSensors.put(name, sensor);
             }
         }
-    }
-
-    @Subscribe
-    public void onEvent(ViewStreamEvent event) {
-        String sensorName = event.getSensor().getSensorName();
-        visibleSensor.set(currentSessionSensors.get(SensorName.from(sensorName)));
-        if (visibleSensor.getSensor() == null) visibleSensor.set(AUDIO_SENSOR);
-        eventBus.post(new StreamUpdateEvent(visibleSensor.getSensor()));
     }
 
     @Subscribe

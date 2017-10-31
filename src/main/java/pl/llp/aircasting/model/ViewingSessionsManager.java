@@ -7,7 +7,7 @@ import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.event.session.ViewSessionEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 
@@ -44,6 +44,6 @@ public class ViewingSessionsManager {
     }
 
     private void notifyNewSession(Session session) {
-        eventBus.post(new SessionAddedEvent(session));
+        eventBus.post(new ViewSessionEvent(session));
     }
 }

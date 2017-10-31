@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 
@@ -137,7 +135,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         visibleSession.setSession(sessionId);
         visibleSession.setSensor(sensorName);
 
-        eventBus.post(new ViewStreamEvent(sensor));
         startActivity(new Intent(context, ChartOptionsActivity.class));
     }
 }

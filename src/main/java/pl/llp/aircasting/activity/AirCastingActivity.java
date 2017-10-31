@@ -22,7 +22,7 @@ package pl.llp.aircasting.activity;
 import android.net.Uri;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
@@ -33,6 +33,7 @@ import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.TopBarHelper;
+import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.events.MeasurementEvent;
@@ -173,7 +174,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
   }
 
   @Subscribe
-  public void onEvent(SessionAddedEvent event) {
+  public void onEvent(VisibleSessionUpdatedEvent event) {
     updateGauges();
   }
 
@@ -199,7 +200,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
   }
 
   @Subscribe
-  public void onEvent(StreamUpdateEvent event) {
+  public void onEvent(VisibleStreamUpdatedEvent event) {
     topBarHelper.updateTopBar(event.getSensor(), topBar);
     updateGauges();
   }

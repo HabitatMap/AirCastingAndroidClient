@@ -9,7 +9,6 @@ import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.inject.InjectResource;
