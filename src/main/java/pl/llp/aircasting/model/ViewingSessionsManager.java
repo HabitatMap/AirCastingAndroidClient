@@ -34,9 +34,12 @@ public class ViewingSessionsManager {
     public void loadSessionForViewing(long sessionId, @NotNull ProgressListener listener) {
         Preconditions.checkNotNull(listener);
         Session newSession = sessionRepository.loadFully(sessionId, listener);
-        state.recording().startShowingOldSession();
         sessionsForViewing.put(sessionId, newSession);
         notifyNewSession(newSession);
+    }
+
+    public Session getSession(long sessionId) {
+        return sessionsForViewing.get(sessionId);
     }
 
     public MeasurementStream getMeasurementStream(String sensorName, long sessionId) {

@@ -25,6 +25,8 @@ public class SelectSensorHelper {
   @InjectResource(R.string.select_sensor) String title;
   @Inject
   VisibleSession visibleSession;
+  @Inject
+  SessionDataFactory sessionData;
 
   /**
    * Prepare a dialog displaying a list of sensors, allowing the user to select
@@ -72,7 +74,7 @@ public class SelectSensorHelper {
   }
 
   private List<Sensor> sortedSensors() {
-    final List<Sensor> sensors = currentSessionSensorManager.getSensorsList();
+    final List<Sensor> sensors = sessionData.getSensorsList(visibleSession.getCurrentSessionId());
     sort(sensors, new Comparator<Sensor>() {
       @Override
       public int compare(Sensor sensor, Sensor sensor1) {

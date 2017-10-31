@@ -21,7 +21,8 @@ import static com.google.inject.internal.Lists.newArrayList;
 @Singleton
 public class VisibleSession {
     @Inject EventBus eventBus;
-    @Inject SessionDataAccessor sessionDataAccessor;
+    @Inject
+    SessionDataFactory sessionDataFactory;
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
 
@@ -30,12 +31,12 @@ public class VisibleSession {
     private Sensor sensor;
 
     public void setSession(@NotNull Long sessionId) {
-        this.session = sessionDataAccessor.getSession(sessionId);
+        this.session = sessionDataFactory.getSession(sessionId);
         eventBus.post(new VisibleSessionUpdatedEvent(session));
     }
 
     public void setSensor(@NotNull String sensorName) {
-        this.sensor = sessionDataAccessor.getSensor(sensorName, getCurrentSessionId());
+        this.sensor = sessionDataFactory.getSensor(sensorName, getCurrentSessionId());
         eventBus.post(new VisibleStreamUpdatedEvent(sensor));
     }
 

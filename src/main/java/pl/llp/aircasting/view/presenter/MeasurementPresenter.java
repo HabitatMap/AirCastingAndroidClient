@@ -24,6 +24,7 @@ import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.VisibleSession;
+import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
@@ -69,6 +70,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   @Inject
   VisibleSession visibleSession;
   @Inject MeasurementAggregator aggregator;
+  @Inject
+  SessionDataFactory sessionData;
 
   private CopyOnWriteArrayList<Measurement> fullView = null;
   private int measurementsSize;
@@ -217,7 +220,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     Stopwatch stopwatch = new Stopwatch().start();
 
     String sensorName = sensor.getSensorName();
-    MeasurementStream stream = currentSessionManager.getMeasurementStream(sensorName);
+    MeasurementStream stream = sessionData.getStream(sensorName, visibleSession.getCurrentSessionId());
     Iterable<Measurement> measurements;
     if (stream == null)
     {

@@ -8,8 +8,11 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.event.session.ViewSessionEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -47,10 +50,14 @@ public class ViewingSessionsSensorManager {
 
             Sensor sensor = new Sensor(stream);
             sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
-
-            visibleSensor.set(sensor);
         }
 
         viewingSessionsSensors.put(event.getSession().getId(), sessionSensors);
+    }
+
+    public List<Sensor> getSensorsList(long sessionId) {
+        ArrayList<Sensor> result = newArrayList();
+        result.addAll(viewingSessionsSensors.get(sessionId).values());
+        return result;
     }
 }
