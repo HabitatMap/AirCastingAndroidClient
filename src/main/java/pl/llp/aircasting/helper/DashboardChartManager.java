@@ -214,8 +214,9 @@ public class DashboardChartManager {
 
     private void prepareEntries(MeasurementStream stream) {
         List<List<Measurement>> periodData;
+        double streamFrequency = stream.getFrequency();
         double xValue = 8;
-        double measurementsInPeriod = INTERVAL_IN_SECONDS / stream.getFrequency();
+        double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
         List entries = new CopyOnWriteArrayList();
         List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
         periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
@@ -223,7 +224,7 @@ public class DashboardChartManager {
         if (periodData.size() > 0) {
             synchronized (periodData) {
                 for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
-                    if (dataChunk.size() > measurementsInPeriod - 3) {
+                    if (dataChunk.size() > measurementsInPeriod - getTolerance(streamFrequency)) {
                         double yValue = getAverage(dataChunk);
                         entries.add(new Entry((float) xValue, (float) yValue));
                         xValue--;
@@ -236,7 +237,15 @@ public class DashboardChartManager {
             return;
         }
 
-        averages.put(getKey(requestedSensorName), Lists.reverse(entries));
+        averages.put(getKey(stream.getSensorName()), Lists.reverse(entries));
+    }
+
+    private double getTolerance(double streamFrequency) {
+        if (0.9 <= streamFrequency && streamFrequency < 1.1) {
+            return 3.5;
+        } else {
+            return  6.5;
+        }
     }
 
     private double getAverage(List<Measurement> measurements) {
