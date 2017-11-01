@@ -35,22 +35,21 @@ public class DashboardChartManager {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject Context context;
-    @Inject
-    SessionDataFactory sessionData;
+    @Inject SessionDataFactory sessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
-    private static int averagesCounter = 0;
+    private static int dynamicAveragesCount = 0;
     private static int interval;
     private static Map<String, Boolean> shouldUseExistingEntries = newHashMap();
-    private static Map<String, Boolean> newEntriesForStream = newHashMap();
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private static Map<String, List> averages = newHashMap();
     private static String requestedSensorName;
+    private static String requestedStreamKey;
     private static long requestedSessionId;
-    private boolean isSessionRecording;
+    private boolean isSessionCurrent;
     private Handler handler = new Handler();
     private Runnable updateEntriesTask = new Runnable() {
         @Override
@@ -72,19 +71,35 @@ public class DashboardChartManager {
     }
 
     private void resetState() {
-        averagesCounter = 0;
+        dynamicAveragesCount = 0;
         averages.clear();
-        newEntriesForStream.clear();
         shouldUseExistingEntries.clear();
         resetAllStaticCharts();
+    }
+
+    public void resetAllStaticCharts() {
+        staticChartGeneratedForStream.clear();
+    }
+
+    public void resetSpecificStaticCharts(Long sessionId, String[] sensors) {
+        for (String sensorName : sensors) {
+            staticChartGeneratedForStream.remove(getKey(sessionId, sensorName));
+        }
+    }
+
+    public void resetDynamicCharts(Set<String> sensors) {
+        for (String sensorName : sensors) {
+            shouldUseExistingEntries.put(getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName), true);
+        }
     }
 
     public void drawChart(LineChart chart, final Sensor sensor, long sessionId) {
         requestedSensorName = sensor.getSensorName();
         requestedSessionId = sessionId;
-        isSessionRecording = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
+        isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
+        requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
         MeasurementStream stream = getStream();
-        String descriptionText = getDescription(stream);
+        String descriptionText = getTimestamp(stream);
 
         draw(chart, descriptionText);
 
@@ -98,21 +113,16 @@ public class DashboardChartManager {
     }
 
     private void initStaticChart(MeasurementStream stream, LineChart chart, Sensor sensor) {
-        if (!isSessionRecording && shouldStaticChartInitialize()) {
-            averagesCounter = MAX_AVERAGES_AMOUNT;
-            prepareEntries(stream);
+        if (!isSessionCurrent && shouldStaticChartInitialize()) {
+            prepareEntries(requestedSessionId, stream);
             updateChartData(chart, sensor.getShortType());
-            staticChartGeneratedForStream.put(getKey(requestedSensorName), true);
+            staticChartGeneratedForStream.put(requestedStreamKey, true);
         }
     }
 
     private void updateChart(LineChart chart, Sensor sensor) {
-//        if (shouldDynamicChartUpdate() || chartHasMissingData(chart)) {
-            updateChartData(chart, sensor.getShortType());
-            chart.notifyDataSetChanged();
-//        } else {
-//            return;
-//        }
+        updateChartData(chart, sensor.getShortType());
+        chart.notifyDataSetChanged();
     }
 
     private void updateChartData(LineChart chart, String unit) {
@@ -122,42 +132,18 @@ public class DashboardChartManager {
             lineData = new LineData();
         }
 
-        List entries = getEntriesForCurrentStream();
+        List<Entry> entries = getEntriesForCurrentStream();
         if (entries == null) {
             return;
         }
 
-        lineData.removeDataSet(0);
         LineDataSet dataSet = prepareDataSet(unit);
-
-        ArrayList<Integer> colors = prepareDataSetColors(entries);
-        dataSet.setCircleColors(colors);
-
-        newEntriesForStream.put(getKey(requestedSensorName), false);
-        staticChartGeneratedForStream.put(getKey(requestedSensorName), true);
 
         lineData.removeDataSet(0);
         lineData.addDataSet(dataSet);
         lineData.setValueFormatter(new MyValueFormatter());
 
         chart.setData(lineData);
-    }
-
-    public void resetAllStaticCharts() {
-        staticChartGeneratedForStream.clear();
-    }
-
-    public void resetSpecificStaticCharts(String[] sensors) {
-        for (String sensorName : sensors) {
-            staticChartGeneratedForStream.remove(getKey(sensorName));
-        }
-    }
-
-    public void resetDynamicCharts(Set<String> sensors) {
-        for (String sensorName : sensors) {
-            newEntriesForStream.put(getKey(sensorName), true);
-            shouldUseExistingEntries.put(getKey(sensorName), true);
-        }
     }
 
     private void draw(LineChart chart, String descriptionText) {
@@ -195,16 +181,18 @@ public class DashboardChartManager {
     private LineDataSet prepareDataSet(String unit) {
         List<Entry> entries = getEntriesForCurrentStream();
         LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
+        ArrayList<Integer> colors = prepareDataSetColors(entries);
 
-        shouldUseExistingEntries.put(getKey(requestedSensorName), false);
+        shouldUseExistingEntries.put(requestedStreamKey, false);
 
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
         dataSet.setLineWidth(3);
         dataSet.setValueTextSize(10);
         dataSet.setDrawHighlightIndicators(false);
+        dataSet.setCircleColors(colors);
 
-        if (!isSessionRecording) {
+        if (!isSessionCurrent) {
             int color = context.getResources().getColor(R.color.gray);
             dataSet.setColor(color);
         }
@@ -212,13 +200,13 @@ public class DashboardChartManager {
         return dataSet;
     }
 
-    private void prepareEntries(MeasurementStream stream) {
+    private void prepareEntries(long sessionId, MeasurementStream stream) {
         List<List<Measurement>> periodData;
         double streamFrequency = stream.getFrequency();
         double xValue = 8;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
         List entries = new CopyOnWriteArrayList();
-        List<Measurement> measurements = stream.getMeasurementsForPeriod(averagesCounter);
+        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT);
         periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
 
         if (periodData.size() > 0) {
@@ -237,7 +225,7 @@ public class DashboardChartManager {
             return;
         }
 
-        averages.put(getKey(stream.getSensorName()), Lists.reverse(entries));
+        averages.put(getKey(sessionId, stream.getSensorName()), Lists.reverse(entries));
     }
 
     private double getTolerance(double streamFrequency) {
@@ -261,15 +249,17 @@ public class DashboardChartManager {
     private void allowChartUpdate() {
         List<MeasurementStream> streams = (List) currentSessionManager.getMeasurementStreams();
 
-        if (averagesCounter < MAX_AVERAGES_AMOUNT) {
-            averagesCounter++;
+        if (dynamicAveragesCount < MAX_AVERAGES_AMOUNT) {
+            dynamicAveragesCount++;
         }
 
         for (MeasurementStream stream : streams) {
-            String sensorName = stream.getSensorName();
-            prepareEntries(stream);
-            newEntriesForStream.put(getKey(sensorName), true);
+            prepareEntries(Constants.CURRENT_SESSION_FAKE_ID, stream);
         }
+    }
+
+    private boolean shouldStaticChartInitialize() {
+        return !staticChartGeneratedForStream.containsKey(requestedStreamKey);
     }
 
     private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
@@ -283,12 +273,12 @@ public class DashboardChartManager {
         return colors;
     }
 
-    private String getKey(String sensorName) {
-        return requestedSessionId + "_" + sensorName;
+    private String getKey(double sessionId, String sensorName) {
+        return String.valueOf(sessionId) + "_" + sensorName;
     }
 
     private List<Entry> getEntriesForCurrentStream() {
-        return averages.get(getKey(requestedSensorName));
+        return averages.get(requestedStreamKey);
     }
 
     private MeasurementStream getStream() {
@@ -302,28 +292,11 @@ public class DashboardChartManager {
         return sensor;
     }
 
-    private boolean shouldDynamicChartUpdate() {
-        return newEntriesForStream.containsKey(getKey(requestedSensorName)) && newEntriesForStream.get(getKey(requestedSensorName)) == true;
-    }
-
-    private boolean shouldStaticChartInitialize() {
-        return !staticChartGeneratedForStream.containsKey(getKey(requestedSensorName));
-    }
-
-    private boolean chartHasMissingData(LineChart chart) {
-        if (averagesCounter > 0) {
-            if (chart.getLineData() == null || chart.getLineData().getEntryCount() != averagesCounter) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String getDescription(MeasurementStream stream) {
+    private String getTimestamp(MeasurementStream stream) {
         double time;
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-        if (!isSessionRecording) {
+        if (!isSessionCurrent) {
             Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
             time = lastMeasurement.getTime().getTime();
         } else {
