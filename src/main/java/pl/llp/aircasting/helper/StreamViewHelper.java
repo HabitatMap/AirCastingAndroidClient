@@ -18,51 +18,45 @@ import pl.llp.aircasting.model.CurrentSessionManager;
 public class StreamViewHelper {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
-    @Inject ApplicationState state;
+    @Inject SessionDataFactory sessionData;
 
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
         int now = (int) currentSessionManager.getNow(sensor);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
-        TextView sessionTitle = (TextView) view.findViewById(R.id.session_title);
+        TextView sessionTitleView = (TextView) view.findViewById(R.id.session_title);
 
         if (position != 0) {
-            sessionTitle.setVisibility(View.GONE);
+            sessionTitleView.setVisibility(View.GONE);
         } else {
-            setTitleView(sessionId, sessionTitle);
+            setTitleView(sessionId, sessionTitleView);
         }
 
         nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
 
-        if (isSessionRecording(sessionId)){
+        if (sessionData.isSessionRecording(sessionId)){
             setBackground(sensor, nowTextView, now);
         }
 
-        if (!isSessionBeingViewed(sessionId)) {
+        if (sessionData.isSessionCurrent(sessionId)) {
             nowTextView.setText(String.valueOf(now));
+        } else {
+            nowTextView.setText(R.string.empty);
         }
     }
 
-    private void setTitleView(long sessionId, TextView sessionTitle) {
-        Session session = currentSessionManager.getCurrentSession();
+    private void setTitleView(long sessionId, TextView sessionTitleView) {
+        Session session = sessionData.getSession(sessionId);
 
-        if (isSessionRecording(sessionId)) {
-            sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
-            sessionTitle.setText("Recording session");
+        sessionTitleView.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
+
+        if (sessionData.isSessionRecording(sessionId)) {
+            sessionTitleView.setText("Recording session");
         } else {
-            sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
-            sessionTitle.setText(session.getTitle());
+            sessionTitleView.setText(session.getTitle());
         }
     }
 
     private void setBackground(Sensor sensor, View view, double value) {
         view.setBackgroundDrawable(resourceHelper.getStreamValueBackground(sensor, value));
-    }
-
-    private boolean isSessionRecording(long sessionId) {
-        return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
-    }
-
-    private boolean isSessionBeingViewed(long sessionId) {
-        return sessionId != Constants.CURRENT_SESSION_FAKE_ID;
     }
 }

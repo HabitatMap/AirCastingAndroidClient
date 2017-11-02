@@ -20,7 +20,7 @@ public class SessionDataFactory {
     public Session getSession(long sessionId) {
         Session session;
 
-        if (currentSessionDataRequested(sessionId)) {
+        if (isSessionCurrent(sessionId)) {
             session = currentSessionManager.getCurrentSession();
         } else {
             session = viewingSessionsManager.getSession(sessionId);
@@ -32,7 +32,7 @@ public class SessionDataFactory {
     public Sensor getSensor(String sensorName, long sessionId) {
         Sensor sensor;
 
-        if (currentSessionDataRequested(sessionId)) {
+        if (isSessionCurrent(sessionId)) {
             sensor = currentSessionSensorManager.getSensorByName(sensorName);
         } else {
             sensor = viewingSessionsSensorManager.getSensorByName(sensorName, sessionId);
@@ -44,7 +44,7 @@ public class SessionDataFactory {
     public List<Sensor> getSensorsList(long sessionId) {
         List<Sensor> result;
 
-        if (currentSessionDataRequested(sessionId)) {
+        if (isSessionCurrent(sessionId)) {
             result = currentSessionSensorManager.getSensorsList();
         } else {
             result = viewingSessionsSensorManager.getSensorsList(sessionId);
@@ -56,7 +56,7 @@ public class SessionDataFactory {
     public MeasurementStream getStream(String sensorName, long sessionId) {
         MeasurementStream stream;
 
-        if (currentSessionDataRequested(sessionId)) {
+        if (isSessionCurrent(sessionId)) {
             stream = currentSessionManager.getMeasurementStream(sensorName);
         } else {
             stream = viewingSessionsManager.getMeasurementStream(sensorName, sessionId);
@@ -65,15 +65,14 @@ public class SessionDataFactory {
         return stream;
     }
 
+    public boolean isSessionCurrent(long sessionId) {
+        return sessionId == Constants.CURRENT_SESSION_FAKE_ID;
+    }
     public boolean isSessionRecording(long sessionId) {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
     }
 
     public boolean isSessionBeingViewed(long sessionId) {
         return sessionId != Constants.CURRENT_SESSION_FAKE_ID;
-    }
-
-    private boolean currentSessionDataRequested(long sessionId) {
-        return sessionId == Constants.CURRENT_SESSION_FAKE_ID;
     }
 }
