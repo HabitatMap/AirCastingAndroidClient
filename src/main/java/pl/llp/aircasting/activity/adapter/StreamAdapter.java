@@ -47,12 +47,17 @@ public class StreamAdapter extends SimpleAdapter {
             R.id.quantity, R.id.sensor_name
     };
 
-    private final Comparator<Map<String, Object>> titleComparator = new Comparator<Map<String, Object>>() {
+    private final Comparator<Map<String, Object>> initialComparator = new Comparator<Map<String, Object>>() {
         @Override
         public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            long leftSessionId = (Long) left.get(SESSION_ID);
+            long rightSessionId = (Long) right.get(SESSION_ID);
+
             Sensor leftSensor = (Sensor) left.get(SENSOR);
             Sensor rightSensor = (Sensor) right.get(SENSOR);
+
             return ComparisonChain.start()
+                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId))
                     .compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
         }
     };
@@ -60,7 +65,11 @@ public class StreamAdapter extends SimpleAdapter {
     private final Comparator<Map<String, Object>> positionComparator = new Comparator<Map<String, Object>>() {
         @Override
         public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            long leftSessionId = (Long) left.get(SESSION_ID);
+            long rightSessionId = (Long) right.get(SESSION_ID);
+
             return ComparisonChain.start()
+                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId))
                     .compare(getPosition(left), getPosition(right)).result();
         }
     };
@@ -81,6 +90,7 @@ public class StreamAdapter extends SimpleAdapter {
 
     // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
+    private static Map<Long, Integer> sessionPositions = newHashMap();
     private static boolean streamsReordered;
     private static boolean reorderInProgress = false;
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
@@ -145,6 +155,8 @@ public class StreamAdapter extends SimpleAdapter {
 
     @Subscribe
     public void onEvent(SensorEvent event) {
+        updateSessionPosition(Constants.CURRENT_SESSION_FAKE_ID);
+
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -155,9 +167,12 @@ public class StreamAdapter extends SimpleAdapter {
         });
     }
 
-    @Subscribe
+   @Subscribe
     public void onEvent(SessionLoadedEvent event) {
-        clearedStreams.remove(event.getSession().getId());
+        long sessionId = event.getSession().getId();
+
+        clearedStreams.remove(sessionId);
+        updateSessionPosition(sessionId);
     }
 
     public void forceUpdate() {
@@ -260,16 +275,18 @@ public class StreamAdapter extends SimpleAdapter {
         }
     }
 
-    private Map<String, Object> prepareItem(Sensor sensor) {
-        String name = sensor.getSensorName();
-        if (!sensors.containsKey(name)) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            sensors.put(name, map);
+    private void updateSessionPosition(long sessionId) {
+        if (!sessionPositions.containsKey(sessionId)) {
+            if (sessionId == Constants.CURRENT_SESSION_FAKE_ID) {
+                Log.i("inserting: ", String.valueOf(true));
+                insertCurrentSessionPosition();
+            } else {
+                sessionPositions.put(sessionId, sessionPositions.size());
+            }
         }
-        return sensors.get(name);
     }
 
-    private int getPosition(Map<String, Object> stream, Map<String, Integer> positions) {
+    private int getPosition(Map<String, Object> stream) {
         Sensor sensor = (Sensor) stream.get(SENSOR);
         Integer position = positions.get(sensor.toString());
         if (position == null) {
@@ -278,8 +295,22 @@ public class StreamAdapter extends SimpleAdapter {
         return position.intValue();
     }
 
-    private int getPosition(Map<String, Object> stream) {
-        return getPosition(stream, positions);
+    private int getSessionPosition(long sessionId) {
+        Integer position = sessionPositions.get(sessionId);
+        if (position == null) {
+            return 0;
+        }
+        return position.intValue();
+    }
+
+    private void insertCurrentSessionPosition() {
+        for (Map.Entry<Long, Integer> entry : sessionPositions.entrySet()) {
+            sessionPositions.put(entry.getKey(), entry.getValue() + 1);
+        }
+
+        sessionPositions.put(Constants.CURRENT_SESSION_FAKE_ID, 0);
+        update();
+        Log.i("session pos: ", String.valueOf(sessionPositions));
     }
 
     public void clearStream(int position) {
