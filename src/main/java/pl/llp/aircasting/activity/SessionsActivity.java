@@ -26,7 +26,6 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
-import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.helper.SelectSensorHelper;
@@ -242,7 +241,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   }
 
   private void startSessionView() {
-    eventBus.post(new SessionLoadedEvent(currentSessionManager.getCurrentSession()));
     Intents.startDashboardActivity(this, true);
   }
 
