@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.event.session.ViewSessionEvent;
+import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class ViewingSessionsSensorManager {
     }
 
     @Subscribe
-    public void onEvent(ViewSessionEvent event) {
+    public void onEvent(SessionLoadedEvent event) {
         Session session = event.getSession();
         Map<SensorName, Sensor> sessionSensors = newHashMap();
 
