@@ -127,12 +127,12 @@ public class StreamAdapter extends SimpleAdapter {
         dashboardChartManager.resetDynamicCharts(sensors.keySet());
     }
 
-    private void resetSwappedCharts(String sensor1, String sensor2) {
+    private void resetSwappedCharts(Long sessionId, String sensor1, String sensor2) {
         String[] sensorNames = new String[2];
         sensorNames[0] = sensor1;
         sensorNames[1] = sensor2;
 
-        dashboardChartManager.resetSpecificStaticCharts(sensorNames);
+        dashboardChartManager.resetSpecificStaticCharts(sessionId, sensorNames);
     }
 
     public void startReorder() {
@@ -170,7 +170,7 @@ public class StreamAdapter extends SimpleAdapter {
         positions.put(s1.toString(), pos2);
         positions.put(s2.toString(), pos1);
 
-        resetSwappedCharts(s1.getSensorName(), s2.getSensorName());
+        resetSwappedCharts((Long) data.get(pos1).get(SESSION_ID), s1.getSensorName(), s2.getSensorName());
 
         streamsReordered = true;
         update();
