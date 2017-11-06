@@ -37,10 +37,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
-public class CurrentSessionManagerMakeANoteTest
+public class VisibleSessionManagerMakeANoteTest
 {
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   private Location location;
   private Date date;
 

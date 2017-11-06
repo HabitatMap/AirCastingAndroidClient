@@ -3,10 +3,8 @@ package pl.llp.aircasting.model;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
-import pl.llp.aircasting.event.ui.ViewStreamEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -15,33 +13,27 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
-public class CurrentSessionSensorManagerTest
+public class VisibleSessionSensorManagerTest
 {
-  @Inject
-  CurrentSessionSensorManager currentSessionSensorManager;
+  @Inject CurrentSessionSensorManager currentSessionSensorManager;
 
   @Mock
   CurrentSessionManager currentSessionManager;
 
   private Sensor SOME_SENSOR;
   private SensorEvent sensorEvent;
-  private SessionAddedEvent SESSION_CHANGED;
+  private VisibleSessionUpdatedEvent SESSION_CHANGED;
 
   @Before
   public void setup() {
-    SESSION_CHANGED = new SessionAddedEvent(new Session());
+    SESSION_CHANGED = new VisibleSessionUpdatedEvent(new Session());
     currentSessionSensorManager.eventBus = mock(EventBus.class);
     currentSessionSensorManager.currentSessionManager = currentSessionManager;
     currentSessionManager.state = new ApplicationState();
