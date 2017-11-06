@@ -21,8 +21,9 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.activity.events.SessionAddedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -41,7 +42,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.util.Collection;
@@ -54,10 +54,10 @@ import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
 import static org.mockito.Mockito.*;
 
 @RunWith(InjectedTestRunner.class)
-public class CurrentSessionManagerTest
+public class VisibleSessionManagerTest
 {
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
+  @Inject VisibleSession visibleSession;
 
   Location location;
   Sensor sensor;
@@ -336,7 +336,7 @@ public class CurrentSessionManagerTest
     currentSessionManager.getCurrentSession().setId(1234);
     currentSessionManager.discardSession();
 
-    verify(currentSessionManager.eventBus).post(Mockito.any(SessionAddedEvent.class));
+    verify(currentSessionManager.eventBus).post(Mockito.any(VisibleSessionUpdatedEvent.class));
   }
 
   @Test
@@ -445,7 +445,7 @@ public class CurrentSessionManagerTest
 
     currentSessionManager.deleteNote(note);
 
-    assertThat(currentSessionManager.getNotes(), not(hasItem(note)));
+    assertThat(visibleSession.getSessionNotes(), not(hasItem(note)));
   }
 
   @Test

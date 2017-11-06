@@ -37,13 +37,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith(InjectedTestRunner.class)
-public class SessionManagerUpdateCurrentSessionTest
+public class SessionManagerUpdateVisibleSessionTest
 {
   public static final int ANY_ID = 3;
   public static final String NEW_TITLE = "New title";
 
-  @Inject
-  CurrentSessionManager currentSessionManager;
+  @Inject CurrentSessionManager currentSessionManager;
   @Inject ContinuousTracker tracker;
   private Session session;
 
