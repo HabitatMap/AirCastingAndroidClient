@@ -189,7 +189,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   }
 
   @Subscribe
-  public synchronized void onEvent(VisibleSessionUpdatedEvent event)
+  public void onEvent(VisibleSessionUpdatedEvent event)
   {
     this.sensor = visibleSession.getSensor();
     reset();
@@ -218,7 +218,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     Stopwatch stopwatch = new Stopwatch().start();
 
     String sensorName = sensor.getSensorName();
-    MeasurementStream stream = sessionData.getStream(sensorName, visibleSession.getCurrentSessionId());
+    MeasurementStream stream = sessionData.getStream(sensorName, visibleSession.getVisibleSessionId());
     Iterable<Measurement> measurements;
     if (stream == null)
     {
@@ -284,15 +284,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public synchronized List<Measurement> getTimelineView()
   {
-    if (state.recording().isShowingASession())
-    {
       prepareTimelineView();
       return timelineView;
-    }
-    else
-    {
-      return newArrayList();
-    }
   }
 
   private int timeToAnchor(Date d, List<Measurement> measurements) {
@@ -415,14 +408,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   public List<Measurement> getFullView()
   {
-    if (state.recording().isJustShowingCurrentValues())
-    {
-      fullView = newCopyOnWriteArrayList();
-    }
-    else
-    {
-      fullView = prepareFullView();
-    }
+    fullView = prepareFullView();
     return fullView;
   }
 
