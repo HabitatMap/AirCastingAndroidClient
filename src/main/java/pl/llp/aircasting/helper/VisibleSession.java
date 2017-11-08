@@ -21,8 +21,7 @@ import static com.google.inject.internal.Lists.newArrayList;
 @Singleton
 public class VisibleSession {
     @Inject EventBus eventBus;
-    @Inject
-    SessionDataFactory sessionDataFactory;
+    @Inject SessionDataFactory sessionDataFactory;
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
 

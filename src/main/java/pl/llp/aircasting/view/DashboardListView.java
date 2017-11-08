@@ -24,7 +24,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,7 +32,6 @@ import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -43,7 +41,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
-import pl.llp.aircasting.model.MeasurementStream;
 
 import static android.content.Context.VIBRATOR_SERVICE;
 

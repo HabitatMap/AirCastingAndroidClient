@@ -47,7 +47,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
@@ -64,7 +63,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
   @Inject ViewingSessionsManager viewingSessionsManager;
   @Inject SettingsHelper settingsHelper;
   @Inject Application context;
-  @Inject ApplicationState state;
   @Inject EventBus eventBus;
 
   @Inject UncalibratedMeasurementCalibrator calibrator;

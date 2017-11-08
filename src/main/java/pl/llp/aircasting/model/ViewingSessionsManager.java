@@ -18,7 +18,6 @@ import static com.google.inject.internal.Maps.newHashMap;
  */
 @Singleton
 public class ViewingSessionsManager {
-    @Inject ApplicationState state;
     @Inject SessionRepository sessionRepository;
     @Inject EventBus eventBus;
 

@@ -20,12 +20,11 @@
 package pl.llp.aircasting.model;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.sun.tools.javac.code.Attribute;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
+import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
