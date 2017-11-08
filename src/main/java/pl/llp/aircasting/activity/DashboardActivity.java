@@ -20,7 +20,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject ApplicationState applicationState;
     @Inject VisibleSession visibleSession;
 
     @Override

@@ -1,6 +1,5 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.util.Log;
 import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
@@ -93,9 +92,9 @@ public class StreamAdapter extends SimpleAdapter {
     private static Map<Long, Integer> sessionPositions = newHashMap();
     private static TreeMap<Integer, Long> sortedSessionPositions = new TreeMap<Integer, Long>();
     private static Map<Long, Integer> sessionStreamCount = newHashMap();
+    private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static boolean streamsReordered;
     private static boolean reorderInProgress = false;
-    private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static Comparator comparator;
 
     public StreamAdapter(DashboardBaseActivity context,
@@ -202,6 +201,7 @@ public class StreamAdapter extends SimpleAdapter {
         chart = (LineChart) view.findViewById(R.id.chart);
 
         view.setTag(R.id.session_id_tag, sessionId);
+
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor, sessionId);
         chart.invalidate();
@@ -269,7 +269,6 @@ public class StreamAdapter extends SimpleAdapter {
 //                    continue;
 //                }
 
-//                Map<String, Object> map = prepareItem(sensor);
                 HashMap<String, Object> map = new HashMap<String, Object>();
 
                 map.put(SESSION_ID, sessionId);
@@ -295,6 +294,15 @@ public class StreamAdapter extends SimpleAdapter {
         }
     }
 
+    private int getPosition(Map<String, Object> stream) {
+        Sensor sensor = (Sensor) stream.get(SENSOR);
+        Integer position = positions.get(sensor.toString());
+        if (position == null) {
+            return 0;
+        }
+        return position.intValue();
+    }
+
     private void updateSessionPosition(long sessionId) {
         if (!sessionPositions.containsKey(sessionId)) {
             if (sessionId == Constants.CURRENT_SESSION_FAKE_ID) {
@@ -304,15 +312,6 @@ public class StreamAdapter extends SimpleAdapter {
                 sortedSessionPositions.put(sessionPositions.size(), sessionId);
             }
         }
-    }
-
-    private int getPosition(Map<String, Object> stream) {
-        Sensor sensor = (Sensor) stream.get(SENSOR);
-        Integer position = positions.get(sensor.toString());
-        if (position == null) {
-            return 0;
-        }
-        return position.intValue();
     }
 
     private int getSessionPosition(long sessionId) {
