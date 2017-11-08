@@ -43,6 +43,7 @@
   <string name="peak">Peak</string>
   <string name="calibration">Microphone maximum</string>
   <string name="view">View</string>
+  <string name="add_to_dashboard">Add to dashboard</string>
   <string name="edit">Edit</string>
   <string name="delete">Delete</string>
   <string name="share">Share</string>

@@ -23,7 +23,7 @@
               style="@style/DialogMain"
         >
     <Button style="@style/DialogButton"
-            android:text="@string/view"
+            android:text="@string/add_to_dashboard"
             android:id="@+id/view"
             />
     <Button style="@style/DialogButton"

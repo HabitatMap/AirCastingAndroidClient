@@ -235,13 +235,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         super.onPostExecute(session);
 
         chartManager.resetAllStaticCharts();
-        startSessionView();
       }
     }.execute(id);
-  }
-
-  private void startSessionView() {
-    Intents.startDashboardActivity(this, true);
   }
 
   @Override
