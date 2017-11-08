@@ -15,20 +15,27 @@ import pl.llp.aircasting.model.CurrentSessionManager;
  * Time: 6:54 PM
  * To change this template use File | Settings | File Templates.
  */
+@Singleton
 public class StreamViewHelper {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
     @Inject SessionDataFactory sessionData;
+
+    private static List<Integer> positionsWithTitle = new ArrayList<Integer>();
+
+    public void addPositionWithTitle(int position) {
+        positionsWithTitle.add(position);
+    }
 
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
         int now = (int) currentSessionManager.getNow(sensor);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
         TextView sessionTitleView = (TextView) view.findViewById(R.id.session_title);
 
-        if (position != 0) {
-            sessionTitleView.setVisibility(View.GONE);
-        } else {
+        if (positionsWithTitle.contains(position)) {
             setTitleView(sessionId, sessionTitleView);
+        } else {
+            sessionTitleView.setVisibility(View.GONE);
         }
 
         nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
@@ -47,6 +54,7 @@ public class StreamViewHelper {
     private void setTitleView(long sessionId, TextView sessionTitleView) {
         Session session = sessionData.getSession(sessionId);
 
+        sessionTitleView.setVisibility(View.VISIBLE);
         sessionTitleView.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
 
         if (sessionData.isSessionRecording(sessionId)) {

@@ -91,6 +91,8 @@ public class StreamAdapter extends SimpleAdapter {
     // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
     private static Map<Long, Integer> sessionPositions = newHashMap();
+    private static TreeMap<Integer, Long> sortedSessionPositions = new TreeMap<Integer, Long>();
+    private static Map<Long, Integer> sessionStreamCount = newHashMap();
     private static boolean streamsReordered;
     private static boolean reorderInProgress = false;
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
@@ -215,13 +217,29 @@ public class StreamAdapter extends SimpleAdapter {
             comparator = positionComparator;
         } else {
             preparePositions();
-            comparator = titleComparator;
+            comparator = initialComparator;
         }
 
         sort(data, comparator);
-        resetAllStaticCharts();
+        setSessionTitles();
 
         notifyDataSetChanged();
+    }
+
+    private void setSessionTitles() {
+        if (data.isEmpty()) {
+            return;
+        }
+
+        int streamWithTitlePosition = 0;
+
+        for (Map.Entry<Integer, Long> entry : sortedSessionPositions.entrySet()) {
+            long sessionId = entry.getValue();
+
+            streamViewHelper.addPositionWithTitle(streamWithTitlePosition);
+
+            streamWithTitlePosition += sessionStreamCount.get(sessionId);
+        }
     }
 
     private void prepareData() {
@@ -243,6 +261,8 @@ public class StreamAdapter extends SimpleAdapter {
         for (Map.Entry<Long, Map<SensorName, Sensor>> entry : allSensors.entrySet()) {
             Long sessionId = entry.getKey();
             Map<SensorName, Sensor> sensors = entry.getValue();
+
+            sessionStreamCount.put(sessionId, sensors.size());
 
             for (Sensor sensor : sensors.values()) {
 //                if (sensorIsHidden(sensor, clearedStreamsForSession)) {
@@ -278,10 +298,10 @@ public class StreamAdapter extends SimpleAdapter {
     private void updateSessionPosition(long sessionId) {
         if (!sessionPositions.containsKey(sessionId)) {
             if (sessionId == Constants.CURRENT_SESSION_FAKE_ID) {
-                Log.i("inserting: ", String.valueOf(true));
                 insertCurrentSessionPosition();
             } else {
                 sessionPositions.put(sessionId, sessionPositions.size());
+                sortedSessionPositions.put(sessionPositions.size(), sessionId);
             }
         }
     }
@@ -306,11 +326,11 @@ public class StreamAdapter extends SimpleAdapter {
     private void insertCurrentSessionPosition() {
         for (Map.Entry<Long, Integer> entry : sessionPositions.entrySet()) {
             sessionPositions.put(entry.getKey(), entry.getValue() + 1);
+            sortedSessionPositions.put(entry.getValue() + 1, entry.getKey());
         }
 
         sessionPositions.put(Constants.CURRENT_SESSION_FAKE_ID, 0);
-        update();
-        Log.i("session pos: ", String.valueOf(sessionPositions));
+        sortedSessionPositions.put(0, Constants.CURRENT_SESSION_FAKE_ID);
     }
 
     public void clearStream(int position) {
