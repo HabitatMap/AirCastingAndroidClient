@@ -117,23 +117,17 @@ public class CurrentSessionManager {
     void setSession(@NotNull Session session) {
         Preconditions.checkNotNull(session, "Cannot set null session");
         this.currentSession = session;
-        notifyNewSession(session);
+        if (session.getId() != null) {
+            visibleSession.setSession(session.getId());
+        }
     }
 
     public boolean isSessionPresent() {
         return getCurrentSession() != null;
     }
 
-    public boolean isSessionBeingViewed() {
-        return state.recording().isShowingOldSession();
-    }
-
     public boolean isSessionRecording() {
         return state.recording().isRecording();
-    }
-
-    public boolean isSessionIdle() {
-        return !isSessionBeingViewed() && !isSessionRecording();
     }
 
     public void updateSession(Session from) {
@@ -285,10 +279,6 @@ public class CurrentSessionManager {
 
             return recentMeasurements.get(sensor.getSensorName());
         }
-    }
-
-    private void notifyNewSession(Session session) {
-        eventBus.post(new VisibleSessionUpdatedEvent(session));
     }
 
     public void startMobileSession(String title, String tags, String description, boolean locationLess) {
