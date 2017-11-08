@@ -36,7 +36,7 @@ public class VisibleSession {
     }
 
     public void setSensor(@NotNull String sensorName) {
-        this.sensor = sessionDataFactory.getSensor(sensorName, getCurrentSessionId());
+        this.sensor = sessionDataFactory.getSensor(sensorName, getVisibleSessionId());
         eventBus.post(new VisibleStreamUpdatedEvent(sensor));
     }
 
@@ -93,7 +93,7 @@ public class VisibleSession {
         }
     }
 
-    public long getCurrentSessionId() {
+    public long getVisibleSessionId() {
         long sessionId;
 
         if (isCurrentSessionVisible()) {
