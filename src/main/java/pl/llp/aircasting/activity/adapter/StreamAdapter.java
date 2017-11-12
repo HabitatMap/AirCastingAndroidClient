@@ -234,19 +234,22 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void setSessionTitles() {
+        List positionsWithTitle = new ArrayList();
+        int streamWithTitlePosition = 0;
+
         if (data.isEmpty()) {
             return;
         }
 
-        int streamWithTitlePosition = 0;
-
         for (Map.Entry<Integer, Long> entry : sortedSessionPositions.entrySet()) {
             long sessionId = entry.getValue();
 
-            streamViewHelper.addPositionWithTitle(streamWithTitlePosition);
+            positionsWithTitle.add(streamWithTitlePosition);
 
             streamWithTitlePosition += sessionStreamCount.get(sessionId);
         }
+
+        streamViewHelper.setPositionsWithTitle(positionsWithTitle);
     }
 
     private void prepareData(boolean onlyCurrentStreams) {
