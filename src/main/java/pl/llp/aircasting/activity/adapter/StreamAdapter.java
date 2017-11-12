@@ -81,6 +81,8 @@ public class StreamAdapter extends SimpleAdapter {
 
     DashboardBaseActivity context;
     EventBus eventBus;
+    SessionState sessionState;
+    SessionDataFactory sessionData;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
@@ -103,17 +105,19 @@ public class StreamAdapter extends SimpleAdapter {
                          StreamViewHelper streamViewHelper,
                          CurrentSessionSensorManager currentSessionSensorManager,
                          ViewingSessionsSensorManager viewingSessionsSensorManager,
-                         CurrentSessionManager currentSessionManager,
-                         DashboardChartManager dashboardChartManager) {
+                         DashboardChartManager dashboardChartManager,
+                         SessionState sessionState,
+                         SessionDataFactory sessionData) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
         this.context = context;
         this.currentSessionSensorManager = currentSessionSensorManager;
         this.viewingSessionsSensorManager = viewingSessionsSensorManager;
-        this.currentSessionManager = currentSessionManager;
         this.streamViewHelper = streamViewHelper;
         this.dashboardChartManager = dashboardChartManager;
+        this.sessionState = sessionState;
+        this.sessionData = sessionData;
     }
 
     /**
@@ -305,7 +309,7 @@ public class StreamAdapter extends SimpleAdapter {
 
     private void updateSessionPosition(long sessionId) {
         if (!sessionPositions.containsKey(sessionId)) {
-            if (sessionId == Constants.CURRENT_SESSION_FAKE_ID) {
+            if (sessionState.isSessionCurrent(sessionId)) {
                 insertCurrentSessionPosition();
             } else {
                 sessionPositions.put(sessionId, sessionPositions.size());
@@ -352,16 +356,21 @@ public class StreamAdapter extends SimpleAdapter {
         String sensorName = (String) sensorTitle.getText();
         Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
 
-        if (currentSessionManager.getCurrentSession().getActiveMeasurementStreams().size() > 1) {
-            confirmDeletingStream(sensor);
+        if (sessionData.getSession(sessionId).getActiveMeasurementStreams().size() > 1) {
+            confirmDeletingStream(sensor, sessionId);
         } else {
             confirmDeletingSession();
         }
     }
 
-    public boolean canStreamBeClearedOrDeleted() {
-        if (currentSessionManager.isSessionRecording()) {
-            if (currentSessionManager.getCurrentSession().isFixed()) {
+    public boolean canStreamBeClearedOrDeleted(long sessionId) {
+        if (sessionState.isSessionBeingViewed(sessionId)) {
+            return true;
+        } else if (sessionState.isCurrentSessionIdle()) {
+            streamDeleteMessage = R.string.cannot_delete_stream;
+            return false;
+        } else {
+            if (sessionData.getSession(sessionId).isFixed()) {
                 return true;
             } else {
                 streamDeleteMessage = R.string.wrong_session_type;
@@ -373,7 +382,6 @@ public class StreamAdapter extends SimpleAdapter {
             streamDeleteMessage = R.string.cannot_delete_stream;
             return false;
         }
-        return false;
     }
 
     public int getStreamDeleteMessage() {

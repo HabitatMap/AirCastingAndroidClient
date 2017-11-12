@@ -2,6 +2,8 @@ package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.helper.SessionDataFactory;
+import pl.llp.aircasting.helper.SessionState;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.model.Sensor;
@@ -31,7 +33,13 @@ public class StreamAdapterTest {
     @Before
     public void setup() {
         adapter = new StreamAdapter(mock(DashboardBaseActivity.class), new ArrayList<Map<String, Object>>(),
-                mock(EventBus.class), mock(StreamViewHelper.class), mock(CurrentSessionSensorManager.class), mock(ViewingSessionsSensorManager.class), mock(CurrentSessionManager.class), mock(DashboardChartManager.class));
+                mock(EventBus.class),
+                mock(StreamViewHelper.class),
+                mock(CurrentSessionSensorManager.class),
+                mock(ViewingSessionsSensorManager.class),
+                mock(DashboardChartManager.class),
+                mock(SessionState.class),
+                mock(SessionDataFactory.class));
 
         sensor = mock(Sensor.class);
 
