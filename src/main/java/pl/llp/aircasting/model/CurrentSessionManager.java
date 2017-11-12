@@ -385,23 +385,6 @@ public class CurrentSessionManager {
         }
     }
 
-    public void deleteSensorStream(Sensor sensor) {
-        String sensorName = sensor.getSensorName();
-        deleteSensorStream(sensorName);
-    }
-
-    void deleteSensorStream(String sensorName) {
-        MeasurementStream stream = getMeasurementStream(sensorName);
-
-        if (stream == null) {
-            Logger.w("No stream for sensor [" + sensorName + "]");
-            return;
-        }
-
-        sessionRepository.deleteStream(currentSession, stream);
-        currentSession.removeStream(stream);
-    }
-
     public void setTitleTagsDescription(long sessionId, String title, String tags, String description) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);

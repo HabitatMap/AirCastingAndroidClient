@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.model.internal.SensorName;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
+    @Inject SessionDataFactory sessionData;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
 
@@ -58,5 +60,10 @@ public class ViewingSessionsSensorManager {
         ArrayList<Sensor> result = newArrayList();
         result.addAll(viewingSessionsSensors.get(sessionId).values());
         return result;
+    }
+
+    public void deleteSensorFromSession(Sensor sensor, long sessionId) {
+        String sensorName = sensor.getSensorName();
+        viewingSessionsSensors.get(sessionId).remove(sensorName);
     }
 }
