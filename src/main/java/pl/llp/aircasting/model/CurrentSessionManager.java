@@ -130,6 +130,10 @@ public class CurrentSessionManager {
         return state.recording().isRecording();
     }
 
+    public boolean isSessionIdle() {
+        return isSessionPresent() && !isSessionRecording();
+    }
+
     public void updateSession(Session from) {
         Preconditions.checkNotNull(from.getId(), "Unsaved session?");
         setTitleTagsDescription(from.getId(), from.getTitle(),
