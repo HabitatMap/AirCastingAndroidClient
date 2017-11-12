@@ -24,6 +24,7 @@ import java.util.List;
 public class StreamViewHelper {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ResourceHelper resourceHelper;
+    @Inject SessionState sessionState;
     @Inject SessionDataFactory sessionData;
 
     private static List<Integer> positionsWithTitle = new ArrayList<Integer>();
@@ -45,11 +46,11 @@ public class StreamViewHelper {
 
         nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
 
-        if (sessionData.isSessionRecording(sessionId)){
+        if (sessionState.isSessionRecording(sessionId)){
             setBackground(sensor, nowTextView, now);
         }
 
-        if (sessionData.isSessionCurrent(sessionId)) {
+        if (sessionState.isSessionCurrent(sessionId)) {
             nowTextView.setText(String.valueOf(now));
         } else {
             nowTextView.setText(R.string.empty);
@@ -62,8 +63,8 @@ public class StreamViewHelper {
         sessionTitleView.setVisibility(View.VISIBLE);
         sessionTitleView.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
 
-        if (sessionData.isSessionRecording(sessionId)) {
-            sessionTitleView.setText("Recording session");
+        if (sessionState.isSessionRecording(sessionId)) {
+            sessionTitle.setText("Recording session");
         } else {
             sessionTitleView.setText(session.getTitle());
         }

@@ -3,6 +3,8 @@ package pl.llp.aircasting.activity.adapter;
 import android.view.View;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.DashboardChartManager;
+import pl.llp.aircasting.helper.SessionDataFactory;
+import pl.llp.aircasting.helper.SessionState;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.CurrentSessionManager;
@@ -20,10 +22,11 @@ public class StreamAdapterFactory
 {
   @Inject EventBus eventBus;
   @Inject StreamViewHelper streamViewHelper;
-  @Inject CurrentSessionManager currentSessionManager;
   @Inject CurrentSessionSensorManager currentSessionSensorManager;
   @Inject ViewingSessionsSensorManager viewingSessionsSensorManager;
   @Inject DashboardChartManager dashboardChartManager;
+  @Inject SessionState sessionState;
+  @Inject SessionDataFactory sessionData;
 
   public StreamAdapter getAdapter(DashboardBaseActivity context) {
     return new StreamAdapter(context,
@@ -32,7 +35,8 @@ public class StreamAdapterFactory
                              streamViewHelper,
                              currentSessionSensorManager,
                              viewingSessionsSensorManager,
-                             currentSessionManager,
-                             dashboardChartManager);
+                             dashboardChartManager,
+                             sessionState,
+                             sessionData);
   }
 }
