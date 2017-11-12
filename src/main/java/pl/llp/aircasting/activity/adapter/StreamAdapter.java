@@ -7,9 +7,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
-import pl.llp.aircasting.helper.DashboardChartManager;
-import pl.llp.aircasting.helper.NoOp;
-import pl.llp.aircasting.helper.StreamViewHelper;
+import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.CurrentSessionManager;
@@ -166,7 +164,7 @@ public class StreamAdapter extends SimpleAdapter {
             @Override
             public void run() {
                 if (!reorderInProgress) {
-                    update();
+                    update(true);
                 }
             }
         });
@@ -178,22 +176,25 @@ public class StreamAdapter extends SimpleAdapter {
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);
+
+        update(false);
     }
 
     public void forceUpdate() {
-        update();
+        update(false);
     }
 
     public void swapPositions(int pos1, int pos2) {
         Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
         Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
+
         positions.put(s1.toString(), pos2);
         positions.put(s2.toString(), pos1);
 
         resetSwappedCharts((Long) data.get(pos1).get(SESSION_ID), s1.getSensorName(), s2.getSensorName());
 
         streamsReordered = true;
-        update();
+        update(false);
     }
 
     @Override
@@ -213,9 +214,12 @@ public class StreamAdapter extends SimpleAdapter {
         return view;
     }
 
-    private void update() {
-        data.clear();
-        prepareData();
+    private void update(boolean onlyCurrentStreams) {
+        if (!onlyCurrentStreams) {
+            data.clear();
+        }
+
+        prepareData(onlyCurrentStreams);
 
         if (streamsReordered) {
             comparator = positionComparator;
@@ -246,10 +250,13 @@ public class StreamAdapter extends SimpleAdapter {
         }
     }
 
-    private void prepareData() {
-        Map<Long, Map<SensorName, Sensor>> allSensors = viewingSessionsSensorManager.getAllViewingSensors();
-//        List<String> clearedStreamsForSession = new ArrayList<String>();
+    private void prepareData(boolean onlyCurrentStreams) {
+        Map<Long, Map<SensorName, Sensor>> allSensors = newHashMap();
         Map<SensorName, Sensor> currentSensors = currentSessionSensorManager.getSensorsMap();
+
+        if (onlyCurrentStreams == false) {
+            allSensors = viewingSessionsSensorManager.getAllViewingSensors();
+        }
 
         allSensors.put(Constants.CURRENT_SESSION_FAKE_ID, currentSensors);
 
@@ -348,7 +355,7 @@ public class StreamAdapter extends SimpleAdapter {
         }
         clearedStreams.get(sessionId).add(sensorName);
         streamsReordered = true;
-        update();
+        update(false);
     }
 
     public void deleteStream(View streamView) {
@@ -376,11 +383,6 @@ public class StreamAdapter extends SimpleAdapter {
                 streamDeleteMessage = R.string.wrong_session_type;
                 return false;
             }
-        } else if (currentSessionManager.isSessionBeingViewed()) {
-            return true;
-        } else if (currentSessionManager.isSessionIdle()) {
-            streamDeleteMessage = R.string.cannot_delete_stream;
-            return false;
         }
     }
 
@@ -412,7 +414,7 @@ public class StreamAdapter extends SimpleAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         currentSessionSensorManager.deleteSensorFromCurrentSession(sensor);
-                        update();
+                        update(false);
                         Intents.triggerSync(context);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
