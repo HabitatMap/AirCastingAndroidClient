@@ -131,6 +131,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         visibleSession.setSession(sessionId);
         visibleSession.setSensor(sensorName);
 
-        startActivity(new Intent(context, ChartOptionsActivity.class));
+        startActivity(new Intent(context, StreamOptionsActivity.class));
     }
 }
