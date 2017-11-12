@@ -480,18 +480,4 @@ public class VisibleSessionManagerTest
 
     verify(currentSessionManager.externalSensors).start();
   }
-
-  @Test
-  public void should_not_crashOnDeletedSensor() throws Exception
-  {
-    // given
-    SensorEvent event = new SensorEvent("CERN", "LHC", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
-    currentSessionManager.onEvent(event);
-
-    // when
-    currentSessionManager.deleteSensorStream(event.getSensorName());
-
-    // then (shouldn't crash)
-    currentSessionManager.onEvent(event);
-  }
 }

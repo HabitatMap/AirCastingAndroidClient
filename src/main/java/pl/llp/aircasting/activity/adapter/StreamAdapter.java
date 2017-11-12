@@ -71,7 +71,6 @@ public class StreamAdapter extends SimpleAdapter {
         }
     };
 
-    CurrentSessionManager currentSessionManager;
     CurrentSessionSensorManager currentSessionSensorManager;
     ViewingSessionsSensorManager viewingSessionsSensorManager;
     StreamViewHelper streamViewHelper;
@@ -264,21 +263,21 @@ public class StreamAdapter extends SimpleAdapter {
             return;
         }
 
-//        if (currentSessionManager.sessionHasId()) {
-//            sessionId = currentSessionManager.getCurrentSession().getId();
-//            clearedStreamsForSession = clearedStreams.get(sessionId);
-//        }
-
         for (Map.Entry<Long, Map<SensorName, Sensor>> entry : allSensors.entrySet()) {
+            int hiddenStreamsSize = 0;
             Long sessionId = entry.getKey();
             Map<SensorName, Sensor> sensors = entry.getValue();
+            List clearedStreamsForSession = clearedStreams.get(sessionId);
+            if (clearedStreamsForSession != null) {
+                hiddenStreamsSize = clearedStreamsForSession.size();
+            }
 
-            sessionStreamCount.put(sessionId, sensors.size());
+            sessionStreamCount.put(sessionId, sensors.size() - hiddenStreamsSize);
 
             for (Sensor sensor : sensors.values()) {
-//                if (sensorIsHidden(sensor, clearedStreamsForSession)) {
-//                    continue;
-//                }
+                if (sensorIsHidden(sensor, clearedStreamsForSession)) {
+                    continue;
+                }
 
                 HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -287,6 +286,7 @@ public class StreamAdapter extends SimpleAdapter {
                 map.put(SENSOR_NAME, sensor.getSensorName());
                 map.put(SENSOR, sensor);
 
+                data.remove(map);
                 data.add(map);
             }
         }
@@ -320,7 +320,7 @@ public class StreamAdapter extends SimpleAdapter {
                 insertCurrentSessionPosition();
             } else {
                 sessionPositions.put(sessionId, sessionPositions.size());
-                sortedSessionPositions.put(sessionPositions.size(), sessionId);
+                sortedSessionPositions.put(sessionPositions.size() - 1, sessionId);
             }
         }
     }
@@ -343,12 +343,9 @@ public class StreamAdapter extends SimpleAdapter {
         sortedSessionPositions.put(0, Constants.CURRENT_SESSION_FAKE_ID);
     }
 
-    public void clearStream(int position) {
-        long sessionId;
-
-        Sensor sensor = (Sensor) data.get(position).get(SENSOR);
+    public void clearStream(int position, long sessionId) {
+        Sensor sensor = getSensorFromData(position);
         String sensorName = sensor.toString();
-        sessionId = currentSessionManager.getCurrentSession().getId();
 
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
@@ -358,15 +355,13 @@ public class StreamAdapter extends SimpleAdapter {
         update(false);
     }
 
-    public void deleteStream(View streamView) {
-        TextView sensorTitle = (TextView) streamView.findViewById(R.id.sensor_name);
-        String sensorName = (String) sensorTitle.getText();
-        Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
+    public void deleteStream(int position, long sessionId) {
+        Sensor sensor = getSensorFromData(position);
 
         if (sessionData.getSession(sessionId).getActiveMeasurementStreams().size() > 1) {
             confirmDeletingStream(sensor, sessionId);
         } else {
-            confirmDeletingSession();
+            confirmDeletingSession(sessionId);
         }
     }
 
@@ -390,14 +385,18 @@ public class StreamAdapter extends SimpleAdapter {
         return streamDeleteMessage;
     }
 
-    private void confirmDeletingSession() {
+    private Sensor getSensorFromData(int position) {
+        return (Sensor) data.get(position).get(SENSOR);
+    }
+
+    private void confirmDeletingSession(final long sessionId) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("This is the only stream, delete session?").
                 setCancelable(true).
                 setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        currentSessionManager.deleteSession();
+                        sessionData.deleteSession(sessionId);
                         Intents.triggerSync(context);
                         Intents.sessions(context, context);
                     }
@@ -406,7 +405,7 @@ public class StreamAdapter extends SimpleAdapter {
         dialog.show();
     }
 
-    private void confirmDeletingStream(final Sensor sensor) {
+    private void confirmDeletingStream(final Sensor sensor, final long sessionId) {
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         b.setMessage("Delete stream?").
                 setCancelable(true).

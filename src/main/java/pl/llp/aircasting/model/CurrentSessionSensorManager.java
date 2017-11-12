@@ -142,7 +142,6 @@ public class CurrentSessionSensorManager {
     public void deleteSensorFromCurrentSession(Sensor sensor) {
         String sensorName = sensor.getSensorName();
         currentSessionSensors.remove(SensorName.from(sensorName));
-        currentSessionManager.deleteSensorStream(sensor);
     }
 
     @Subscribe

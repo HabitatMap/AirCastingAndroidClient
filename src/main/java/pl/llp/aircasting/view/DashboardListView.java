@@ -332,15 +332,16 @@ public class DashboardListView extends ListView {
             boolean swipedLeft = deltaXTotal < (hoverCellOriginalBounds.left - hoverCell.getIntrinsicWidth() / 2);
             
             final View mobileView = getViewForID(mobileItemId);
+            final long sessionId = (Long) mobileView.getTag(R.id.session_id_tag);
 
             Rect offScreenBounds = getOffScreenBounds(swipedLeft);
             ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(hoverCell, "bounds",
                     sBoundEvaluator, offScreenBounds);
 
             if (swipedLeft) {
-                if (getStreamAdapter().canStreamBeClearedOrDeleted()) {
+                if (getStreamAdapter().canStreamBeClearedOrDeleted(sessionId)) {
                     swipeInProgress = true;
-                    getStreamAdapter().deleteStream(mobileView);
+                    getStreamAdapter().deleteStream(getPositionForView(mobileView), sessionId);
 
                     mobileView.setVisibility(GONE);
 
@@ -358,7 +359,7 @@ public class DashboardListView extends ListView {
                     Toast.makeText(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT).show();
                 }
             } else if (swipedRight) {
-                if (getStreamAdapter().canStreamBeClearedOrDeleted()) {
+                if (getStreamAdapter().canStreamBeClearedOrDeleted(sessionId)) {
                     swipeInProgress = true;
                     swipeRightInProgress = true;
 
@@ -369,7 +370,7 @@ public class DashboardListView extends ListView {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            getStreamAdapter().clearStream(getPositionForView(mobileView));
+                            getStreamAdapter().clearStream(getPositionForView(mobileView), sessionId);
                             touchEventsEnded();
                             mobileView.setVisibility(VISIBLE);
                         }
