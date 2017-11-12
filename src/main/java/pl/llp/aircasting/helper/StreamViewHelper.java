@@ -29,8 +29,8 @@ public class StreamViewHelper {
 
     private static List<Integer> positionsWithTitle = new ArrayList<Integer>();
 
-    public void addPositionWithTitle(int position) {
-        positionsWithTitle.add(position);
+    public void setPositionsWithTitle(List positions) {
+        positionsWithTitle = positions;
     }
 
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
