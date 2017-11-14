@@ -3,7 +3,6 @@ package pl.llp.aircasting.model;
 import android.content.Context;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.VisibleSession;
