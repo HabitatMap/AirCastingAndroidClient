@@ -8,6 +8,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelper;
 import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
@@ -27,6 +28,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
     @Inject CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
@@ -48,7 +50,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         initialize();
         locationHelper.start();
 
-        if (currentSessionManager.isSessionPresent()) {
+        if (currentSessionSensorManager.anySensorConnected()) {
             Intents.startSensors(context);
         }
 
@@ -63,7 +65,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        if (currentSessionManager.isSessionPresent()) {
+        if (currentSessionSensorManager.anySensorConnected()) {
             Intents.stopSensors(context);
         }
 
