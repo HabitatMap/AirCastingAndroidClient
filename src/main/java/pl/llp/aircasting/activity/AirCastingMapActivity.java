@@ -153,16 +153,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         super.onPrepareOptionsMenu(menu);
 
         MenuInflater inflater = getDelegate().getMenuInflater();
-
-        if (!currentSessionManager.isSessionRecording()) {
-            inflater.inflate(R.menu.toolbar_start_recording, menu);
-        } else {
-            inflater.inflate(R.menu.toolbar_stop_recording, menu);
-            inflater.inflate(R.menu.toolbar_make_note, menu);
-        }
-
         inflater.inflate(R.menu.toolbar_crowd_map_toggle, menu);
-
         return true;
     }
 

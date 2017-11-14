@@ -122,16 +122,12 @@ public class CurrentSessionManager {
         }
     }
 
-    public boolean isSessionPresent() {
-        return getCurrentSession() != null;
-    }
-
     public boolean isSessionRecording() {
-        return state.recording().isRecording();
+        return currentSessionSensorManager.anySensorConnected() && state.recording().isRecording();
     }
 
     public boolean isSessionIdle() {
-        return isSessionPresent() && !isSessionRecording();
+        return currentSessionSensorManager.anySensorConnected() && !isSessionRecording();
     }
 
     public void updateSession(Session from) {
