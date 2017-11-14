@@ -2,6 +2,7 @@ package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.Constants;
