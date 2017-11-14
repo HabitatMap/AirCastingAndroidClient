@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,13 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject VisibleSession visibleSession;
+
+    public static boolean sessionReorderInProgress = false;
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        return super.onCreateDialog(id);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +106,8 @@ public class DashboardActivity extends DashboardBaseActivity {
             return true;
         }
 
+        inflater.inflate(R.menu.toolbar_session_rearrange_toggle, menu);
+
         return true;
     }
 
@@ -112,8 +122,21 @@ public class DashboardActivity extends DashboardBaseActivity {
             case R.id.make_note:
                 Intents.makeANote(this);
                 break;
+            case R.id.session_rearrange_toggle:
+                toggleSessionReorder(menuItem);
+                break;
         }
         return true;
+    }
+
+    private void toggleSessionReorder(MenuItem menuItem) {
+        if (sessionReorderInProgress) {
+            sessionReorderInProgress = false;
+            menuItem.setIcon(R.drawable.toolbar_rearrange_inactive);
+        } else {
+            sessionReorderInProgress = true;
+            menuItem.setIcon(R.drawable.toolbar_rearrange_active);
+        }
     }
 
     @Override
