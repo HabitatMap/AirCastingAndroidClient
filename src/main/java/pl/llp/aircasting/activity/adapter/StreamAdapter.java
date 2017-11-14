@@ -1,6 +1,5 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
@@ -10,7 +9,6 @@ import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.ViewingSessionsSensorManager;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -415,7 +413,7 @@ public class StreamAdapter extends SimpleAdapter {
                 setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        currentSessionSensorManager.deleteSensorFromCurrentSession(sensor);
+                        sessionData.deleteSensorStream(sensor, sessionId);
                         update(false);
                         Intents.triggerSync(context);
                     }
