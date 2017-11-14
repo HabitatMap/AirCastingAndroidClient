@@ -91,23 +91,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     measurementPresenter.unregisterListener(this);
   }
 
-  @Override
-  public boolean onPrepareOptionsMenu(Menu menu) {
-    super.onPrepareOptionsMenu(menu);
-
-    MenuInflater inflater = getDelegate().getMenuInflater();
-
-    if (!currentSessionManager.isSessionRecording()) {
-      inflater.inflate(R.menu.toolbar_start_recording, menu);
-    } else {
-      inflater.inflate(R.menu.toolbar_stop_recording, menu);
-      inflater.inflate(R.menu.toolbar_make_note, menu);
-    }
-
-    return true;
-  }
-
-  @Override
+ @Override
   public boolean onOptionsItemSelected(MenuItem menuItem) {
     super.onOptionsItemSelected(menuItem);
 

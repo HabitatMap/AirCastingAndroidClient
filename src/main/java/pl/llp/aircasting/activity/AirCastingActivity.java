@@ -20,6 +20,8 @@
 package pl.llp.aircasting.activity;
 
 import android.net.Uri;
+import android.view.Menu;
+import android.view.MenuInflater;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
@@ -43,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import pl.llp.aircasting.sensor.SensorConnectedEvent;
 import roboguice.inject.InjectView;
 
 import java.io.File;
@@ -155,8 +158,28 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         {
           gaugeHelper.updateGauges(visibleSensor, gauges);
           noUpdateInProgress.set(true);
+
+    @Subscribe
+    public void onEvent(SensorConnectedEvent event) {
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuInflater inflater = getDelegate().getMenuInflater();
+
+        if (currentSessionManager.isSessionIdle()) {
+            inflater.inflate(R.menu.toolbar_start_recording, menu);
+        } else if (currentSessionManager.isSessionRecording()){
+            inflater.inflate(R.menu.toolbar_stop_recording, menu);
+            inflater.inflate(R.menu.toolbar_make_note, menu);
+        } else {
+            return true;
         }
-      });
+
+        return true;
     }
   }
 

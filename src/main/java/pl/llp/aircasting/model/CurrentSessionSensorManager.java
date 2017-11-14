@@ -14,6 +14,7 @@ import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.SensorConnectedEvent;
 import pl.llp.aircasting.sensor.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
@@ -77,6 +78,7 @@ public class CurrentSessionSensorManager {
 
             if (!currentSessionSensors.containsKey(name)) {
                 currentSessionSensors.put(name, sensor);
+                eventBus.post(new SensorConnectedEvent());
             }
         }
     }
@@ -100,6 +102,10 @@ public class CurrentSessionSensorManager {
         SensorName sensorName = SensorName.from(name);
         Sensor sensor = currentSessionSensors.get(sensorName);
         return sensor;
+    }
+
+    public boolean anySensorConnected() {
+        return !getSensorsMap().isEmpty();
     }
 
     /**

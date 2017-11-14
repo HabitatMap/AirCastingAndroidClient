@@ -97,10 +97,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         }
     }
 
-    public boolean isAdapterSet() {
-        return getListAdapter() != null;
-    }
-
     private void setData(StreamAdapterFactory adapterFactory, ApplicationState state) {
         this.adapterFactory = adapterFactory;
         this.state = state;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -12,6 +13,7 @@ import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.sensor.SensorConnectedEvent;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
@@ -76,18 +78,18 @@ public class DashboardActivity extends DashboardBaseActivity {
         stopSensors(context);
     }
 
+    @Subscribe
+    public void onEvent(SensorConnectedEvent event) {
+        invalidateOptionsMenu();
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
         MenuInflater inflater = getDelegate().getMenuInflater();
-        DashboardListFragment listFragment = (DashboardListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
-        if (!listFragment.isAdapterSet()) {
-            return true;
-        }
-
-        if (!currentSessionManager.isSessionRecording()) {
+        if (currentSessionManager.isSessionIdle()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
         } else if (currentSessionManager.isSessionRecording()){
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
