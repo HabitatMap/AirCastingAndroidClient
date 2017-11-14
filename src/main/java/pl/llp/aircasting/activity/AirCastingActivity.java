@@ -85,7 +85,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
-  @Override
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -100,7 +100,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         Intents.startDatabaseWriterService(context);
     }
 
-  private void initialize() {
+    private void initialize() {
         if (!initialized) {
             zoomOut.setOnClickListener(this);
             zoomIn.setOnClickListener(this);
@@ -140,28 +140,64 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         }
     }
 
-  protected void updateGauges()
-  {
-    final Sensor sensor = visibleSession.getSensor();
-    updateGaugeFaces(sensor);
-  }
+    protected void updateGauges() {
+        final Sensor sensor = visibleSession.getSensor();
+        updateGaugeFaces(sensor);
+    }
 
-  private void updateGaugeFaces(final Sensor visibleSensor)
-  {
-    if (noUpdateInProgress.get())
+    private void updateGaugeFaces(final Sensor visibleSensor) {
+        if (noUpdateInProgress.get()) {
+            noUpdateInProgress.set(false);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    gaugeHelper.updateGauges(visibleSensor, gauges);
+                    noUpdateInProgress.set(true);
+                }
+            });
+        }
+    }
+
+    @Subscribe
+    public void onEvent(MeasurementEvent event) {
+        updateGauges();
+    }
+
+    @Subscribe
+    public void onEvent(VisibleSessionUpdatedEvent event) {
+        updateGauges();
+    }
+
+    @Subscribe
+    public void onEvent(SensorEvent event) {
+        updateGauges();
+    }
+
+    @Subscribe
+    public void onEvent(ThresholdSetEvent event)
     {
-      noUpdateInProgress.set(false);
-      runOnUiThread(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          gaugeHelper.updateGauges(visibleSensor, gauges);
-          noUpdateInProgress.set(true);
+        updateGauges();
+    }
 
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
         invalidateOptionsMenu();
+    }
+
+    @Subscribe
+    public void onEvent(AudioReaderErrorEvent event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Subscribe
+    public void onEvent(VisibleStreamUpdatedEvent event) {
+        topBarHelper.updateTopBar(event.getSensor(), topBar);
+        updateGauges();
     }
 
     @Override
@@ -181,44 +217,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         return true;
     }
-  }
-
-  @Subscribe
-  public void onEvent(MeasurementEvent event) {
-    updateGauges();
-  }
-
-  @Subscribe
-  public void onEvent(VisibleSessionUpdatedEvent event) {
-    updateGauges();
-  }
-
-  @Subscribe
-  public void onEvent(SensorEvent event) {
-    updateGauges();
-  }
-
-  @Subscribe
-  public void onEvent(ThresholdSetEvent event)
-  {
-    updateGauges();
-  }
-
-  @Subscribe
-  public void onEvent(AudioReaderErrorEvent event) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
-      }
-    });
-  }
-
-  @Subscribe
-  public void onEvent(VisibleStreamUpdatedEvent event) {
-    topBarHelper.updateTopBar(event.getSensor(), topBar);
-    updateGauges();
-  }
 
     @Override
     public void onClick(View view) {
@@ -354,5 +352,5 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         }
     }
 
-  protected abstract void refreshNotes();
+    protected abstract void refreshNotes();
 }
