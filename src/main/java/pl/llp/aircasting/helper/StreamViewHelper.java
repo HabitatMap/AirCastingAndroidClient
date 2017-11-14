@@ -64,7 +64,7 @@ public class StreamViewHelper {
         sessionTitleView.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
 
         if (sessionState.isSessionRecording(sessionId)) {
-            sessionTitle.setText("Recording session");
+            sessionTitleView.setText("Recording session");
         } else {
             sessionTitleView.setText(session.getTitle());
         }
