@@ -422,6 +422,14 @@ public class DashboardListView extends ListView {
         if (isBelow || isAbove) {
             final long switchItemID = isBelow ? belowItemId : aboveItemId;
             View switchView = isBelow ? belowView : aboveView;
+            long mobileItemSessionId = (Long) mobileView.getTag(R.id.session_id_tag);
+            long switchItemSessionId = (Long) switchView.getTag(R.id.session_id_tag);
+
+            if (mobileItemSessionId != switchItemSessionId) {
+                touchEventsCancelled();
+                return;
+            }
+
             final int originalItem = getPositionForView(mobileView);
 
             if (switchView == null) {
