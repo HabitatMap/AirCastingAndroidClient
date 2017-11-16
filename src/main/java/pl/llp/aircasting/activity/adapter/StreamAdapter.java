@@ -9,6 +9,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
+import pl.llp.aircasting.activity.FakeActivity;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.helper.*;
@@ -187,6 +188,10 @@ public class StreamAdapter extends SimpleAdapter {
 
     @Subscribe
     public void onEvent(ToggleSessionReorderEvent event) {
+        // this is a bit hacky way to make the ListFragment call onResume,
+        // so that the OnItemClick and OnItemTouch listeners get reset properly.
+
+        context.startActivity(new Intent(context, FakeActivity.class));
         update(false);
     }
 

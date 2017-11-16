@@ -106,6 +106,8 @@
 
     <activity android:label="@string/start_mobile_session" android:name=".activity.StartMobileSessionActivity" android:theme="@style/Dialog"/>
 
+    <activity android:name=".activity.FakeActivity" android:theme="@android:style/Theme.NoDisplay"/>
+
     <!-- Services -->
     <service android:name=".service.SensorService"/>
 
