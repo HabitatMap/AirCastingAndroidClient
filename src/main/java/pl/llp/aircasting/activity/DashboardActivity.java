@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
+import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
@@ -24,8 +25,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject VisibleSession visibleSession;
-
-    public static boolean sessionReorderInProgress = false;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -94,8 +94,14 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
         MenuInflater inflater = getDelegate().getMenuInflater();
+
+        if (viewingSessionsManager.anySessionPresent()) {
+            inflater.inflate(R.menu.toolbar_session_rearrange_toggle, menu);
+            MenuItem toggleReorderItem = menu.getItem(0);
+
+            chooseToggleSessionsReorderIcon(toggleReorderItem);
+        }
 
         if (currentSessionManager.isSessionIdle()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
@@ -106,9 +112,15 @@ public class DashboardActivity extends DashboardBaseActivity {
             return true;
         }
 
-        inflater.inflate(R.menu.toolbar_session_rearrange_toggle, menu);
-
         return true;
+    }
+
+    private void chooseToggleSessionsReorderIcon(MenuItem item) {
+        if (state.dashboardState().isSessionReorderInProgress()) {
+            item.setIcon(R.drawable.toolbar_rearrange_active);
+        } else {
+            item.setIcon(R.drawable.toolbar_rearrange_inactive);
+        }
     }
 
     @Override
@@ -130,13 +142,9 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     private void toggleSessionReorder(MenuItem menuItem) {
-        if (sessionReorderInProgress) {
-            sessionReorderInProgress = false;
-            menuItem.setIcon(R.drawable.toolbar_rearrange_inactive);
-        } else {
-            sessionReorderInProgress = true;
-            menuItem.setIcon(R.drawable.toolbar_rearrange_active);
-        }
+        state.dashboardState().toggleSessionReorder();
+        chooseToggleSessionsReorderIcon(menuItem);
+        eventBus.post(new ToggleSessionReorderEvent());
     }
 
     @Override
