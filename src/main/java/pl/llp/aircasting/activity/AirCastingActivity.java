@@ -45,7 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import pl.llp.aircasting.sensor.SensorConnectedEvent;
+import pl.llp.aircasting.activity.events.SensorConnectedEvent;
 import roboguice.inject.InjectView;
 
 import java.io.File;

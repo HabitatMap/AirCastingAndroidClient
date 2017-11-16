@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
+import pl.llp.aircasting.activity.events.SensorStoppedEvent;
 
 import static java.lang.Thread.State;
 

@@ -1,4 +1,6 @@
-package pl.llp.aircasting.sensor;
+package pl.llp.aircasting.activity.events;
+
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 
 public class SensorStoppedEvent
 {
