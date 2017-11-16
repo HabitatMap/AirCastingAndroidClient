@@ -45,6 +45,9 @@ public class ViewingSessionsManager {
         return sessionsForViewing.get(sessionId).getStream(sensorName);
     }
 
+    public boolean anySessionPresent() {
+        return !sessionsForViewing.isEmpty();
+    }
     private void notifyNewSession(Session session) {
         state.dashboardState().populate();
         eventBus.post(new SessionLoadedEvent(session));

@@ -2,10 +2,14 @@ package pl.llp.aircasting.helper;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.CurrentSessionManager;
@@ -26,6 +30,7 @@ public class StreamViewHelper {
     @Inject ResourceHelper resourceHelper;
     @Inject SessionState sessionState;
     @Inject SessionDataFactory sessionData;
+    @Inject ApplicationState applicationState;
 
     private static List<Integer> positionsWithTitle = new ArrayList<Integer>();
 
@@ -36,12 +41,12 @@ public class StreamViewHelper {
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
         int now = (int) currentSessionManager.getNow(sensor);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
-        TextView sessionTitleView = (TextView) view.findViewById(R.id.session_title);
+        RelativeLayout sessionTitleContainer = (RelativeLayout) view.findViewById(R.id.title_container);
 
         if (positionsWithTitle.contains(position)) {
-            setTitleView(sessionId, sessionTitleView);
+            setTitleView(sessionId, sessionTitleContainer);
         } else {
-            sessionTitleView.setVisibility(View.GONE);
+            sessionTitleContainer.setVisibility(View.GONE);
         }
 
         nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
@@ -57,16 +62,20 @@ public class StreamViewHelper {
         }
     }
 
-    private void setTitleView(long sessionId, TextView sessionTitleView) {
+    private void setTitleView(long sessionId, RelativeLayout sessionTitleView) {
         Session session = sessionData.getSession(sessionId);
+        TextView sessionTitle = (TextView) sessionTitleView.findViewById(R.id.session_title);
+        LinearLayout sessionButtonsContainer = (LinearLayout) sessionTitleView.findViewById(R.id.session_reorder_buttons);
 
         sessionTitleView.setVisibility(View.VISIBLE);
-        sessionTitleView.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
+        sessionTitle.setCompoundDrawablesWithIntrinsicBounds(session.getDrawable(), 0, 0, 0);
 
-        if (sessionState.isSessionRecording(sessionId)) {
-            sessionTitleView.setText("Recording session");
+        if (applicationState.dashboardState().isSessionReorderInProgress()) {
+            sessionButtonsContainer.setVisibility(View.VISIBLE);
         } else {
-            sessionTitleView.setText(session.getTitle());
+            sessionButtonsContainer.setVisibility(View.GONE);
+        }
+
         }
     }
 

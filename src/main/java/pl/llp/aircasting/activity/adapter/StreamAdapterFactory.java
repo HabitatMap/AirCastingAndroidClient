@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import android.view.View;
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.DashboardChartManager;
 import pl.llp.aircasting.helper.SessionDataFactory;
@@ -27,6 +28,7 @@ public class StreamAdapterFactory
   @Inject DashboardChartManager dashboardChartManager;
   @Inject SessionState sessionState;
   @Inject SessionDataFactory sessionData;
+  @Inject ApplicationState applicationState;
 
   public StreamAdapter getAdapter(DashboardBaseActivity context) {
     return new StreamAdapter(context,
@@ -37,6 +39,7 @@ public class StreamAdapterFactory
                              viewingSessionsSensorManager,
                              dashboardChartManager,
                              sessionState,
-                             sessionData);
+                             sessionData,
+                             applicationState);
   }
 }

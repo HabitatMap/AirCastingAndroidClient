@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import pl.llp.aircasting.InjectedTestRunner;
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.helper.SessionState;
@@ -39,7 +40,8 @@ public class StreamAdapterTest {
                 mock(ViewingSessionsSensorManager.class),
                 mock(DashboardChartManager.class),
                 mock(SessionState.class),
-                mock(SessionDataFactory.class));
+                mock(SessionDataFactory.class),
+                mock(ApplicationState.class));
 
         sensor = mock(Sensor.class);
 

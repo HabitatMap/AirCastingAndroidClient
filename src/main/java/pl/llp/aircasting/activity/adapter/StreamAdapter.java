@@ -1,11 +1,16 @@
 package pl.llp.aircasting.activity.adapter;
 
+import android.content.Intent;
+import android.widget.Button;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Sensor;
@@ -78,6 +83,7 @@ public class StreamAdapter extends SimpleAdapter {
     EventBus eventBus;
     SessionState sessionState;
     SessionDataFactory sessionData;
+    ApplicationState state;
 
     private List<Map<String, Object>> data;
     private Map<String, Map<String, Object>> sensors = newHashMap();
@@ -102,7 +108,8 @@ public class StreamAdapter extends SimpleAdapter {
                          ViewingSessionsSensorManager viewingSessionsSensorManager,
                          DashboardChartManager dashboardChartManager,
                          SessionState sessionState,
-                         SessionDataFactory sessionData) {
+                         SessionDataFactory sessionData,
+                         ApplicationState state) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;
         this.eventBus = eventBus;
@@ -113,6 +120,7 @@ public class StreamAdapter extends SimpleAdapter {
         this.dashboardChartManager = dashboardChartManager;
         this.sessionState = sessionState;
         this.sessionData = sessionData;
+        this.state = state;
     }
 
     /**
@@ -177,18 +185,25 @@ public class StreamAdapter extends SimpleAdapter {
         update(false);
     }
 
+    @Subscribe
+    public void onEvent(ToggleSessionReorderEvent event) {
+        update(false);
+    }
+
     public void forceUpdate() {
         update(false);
     }
 
     public void swapPositions(int pos1, int pos2) {
-        Sensor s1 = (Sensor) data.get(pos1).get(SENSOR);
-        Sensor s2 = (Sensor) data.get(pos2).get(SENSOR);
+        Map item1 = data.get(pos1);
+        Map item2 = data.get(pos2);
+        Sensor s1 = (Sensor) item1.get(SENSOR);
+        Sensor s2 = (Sensor) item2.get(SENSOR);
 
         positions.put(s1.toString(), pos2);
         positions.put(s2.toString(), pos1);
 
-        resetSwappedCharts((Long) data.get(pos1).get(SESSION_ID), s1.getSensorName(), s2.getSensorName());
+        resetSwappedCharts((Long) item1.get(SESSION_ID), s1.getSensorName(), s2.getSensorName());
 
         streamsReordered = true;
         update(false);
@@ -197,10 +212,36 @@ public class StreamAdapter extends SimpleAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-        Map<String, Object> state = data.get(position);
-        final Sensor sensor = (Sensor) state.get(SENSOR);
-        final long sessionId = (Long) state.get(SESSION_ID);
+        Map<String, Object> item = data.get(position);
         chart = (LineChart) view.findViewById(R.id.chart);
+        final Sensor sensor = (Sensor) item.get(SENSOR);
+        final long sessionId = (Long) item.get(SESSION_ID);
+        final Button moveSessionDown = (Button) view.findViewById(R.id.session_down);
+        final Button moveSessionUp = (Button) view.findViewById(R.id.session_up);
+
+        if (state.dashboardState().isSessionReorderInProgress()) {
+            moveSessionDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    moveSessionDown(sessionId);
+                }
+            });
+
+            moveSessionUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    moveSessionUp(sessionId);
+                }
+            });
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DashboardActivity activity = (DashboardActivity) context;
+                    activity.viewChartOptions(v);
+                }
+            });
+        }
 
         view.setTag(R.id.session_id_tag, sessionId);
 
@@ -209,6 +250,37 @@ public class StreamAdapter extends SimpleAdapter {
         chart.invalidate();
 
         return view;
+    }
+
+    private void moveSessionDown(long sessionId) {
+        int sessionPosition = sessionPositions.get(sessionId);
+        int switchSessionPosition = sessionPosition + 1;
+
+        if (sessionPosition < sessionPositions.size() - 1) {
+            switchSessionPositions(sessionPosition, switchSessionPosition);
+        }
+    }
+
+    private void moveSessionUp(long sessionId) {
+        int sessionPosition = sessionPositions.get(sessionId);
+        int switchSessionPosition = sessionPosition - 1;
+
+        if (sessionPosition != 0) {
+            switchSessionPositions(sessionPosition, switchSessionPosition);
+        }
+    }
+
+    private void switchSessionPositions(int pos1, int pos2) {
+        long session1Id = sortedSessionPositions.get(pos1);
+        long session2Id = sortedSessionPositions.get(pos2);
+
+        sessionPositions.put(session1Id, pos2);
+        sessionPositions.put(session2Id, pos1);
+        sortedSessionPositions.put(pos2, session1Id);
+        sortedSessionPositions.put(pos1, session2Id);
+
+        resetAllStaticCharts();
+        update(false);
     }
 
     private void update(boolean onlyCurrentStreams) {
