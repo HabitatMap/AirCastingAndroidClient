@@ -13,8 +13,8 @@ import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.sensor.SensorConnectedEvent;
-import pl.llp.aircasting.sensor.SensorStoppedEvent;
+import pl.llp.aircasting.activity.events.SensorConnectedEvent;
+import pl.llp.aircasting.activity.events.SensorStoppedEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 
