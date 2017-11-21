@@ -93,8 +93,7 @@ public class SessionTrackerDAO
     }
   }
 
-  private void markComplete(final long sessionId)
-  {
+  private void markComplete(final long sessionId) {
     dbAccessor.executeWritableTask(new WritableDatabaseTask<Void>()
     {
       @Override
