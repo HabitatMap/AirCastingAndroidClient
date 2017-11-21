@@ -41,6 +41,10 @@ public class ViewingSessionsManager {
         return sessionsForViewing.get(sessionId);
     }
 
+    public boolean isSessionBeingViewed(long sessionId) {
+        return sessionsForViewing.containsKey(sessionId);
+    }
+
     public MeasurementStream getMeasurementStream(String sensorName, long sessionId) {
         return sessionsForViewing.get(sessionId).getStream(sensorName);
     }
@@ -48,6 +52,7 @@ public class ViewingSessionsManager {
     public boolean anySessionPresent() {
         return !sessionsForViewing.isEmpty();
     }
+
     private void notifyNewSession(Session session) {
         state.dashboardState().populate();
         eventBus.post(new SessionLoadedEvent(session));

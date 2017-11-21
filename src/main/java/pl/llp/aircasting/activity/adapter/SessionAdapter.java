@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity.adapter;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.ResourceHelper;
+import pl.llp.aircasting.helper.SessionState;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
 
@@ -28,16 +29,20 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 public class SessionAdapter extends ArrayAdapter
 {
-  private static final int[] backgrounds = new int[]{R.drawable.session_list_odd, R.drawable.session_list_even};
+  private static final int[] regular_backgrounds = new int[] {R.drawable.session_list_odd, R.drawable.session_list_even};
+  private static final int[] marked_backgrounds = new int[] {R.drawable.session_list_marked_even, R.drawable.session_list_marked_odd};
 
   private ResourceHelper resourceHelper;
   private Context context;
+  private SessionState sessionState;
+
   List<Session> sessions = newArrayList();
 
-  public SessionAdapter(Context context)
-  {
+  public SessionAdapter(Context context, SessionState sessionState) {
     super(context, R.layout.session_row, R.id.session_title);
+
     this.context = context;
+    this.sessionState = sessionState;
   }
 
   @Override
@@ -47,7 +52,7 @@ public class SessionAdapter extends ArrayAdapter
 
     Session session = sessions.get(position);
 
-    Drawable background = evenOddBackground(position);
+    Drawable background = getBackground(position, session.getId());
     view.setBackgroundDrawable(background);
 
     fillTitle(view, context, session);
@@ -70,9 +75,15 @@ public class SessionAdapter extends ArrayAdapter
     view.findViewById(R.id.peak_container).setVisibility(View.GONE);
   }
 
-  private Drawable evenOddBackground(int position)
-  {
-    int id = backgrounds[position % backgrounds.length];
+  private Drawable getBackground(int position, Long sessionId) {
+    int id;
+
+    if (sessionState.isSessionBeingViewed(sessionId)) {
+      id = marked_backgrounds[position % marked_backgrounds.length];
+    } else {
+      id = regular_backgrounds[position % regular_backgrounds.length];
+    }
+
     return context.getResources().getDrawable(id);
   }
 

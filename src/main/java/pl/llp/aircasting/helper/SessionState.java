@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.util.Constants;
 
 /**
@@ -12,6 +13,7 @@ import pl.llp.aircasting.util.Constants;
 public class SessionState {
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     public boolean isSessionCurrent(@NotNull long sessionId) {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID;
@@ -21,11 +23,11 @@ public class SessionState {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
     }
 
-    public boolean isSessionBeingViewed(@NotNull long sessionId) {
-        return sessionId != Constants.CURRENT_SESSION_FAKE_ID;
-    }
-
     public boolean isCurrentSessionIdle() {
         return currentSessionManager.isSessionIdle();
+    }
+
+    public boolean isSessionBeingViewed(@NotNull long sessionId) {
+        return viewingSessionsManager.isSessionBeingViewed(sessionId);
     }
 }
