@@ -96,6 +96,10 @@ public class Session implements Serializable {
         return title;
     }
 
+    public boolean hasTitle() {
+        return title != null;
+    }
+
     public String getTags() {
         return tags;
     }

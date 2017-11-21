@@ -193,7 +193,7 @@
   <string name="external_devices">External devices</string>
   <string name="bluetooth_not_supported">Your phone does not support bluetooth.</string>
   <string name="measurement_streams">Measurement streams</string>
-  <string name="recording_session">Recording session</string>
+  <string name="unnamed">Unnamed</string>
 
   <string name="peak_label_template" formatted="false">Peak %s</string>
   <string name="now_label_template" formatted="false">Now %s</string>
