@@ -76,7 +76,7 @@ public class SettingsHelper
   public static final String SHOW_ROUTE = "show_route";
   public static final String SENSORS = "external_sensors_json";
   public static final boolean DEFAULT_FIXED_SESSIONS_STREAMING = false;
-  public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = false;
+  public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = true;
 
   public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
 
