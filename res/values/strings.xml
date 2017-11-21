@@ -214,6 +214,7 @@
   <string name="backend_settings">Backend settings</string>
   <string name="backend_settings_summary">Set backend address and port</string>
   <string name="show_graph_metadata">Show graph metadata</string>
+  <string name="rearrange">Rearrange sessions</string>
 
   <string name="available_sensors_label">Available</string>
   <string name="known_sensors_label">Exter</string>

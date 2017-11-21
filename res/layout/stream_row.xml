@@ -23,26 +23,26 @@
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"/>
 
-        <LinearLayout android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
+        <LinearLayout android:layout_width="110dp"
+                      android:layout_height="35dp"
                       android:id="@+id/session_reorder_buttons"
-                      android:visibility="gone"
                       android:layout_alignParentRight="true"
                       android:layout_centerVertical="true">
 
-            <Button android:layout_width="30dp"
-                    android:layout_height="30dp"
+            <Button android:layout_width="50dp"
+                    android:layout_height="22dp"
                     android:id="@+id/session_down"
-                    android:layout_marginRight="7dp"
-                    android:background="@drawable/down_arrow"/>
+                    android:layout_marginRight="5dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/sessions_down_arrow"/>
 
-            <Button android:layout_width="30dp"
-                    android:layout_height="30dp"
+            <Button android:layout_width="50dp"
+                    android:layout_height="22dp"
                     android:id="@+id/session_up"
-                    android:background="@drawable/up_arrow"
-                    android:layout_centerVertical="true"
+                    android:background="@drawable/sessions_up_arrow"
+                    android:layout_gravity="center"
                     android:layout_toLeftOf="@id/session_up"
-                    android:layout_marginRight="5dp"/>
+                    android:layout_marginRight="3dp"/>
 
         </LinearLayout>
 

@@ -117,9 +117,9 @@ public class DashboardActivity extends DashboardBaseActivity {
 
     private void chooseToggleSessionsReorderIcon(MenuItem item) {
         if (state.dashboardState().isSessionReorderInProgress()) {
-            item.setIcon(R.drawable.toolbar_rearrange_active);
+            item.setIcon(R.drawable.sessions_rearrange_active);
         } else {
-            item.setIcon(R.drawable.toolbar_rearrange_inactive);
+            item.setIcon(R.drawable.sessions_rearrange_inactive);
         }
     }
 

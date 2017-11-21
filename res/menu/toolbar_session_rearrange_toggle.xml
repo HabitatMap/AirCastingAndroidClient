@@ -3,8 +3,8 @@
       xmlns:app="http://schemas.android.com/apk/res/pl.llp.aircasting">
 
     <item android:id="@+id/session_rearrange_toggle"
-          android:icon="@drawable/toolbar_rearrange_inactive"
+          android:icon="@drawable/sessions_rearrange_inactive"
           app:showAsAction="always"
-          android:title="@string/crowdmap"/>
+          android:title="@string/rearrange"/>
 
 </menu>
