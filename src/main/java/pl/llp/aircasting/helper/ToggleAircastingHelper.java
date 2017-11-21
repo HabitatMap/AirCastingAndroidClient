@@ -79,9 +79,13 @@ public class ToggleAircastingHelper {
             currentSessionManager.discardSession(sessionId);
         } else {
             currentSessionManager.stopSession();
-            Intent intent = new Intent(activity, SaveSessionActivity.class);
-            intent.putExtra(Intents.SESSION_ID, sessionId);
-            activity.startActivityForResult(intent, Intents.SAVE_DIALOG);
+
+            if(session.isLocationless()) {
+                currentSessionManager.finishSession(sessionId);
+            } else if (settingsHelper.isContributingToCrowdMap()) {
+                currentSessionManager.setContribute(sessionId, true);
+                currentSessionManager.finishSession(sessionId);
+            }
         }
     }
 
