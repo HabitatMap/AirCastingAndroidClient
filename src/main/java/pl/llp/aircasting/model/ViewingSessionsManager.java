@@ -37,6 +37,10 @@ public class ViewingSessionsManager {
         notifyNewSession(newSession);
     }
 
+    public void removeSession(long sessionId) {
+        sessionsForViewing.remove(sessionId);
+    }
+
     public Session getSession(long sessionId) {
         return sessionsForViewing.get(sessionId);
     }

@@ -23,7 +23,6 @@ import static com.google.common.collect.Maps.newHashMap;
 @Singleton
 public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
-    @Inject SessionDataFactory sessionData;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
 
@@ -66,6 +65,10 @@ public class ViewingSessionsSensorManager {
 
     public void deleteSensorFromSession(Sensor sensor, long sessionId) {
         String sensorName = sensor.getSensorName();
-        viewingSessionsSensors.get(sessionId).remove(sensorName);
+        viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
+    }
+
+    public void removeSessionSensors(long sessionId) {
+        viewingSessionsSensors.remove(sessionId);
     }
 }
