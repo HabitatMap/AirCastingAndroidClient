@@ -37,6 +37,8 @@
     <color name="list_selected">#FFD5E9FF</color>
     <color name="list_odd">#FFEFEFEF</color>
     <color name="list_even">#FFFDFBFD</color>
+    <color name="list_viewing_session_even">#CBF0FA</color>
+    <color name="list_viewing_session_odd">#9BE0F8</color>
 
     <color name="transparent">#0FFF</color>
 

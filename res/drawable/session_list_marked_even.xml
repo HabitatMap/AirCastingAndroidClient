@@ -22,5 +22,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true" android:drawable="@color/list_selected"/>
     <item android:state_pressed="true" android:drawable="@color/list_selected"/>
-    <item android:drawable="@color/button_focused"/>
+    <item android:drawable="@color/list_viewing_session_even"/>
 </selector>
