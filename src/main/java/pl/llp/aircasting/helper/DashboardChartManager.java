@@ -86,6 +86,10 @@ public class DashboardChartManager {
         }
     }
 
+    public void resetAllDynamicCharts() {
+        shouldUseExistingEntries.clear();
+    }
+
     public void resetDynamicCharts(Set<String> sensors) {
         for (String sensorName : sensors) {
             shouldUseExistingEntries.put(getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName), true);
