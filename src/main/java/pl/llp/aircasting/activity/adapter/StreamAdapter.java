@@ -10,7 +10,7 @@ import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.FakeActivity;
-import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
@@ -177,11 +177,12 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
    @Subscribe
-    public void onEvent(SessionLoadedEvent event) {
+    public void onEvent(SessionSensorsLoadedEvent event) {
         long sessionId = event.getSession().getId();
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);
+        sessionStreamCount.put(sessionId, viewingSessionsSensorManager.getSensorsList(sessionId).size());
 
         update(false);
     }

@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.model.internal.SensorName;
 
@@ -54,6 +55,7 @@ public class ViewingSessionsSensorManager {
         }
 
         viewingSessionsSensors.put(event.getSession().getId(), sessionSensors);
+        eventBus.post(new SessionSensorsLoadedEvent(session));
     }
 
     public List<Sensor> getSensorsList(long sessionId) {
