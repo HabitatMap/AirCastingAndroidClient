@@ -30,7 +30,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class SessionAdapter extends ArrayAdapter
 {
   private static final int[] regular_backgrounds = new int[] {R.drawable.session_list_odd, R.drawable.session_list_even};
-  private static final int[] marked_backgrounds = new int[] {R.drawable.session_list_marked_even, R.drawable.session_list_marked_odd};
+  private static final int[] marked_backgrounds = new int[] {R.drawable.session_list_marked_odd, R.drawable.session_list_marked_even};
 
   private ResourceHelper resourceHelper;
   private Context context;
