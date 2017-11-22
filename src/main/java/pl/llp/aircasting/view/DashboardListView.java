@@ -370,7 +370,7 @@ public class DashboardListView extends ListView {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            getStreamAdapter().clearStream(getPositionForView(mobileView), sessionId);
+                            getStreamAdapter().clearStreamFromPosition(getPositionForView(mobileView), sessionId);
                             touchEventsEnded();
                             mobileView.setVisibility(VISIBLE);
                         }

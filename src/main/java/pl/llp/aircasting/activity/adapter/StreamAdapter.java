@@ -332,7 +332,7 @@ public class StreamAdapter extends SimpleAdapter {
         Map<Long, Map<SensorName, Sensor>> allSensors = newHashMap();
         Map<SensorName, Sensor> currentSensors = currentSessionSensorManager.getSensorsMap();
 
-        if (onlyCurrentStreams == false) {
+        if (!onlyCurrentStreams) {
             allSensors = viewingSessionsSensorManager.getAllViewingSensors();
         }
 
@@ -422,22 +422,34 @@ public class StreamAdapter extends SimpleAdapter {
         sortedSessionPositions.put(0, Constants.CURRENT_SESSION_FAKE_ID);
     }
 
-    public void clearStream(int position, long sessionId) {
+    public void clearStreamFromPosition(int position, long sessionId) {
         Sensor sensor = getSensorFromData(position);
-        String sensorName = sensor.toString();
+        clearStream(sensor, sessionId);
+    }
 
+    private void clearStream(Sensor sensor, long sessionId) {
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
         }
-        clearedStreams.get(sessionId).add(sensorName);
+        List clearedStreamsForSession = clearedStreams.get(sessionId);
+
+        clearedStreamsForSession.add(sensor.getSensorName());
+        clearViewingSessionIfNeeded(sessionId, clearedStreamsForSession.size());
         streamsReordered = true;
         update(false);
+    }
+
+    private void clearViewingSessionIfNeeded(long sessionId, int clearedStreamsSize) {
+        if (!sessionState.isSessionCurrent(sessionId) &&
+                sessionData.getSession(sessionId).getStreamsSize() <= clearedStreamsSize) {
+            sessionData.clearViewingSession(sessionId);
+        }
     }
 
     public void deleteStream(int position, long sessionId) {
         Sensor sensor = getSensorFromData(position);
 
-        if (sessionData.getSession(sessionId).getActiveMeasurementStreams().size() > 1) {
+        if (sessionData.getSession(sessionId).getStreamsSize() > 1) {
             confirmDeletingStream(sensor, sessionId);
         } else {
             confirmDeletingSession(sessionId);
@@ -445,7 +457,7 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     public boolean canStreamBeClearedOrDeleted(long sessionId) {
-        if (sessionState.isSessionBeingViewed(sessionId)) {
+        if (!sessionState.isSessionCurrent(sessionId)) {
             return true;
         } else if (sessionState.isCurrentSessionIdle()) {
             streamDeleteMessage = R.string.cannot_delete_stream;
@@ -476,8 +488,9 @@ public class StreamAdapter extends SimpleAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessionData.deleteSession(sessionId);
+                        cleanupSession(sessionId);
                         Intents.triggerSync(context);
-                        Intents.sessions(context, context);
+                        update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
         AlertDialog dialog = b.create();
@@ -492,11 +505,20 @@ public class StreamAdapter extends SimpleAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessionData.deleteSensorStream(sensor, sessionId);
-                        update(false);
                         Intents.triggerSync(context);
+                        update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
         AlertDialog dialog = b.create();
         dialog.show();
+    }
+
+    private void cleanupSession(long sessionId) {
+        int sessionPosition = sessionPositions.get(sessionId);
+
+        sortedSessionPositions.remove(sessionPosition);
+        sessionPositions.remove(sessionId);
+        sessionStreamCount.remove(sessionId);
+        clearedStreams.remove(sessionId);
     }
 }

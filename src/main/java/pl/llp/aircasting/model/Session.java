@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.google.common.collect.Iterables.all;
-import static com.google.common.collect.Iterables.any;
-import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -273,6 +271,10 @@ public class Session implements Serializable {
                 return stream != null && !stream.isMarkedForRemoval() && stream.isVisible();
             }
         }));
+    }
+
+    public int getStreamsSize() {
+        return getActiveMeasurementStreams().size();
     }
 
     @Override

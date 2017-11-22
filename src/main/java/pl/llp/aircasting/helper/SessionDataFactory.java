@@ -72,6 +72,7 @@ public class SessionDataFactory {
         if (sessionState.isSessionCurrent(sessionId)) {
             currentSessionManager.deleteSession();
         } else {
+            clearViewingSession(sessionId);
             sessionRepository.markSessionForRemoval(sessionId);
         }
     }
@@ -98,5 +99,10 @@ public class SessionDataFactory {
 
         sessionRepository.deleteStream(getSession(sessionId), stream);
         getSession(sessionId).removeStream(stream);
+    }
+
+    public void clearViewingSession(long sessionId) {
+        viewingSessionsManager.removeSession(sessionId);
+        viewingSessionsSensorManager.removeSessionSensors(sessionId);
     }
 }
