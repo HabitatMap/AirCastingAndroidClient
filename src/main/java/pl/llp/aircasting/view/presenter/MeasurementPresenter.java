@@ -89,6 +89,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
   private Sensor sensor = SimpleAudioReader.getSensor();
+  private Session session;
 
   @Inject
   public void init()
@@ -105,6 +106,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
   private void onMeasurement(MeasurementEvent event)
   {
+    if (!visibleSession.isCurrentSessionVisible()) return;
     if (!state.recording().isRecording()) return;
     if (!event.getSensor().equals(this.sensor)) return;
 
@@ -192,6 +194,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
   public void onEvent(VisibleSessionUpdatedEvent event)
   {
     this.sensor = visibleSession.getSensor();
+    this.session = event.getSession();
     reset();
     anchor = 0;
   }
