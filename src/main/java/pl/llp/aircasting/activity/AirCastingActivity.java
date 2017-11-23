@@ -307,7 +307,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (visibleSession.isViewingSessionVisible()) {
+                if (visibleSession.isVisibleSessionViewed()) {
                     currentSessionManager.updateNote(currentNote);
                     triggerSync(context);
                 }

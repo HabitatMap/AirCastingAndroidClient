@@ -65,7 +65,7 @@ public class VisibleSession {
         return isCurrentSessionVisible() && state.recording().isRecording();
     }
 
-    public boolean isViewingSessionVisible() {
+    public boolean isVisibleSessionViewed() {
         return session != currentSessionManager.getCurrentSession();
     }
 

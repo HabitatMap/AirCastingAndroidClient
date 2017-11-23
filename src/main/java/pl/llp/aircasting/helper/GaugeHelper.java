@@ -110,7 +110,7 @@ public class GaugeHelper {
         textView.setText(valueOf(value));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
 
-        if (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible()) {
+        if (visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed()) {
             textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
         } else {
             textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));

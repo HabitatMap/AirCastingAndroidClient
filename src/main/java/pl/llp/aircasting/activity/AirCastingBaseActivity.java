@@ -59,7 +59,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         initialize();
         locationHelper.start();
 
-        if (!visibleSession.isViewingSessionVisible()) {
+        if (!visibleSession.isVisibleSessionViewed()) {
             Intents.startSensors(context);
         }
 
@@ -74,7 +74,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     protected void onPause() {
         super.onPause();
 
-        if (!visibleSession.isViewingSessionVisible()) {
+        if (!visibleSession.isVisibleSessionViewed()) {
             Intents.stopSensors(context);
         }
 
