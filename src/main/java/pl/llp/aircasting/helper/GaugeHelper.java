@@ -16,117 +16,112 @@ import roboguice.inject.InjectResource;
 import static java.lang.String.valueOf;
 
 @Singleton
-public class GaugeHelper
-{
-  public static final int MARGIN = 2;
+public class GaugeHelper {
+    public static final int MARGIN = 2;
 
-  @Inject ResourceHelper resourceHelper;
-  @Inject CurrentSessionManager currentSessionManager;
-  @Inject VisibleSession visibleSession;
+    @Inject ResourceHelper resourceHelper;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject VisibleSession visibleSession;
+    @Inject NowValueVisibilityManager nowManager;
 
-  @InjectResource(R.string.avg_label_template) String avgLabel;
-  @InjectResource(R.string.now_label_template) String nowLabel;
-  @InjectResource(R.string.peak_label_template) String peakLabel;
+    @InjectResource(R.string.avg_label_template) String avgLabel;
+    @InjectResource(R.string.now_label_template) String nowLabel;
+    @InjectResource(R.string.peak_label_template) String peakLabel;
 
-  @Inject NowValueVisibilityManager nowManager;
+    /**
+     * Update a set of now/avg/peak gauges
+     *
+     * @param sensor The Sensor from which the readings are taken
+     * @param view   The view containing the three gauges
+     */
+    public void updateGauges(Sensor sensor, View view) {
+        View nowContainer = view.findViewById(R.id.now_container);
+        nowContainer.setVisibility(nowManager.getVisibility());
 
-  /**
-   * Update a set of now/avg/peak gauges
-   *
-   * @param sensor The Sensor from which the readings are taken
-   * @param view   The view containing the three gauges
-   */
-  public void updateGauges(Sensor sensor, View view)
-  {
-    View nowContainer = view.findViewById(R.id.now_container);
-    nowContainer.setVisibility(nowManager.getVisibility());
+        int now = (int) currentSessionManager.getNow(sensor);
+        updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
 
-    int now = (int) currentSessionManager.getNow(sensor);
-    updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
+        String nowText = String.format(nowLabel, sensor.getShortType());
+        String avgText = String.format(avgLabel, sensor.getShortType());
+        String peakText = String.format(peakLabel, sensor.getShortType());
 
-    String nowText = String.format(nowLabel, sensor.getShortType());
-    String avgText = String.format(avgLabel, sensor.getShortType());
-    String peakText = String.format(peakLabel, sensor.getShortType());
+        TextView nowTextView = (TextView) view.findViewById(R.id.now_label);
+        TextView avgTextView = (TextView) view.findViewById(R.id.avg_label);
+        TextView peakTextView = (TextView) view.findViewById(R.id.peak_label);
 
-    TextView nowTextView = (TextView) view.findViewById(R.id.now_label);
-    TextView avgTextView = (TextView) view.findViewById(R.id.avg_label);
-    TextView peakTextView = (TextView) view.findViewById(R.id.peak_label);
+        float avgSize = findMinimumVisibleSize(avgTextView, avgText);
+        float peakSize = findMinimumVisibleSize(peakTextView, peakText);
+        float nowSize = findMinimumVisibleSize(nowTextView, nowText);
 
-    float avgSize = findMinimumVisibleSize(avgTextView, avgText);
-    float peakSize = findMinimumVisibleSize(peakTextView, peakText);
-    float nowSize = findMinimumVisibleSize(nowTextView, nowText);
+        avgSize = peakSize = Math.min(avgSize, peakSize);
 
-    avgSize = peakSize = Math.min(avgSize, peakSize);
+        updateLabel(nowTextView, nowText, nowSize);
+        updateLabel(avgTextView, avgText, avgSize);
+        updateLabel(peakTextView, peakText, peakSize);
 
-    updateLabel(nowTextView, nowText, nowSize);
-    updateLabel(avgTextView, avgText, avgSize);
-    updateLabel(peakTextView, peakText, peakSize);
+        boolean hasStats = visibleSession.isCurrentSessionVisible();
 
-    boolean hasStats = visibleSession.isCurrentSessionVisible();
-    if (hasStats && sensor.isEnabled())
-    {
-      int avg = (int) currentSessionManager.getAvg(sensor);
-      int peak = (int) currentSessionManager.getPeak(sensor);
+        if (hasStats && sensor.isEnabled()) {
+            int avg = (int) currentSessionManager.getAvg(sensor);
+            int peak = (int) currentSessionManager.getPeak(sensor);
 
-      updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
-      updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
-    }
-    else
-    {
-      displayInactiveGauge(view.findViewById(R.id.avg_gauge), MarkerSize.SMALL);
-      displayInactiveGauge(view.findViewById(R.id.peak_gauge), MarkerSize.SMALL);
-    }
-  }
-
-  private void updateLabel(TextView view, String label, float size)
-  {
-    view.getPaint().setTextSize(size);
-    view.setText(label);
-  }
-
-  private float findMinimumVisibleSize(TextView textView, String message)
-  {
-    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-    long viewWidth = textView.getWidth();
-    if(viewWidth < 1)
-    {
-      textView.measure(0, 0);
-      viewWidth = textView.getMeasuredWidth();
-
-      if(viewWidth < 1) return textView.getTextSize();
+            updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
+            updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
+        } else {
+            displayInactiveGauge(view.findViewById(R.id.avg_gauge), MarkerSize.SMALL);
+            displayInactiveGauge(view.findViewById(R.id.peak_gauge), MarkerSize.SMALL);
+        }
     }
 
-    TextPaint textPaint = textView.getPaint();
-    float textSize = textView.getTextSize();
-    float paintWidth = textPaint.measureText(message) + 2*MARGIN;
-    while(paintWidth > viewWidth)
-    {
-      textSize--;
-      textPaint.setTextSize(textSize);
-      paintWidth = textPaint.measureText(message) + 2*MARGIN;
+    private void updateLabel(TextView view, String label, float size) {
+        view.getPaint().setTextSize(size);
+        view.setText(label);
     }
-    return textSize;
-  }
 
-  private void updateGauge(View view, Sensor sensor, MarkerSize size, int value)
-  {
-    TextView textView = (TextView) view;
+    private float findMinimumVisibleSize(TextView textView, String message) {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        long viewWidth = textView.getWidth();
 
-    textView.setText(valueOf(value));
-    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
-    if (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible()) {
-      textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
-    } else {
-      textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+        if (viewWidth < 1) {
+            textView.measure(0, 0);
+            viewWidth = textView.getMeasuredWidth();
+
+            if (viewWidth < 1) {
+                return textView.getTextSize();
+            }
+        }
+
+        TextPaint textPaint = textView.getPaint();
+        float textSize = textView.getTextSize();
+        float paintWidth = textPaint.measureText(message) + 2 * MARGIN;
+
+        while (paintWidth > viewWidth) {
+            textSize--;
+            textPaint.setTextSize(textSize);
+            paintWidth = textPaint.measureText(message) + 2 * MARGIN;
+        }
+
+        return textSize;
     }
-  }
 
-  private void displayInactiveGauge(View view, MarkerSize size)
-  {
-    TextView textView = (TextView) view;
+    private void updateGauge(View view, Sensor sensor, MarkerSize size, int value) {
+        TextView textView = (TextView) view;
 
-    textView.setText("--");
-    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, ResourceHelper.SMALL_GAUGE_SMALL_TEXT);
-    textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
-  }
+        textView.setText(valueOf(value));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
+
+        if (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible()) {
+            textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
+        } else {
+            textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+        }
+    }
+
+    private void displayInactiveGauge(View view, MarkerSize size) {
+        TextView textView = (TextView) view;
+
+        textView.setText("--");
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, ResourceHelper.SMALL_GAUGE_SMALL_TEXT);
+        textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+    }
 }
