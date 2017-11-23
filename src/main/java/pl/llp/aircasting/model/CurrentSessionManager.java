@@ -360,26 +360,6 @@ public class CurrentSessionManager {
         notificationHelper.hideRecordingNotification();
     }
 
-    public double getAvg(Sensor sensor) {
-        String sensorName = sensor.getSensorName();
-
-        if (currentSession.hasStream(sensorName)) {
-            return currentSession.getStream(sensorName).getAvg();
-        } else {
-            return 0;
-        }
-    }
-
-    public double getPeak(Sensor sensor) {
-        String sensorName = sensor.getSensorName();
-
-        if (currentSession.hasStream(sensorName)) {
-            return currentSession.getStream(sensorName).getPeak();
-        } else {
-            return 0;
-        }
-    }
-
     public void setTitleTagsDescription(long sessionId, String title, String tags, String description) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);

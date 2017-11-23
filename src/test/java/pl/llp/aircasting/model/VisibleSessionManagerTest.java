@@ -190,7 +190,7 @@ public class VisibleSessionManagerTest
     when(stream.getSensorName()).thenReturn(name);
     currentSessionManager.currentSession.add(stream);
 
-    assertThat(currentSessionManager.getAvg(sensor), equalTo(10.0));
+    assertThat(visibleSession.getAvg(sensor), equalTo(10.0));
   }
 
   @Test
@@ -202,7 +202,7 @@ public class VisibleSessionManagerTest
     when(stream.getSensorName()).thenReturn(name);
     currentSessionManager.currentSession.add(stream);
 
-    assertThat(currentSessionManager.getPeak(sensor), equalTo(11.0));
+    assertThat(visibleSession.getPeak(sensor), equalTo(11.0));
   }
 
   @Test
