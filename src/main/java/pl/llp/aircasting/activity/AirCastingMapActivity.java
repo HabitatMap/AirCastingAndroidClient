@@ -116,7 +116,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
-        if (!visibleSession.isViewingSessionVisible()) {
+        if (!visibleSession.isVisibleSessionViewed()) {
             mapView.getOverlays().add(locationOverlay);
         }
     }
@@ -251,7 +251,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private boolean shouldShowRoute() {
         return settingsHelper.isShowRoute() &&
-                (visibleSession.isVisibleSessionRecording() || visibleSession.isViewingSessionVisible());
+                (visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed());
     }
 
     private void initializeMap() {
@@ -293,7 +293,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void showSession() {
-        if (visibleSession.isViewingSessionVisible() && zoomToSession) {
+        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
             LocationConversionHelper.BoundingBox boundingBox = boundingBox(visibleSession.getSession());
 
             mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
