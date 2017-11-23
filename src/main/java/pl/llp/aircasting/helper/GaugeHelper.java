@@ -22,6 +22,7 @@ public class GaugeHelper {
     @Inject ResourceHelper resourceHelper;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject VisibleSession visibleSession;
+    @Inject SessionDataFactory sessionData;
     @Inject NowValueVisibilityManager nowManager;
 
     @InjectResource(R.string.avg_label_template) String avgLabel;
@@ -59,11 +60,11 @@ public class GaugeHelper {
         updateLabel(avgTextView, avgText, avgSize);
         updateLabel(peakTextView, peakText, peakSize);
 
-        boolean hasStats = visibleSession.isCurrentSessionVisible();
+        boolean hasStats = visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed();
 
-        if (hasStats && sensor.isEnabled()) {
-            int avg = (int) currentSessionManager.getAvg(sensor);
-            int peak = (int) currentSessionManager.getPeak(sensor);
+        if (hasStats) {
+            int avg = (int) visibleSession.getAvg(sensor);
+            int peak = (int) visibleSession.getPeak(sensor);
 
             updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
             updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);

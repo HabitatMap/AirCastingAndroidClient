@@ -69,6 +69,26 @@ public class VisibleSession {
         return session != currentSessionManager.getCurrentSession();
     }
 
+    public double getAvg(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getAvg();
+        } else {
+            return 0;
+        }
+    }
+
+    public double getPeak(Sensor sensor) {
+        String sensorName = sensor.getSensorName();
+
+        if (session.hasStream(sensorName)) {
+            return session.getStream(sensorName).getPeak();
+        } else {
+            return 0;
+        }
+    }
+
     public Iterable<Note> getSessionNotes() {
         return session.getNotes();
     }
