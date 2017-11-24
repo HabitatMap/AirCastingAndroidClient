@@ -54,7 +54,7 @@ public class ViewingSessionsSensorManager {
         }
 
         viewingSessionsSensors.put(event.getSession().getId(), sessionSensors);
-        eventBus.post(new SessionSensorsLoadedEvent(session));
+        eventBus.post(new SessionSensorsLoadedEvent(session.getId()));
     }
 
     public List<Sensor> getSensorsList(long sessionId) {

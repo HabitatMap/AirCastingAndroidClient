@@ -49,7 +49,7 @@ public class ViewingSessionsManager {
         return sessionsForViewing.containsKey(sessionId);
     }
 
-    public MeasurementStream getMeasurementStream(String sensorName, long sessionId) {
+    public MeasurementStream getMeasurementStream(long sessionId, String sensorName) {
         return sessionsForViewing.get(sessionId).getStream(sensorName);
     }
 

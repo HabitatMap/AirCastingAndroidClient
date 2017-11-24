@@ -25,6 +25,7 @@ public class NavigationDrawerHelper {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
+    @Inject ApplicationState state;
 
     public NavigationView navigationView;
     public DrawerLayout drawerLayout;
@@ -32,6 +33,17 @@ public class NavigationDrawerHelper {
 
     public void initNavigationDrawer(final Toolbar toolbar, final Activity activity) {
         navigationView = (NavigationView) activity.findViewById(R.id.navigation_view);
+        final MenuItem connectMicrophone = navigationView.getMenu().findItem(R.id.connect_microphone);
+        final MenuItem disconnectMicrophone = navigationView.getMenu().findItem(R.id.disconnect_microphone);
+
+        if (state.microphoneState().started()) {
+            connectMicrophone.setVisible(false);
+            disconnectMicrophone.setVisible(true);
+        } else {
+            connectMicrophone.setVisible(true);
+            disconnectMicrophone.setVisible(false);
+        }
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -55,10 +67,18 @@ public class NavigationDrawerHelper {
                         activity.startActivity(new Intent(context, AboutActivity.class));
                         drawerLayout.closeDrawers();
                         break;
-                    case R.id.phone_microphone:
+                    case R.id.connect_microphone:
                         currentSessionManager.startAudioSensor();
                         Intents.startDashboardActivity(activity, true);
                         drawerLayout.closeDrawers();
+                        connectMicrophone.setVisible(false);
+                        disconnectMicrophone.setVisible(true);
+                        break;
+                    case R.id.disconnect_microphone:
+                        currentSessionManager.stopAudioSensor();
+                        drawerLayout.closeDrawers();
+                        disconnectMicrophone.setVisible(false);
+                        connectMicrophone.setVisible(true);
                         break;
                     case R.id.external_sensors:
                         activity.startActivity(new Intent(context, ExternalSensorActivity.class));

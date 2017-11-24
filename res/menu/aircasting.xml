@@ -44,9 +44,14 @@
     <group android:id="@+id/group_secondary"
            android:checkableBehavior="none">
 
-        <item android:id="@+id/phone_microphone"
+        <item android:id="@+id/connect_microphone"
               android:icon="@drawable/menu_microphone_icon_black"
-              android:title="Connect to phone microphone"
+              android:title="@string/connect_phone_mic"
+        />
+        <item android:id="@+id/disconnect_microphone"
+              android:icon="@drawable/menu_microphone_icon_black"
+              android:title="@string/disconnect_phone_mic"
+              android:visible="false"
         />
         <item android:id="@+id/external_sensors"
               android:icon="@drawable/menu_sensors_icon_black"

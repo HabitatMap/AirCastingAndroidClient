@@ -3,6 +3,7 @@ package pl.llp.aircasting.model;
 import android.content.Context;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.VisibleSession;
@@ -22,6 +23,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,6 +154,12 @@ public class CurrentSessionSensorManager {
     @Subscribe
     public void onEvent(ConnectionUnsuccessfulEvent e) {
         disconnectSensors(new ExternalSensorDescriptor(e.getDevice()));
+    }
+
+    public void disconnectPhoneMicrophone() {
+        currentSessionSensors.remove(SensorName.from("Phone Microphone"));
+        eventBus.post(new SessionSensorsLoadedEvent(Constants.CURRENT_SESSION_FAKE_ID));
+        eventBus.post(new SensorConnectedEvent());
     }
 
     public void disconnectSensors(ExternalSensorDescriptor descriptor) {

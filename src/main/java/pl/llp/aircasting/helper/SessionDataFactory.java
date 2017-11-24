@@ -62,7 +62,7 @@ public class SessionDataFactory {
         if (sessionState.isSessionCurrent(sessionId)) {
             stream = currentSessionManager.getMeasurementStream(sensorName);
         } else {
-            stream = viewingSessionsManager.getMeasurementStream(sensorName, sessionId);
+            stream = viewingSessionsManager.getMeasurementStream(sessionId, sensorName);
         }
 
         return stream;

@@ -178,7 +178,7 @@ public class StreamAdapter extends SimpleAdapter {
 
    @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
-        long sessionId = event.getSession().getId();
+        long sessionId = event.getSessionId();
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);

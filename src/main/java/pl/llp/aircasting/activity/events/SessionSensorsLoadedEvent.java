@@ -1,20 +1,18 @@
 package pl.llp.aircasting.activity.events;
 
-import pl.llp.aircasting.model.Session;
-
 /**
  * Created by ags on 08/08/12 at 19:52
  */
 public class SessionSensorsLoadedEvent {
-    private final Session session;
+    private final long sessionId;
 
-    public SessionSensorsLoadedEvent(Session session)
+    public SessionSensorsLoadedEvent(long sessionId)
     {
-        this.session = session;
+        this.sessionId = sessionId;
     }
 
-    public Session getSession()
+    public long getSessionId()
     {
-        return session;
+        return sessionId;
     }
 }
