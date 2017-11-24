@@ -152,17 +152,14 @@ public class CurrentSessionManager {
     }
 
     public void startAudioSensor() {
-        if (!state.microphoneState().started()) {
-            audioReader.start();
-            state.microphoneState().start();
-        }
+        audioReader.start();
+        state.microphoneState().start();
     }
 
     public void stopAudioSensor() {
-        if (state.microphoneState().started()) {
-            audioReader.stop();
-            state.microphoneState().stop();
-        }
+        audioReader.stop();
+        currentSessionSensorManager.disconnectPhoneMicrophone();
+        state.microphoneState().stop();
     }
 
     public synchronized void pauseSession() {
@@ -185,7 +182,6 @@ public class CurrentSessionManager {
         }
 
         locationHelper.stop();
-        state.microphoneState().stop();
         state.sensors().stop();
     }
 

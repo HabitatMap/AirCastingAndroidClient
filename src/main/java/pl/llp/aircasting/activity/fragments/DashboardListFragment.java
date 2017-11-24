@@ -87,6 +87,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
             case R.id.dashboard_microphone:
                 DashboardActivity activity = (DashboardActivity) getActivity();
                 activity.connectPhoneMicrophone();
+                activity.reloadNavigationDrawer();
                 setListAdapter(adapter);
                 state.dashboardState.populate();
                 activity.invalidateOptionsMenu();

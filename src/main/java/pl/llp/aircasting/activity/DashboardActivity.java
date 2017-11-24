@@ -123,6 +123,10 @@ public class DashboardActivity extends DashboardBaseActivity {
         }
     }
 
+    public void reloadNavigationDrawer() {
+        initNavigationDrawer();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         super.onOptionsItemSelected(menuItem);

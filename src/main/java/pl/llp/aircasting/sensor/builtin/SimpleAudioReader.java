@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.sensor.builtin;
 
-import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.helper.CalibrationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
@@ -31,8 +30,7 @@ import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-public class SimpleAudioReader extends AudioReader.Listener
-{
+public class SimpleAudioReader extends AudioReader.Listener {
   private static final int SAMPLE_RATE = 44100;
   public static final String SYMBOL = "dB";
   public static final String UNIT = "decibels";
@@ -57,7 +55,6 @@ public class SimpleAudioReader extends AudioReader.Listener
   @Inject SignalPower signalPower;
   @Inject EventBus eventBus;
   @Inject CalibrationHelper calibrationHelper;
-  @Inject ApplicationState state;
 
   /**
    * @return A Sensor representing the internal microphone
@@ -73,10 +70,8 @@ public class SimpleAudioReader extends AudioReader.Listener
     audioReader.startReader(SAMPLE_RATE, block, this);
   }
 
-  public void stop()
-  {
-    audioReader.stopReader();
-    state.microphoneState().stop();
+  public void stop() {
+   audioReader.stopReader();
   }
 
   @Override
@@ -86,14 +81,12 @@ public class SimpleAudioReader extends AudioReader.Listener
       double calibrated = calibrationHelper.calibrate(power);
       SensorEvent event = new SensorEvent(SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                                           VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
-      if(Constants.isDevMode())
-      {
+      if(Constants.isDevMode()) {
         Log.d(Constants.SENSORS_TAG, event.toString());
       }
       eventBus.post(event);
 
-      if(Constants.isDevMode())
-      {
+      if(Constants.isDevMode()) {
         SensorEvent event2 = new SensorEvent("2"+SENSOR_PACKAGE_NAME, "2"+SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                                              VERY_LOW, LOW, MID, HIGH, VERY_HIGH, 25);
         eventBus.post(event2);
