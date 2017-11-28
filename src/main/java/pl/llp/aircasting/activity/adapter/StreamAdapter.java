@@ -179,10 +179,16 @@ public class StreamAdapter extends SimpleAdapter {
    @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
         long sessionId = event.getSessionId();
+        int sensorsCount = sessionData.getSessionSensorsCount(sessionId);
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);
-        sessionStreamCount.put(sessionId, viewingSessionsSensorManager.getSensorsList(sessionId).size());
+
+        if (sensorsCount > 0) {
+            sessionStreamCount.put(sessionId, sessionData.getSessionSensorsCount(sessionId));
+        } else {
+            sessionStreamCount.remove(sessionId);
+        }
 
         update(false);
     }
@@ -431,9 +437,9 @@ public class StreamAdapter extends SimpleAdapter {
         if (!clearedStreams.containsKey(sessionId)) {
             clearedStreams.put(sessionId, new ArrayList<String>());
         }
+        clearedStreams.get(sessionId).add(sensor.toString());
         List clearedStreamsForSession = clearedStreams.get(sessionId);
 
-        clearedStreamsForSession.add(sensor.getSensorName());
         clearViewingSessionIfNeeded(sessionId, clearedStreamsForSession.size());
         streamsReordered = true;
         update(false);

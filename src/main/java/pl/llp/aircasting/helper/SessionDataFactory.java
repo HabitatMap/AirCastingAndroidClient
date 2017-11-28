@@ -68,6 +68,18 @@ public class SessionDataFactory {
         return stream;
     }
 
+    public Integer getSessionSensorsCount(long sessionId) {
+        int size;
+
+        if (sessionState.isSessionCurrent(sessionId)) {
+            size = currentSessionSensorManager.getSensorsList().size();
+        } else {
+            size = viewingSessionsSensorManager.getSensorsList(sessionId).size();
+        }
+
+        return size;
+    }
+
     public void deleteSession(long sessionId) {
         if (sessionState.isSessionCurrent(sessionId)) {
             currentSessionManager.deleteSession();
