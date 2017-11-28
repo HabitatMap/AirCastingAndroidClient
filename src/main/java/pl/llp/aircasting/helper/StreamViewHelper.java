@@ -76,7 +76,7 @@ public class StreamViewHelper {
             sessionButtonsContainer.setVisibility(View.GONE);
         }
 
-        if (sessionState.isSessionRecording(sessionId) && !session.hasTitle()) {
+        if (!session.hasTitle()) {
             sessionTitle.setText(R.string.unnamed);
         } else {
             sessionTitle.setText(session.getTitle());
