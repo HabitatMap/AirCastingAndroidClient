@@ -306,7 +306,6 @@ public class Session implements Serializable {
     public void setFixed(boolean isFixed) {
         if (isFixed) {
             this.type = "FixedSession";
-            this.drawable = R.drawable.session_fixed_icon;
         } else {
             this.type = "MobileSession";
         }
@@ -316,7 +315,15 @@ public class Session implements Serializable {
         return this.type;
     }
 
-    public int getDrawable() { return this.drawable; }
+    public int getDrawable() {
+        if (isFixed()) {
+            this.drawable = R.drawable.session_fixed_icon;
+        } else {
+            this.drawable = R.drawable.session_mobile_icon;
+        }
+
+        return this.drawable;
+    }
 
     public void setType(String type) {
         this.type = type;
