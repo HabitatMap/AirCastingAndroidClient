@@ -26,171 +26,156 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-public class ExternalSensorActivity extends DialogActivity
-{
-  @Inject Context context;
-  @Inject SensorAdapterFactory adapterFactory;
-  @Inject SettingsHelper settingsHelper;
-  @Inject ExternalSensors externalSensors;
-  @Inject EventBus eventBus;
+public class ExternalSensorActivity extends DialogActivity {
+    @Inject
+    Context context;
+    @Inject
+    SensorAdapterFactory adapterFactory;
+    @Inject
+    SettingsHelper settingsHelper;
+    @Inject
+    ExternalSensors externalSensors;
+    @Inject
+    EventBus eventBus;
 
-  @InjectView(R.id.paired_sensor_list) ListView pairedSensorList;
-  @InjectView(R.id.connected_sensors_list) ListView connectedSensorList;
+    @InjectView(R.id.paired_sensor_list)
+    ListView pairedSensorList;
+    @InjectView(R.id.connected_sensors_list)
+    ListView connectedSensorList;
+    @InjectView((R.id.pair_with_new_sensors_button))
+    Button openBluetoothButton;
 
-  @InjectView((R.id.pair_with_new_sensors_button)) Button openBluetoothButton;
+    BluetoothAdapter bluetoothAdapter;
+    PairedSensorAdapter pairedSensorAdapter;
+    ConnectedSensorAdapter connectedSensorAdapter;
 
-  BluetoothAdapter bluetoothAdapter;
-  PairedSensorAdapter pairedSensorAdapter;
-  ConnectedSensorAdapter connectedSensorAdapter;
+    AdapterInteractor sensorLists;
+    IOIOInteractor ioio = new IOIOInteractor();
 
-  AdapterInteractor sensorLists;
-  IOIOInteractor ioio = new IOIOInteractor();
+    private long bluetoothRequestTimestamp;
 
-  private long bluetoothRequestTimestamp;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.external_sensors_list);
+        eventBus.register(this);
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState)
-  {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.external_sensors_list);
-    eventBus.register(this);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        pairedSensorAdapter = adapterFactory.getPairedSensorAdapter(this);
+        connectedSensorAdapter = adapterFactory.getConnectedSensorAdapter(this, settingsHelper);
 
-    pairedSensorAdapter = adapterFactory.getPairedSensorAdapter(this);
-    connectedSensorAdapter = adapterFactory.getConnectedSensorAdapter(this, settingsHelper);
+        pairedSensorList.setAdapter(pairedSensorAdapter);
+        pairedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage(R.string.connect_sensor).
+                        setCancelable(true).
+                        setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
+                                ioio.startIfNecessary(connected, context);
 
-    pairedSensorList.setAdapter(pairedSensorAdapter);
-    pairedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener()
-    {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
-      {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.connect_sensor).
-            setCancelable(true).
-                   setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                   {
-                     @Override
-                     public void onClick(DialogInterface dialog, int which)
-                     {
-                       ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
-                       ioio.startIfNecessary(connected, context);
+                                Intents.restartSensors(context);
+                                Intents.startDashboardActivity(ExternalSensorActivity.this, true);
+                            }
+                        }).setNegativeButton("No", NoOp.dialogOnClick());
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
-                       Intents.restartSensors(context);
-                       Intents.startDashboardActivity(ExternalSensorActivity.this, true);
-                     }
-                   }).setNegativeButton("No", NoOp.dialogOnClick());
-        AlertDialog dialog = builder.create();
-        dialog.show();
-      }
-    });
+        connectedSensorList.setAdapter(connectedSensorAdapter);
+        connectedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage(R.string.disconnect_sensor).
+                        setCancelable(true).
+                        setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                disconnectFrom(sensorLists.disconnect(position));
+                            }
+                        }).setNegativeButton("No", NoOp.dialogOnClick());
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
-    connectedSensorList.setAdapter(connectedSensorAdapter);
-    connectedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener()
-    {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
-      {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.disconnect_sensor).
-            setCancelable(true).
-                   setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                   {
-                     @Override
-                     public void onClick(DialogInterface dialog, int which)
-                     {
-                       disconnectFrom(sensorLists.disconnect(position));
-                     }
-                   }).setNegativeButton("No", NoOp.dialogOnClick());
-        AlertDialog dialog = builder.create();
-        dialog.show();
-      }
-    });
+        sensorLists = new AdapterInteractor(this, pairedSensorAdapter, connectedSensorAdapter, settingsHelper);
+    }
 
-    sensorLists = new AdapterInteractor(this, pairedSensorAdapter, connectedSensorAdapter, settingsHelper);
-  }
+    private void disconnectFrom(final ExternalSensorDescriptor disconnected) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int pos = connectedSensorAdapter.findPosition(disconnected);
+                if (pos > -1) {
+                    sensorLists.disconnect(pos);
+                }
+                externalSensors.disconnect(disconnected.getAddress());
 
-  private void disconnectFrom(final ExternalSensorDescriptor disconnected)
-  {
-    runOnUiThread(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        int pos = connectedSensorAdapter.findPosition(disconnected);
-        if(pos > -1)
-        {
-          sensorLists.disconnect(pos);
+                Intents.restartSensors(context);
+                ioio.stopIfNecessary(disconnected, context);
+            }
+        });
+    }
+
+    @Subscribe
+    public void onEvent(ConnectionUnsuccessfulEvent event) {
+        disconnectFrom(new ExternalSensorDescriptor(event.getDevice()));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        eventBus.register(this);
+
+        if (bluetoothAdapter == null) {
+            Toast.makeText(context, R.string.bluetooth_not_supported, Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
-        externalSensors.disconnect(disconnected.getAddress());
 
-        Intents.restartSensors(context);
-        ioio.stopIfNecessary(disconnected, context); }
-    });
-  }
+        sensorLists.updateKnownSensorListVisibility();
+        ioio.startPreviouslyConnectedIOIO(settingsHelper, context);
 
-  @Subscribe
-  public void onEvent(ConnectionUnsuccessfulEvent event)
-  {
-    disconnectFrom(new ExternalSensorDescriptor(event.getDevice()));
-  }
+        openBluetoothButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!bluetoothAdapter.isDiscovering()) {
+                    bluetoothAdapter.startDiscovery();
+                }
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                context.startActivity(intent);
+            }
+        });
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    eventBus.register(this);
-
-    if (bluetoothAdapter == null) {
-      Toast.makeText(context, R.string.bluetooth_not_supported, Toast.LENGTH_LONG).show();
-      finish();
-      return;
-    }
-
-    sensorLists.updateKnownSensorListVisibility();
-    ioio.startPreviouslyConnectedIOIO(settingsHelper, context);
-
-    openBluetoothButton.setOnClickListener(new View.OnClickListener()
-    {
-      @Override
-      public void onClick(View v)
-      {
-        if(!bluetoothAdapter.isDiscovering())
-        {
-          bluetoothAdapter.startDiscovery();
+        if (!bluetoothAdapter.isEnabled()) {
+            long now = System.currentTimeMillis();
+            if (now - bluetoothRequestTimestamp > Constants.ONE_SECOND) {
+                Intents.requestEnableBluetooth(this);
+            }
         }
-        Intent intent = new Intent();
-        intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-        context.startActivity(intent);
-      }
-    });
-
-    if (!bluetoothAdapter.isEnabled())
-    {
-      long now = System.currentTimeMillis();
-      if(now - bluetoothRequestTimestamp > Constants.ONE_SECOND)
-      {
-        Intents.requestEnableBluetooth(this);
-      }
     }
-  }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data)
-  {
-    if(requestCode == Intents.REQUEST_ENABLE_BLUETOOTH)
-    {
-      bluetoothRequestTimestamp = System.currentTimeMillis();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Intents.REQUEST_ENABLE_BLUETOOTH) {
+            bluetoothRequestTimestamp = System.currentTimeMillis();
+        }
     }
-  }
 
-  @Override
-  protected void onPause()
-  {
-    super.onPause();
-    openBluetoothButton.setOnClickListener(null);
-    eventBus.unregister(this);
-  }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        openBluetoothButton.setOnClickListener(null);
+        eventBus.unregister(this);
+    }
 }
 
