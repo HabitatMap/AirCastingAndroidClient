@@ -32,6 +32,7 @@ import roboguice.inject.InjectView;
  * Time: 4:25 PM
  */
 public class OpenFixedSessionActivity extends DialogActivity implements View.OnClickListener {
+    @InjectView(R.id.view) Button view;
     @InjectView(R.id.continue_streaming) Button continueStreaming;
     @InjectView(R.id.edit) Button edit;
     @InjectView(R.id.delete_session) Button delete;
@@ -41,6 +42,7 @@ public class OpenFixedSessionActivity extends DialogActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_fixed_session);
 
+        view.setOnClickListener(this);
         continueStreaming.setOnClickListener(this);
         edit.setOnClickListener(this);
         delete.setOnClickListener(this);

@@ -22,6 +22,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
         >
+
+    <Button style="@style/DialogButton"
+            android:text="@string/add_to_dashboard"
+            android:id="@+id/view"
+    />
     <Button style="@style/DialogButton"
             android:text="@string/continue_streaming"
             android:id="@+id/continue_streaming"

@@ -41,6 +41,7 @@ public class DashboardChartManager {
     private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
+    private final static int MAX_X_VALUE = 8;
     private static int dynamicAveragesCount = 0;
     private static int interval;
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
@@ -99,16 +100,16 @@ public class DashboardChartManager {
     public void drawChart(LineChart chart, final Sensor sensor, long sessionId) {
         requestedSensorName = sensor.getSensorName();
         requestedSessionId = sessionId;
+        MeasurementStream stream = getStream();
         isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
         requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
-        MeasurementStream stream = getStream();
         String descriptionText = getTimestamp(stream);
 
         draw(chart, descriptionText);
+        chart.clear();
 
-        if (chartShouldStayEmpty(stream)) {
-           chart.clear();
-           return;
+        if (stream == null) {
+            return;
         }
 
         initStaticChart(stream, chart, sensor);
@@ -203,8 +204,9 @@ public class DashboardChartManager {
 
     private void prepareEntries(long sessionId, MeasurementStream stream) {
         List<List<Measurement>> periodData;
-        double streamFrequency = stream.getFrequency();
-        double xValue = 8;
+        boolean isFixed = sessionData.getSession(sessionId).isFixed();
+        double streamFrequency = stream.getFrequency(isFixed);
+        double xValue = MAX_X_VALUE;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
         List entries = new CopyOnWriteArrayList();
         List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT);
@@ -268,12 +270,6 @@ public class DashboardChartManager {
         String key = getKey(Constants.CURRENT_SESSION_FAKE_ID, requestedSensorName);
         return shouldUseExistingEntries.containsKey(key) && shouldUseExistingEntries.get(key) == true;
     }
-
-    private boolean chartShouldStayEmpty(MeasurementStream stream) {
-        return stream == null || (isSessionCurrent && !shouldDynamicChartUpdate());
-    }
-
-
 
     private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
         ArrayList colors = new ArrayList<Integer>();
