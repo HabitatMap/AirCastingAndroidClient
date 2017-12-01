@@ -50,6 +50,7 @@ public class SessionDriver
     private static final String DELETE_SESSION_STREAMS_PATH = "/api/user/sessions/delete_session_streams";
     private static final String USER_SESSION_PATH = "/api/user/sessions/";
     public static final String COMPRESSION = "compression";
+    public static final String STREAM_MEASUREMENTS = "stream_measurements";
 
     @Inject SessionRepository sessionRepository;
     @Inject GZIPHelper gzipHelper;
@@ -106,6 +107,7 @@ public class SessionDriver
       return http()
               .get()
               .from(USER_SESSION_PATH + id + ".json")
+              .with(STREAM_MEASUREMENTS, "true")
               .into(Session.class);
   }
 

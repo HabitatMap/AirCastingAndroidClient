@@ -32,7 +32,7 @@ public class MeasurementStream implements Serializable
   @Expose @SerializedName("unit_symbol") private String symbol;
 
   private Double sum = 0.0;
-  private Double frequency;
+  private Double frequency = 0.0;
 
   @Expose @SerializedName("average_value") Double avg;
 
@@ -135,7 +135,7 @@ public class MeasurementStream implements Serializable
   }
 
   private double calculateSamplingFrequency() {
-    if (frequency != null) { return frequency; }
+    if (frequency > 0.0) { return frequency; }
 
     double deltaSum = 0;
     List<Measurement> sample = getLastMeasurements(5);
@@ -227,9 +227,13 @@ public class MeasurementStream implements Serializable
     return sum / (measurements.isEmpty() ? 1 : measurements.size());
   }
 
-  public double getFrequency() {
-    if (frequency == null) {
-      frequency = calculateSamplingFrequency();
+  public double getFrequency(boolean isFixed) {
+    if (frequency <= 0.0) {
+        if (isFixed) {
+          frequency = Double.valueOf(1);
+        } else {
+          frequency = calculateSamplingFrequency();
+        }
     }
     return frequency;
   }
