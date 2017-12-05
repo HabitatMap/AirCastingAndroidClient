@@ -19,7 +19,10 @@
  */
 package pl.llp.aircasting.service;
 
+import android.app.Notification;
+import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.SessionManager;
 
 import android.content.Intent;
@@ -29,6 +32,8 @@ import roboguice.service.RoboService;
 
 public class SensorService extends RoboService
 {
+  public static final int ACTIVE_SENSORS_ID = 2;
+
   @Inject SessionManager sessionManager;
 
   @Override
@@ -58,6 +63,15 @@ public class SensorService extends RoboService
         sessionManager.restartSensors();
         break;
     }
+
+      NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+              .setSmallIcon(R.drawable.aircasting)
+              .setContentTitle(getString(R.string.app_name))
+              .setContentText(getString(R.string.sensors_are_active))
+              .setAutoCancel(true);
+
+      Notification notification = builder.build();
+      startForeground(ACTIVE_SENSORS_ID, notification);
 
     return START_STICKY;
   }

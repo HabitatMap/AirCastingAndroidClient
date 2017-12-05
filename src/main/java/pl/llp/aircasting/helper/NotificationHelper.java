@@ -1,15 +1,13 @@
 package pl.llp.aircasting.helper;
 
+import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.R;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.activity.StreamsActivity;
 import roboguice.inject.InjectResource;
 
 /**
@@ -21,8 +19,6 @@ import roboguice.inject.InjectResource;
 @Singleton
 public class NotificationHelper {
     public static final int RECORDING_ID = 1;
-    public static final int EMPTY_FLAGS = 0;
-    public static final int REQUEST_ANY = 0;
 
     @Inject NotificationManager notificationManager;
     @Inject Context context;
@@ -30,14 +26,15 @@ public class NotificationHelper {
     @InjectResource(R.string.aircasting_is_recording) String aircastingIsRecording;
 
     public void showRecordingNotification() {
-        long time = System.currentTimeMillis();
-        Notification notification = new Notification(R.drawable.ic_media_record, aircastingIsRecording, time);
-        notification.flags &= ~Notification.FLAG_AUTO_CANCEL;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setContentTitle(aircastingIsRecording)
+                .setContentText("")
+                .setSmallIcon(R.drawable.ic_media_record)
+                .setAutoCancel(true);
 
-        Intent notificationIntent = new Intent(context, StreamsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, REQUEST_ANY, notificationIntent, EMPTY_FLAGS);
-        notification.setLatestEventInfo(context, aircastingIsRecording, "", pendingIntent);
+        builder.build();
 
+        Notification notification = builder.getNotification();
         notificationManager.notify(RECORDING_ID, notification);
     }
 

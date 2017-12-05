@@ -19,6 +19,8 @@
  */
 package pl.llp.aircasting;
 
+import android.os.Build;
+import android.util.Log;
 import pl.llp.aircasting.activity.ContributeActivity;
 import pl.llp.aircasting.activity.EditSessionActivity;
 import pl.llp.aircasting.activity.MakeANoteActivity;
