@@ -63,7 +63,6 @@ public class ToggleAircastingHelper {
     public void stopAirCasting() {
         Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
-        dashboardChartManager.resetAllDynamicCharts();
 
         if (session.isFixed()) {
             stopFixedAirCasting(session);

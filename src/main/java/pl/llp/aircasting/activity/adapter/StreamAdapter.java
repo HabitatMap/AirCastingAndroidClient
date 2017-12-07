@@ -142,10 +142,6 @@ public class StreamAdapter extends SimpleAdapter {
         dashboardChartManager.resetAllStaticCharts();
     }
 
-    public void resetDynamicCharts() {
-        dashboardChartManager.resetDynamicCharts(sensors.keySet());
-    }
-
     private void resetSwappedCharts(Long sessionId, String sensor1, String sensor2) {
         String[] sensorNames = new String[2];
         sensorNames[0] = sensor1;
