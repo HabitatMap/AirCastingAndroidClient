@@ -69,7 +69,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
 
         adapter.resetAllStaticCharts();
-        adapter.resetDynamicCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
 

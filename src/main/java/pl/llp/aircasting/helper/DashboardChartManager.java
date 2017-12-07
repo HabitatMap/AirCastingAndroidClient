@@ -45,7 +45,6 @@ public class DashboardChartManager {
     private static int dynamicAveragesCount = 0;
     private static int interval;
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
-    private static Map<String, Boolean> shouldUseExistingEntries = newHashMap();
     private static Map<String, List> averages = newHashMap();
     private static String requestedSensorName;
     private static String requestedStreamKey;
@@ -84,16 +83,6 @@ public class DashboardChartManager {
     public void resetSpecificStaticCharts(Long sessionId, String[] sensors) {
         for (String sensorName : sensors) {
             staticChartGeneratedForStream.remove(getKey(sessionId, sensorName));
-        }
-    }
-
-    public void resetAllDynamicCharts() {
-        shouldUseExistingEntries.clear();
-    }
-
-    public void resetDynamicCharts(Set<String> sensors) {
-        for (String sensorName : sensors) {
-            shouldUseExistingEntries.put(getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName), true);
         }
     }
 
@@ -229,7 +218,6 @@ public class DashboardChartManager {
         }
 
         averages.put(getKey(sessionId, stream.getSensorName()), Lists.reverse(entries));
-        shouldUseExistingEntries.put(getKey(sessionId, stream.getSensorName()), true);
     }
 
     private double getTolerance(double streamFrequency) {
@@ -264,11 +252,6 @@ public class DashboardChartManager {
 
     private boolean shouldStaticChartInitialize() {
         return !staticChartGeneratedForStream.containsKey(requestedStreamKey);
-    }
-
-    private boolean shouldDynamicChartUpdate() {
-        String key = getKey(Constants.CURRENT_SESSION_FAKE_ID, requestedSensorName);
-        return shouldUseExistingEntries.containsKey(key) && shouldUseExistingEntries.get(key) == true;
     }
 
     private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
