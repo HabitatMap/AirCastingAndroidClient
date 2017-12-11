@@ -1,5 +1,6 @@
 package pl.llp.aircasting.sensor;
 
+import android.util.Log;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 

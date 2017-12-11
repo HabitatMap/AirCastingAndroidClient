@@ -15,120 +15,104 @@ import com.google.inject.Inject;
 /**
  * Created by ags on 03/16/13 at 23:36
  */
-public class ContinuousTracker
-{
-  @Inject EventBus eventBus;
-  @Inject MetadataHelper metadataHelper;
-  @Inject LocationHelper locationHelper;
-  @Inject SettingsHelper settingsHelper;
-  @Inject DatabaseTaskQueue taskQueue;
-  @Inject SessionRepository sessions;
-  @Inject
-  FixedSessionUploader fixedSessionUploader;
+public class ContinuousTracker {
+    @Inject EventBus eventBus;
+    @Inject MetadataHelper metadataHelper;
+    @Inject LocationHelper locationHelper;
+    @Inject SettingsHelper settingsHelper;
+    @Inject DatabaseTaskQueue taskQueue;
+    @Inject SessionRepository sessions;
+    @Inject FixedSessionUploader fixedSessionUploader;
 
-  private Session session;
+    private Session session;
 
-  private SessionTracker sessionTracker;
-  private ActualNoteTracker noteTracker;
+    private SessionTracker sessionTracker;
+    private ActualNoteTracker noteTracker;
 
-  @Inject
-  public void init()
-  {
-    eventBus.register(this);
-    sessionTracker = new InactiveSessionTracker(taskQueue);
-    noteTracker = new ActualNoteTracker(eventBus, taskQueue);
-  }
-
-  public void addNote(Note note)
-  {
-    sessionTracker.addNote(note);
-  }
-
-  public boolean startTracking(Session incomingSession, boolean locationLess)
-  {
-    this.session = incomingSession;
-    sessionTracker = buildSessionTracker(locationLess);
-
-    if(sessionTracker.save(session))
-      return true;
-    else {
-      stopTracking(session);
-      return false;
+    @Inject
+    public void init() {
+        eventBus.register(this);
+        sessionTracker = new InactiveSessionTracker(taskQueue);
+        noteTracker = new ActualNoteTracker(eventBus, taskQueue);
     }
-  }
 
-  public boolean continueTracking(Session incomingSession, boolean locationLess)
-  {
-    this.session = incomingSession;
-    sessionTracker = buildSessionTracker(locationLess);
-    return true;
-  }
+    public void addNote(Note note) {
+        sessionTracker.addNote(note);
+    }
 
-  public void stopTracking() {
-      stopTracking(session);
-  }
+    public boolean startTracking(Session incomingSession, boolean locationLess) {
+        this.session = incomingSession;
+        sessionTracker = buildSessionTracker(locationLess);
 
-  public void stopTracking(Session session)
-  {
-    sessionTracker.finishTracking();
-    sessionTracker = new InactiveSessionTracker(taskQueue);
-    eventBus.post(new SessionStoppedEvent(session));
-  }
+        if (sessionTracker.save(session))
+            return true;
+        else {
+            stopTracking(session);
+            return false;
+        }
+    }
 
-  public void setTitle(long sessionId, String title)
-  {
-    sessionTracker.setTitle(sessionId, title);
-  }
+    public boolean continueTracking(Session incomingSession, boolean locationLess) {
+        this.session = incomingSession;
+        sessionTracker = buildSessionTracker(locationLess);
+        return true;
+    }
 
-  public void setTags(long sessionId, String tags)
-  {
-    sessionTracker.setTags(sessionId, tags);
-  }
+    public void stopTracking() {
+        stopTracking(session);
+    }
 
-  public void setDescription(long sessionId, String description)
-  {
-    sessionTracker.setDescription(sessionId, description);
-  }
+    public void stopTracking(Session session) {
+        sessionTracker.finishTracking();
+        sessionTracker = new InactiveSessionTracker(taskQueue);
+        eventBus.post(new SessionStoppedEvent(session));
+    }
 
-  public void setContribute(long sessionId, boolean shouldContribute)
-  {
-    sessionTracker.setContribute(sessionId, shouldContribute);
-  }
+    public void setTitle(long sessionId, String title) {
+        sessionTracker.setTitle(sessionId, title);
+    }
 
-  public void addStream(final MeasurementStream stream)
-  {
-    sessionTracker.addStream(stream);
-  }
+    public void setTags(long sessionId, String tags) {
+        sessionTracker.setTags(sessionId, tags);
+    }
 
-  public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement)
-  {
-    sessionTracker.addMeasurement(sensor, stream, measurement);
-  }
+    public void setDescription(long sessionId, String description) {
+        sessionTracker.setDescription(sessionId, description);
+    }
 
-  public void complete(long sessionId)
-  {
-    sessions.complete(sessionId);
-  }
+    public void setContribute(long sessionId, boolean shouldContribute) {
+        sessionTracker.setContribute(sessionId, shouldContribute);
+    }
 
-  public void discard(long sessionId)
-  {
-    stopTracking(session);
-    sessions.deleteCompletely(sessionId);
-  }
+    public void addStream(final MeasurementStream stream) {
+        sessionTracker.addStream(stream);
+    }
 
-  public void deleteNote(Session session, Note note)
-  {
-    noteTracker.deleteNote(session, note);
-  }
+    public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement) {
+        sessionTracker.addMeasurement(sensor, stream, measurement);
+    }
 
-  private SessionTracker buildSessionTracker(boolean locationLess) {
-    if(session.isFixed())
-      return new FixedSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, fixedSessionUploader, locationLess);
-    else
-      return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
-  }
+    public void complete(long sessionId) {
+        sessions.complete(sessionId);
+    }
 
-  public synchronized double getNow(Sensor sensor) {
-    return sessionTracker.getNow(sensor);
-  }
+    public void discard(long sessionId) {
+        stopTracking(session);
+        sessions.deleteCompletely(sessionId);
+    }
+
+    public void deleteNote(Session session, Note note) {
+        noteTracker.deleteNote(session, note);
+    }
+
+    private SessionTracker buildSessionTracker(boolean locationLess) {
+        if (session.isFixed())
+            return new FixedSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, fixedSessionUploader, locationLess);
+        else
+            return new ActualSessionTracker(eventBus, session, taskQueue, settingsHelper, metadataHelper, sessions, locationLess);
+    }
+
+    public synchronized double getNow(Sensor sensor) {
+        return sessionTracker.getNow(sensor);
+    }
 }

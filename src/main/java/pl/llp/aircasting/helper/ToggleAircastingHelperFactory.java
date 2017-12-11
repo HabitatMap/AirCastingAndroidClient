@@ -19,6 +19,13 @@ public class ToggleAircastingHelperFactory {
     @Inject DashboardChartManager dashboardChartManager;
 
     public ToggleAircastingHelper getAircastingHelper(Activity activity, AppCompatDelegate delegate) {
-        return new ToggleAircastingHelper(activity, currentSessionManager, settingsHelper, currentSessionSensorManager, locationHelper, delegate, context, dashboardChartManager);
+        return new ToggleAircastingHelper(activity,
+                currentSessionManager,
+                settingsHelper,
+                currentSessionSensorManager,
+                locationHelper,
+                delegate,
+                context,
+                dashboardChartManager);
     }
 }

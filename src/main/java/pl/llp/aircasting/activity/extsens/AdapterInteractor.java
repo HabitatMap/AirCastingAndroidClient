@@ -9,70 +9,58 @@ import android.view.View;
 import java.util.List;
 import java.util.Map;
 
-class AdapterInteractor
-{
-  private ExternalSensorActivity parent;
-  private ConnectedSensorAdapter connectedSensorAdapter;
-  private PairedSensorAdapter pairedSensorAdapter;
-  private SettingsHelper settingsHelper;
+class AdapterInteractor {
+    private ExternalSensorActivity parent;
+    private ConnectedSensorAdapter connectedSensorAdapter;
+    private PairedSensorAdapter pairedSensorAdapter;
+    private SettingsHelper settingsHelper;
 
-  AdapterInteractor(ExternalSensorActivity parent, PairedSensorAdapter pairedSensorAdapter, ConnectedSensorAdapter connectedSensorAdapter, SettingsHelper settingsHelper)
-  {
-    this.parent = parent;
-    this.pairedSensorAdapter = pairedSensorAdapter;
-    this.connectedSensorAdapter = connectedSensorAdapter;
-    this.settingsHelper = settingsHelper;
-  }
-
-  void updateKnownSensorListVisibility()
-  {
-    List<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
-    connectedSensorAdapter.updatePreviouslyConnected(descriptors);
-    for (ExternalSensorDescriptor descriptor : descriptors)
-    {
-      pairedSensorAdapter.markAsConnected(descriptor);
+    AdapterInteractor(ExternalSensorActivity parent, PairedSensorAdapter pairedSensorAdapter, ConnectedSensorAdapter connectedSensorAdapter, SettingsHelper settingsHelper) {
+        this.parent = parent;
+        this.pairedSensorAdapter = pairedSensorAdapter;
+        this.connectedSensorAdapter = connectedSensorAdapter;
+        this.settingsHelper = settingsHelper;
     }
 
-    pairedSensorAdapter.updateIfNecessary();
-    if(pairedSensorAdapter.getCount() > 0)
-    {
-      parent.findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);
-      parent.findViewById(R.id.paired_sensors_label).setVisibility(View.VISIBLE);
-    }
-    else
-    {
-      parent.findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
-      parent.findViewById(R.id.paired_sensors_label).setVisibility(View.GONE);
-    }
-    if (connectedSensorAdapter.getCount() > 0)
-    {
-      parent.findViewById(R.id.connected_sensors_label).setVisibility(View.VISIBLE);
-      parent.findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
-    }
-    else
-    {
-      parent.findViewById(R.id.connected_sensors_label).setVisibility(View.GONE);
-      parent.findViewById(R.id.connected_sensors_list).setVisibility(View.GONE);
-    }
-  }
+    void updateKnownSensorListVisibility() {
+        List<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
+        connectedSensorAdapter.updatePreviouslyConnected(descriptors);
+        for (ExternalSensorDescriptor descriptor : descriptors) {
+            pairedSensorAdapter.markAsConnected(descriptor);
+        }
 
-  public ExternalSensorDescriptor connectToActive(int position)
-  {
-    ExternalSensorDescriptor descriptor = pairedSensorAdapter.get(position);
-    descriptor.setAction("disconnect");
+        pairedSensorAdapter.updateIfNecessary();
+        if (pairedSensorAdapter.getCount() > 0) {
+            parent.findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);
+            parent.findViewById(R.id.paired_sensors_label).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
+            parent.findViewById(R.id.paired_sensors_label).setVisibility(View.GONE);
+        }
+        if (connectedSensorAdapter.getCount() > 0) {
+            parent.findViewById(R.id.connected_sensors_label).setVisibility(View.VISIBLE);
+            parent.findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.connected_sensors_label).setVisibility(View.GONE);
+            parent.findViewById(R.id.connected_sensors_list).setVisibility(View.GONE);
+        }
+    }
 
-    pairedSensorAdapter.markAsConnected(position);
-    connectedSensorAdapter.addSensor(descriptor);
+    public ExternalSensorDescriptor connectToActive(int position) {
+        ExternalSensorDescriptor descriptor = pairedSensorAdapter.get(position);
+        descriptor.setAction("disconnect");
 
-    return descriptor;
-  }
+        pairedSensorAdapter.markAsConnected(position);
+        connectedSensorAdapter.addSensor(descriptor);
 
-  public ExternalSensorDescriptor disconnect(int position)
-  {
-    Map<String, String> removed = connectedSensorAdapter.remove(position);
-    ExternalSensorDescriptor sensor = ExternalSensorDescriptor.from(removed);
-    pairedSensorAdapter.connectionFailedWith(sensor.getAddress());
-    updateKnownSensorListVisibility();
-    return sensor;
-  }
+        return descriptor;
+    }
+
+    public ExternalSensorDescriptor disconnect(int position) {
+        Map<String, String> removed = connectedSensorAdapter.remove(position);
+        ExternalSensorDescriptor sensor = ExternalSensorDescriptor.from(removed);
+        pairedSensorAdapter.connectionFailedWith(sensor.getAddress());
+        updateKnownSensorListVisibility();
+        return sensor;
+    }
 }
