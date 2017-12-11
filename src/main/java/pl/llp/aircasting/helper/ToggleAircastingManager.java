@@ -15,7 +15,7 @@ import pl.llp.aircasting.model.Session;
 /**
  * Created by radek on 21/06/17.
  */
-public class ToggleAircastingHelper {
+public class ToggleAircastingManager {
     public AppCompatDelegate delegate;
     private Context context;
     private Activity activity;
@@ -25,14 +25,14 @@ public class ToggleAircastingHelper {
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
-    public ToggleAircastingHelper(Activity activity,
-                                  CurrentSessionManager currentSessionManager,
-                                  SettingsHelper settingsHelper,
-                                  CurrentSessionSensorManager currentSessionSensorManager,
-                                  LocationHelper locationHelper,
-                                  AppCompatDelegate delegate,
-                                  Context context,
-                                  DashboardChartManager dashboardChartManager) {
+    public ToggleAircastingManager(Activity activity,
+                                   CurrentSessionManager currentSessionManager,
+                                   SettingsHelper settingsHelper,
+                                   CurrentSessionSensorManager currentSessionSensorManager,
+                                   LocationHelper locationHelper,
+                                   AppCompatDelegate delegate,
+                                   Context context,
+                                   DashboardChartManager dashboardChartManager) {
         this.activity = activity;
         this.currentSessionManager = currentSessionManager;
         this.settingsHelper = settingsHelper;

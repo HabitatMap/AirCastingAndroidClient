@@ -36,7 +36,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject EventBus eventBus;
-    @Inject ToggleAircastingHelperFactory aircastingHelperFactory;
+    @Inject ToggleAircastingManagerFactory aircastingHelperFactory;
 
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
@@ -48,7 +48,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Nullable
     @InjectView(R.id.zoom_out) Button zoomOut;
 
-    private ToggleAircastingHelper toggleAircastingHelper;
+    private ToggleAircastingManager toggleAircastingManager;
     private boolean initialized = false;
     private long lastChecked = 0;
 
@@ -94,7 +94,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     }
 
     private void initialize() {
-        toggleAircastingHelper = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
+        toggleAircastingManager = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
 
         if (!initialized) {
             initialized = true;
@@ -107,7 +107,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     }
 
     public synchronized void toggleAirCasting() {
-        toggleAircastingHelper.toggleAirCasting();
+        toggleAircastingManager.toggleAirCasting();
         getDelegate().invalidateOptionsMenu();
     }
 
@@ -116,9 +116,9 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         switch (requestCode) {
             case Intents.CHOOSE_SESSION_TYPE:
                 if (resultCode == R.id.mobile_session_button) {
-                    toggleAircastingHelper.startMobileAirCasting();
+                    toggleAircastingManager.startMobileAirCasting();
                 } else {
-                    toggleAircastingHelper.startFixedAirCasting();
+                    toggleAircastingManager.startFixedAirCasting();
                 }
                 break;
             case Intents.SAVE_DIALOG:

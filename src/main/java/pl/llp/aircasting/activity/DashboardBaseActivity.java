@@ -5,8 +5,8 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.helper.ToggleAircastingHelper;
-import pl.llp.aircasting.helper.ToggleAircastingHelperFactory;
+import pl.llp.aircasting.helper.ToggleAircastingManager;
+import pl.llp.aircasting.helper.ToggleAircastingManagerFactory;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Session;
@@ -33,12 +33,13 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
-    @Inject ToggleAircastingHelperFactory aircastingHelperFactory;
+    @Inject
+    ToggleAircastingManagerFactory aircastingHelperFactory;
     @Inject
     SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
-    private ToggleAircastingHelper toggleAircastingHelper;
+    private ToggleAircastingManager toggleAircastingManager;
     private boolean initialized = false;
     private long lastChecked = 0;
     public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
@@ -79,7 +80,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     }
 
     private void initialize() {
-        toggleAircastingHelper = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
+        toggleAircastingManager = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
 
         if (!initialized) {
             initialized = true;
@@ -87,7 +88,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     }
 
     public synchronized void toggleAirCasting() {
-        toggleAircastingHelper.toggleAirCasting();
+        toggleAircastingManager.toggleAirCasting();
         getDelegate().invalidateOptionsMenu();
     }
 
@@ -96,9 +97,9 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         switch (requestCode) {
             case Intents.CHOOSE_SESSION_TYPE:
                 if (resultCode == R.id.mobile_session_button) {
-                    toggleAircastingHelper.startMobileAirCasting();
+                    toggleAircastingManager.startMobileAirCasting();
                 } else {
-                    toggleAircastingHelper.startFixedAirCasting();
+                    toggleAircastingManager.startFixedAirCasting();
                 }
                 break;
             case Intents.SAVE_DIALOG:
