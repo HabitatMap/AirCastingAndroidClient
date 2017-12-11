@@ -10,7 +10,7 @@ import pl.llp.aircasting.model.CurrentSessionManager;
 /**
  * Created by radek on 13/07/17.
  */
-public class ToggleAircastingHelperFactory {
+public class ToggleAircastingManagerFactory {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject LocationHelper locationHelper;
@@ -18,8 +18,8 @@ public class ToggleAircastingHelperFactory {
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
 
-    public ToggleAircastingHelper getAircastingHelper(Activity activity, AppCompatDelegate delegate) {
-        return new ToggleAircastingHelper(activity,
+    public ToggleAircastingManager getAircastingHelper(Activity activity, AppCompatDelegate delegate) {
+        return new ToggleAircastingManager(activity,
                 currentSessionManager,
                 settingsHelper,
                 currentSessionSensorManager,
