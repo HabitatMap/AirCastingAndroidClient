@@ -32,12 +32,9 @@ public class ExternalSensors {
     final Map<String, AbstractSensor> sensors = newHashMap();
 
     @Nullable
-    @Inject
-    BluetoothAdapter bluetoothAdapter;
-    @Inject
-    SettingsHelper settings;
-    @Inject
-    EventBus eventBus;
+    @Inject BluetoothAdapter bluetoothAdapter;
+    @Inject SettingsHelper settings;
+    @Inject EventBus eventBus;
 
     @Inject
     public void init() {

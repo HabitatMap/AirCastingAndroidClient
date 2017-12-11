@@ -27,23 +27,15 @@ import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 public class ExternalSensorActivity extends DialogActivity {
-    @Inject
-    Context context;
-    @Inject
-    SensorAdapterFactory adapterFactory;
-    @Inject
-    SettingsHelper settingsHelper;
-    @Inject
-    ExternalSensors externalSensors;
-    @Inject
-    EventBus eventBus;
+    @Inject Context context;
+    @Inject SensorAdapterFactory adapterFactory;
+    @Inject SettingsHelper settingsHelper;
+    @Inject ExternalSensors externalSensors;
+    @Inject EventBus eventBus;
 
-    @InjectView(R.id.paired_sensor_list)
-    ListView pairedSensorList;
-    @InjectView(R.id.connected_sensors_list)
-    ListView connectedSensorList;
-    @InjectView((R.id.pair_with_new_sensors_button))
-    Button openBluetoothButton;
+    @InjectView(R.id.paired_sensor_list) ListView pairedSensorList;
+    @InjectView(R.id.connected_sensors_list) ListView connectedSensorList;
+    @InjectView((R.id.pair_with_new_sensors_button)) Button openBluetoothButton;
 
     BluetoothAdapter bluetoothAdapter;
     PairedSensorAdapter pairedSensorAdapter;
