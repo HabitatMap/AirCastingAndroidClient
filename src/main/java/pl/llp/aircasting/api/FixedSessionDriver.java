@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ * AirCasting - Share your Air!
+ * Copyright (C) 2011-2012 HabitatMap, Inc.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.api;
 
 import com.google.gson.Gson;
@@ -40,8 +40,7 @@ import static pl.llp.aircasting.util.http.HttpBuilder.error;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
 
 @Singleton
-public class FixedSessionDriver
-{
+public class FixedSessionDriver {
     public static final String SESSION_KEY = "session";
     public static final String COMPRESSION = "compression";
     private static final String CREATE_FIXED_SESSIONS_MEASUREMENT_PATH = "/api/realtime/measurements.json";
@@ -54,63 +53,61 @@ public class FixedSessionDriver
     @Inject BitmapTransformer bitmapTransformer;
 
     public HttpResult<CreateSessionResponse> create(Session session) {
-      String zipped;
-      try {
-        zipped = new String(gzip(session));
-      } catch (IOException e) {
-        return error();
-      }
+        String zipped;
+        try {
+            zipped = new String(gzip(session));
+        } catch (IOException e) {
+            return error();
+        }
 
-      PerformRequest builder = http()
-              .post()
-              .to(CREATE_FIXED_SESSION_PATH)
-              .with(SESSION_KEY, zipped)
-              .with(COMPRESSION, "true");
+        PerformRequest builder = http()
+                .post()
+                .to(CREATE_FIXED_SESSION_PATH)
+                .with(SESSION_KEY, zipped)
+                .with(COMPRESSION, "true");
 
-      builder = attachPhotos(session, builder);
+        builder = attachPhotos(session, builder);
 
-      return builder.into(CreateSessionResponse.class);
+        return builder.into(CreateSessionResponse.class);
     }
 
-    private byte[] gzip(Session session) throws IOException
-    {
-      return gzipHelper.zippedSession(session);
+    private byte[] gzip(Session session) throws IOException {
+        return gzipHelper.zippedSession(session);
     }
 
-    private byte[] gzip(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException
-    {
-      return gzipHelper.zippedFixedSessionsMeasurement(fixedSessionsMeasurement);
+    private byte[] gzip(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException {
+        return gzipHelper.zippedFixedSessionsMeasurement(fixedSessionsMeasurement);
     }
 
     private PerformRequest attachPhotos(Session session, PerformRequest builder) {
-      for (int i = 0; i < session.getNotes().size(); i++) {
-        Note note = session.getNotes().get(i);
+        for (int i = 0; i < session.getNotes().size(); i++) {
+            Note note = session.getNotes().get(i);
 
-        if (photoHelper.photoExistsLocally(note)) {
-          String path = note.getPhotoPath();
-          Uploadable uploadable = bitmapTransformer.readScaledBitmap(path);
+            if (photoHelper.photoExistsLocally(note)) {
+                String path = note.getPhotoPath();
+                Uploadable uploadable = bitmapTransformer.readScaledBitmap(path);
 
-          builder = builder.upload("photos[]", uploadable);
-        } else {
-          builder = builder.with("photos[]", "");
+                builder = builder.upload("photos[]", uploadable);
+            } else {
+                builder = builder.with("photos[]", "");
+            }
         }
-      }
-      return builder;
+        return builder;
     }
 
     public HttpResult<CreateFixedSessionsMeasurementResponse> create_measurement(FixedSessionsMeasurement fixedSessionsMeasurement) {
-      String zipped;
-      try {
-        zipped = new String(gzip(fixedSessionsMeasurement));
-      } catch (IOException e) {
-        return error();
-      }
+        String zipped;
+        try {
+            zipped = new String(gzip(fixedSessionsMeasurement));
+        } catch (IOException e) {
+            return error();
+        }
 
-      return http()
-              .post()
-              .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
-              .with("data", zipped)
-              .with(COMPRESSION, "true")
-              .into(CreateFixedSessionsMeasurementResponse.class);
+        return http()
+                .post()
+                .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
+                .with("data", zipped)
+                .with(COMPRESSION, "true")
+                .into(CreateFixedSessionsMeasurementResponse.class);
     }
 }
