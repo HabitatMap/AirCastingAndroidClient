@@ -54,8 +54,4 @@ public class AirbeamSensor extends AbstractSensor {
     public void onEvent(Airbeam2ConfigMessageEvent event) {
         writerWorker.write(event.getMessage());
     }
-
-    private boolean isConfigurationModeOn() {
-        return !lineReader.hasStartedProcessing();
-    }
 }
