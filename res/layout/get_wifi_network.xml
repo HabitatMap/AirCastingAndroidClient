@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              style="@style/DialogMain">
+
+    <TextView style="@style/DialogText"
+              android:text="@string/wifi_ssid"/>
+
+    <EditText style="@style/Wide"
+              android:singleLine="false"
+              android:gravity="top"
+              android:id="@+id/wifi_ssid"/>
+
+    <TextView style="@style/DialogText"
+              android:text="@string/wifi_password"/>
+
+    <EditText style="@style/Wide"
+              android:singleLine="false"
+              android:gravity="top"
+              android:inputType="textPassword"
+              android:id="@+id/wifi_password"/>
+
+    <Button style="@style/DialogButton"
+            android:text="@string/submit"
+            android:id="@+id/wifi_submit"/>
 
 </LinearLayout>

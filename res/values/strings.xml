@@ -127,6 +127,7 @@
   <string name="session_details">Session details</string>
   <string name="stream_options">Stream options</string>
   <string name="choose_session_type">Choose session type</string>
+  <string name="choose_streaming_method">Choose streaming method</string>
   <string name="note">Note</string>
   <string name="sign_out">Sign out</string>
   <string name="contribute_to_crowd_map">Contribute to CrowdMap</string>
@@ -208,6 +209,8 @@
   <string name="Address">Address</string>
   <string name="connect_sensor">Connect?</string>
   <string name="disconnect_sensor">Disconnect?</string>
+  <string name="wifi">WiFi</string>
+  <string name="cellular">Cellular</string>
 
   <string name="backend_address">Backend address</string>
   <string name="backend_port">Backend port</string>
@@ -253,7 +256,12 @@
   <string name="disconnect_phone_mic">Disconnect phone microphone</string>
   <string name="connect_external_device">Connect to external device</string>
   <string name="configure_airbeam2">Configure AirBeam 2</string>
+  <string name="input_wifi_credentials">Input WiFi Credentials</string>
 
   <string name="drawer_open">Open</string>
   <string name="drawer_close">Close</string>
+
+  <string name="wifi_ssid">WiFi SSID</string>
+  <string name="wifi_password">WiFi Password</string>
+  <string name="submit">Submit</string>
 </resources>
