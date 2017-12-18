@@ -47,17 +47,8 @@ public class ToggleAircastingManager {
         if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
-            if (currentSessionSensorManager.getSensorByName("Phone Microphone") == null) {
-                chooseSessionType();
-            } else {
-                startMobileAirCasting();
-            }
+            startMobileAirCasting();
         }
-    }
-
-    private void chooseSessionType() {
-        Intent intent = new Intent(activity, ChooseSessionTypeActivity.class);
-        activity.startActivityForResult(intent, Intents.CHOOSE_SESSION_TYPE);
     }
 
     public void stopAirCasting() {
