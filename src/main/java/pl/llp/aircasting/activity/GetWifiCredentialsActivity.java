@@ -31,7 +31,7 @@ public class GetWifiCredentialsActivity extends DialogActivity implements View.O
                 String ssid = wifi_ssid.getText().toString();
                 String password = wifi_password.getText().toString();
 
-//                Airbeam2Configurator
+                airbeam2Configurator.setWifi(ssid, password);
                 startActivity(new Intent(this, StartFixedSessionActivity.class));
                 break;
         }

@@ -8,6 +8,7 @@ import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 
@@ -27,12 +28,14 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
+
 public class ExternalSensorActivity extends DialogActivity {
     @Inject Context context;
     @Inject SensorAdapterFactory adapterFactory;
     @Inject SettingsHelper settingsHelper;
     @Inject ExternalSensors externalSensors;
     @Inject EventBus eventBus;
+    @Inject Airbeam2Configurator configurator;
 
     @InjectView(R.id.paired_sensor_list) ListView pairedSensorList;
     @InjectView(R.id.connected_sensors_list) ListView connectedSensorList;

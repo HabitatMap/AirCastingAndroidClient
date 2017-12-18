@@ -282,30 +282,38 @@ public class CurrentSessionManager {
         newSession.setTags(tags);
         newSession.setDescription(description);
 
-        startSession(newSession, locationLess);
+        setSession(newSession);
+        startSession(locationLess);
+    }
+
+    public void createAndSetFixedSession() {
+        Session newSession = new Session(true);
+        setSession(newSession);
     }
 
     public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng) {
-        Session newSession = new Session(true);
-        newSession.setTitle(title);
-        newSession.setTags(tags);
-        newSession.setDescription(description);
-        newSession.setIndoor(isIndoor);
+        Session session = getCurrentSession();
+        if (!session.isFixed()) {
+            createAndSetFixedSession();
+        }
+        session.setTitle(title);
+        session.setTags(tags);
+        session.setDescription(description);
+        session.setIndoor(isIndoor);
 
         if(latlng == null) {
-            newSession.setLatitude(TOTALLY_FAKE_COORDINATE);
-            newSession.setLongitude(TOTALLY_FAKE_COORDINATE);
+            session.setLatitude(TOTALLY_FAKE_COORDINATE);
+            session.setLongitude(TOTALLY_FAKE_COORDINATE);
         } else {
-            newSession.setLatitude(latlng.latitude);
-            newSession.setLongitude(latlng.longitude);
+            session.setLatitude(latlng.latitude);
+            session.setLongitude(latlng.longitude);
         }
 
-        startSession(newSession, true);
+        startSession(true);
     }
 
-    private void startSession(Session newSession, boolean locationLess) {
+    private void startSession(boolean locationLess) {
         eventBus.post(new SessionStartedEvent(getCurrentSession()));
-        setSession(newSession);
         locationHelper.start();
         startSensors();
         state.recording().startRecording();

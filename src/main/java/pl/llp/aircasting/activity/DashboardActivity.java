@@ -16,6 +16,7 @@ import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
+import pl.llp.aircasting.sensor.airbeam.Airbeam2ConfigMessageEvent;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
