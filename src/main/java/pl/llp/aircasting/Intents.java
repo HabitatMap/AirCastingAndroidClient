@@ -28,6 +28,7 @@ import pl.llp.aircasting.activity.SessionsActivity;
 import pl.llp.aircasting.activity.ShareSessionActivity;
 import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.ThresholdsActivity;
+import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.IOIOService;
@@ -73,6 +74,7 @@ public final class Intents {
     public static final String MIME_IMAGE_JPEG = "image/jpeg";
     public static final int REQUEST_ENABLE_BLUETOOTH = 5;
     public static final String EXTRA_SENSOR = "sensor";
+    public static final String CONFIGURATION_REQUIRED = "configuration_required";
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -167,6 +169,13 @@ public final class Intents {
     public static void shareSession(Activity context, long sessionId) {
         Intent intent = new Intent(context, ShareSessionActivity.class);
         intent.putExtra(SESSION_ID, sessionId);
+
+        context.startActivity(intent);
+    }
+
+    public static void startAirbeam2Configuration(Activity context) {
+        Intent intent = new Intent(context, ExternalSensorActivity.class);
+        intent.putExtra(CONFIGURATION_REQUIRED, true);
 
         context.startActivity(intent);
     }

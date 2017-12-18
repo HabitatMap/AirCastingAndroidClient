@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardActivity;
@@ -24,6 +25,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private View view;
     private Button microphoneButton;
     private Button sensorsButton;
+    private Button airbeam2ConfigButton;
     private StreamAdapterFactory adapterFactory;
     private StreamAdapter adapter;
     private ApplicationState state;
@@ -47,11 +49,13 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         microphoneButton = (Button) view.findViewById(R.id.dashboard_microphone);
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
+        airbeam2ConfigButton = (Button) view.findViewById(R.id.configure_airbeam2);
 
         setListAdapter(adapter);
 
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
         if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
+        if (airbeam2ConfigButton != null) { airbeam2ConfigButton.setOnClickListener(this); }
 
         return view;
     }
@@ -93,6 +97,9 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 break;
             case R.id.dashboard_sensors:
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
+                break;
+            case R.id.configure_airbeam2:
+                Intents.startAirbeam2Configuration(getActivity());
                 break;
         }
     }

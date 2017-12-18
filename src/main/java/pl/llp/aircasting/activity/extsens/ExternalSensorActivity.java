@@ -2,6 +2,7 @@ package pl.llp.aircasting.activity.extsens;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ChooseSessionTypeActivity;
 import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.NoOp;
@@ -45,12 +46,14 @@ public class ExternalSensorActivity extends DialogActivity {
     IOIOInteractor ioio = new IOIOInteractor();
 
     private long bluetoothRequestTimestamp;
+    private boolean configurationRequired;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.external_sensors_list);
         eventBus.register(this);
+        configurationRequired = getIntent().getBooleanExtra(Intents.CONFIGURATION_REQUIRED, false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -69,9 +72,19 @@ public class ExternalSensorActivity extends DialogActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
                                 ioio.startIfNecessary(connected, context);
-
                                 Intents.restartSensors(context);
-                                Intents.startDashboardActivity(ExternalSensorActivity.this, true);
+
+                                if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
+                                    try {
+                                        Thread.sleep(3000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    startActivity(new Intent(context, ChooseSessionTypeActivity.class));
+                                    finish();
+                                } else {
+                                    Intents.startDashboardActivity(ExternalSensorActivity.this, true);
+                                }
                             }
                         }).setNegativeButton("No", NoOp.dialogOnClick());
                 AlertDialog dialog = builder.create();
