@@ -88,7 +88,7 @@ public class SignUpActivity extends DialogActivity implements View.OnClickListen
                         getPassword(), sendEmails.isChecked());
 
                 if (result.getStatus() == SUCCESS) {
-                    settingsHelper.setAuthToken(result.getContent().getAuthentication_token());
+                    settingsHelper.setAuthToken(result.getContent().getAuthenticationToken());
                     settingsHelper.setUserLogin(result.getContent().getUsername());
 
                     finish();

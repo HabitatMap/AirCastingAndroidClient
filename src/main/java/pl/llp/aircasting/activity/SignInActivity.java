@@ -95,7 +95,7 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
         HttpResult<UserInfo> result = userDriver.connect(getLogin(), getPassword());
 
         if (result.getStatus() == SUCCESS) {
-          settingsHelper.setAuthToken(result.getContent().getAuthentication_token());
+          settingsHelper.setAuthToken(result.getContent().getAuthenticationToken());
           settingsHelper.setUserLogin(result.getContent().getUsername());
         }
 

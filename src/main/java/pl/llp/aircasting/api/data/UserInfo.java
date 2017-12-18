@@ -47,7 +47,7 @@ public class UserInfo {
         return username;
     }
 
-    public String getAuthentication_token() {
+    public String getAuthenticationToken() {
         return authentication_token;
     }
 

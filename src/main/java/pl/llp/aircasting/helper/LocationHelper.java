@@ -1,21 +1,21 @@
 /**
- AirCasting - Share your Air!
- Copyright (C) 2011-2012 HabitatMap, Inc.
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- You can contact the authors by email at <info@habitatmap.org>
+ * AirCasting - Share your Air!
+ * Copyright (C) 2011-2012 HabitatMap, Inc.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * You can contact the authors by email at <info@habitatmap.org>
  */
 package pl.llp.aircasting.helper;
 
@@ -31,46 +31,41 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class LocationHelper implements LocationListener
-{
-  public static final int ACCURACY_THRESHOLD = 200;
+public class LocationHelper implements LocationListener {
+    public static final int ACCURACY_THRESHOLD = 200;
 
-  @Inject LocationManager locationManager;
-  @Inject EventBus eventBus;
+    @Inject LocationManager locationManager;
+    @Inject EventBus eventBus;
 
-  private Location lastLocation;
-  private int starts;
+    private Location lastLocation;
+    private int starts;
 
-  public synchronized void start()
-  {
-    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+    public synchronized void start() {
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
-    updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-    updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+        updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 
-    starts += 1;
-  }
-
-  public synchronized void stop()
-  {
-    starts -= 1;
-    if (starts <= 0) {
-      starts = 0;
-      locationManager.removeUpdates(this);
+        starts += 1;
     }
-  }
 
-  public Location getLastLocation()
-  {
-    return lastLocation;
-  }
+    public synchronized void stop() {
+        starts -= 1;
+        if (starts <= 0) {
+            starts = 0;
+            locationManager.removeUpdates(this);
+        }
+    }
 
-  @Override
-  public void onLocationChanged(Location location)
-  {
-    updateLocation(location);
-  }
+    public Location getLastLocation() {
+        return lastLocation;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        updateLocation(location);
+    }
 
     private void updateLocation(Location location) {
         if (isBetterLocation(location, lastLocation)) {
@@ -158,7 +153,7 @@ public class LocationHelper implements LocationListener
 
     public boolean hasGPSFix() {
         return (lastLocation != null) &&
-            LocationManager.GPS_PROVIDER.equals(lastLocation.getProvider());
+                LocationManager.GPS_PROVIDER.equals(lastLocation.getProvider());
     }
 
     public boolean hasNoGPSFix() {

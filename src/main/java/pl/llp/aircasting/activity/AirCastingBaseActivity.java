@@ -135,14 +135,11 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         }
     }
 
-    private void checkForUnfinishedSessions()
-    {
-        if (shouldCheckForUnfinishedSessions())
-        {
-            new AsyncTask<Void, Void, Void>(){
+    private void checkForUnfinishedSessions() {
+        if (shouldCheckForUnfinishedSessions()) {
+            new AsyncTask<Void, Void, Void>() {
                 @Override
-                protected Void doInBackground(Void... voids)
-                {
+                protected Void doInBackground(Void... voids) {
                     checker.check(AirCastingBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
@@ -151,12 +148,11 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         }
     }
 
-    private boolean shouldCheckForUnfinishedSessions()
-    {
-        if(visibleSession.isVisibleSessionRecording())
+    private boolean shouldCheckForUnfinishedSessions() {
+        if (visibleSession.isVisibleSessionRecording())
             return false;
 
-        if(state.saving().isSaving())
+        if (state.saving().isSaving())
             return false;
 
         long timeout = System.currentTimeMillis() - lastChecked;
