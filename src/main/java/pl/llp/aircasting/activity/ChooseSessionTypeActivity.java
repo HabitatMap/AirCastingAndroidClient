@@ -18,11 +18,10 @@ import java.util.UUID;
 /**
  * Created by radek on 11/12/17.
  */
-public class ChooseAirbeam2SessionTypeActivity extends DialogActivity implements View.OnClickListener {
+public class ChooseSessionTypeActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.mobile_session_button) Button mobileSessionButton;
     @InjectView(R.id.fixed_session_button) Button fixedSessionButton;
 
-    @Inject EventBus eventBus;
     @Inject CurrentSessionManager currentSessionManager;
 
     @Override

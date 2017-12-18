@@ -64,7 +64,11 @@
 
     <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
     
-    <activity android:label="@string/choose_session_type" android:name=".activity.ChooseSessionTypeActivity" android:theme="@style/Dialog"/>
+    <activity android:label="@string/choose_session_type" android:name=".activity.ChooseSessionTypeActivity" android:theme="@style/Dialog" />
+
+    <activity android:label="@string/choose_streaming_method" android:name=".activity.ChooseStreamingMethodActivity" android:theme="@style/Dialog" />
+
+    <activity android:label="@string/input_wifi_credentials" android:name=".activity.GetWifiCredentialsActivity" android:theme="@style/Dialog" />
 
     <activity android:label="@string/session_options" android:name=".activity.OpenMobileSessionActivity" android:theme="@style/Dialog"/>
 

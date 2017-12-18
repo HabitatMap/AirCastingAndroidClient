@@ -6,13 +6,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import roboguice.inject.InjectView;
 
 /**
  * Created by radek on 12/12/17.
  */
-public class GetWifiNetworkActivity extends DialogActivity implements View.OnClickListener {
+public class GetWifiCredentialsActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.wifi_ssid) EditText wifi_ssid;
     @InjectView(R.id.wifi_password) EditText wifi_password;
     @InjectView(R.id.wifi_submit) Button wifi_submit;
