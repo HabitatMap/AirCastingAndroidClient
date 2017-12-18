@@ -103,7 +103,7 @@ public class DashboardActivity extends DashboardBaseActivity {
             chooseToggleSessionsReorderIcon(toggleReorderItem);
         }
 
-        if (currentSessionManager.isSessionIdle()) {
+        if (currentSessionSensorManager.anySensorConnected() && !currentSessionManager.isSessionRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
         } else if (currentSessionManager.isSessionRecording()){
             inflater.inflate(R.menu.toolbar_stop_recording, menu);
