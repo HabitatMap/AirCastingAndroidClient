@@ -33,8 +33,10 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.util.base64.Base64;
 import roboguice.inject.InjectView;
 
 public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener {
@@ -104,12 +106,35 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     }
 
     private void startFixedSession(boolean isIndoor, LatLng latlng) {
+        sendFinalAb2Config(latlng);
+
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
         String description = sessionDescription.getText().toString();
 
+        Intents.startDashboardActivity(this, true);
         currentSessionManager.startFixedSession(title, tags, description, isIndoor, latlng);
 
         finish();
+    }
+
+    private void sendFinalAb2Config(LatLng latLng) {
+        airbeam2Configurator.sendLatLng(latLng);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        airbeam2Configurator.sendPackageName();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        airbeam2Configurator.configureStreamingMethod();
     }
 }

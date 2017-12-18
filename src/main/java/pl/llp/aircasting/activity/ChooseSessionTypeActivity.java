@@ -37,8 +37,7 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.mobile_session_button:
-                byte[] message = Airbeam2Configurator.BLUETOOTH_CONFIGURATION_MESSAGE;
-                eventBus.post(new Airbeam2ConfigMessageEvent(message));
+                airbeam2Configurator.configureBluetooth();
                 Intents.startDashboardActivity(this, true);
                 break;
             case R.id.fixed_session_button:
@@ -46,7 +45,15 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
                 UUID uuid = currentSessionManager.getCurrentSession().getUUID();
                 String authToken = settingsHelper.getAuthToken();
 
-                airbeam2Configurator.sendUUIDAndAuthToken(uuid, authToken);
+                // UUID and auth are sent to prolong the AB2 configuration mode
+                airbeam2Configurator.sendUUID(uuid);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                airbeam2Configurator.sendAuthToken(authToken);
+
                 startActivity(new Intent(this, ChooseStreamingMethodActivity.class));
                 break;
         }

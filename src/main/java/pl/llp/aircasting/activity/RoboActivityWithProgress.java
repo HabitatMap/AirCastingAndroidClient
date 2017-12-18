@@ -17,6 +17,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.helper.NavigationDrawerHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import roboguice.activity.event.*;
 import roboguice.application.RoboApplication;
 import roboguice.event.EventManager;
@@ -31,6 +32,7 @@ import roboguice.inject.ContextScope;
 public abstract class RoboActivityWithProgress extends AppCompatActivity implements ActivityWithProgress, AppCompatCallback {
     @Inject NavigationDrawerHelper navigationDrawerHelper;
     @Inject SettingsHelper settingsHelper;
+    @Inject Airbeam2Configurator airbeam2Configurator;
 
     public AppCompatDelegate delegate;
     public Toolbar toolbar;
