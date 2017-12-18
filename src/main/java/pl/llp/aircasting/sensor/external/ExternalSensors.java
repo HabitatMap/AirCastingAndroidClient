@@ -4,6 +4,7 @@ import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.airbeam.AirbeamSensor;
 import pl.llp.aircasting.sensor.bioharness.BioharnessSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 import pl.llp.aircasting.sensor.hxm.HXMHeartBeatMonitor;
@@ -28,6 +29,7 @@ public class ExternalSensors {
     public static final String ZEPHYR_BIOHARNESS = "BH BHT";
     public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
     public static final String IOIO_DISPLAY_STRIP = "IOIO";
+    public static final String AIRBEAM = "airbeam";
 
     final Map<String, AbstractSensor> sensors = newHashMap();
 
@@ -66,6 +68,9 @@ public class ExternalSensors {
         String sensorName = descriptor.getName();
         if (Strings.isNullOrEmpty(sensorName)) {
             return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);
+        }
+        if (sensorName.startsWith(AIRBEAM)) {
+            return new AirbeamSensor(descriptor, eventBus, bluetoothAdapter);
         }
         if (sensorName.startsWith(ZEPHYR_BIOHARNESS)) {
             return new BioharnessSensor(descriptor, eventBus, bluetoothAdapter);
