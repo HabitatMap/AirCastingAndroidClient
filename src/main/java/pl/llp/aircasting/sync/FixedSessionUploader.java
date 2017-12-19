@@ -22,6 +22,7 @@ package pl.llp.aircasting.sync;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
@@ -57,11 +58,17 @@ public class FixedSessionUploader {
         eventBus.register(this);
     }
 
-    public boolean create(Session session) {
+    public boolean create(final Session session) {
         try {
             if (canUpload()) {
-//        enableStrictMode();
-                performCreateSession(session);
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... voids) {
+                        performCreateSession(session);
+
+                        return true;
+                    }
+                }.execute();
                 return (true);
             } else {
                 Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
@@ -71,16 +78,6 @@ public class FixedSessionUploader {
             Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
             return (false);
         }
-    }
-
-    // This is BAD but easy workaround to the fixed sessions creation error, use only for dev purposes.
-    // It enables doing network operations in the main thread of the app. It should be done in a background task.
-    // TODO:
-    // Fix this later
-    public void enableStrictMode() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-        StrictMode.setThreadPolicy(policy);
     }
 
     private void performCreateSession(Session session) throws SessionSyncException {
