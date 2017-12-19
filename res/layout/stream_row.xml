@@ -75,7 +75,8 @@
                           android:layout_weight="10"
                           android:background="@color/gray"/>
 
-                    <TextView android:layout_width="80dp"
+                    <TextView android:id="@+id/last_measurement_label"
+                              android:layout_width="80dp"
                               android:layout_height="wrap_content"
                               android:paddingLeft="6dp"
                               android:paddingRight="6dp"
