@@ -29,7 +29,7 @@ public class ExternalSensors {
     public static final String ZEPHYR_BIOHARNESS = "BH BHT";
     public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
     public static final String IOIO_DISPLAY_STRIP = "IOIO";
-    public static final String AIRBEAM = "airbeam";
+    public static final String AIRBEAM = "Airbeam";
 
     final Map<String, AbstractSensor> sensors = newHashMap();
 

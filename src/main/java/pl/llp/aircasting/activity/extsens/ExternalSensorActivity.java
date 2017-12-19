@@ -35,7 +35,6 @@ public class ExternalSensorActivity extends DialogActivity {
     @Inject SettingsHelper settingsHelper;
     @Inject ExternalSensors externalSensors;
     @Inject EventBus eventBus;
-    @Inject Airbeam2Configurator configurator;
 
     @InjectView(R.id.paired_sensor_list) ListView pairedSensorList;
     @InjectView(R.id.connected_sensors_list) ListView connectedSensorList;
