@@ -42,6 +42,8 @@ public class DashboardChartManager {
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
     private final static int MAX_X_VALUE = 8;
+    private final static String FIXED_LABEL = "1 hr Avg";
+    private final static String MOBILE_LABEL = "1 min Avg";
     private static int dynamicAveragesCount = 0;
     private static int interval;
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
@@ -173,7 +175,7 @@ public class DashboardChartManager {
 
     private LineDataSet prepareDataSet(String unit) {
         List<Entry> entries = getEntriesForCurrentStream();
-        LineDataSet dataSet = new LineDataSet(entries, "1 min Avg - " + unit);
+        LineDataSet dataSet = new LineDataSet(entries, getDatasetLabel() + unit);
         ArrayList<Integer> colors = prepareDataSetColors(entries);
 
         dataSet.setDrawCircleHole(false);
@@ -189,6 +191,14 @@ public class DashboardChartManager {
         }
 
         return dataSet;
+    }
+
+    private String getDatasetLabel() {
+        if (sessionData.getSession(requestedSessionId).isFixed()) {
+            return FIXED_LABEL;
+        } else {
+            return MOBILE_LABEL;
+        }
     }
 
     private void prepareEntries(long sessionId, MeasurementStream stream) {
