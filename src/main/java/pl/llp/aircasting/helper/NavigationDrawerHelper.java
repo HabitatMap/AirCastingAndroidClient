@@ -67,6 +67,9 @@ public class NavigationDrawerHelper {
                         activity.startActivity(new Intent(context, AboutActivity.class));
                         drawerLayout.closeDrawers();
                         break;
+                    case R.id.configure_ab2:
+                        Intents.startAirbeam2Configuration(activity);
+                        break;
                     case R.id.connect_microphone:
                         currentSessionManager.startAudioSensor();
                         Intents.startDashboardActivity(activity, true);
