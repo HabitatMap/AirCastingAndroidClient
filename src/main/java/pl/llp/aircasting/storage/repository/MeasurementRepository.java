@@ -1,15 +1,17 @@
 package pl.llp.aircasting.storage.repository;
 
-import pl.llp.aircasting.android.Logger;
+import com.google.gson.Gson;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.ProgressListener;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +23,11 @@ import static pl.llp.aircasting.storage.DBHelper.getDouble;
 import static pl.llp.aircasting.storage.DBHelper.getLong;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
-class MeasurementRepository
+public class MeasurementDAO
 {
   private ProgressListener progress = NoOp.progressListener();
 
-  public MeasurementRepository(ProgressListener progressListener)
+  public MeasurementDAO(ProgressListener progressListener)
   {
     if(progressListener != null)
     {
@@ -89,8 +91,8 @@ class MeasurementRepository
       values.put(MEASUREMENT_LONGITUDE, measurement.getLongitude());
       values.put(MEASUREMENT_LATITUDE, measurement.getLatitude());
       values.put(MEASUREMENT_VALUE, measurement.getValue());
-      values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
       values.put(MEASUREMENT_MEASURED_VALUE, measurement.getMeasuredValue());
+      values.put(MEASUREMENT_TIME, measurement.getTime().getTime());
 
       writableDatabase.insertOrThrow(MEASUREMENT_TABLE_NAME, null, values);
     }
@@ -105,7 +107,7 @@ class MeasurementRepository
     }
     catch (SQLException e)
     {
-      Logger.e("Error removing measurements from stream [" + streamId + "]", e);
+      Log.e(Constants.TAG, "Error removing measurements from stream [" + streamId + "]", e);
     }
   }
 }
