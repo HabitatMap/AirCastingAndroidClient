@@ -2,10 +2,8 @@ package pl.llp.aircasting.sensor;
 
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-
 import android.bluetooth.BluetoothDevice;
 import com.google.common.eventbus.EventBus;
-
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;

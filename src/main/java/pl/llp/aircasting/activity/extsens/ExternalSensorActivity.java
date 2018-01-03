@@ -28,7 +28,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-
 public class ExternalSensorActivity extends DialogActivity {
     @Inject Context context;
     @Inject SensorAdapterFactory adapterFactory;

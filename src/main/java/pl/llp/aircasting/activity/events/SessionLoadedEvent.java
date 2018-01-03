@@ -8,13 +8,11 @@ import pl.llp.aircasting.model.Session;
 public class SessionLoadedEvent {
     private final Session session;
 
-    public SessionLoadedEvent(Session session)
-  {
-    this.session = session;
-  }
+    public SessionLoadedEvent(Session session) {
+        this.session = session;
+    }
 
-    public Session getSession()
-  {
-    return session;
-  }
+    public Session getSession() {
+        return session;
+    }
 }

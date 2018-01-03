@@ -33,10 +33,8 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
-    @Inject
-    ToggleAircastingManagerFactory aircastingHelperFactory;
-    @Inject
-    SyncBroadcastReceiver syncBroadcastReceiver;
+    @Inject ToggleAircastingManagerFactory aircastingHelperFactory;
+    @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;
 
     private ToggleAircastingManager toggleAircastingManager;
@@ -109,14 +107,11 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         }
     }
 
-    private void checkForUnfinishedSessions()
-    {
-        if (shouldCheckForUnfinishedSessions())
-        {
-            new AsyncTask<Void, Void, Void>(){
+    private void checkForUnfinishedSessions() {
+        if (shouldCheckForUnfinishedSessions()) {
+            new AsyncTask<Void, Void, Void>() {
                 @Override
-                protected Void doInBackground(Void... voids)
-                {
+                protected Void doInBackground(Void... voids) {
                     checker.check(DashboardBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
@@ -125,12 +120,11 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         }
     }
 
-    private boolean shouldCheckForUnfinishedSessions()
-    {
-        if(currentSessionManager.isSessionRecording())
+    private boolean shouldCheckForUnfinishedSessions() {
+        if (currentSessionManager.isSessionRecording())
             return false;
 
-        if(state.saving().isSaving())
+        if (state.saving().isSaving())
             return false;
 
         long timeout = System.currentTimeMillis() - lastChecked;
