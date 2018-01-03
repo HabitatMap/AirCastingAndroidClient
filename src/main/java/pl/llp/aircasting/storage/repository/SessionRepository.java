@@ -324,7 +324,7 @@ public class SessionRepository {
         }
 
         final Iterable<MeasurementStream> streams = session.getActiveMeasurementStreams();
-        final MeasurementDAO r = new MeasurementDAO(progressListener);
+        final MeasurementRepository r = new MeasurementRepository(progressListener);
 
         return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
             @Override
@@ -404,7 +404,7 @@ public class SessionRepository {
     }
 
     @API
-    public StreamDAO streams() {
+    public StreamRepository streams() {
         return streams;
     }
 
@@ -460,7 +460,7 @@ public class SessionRepository {
         WritableDatabaseTask<Void> writableDatabaseTask = new WritableDatabaseTask<Void>() {
             @Override
             public Void execute(SQLiteDatabase writableDatabase) {
-                ContentValues values = StreamDAO.values(stream);
+                ContentValues values = StreamRepository.values(stream);
                 values.put(STREAM_SESSION_ID, session.getId());
                 long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
                 stream.setId(streamId);
