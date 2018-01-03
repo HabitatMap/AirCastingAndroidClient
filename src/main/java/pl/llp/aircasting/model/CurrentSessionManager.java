@@ -214,7 +214,7 @@ public class CurrentSessionManager {
     private Location getLocation() {
         Location location = locationHelper.getLastLocation();
 
-        if(currentSession.isFixed()) {
+        if (currentSession.isFixed()) {
             location.setLatitude(currentSession.getLatitude());
             location.setLongitude(currentSession.getLongitude());
         } else if (currentSession.isLocationless()) {
@@ -235,7 +235,7 @@ public class CurrentSessionManager {
         }
 
         MeasurementStream stream = currentSession.getStream(sensorName);
-        if(stream.isVisible()) {
+        if (stream.isVisible()) {
             stream.markAs(MeasurementStream.Visibility.VISIBLE_RECONNECTED);
         }
 
@@ -301,7 +301,7 @@ public class CurrentSessionManager {
         session.setDescription(description);
         session.setIndoor(isIndoor);
 
-        if(latlng == null) {
+        if (latlng == null) {
             session.setLatitude(TOTALLY_FAKE_COORDINATE);
             session.setLongitude(TOTALLY_FAKE_COORDINATE);
         } else {

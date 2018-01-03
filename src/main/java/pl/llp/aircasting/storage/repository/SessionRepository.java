@@ -51,18 +51,13 @@ import static pl.llp.aircasting.storage.DBHelper.*;
 import static pl.llp.aircasting.storage.db.DBConstants.*;
 
 public class SessionRepository {
-    @Inject
-    AirCastingDB dbAccessor;
+    @Inject AirCastingDB dbAccessor;
 
-    @Inject
-    NoteRepository notes;
-    @Inject
-    StreamDAO streams;
+    @Inject NoteRepository notes;
+    @Inject StreamRepository streams;
 
-    @Inject
-    SessionDAO sessionDAO;
-    @Inject
-    SessionTrackerDAO trackedSessionsDAO;
+    @Inject SessionDAO sessionDAO;
+    @Inject SessionTrackerDAO trackedSessionsDAO;
 
     @API
     public Session save(@NotNull final Session session) {

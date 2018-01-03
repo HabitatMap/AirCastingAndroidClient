@@ -13,92 +13,79 @@ import android.widget.EditText;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
-public class SaveOrDiscardRestoredSessionActivity extends DialogActivity implements View.OnClickListener
-{
-  @InjectView(R.id.save_button) Button saveButton;
-  @InjectView(R.id.discard_button) Button discardButton;
+public class SaveOrDiscardRestoredSessionActivity extends DialogActivity implements View.OnClickListener {
+    @InjectView(R.id.save_button) Button saveButton;
+    @InjectView(R.id.discard_button) Button discardButton;
 
-  @InjectView(R.id.session_title) EditText sessionTitle;
-  @InjectView(R.id.session_tags) EditText sessionTags;
-  @InjectView(R.id.session_description) EditText sessionDescription;
+    @InjectView(R.id.session_title) EditText sessionTitle;
+    @InjectView(R.id.session_tags) EditText sessionTags;
+    @InjectView(R.id.session_description) EditText sessionDescription;
 
-  @Inject CurrentSessionManager currentSessionManager;
-  @Inject SettingsHelper settingsHelper;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject SettingsHelper settingsHelper;
 
-  @Inject ApplicationState state;
+    @Inject ApplicationState state;
 
-  private long sessionId;
+    private long sessionId;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState)
-  {
-    super.onCreate(savedInstanceState);
-    Session session = currentSessionManager.getCurrentSession();
-    currentSessionManager.pauseSession();
-
-    setContentView(R.layout.save_lost_session);
-
-    sessionTitle.setText(session.getTitle());
-    sessionTags.setText(session.getTags());
-    sessionDescription.setText(session.getDescription());
-
-    saveButton.setOnClickListener(this);
-    discardButton.setOnClickListener(this);
-  }
-
-  @Override
-  protected void onResume()
-  {
-    super.onResume();
-    if(!getIntent().hasExtra(Intents.SESSION_ID))
-    {
-      throw new RuntimeException("Should have arrived here with a session id");
-    }
-
-    sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
-    state.saving().markCurrentlySaving(sessionId);
-  }
-
-  @Override
-  public void onBackPressed()
-  {
-    currentSessionManager.discardSession(sessionId);
-    finish();
-  }
-
-  @Override
-  public void onClick(View view)
-  {
-    switch (view.getId())
-    {
-      case R.id.save_button:
-      {
-        fillSessionDetails(sessionId);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Session session = currentSessionManager.getCurrentSession();
-        if(session.isLocationless())
-        {
-          currentSessionManager.finishSession(sessionId);
-        }
-        else
-        {
-          Intents.contribute(this, sessionId);
-        }
-        break;
-      }
-      case R.id.discard_button:
-      {
-        currentSessionManager.discardSession(sessionId);
-        break;
-      }
-    }
-    finish();
-  }
+        currentSessionManager.pauseSession();
 
-  private void fillSessionDetails(long sessionId)
-  {
-    String title = sessionTitle.getText().toString();
-    String tags = sessionTags.getText().toString();
-    String description = sessionDescription.getText().toString();
-    currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
-  }
+        setContentView(R.layout.save_lost_session);
+
+        sessionTitle.setText(session.getTitle());
+        sessionTags.setText(session.getTags());
+        sessionDescription.setText(session.getDescription());
+
+        saveButton.setOnClickListener(this);
+        discardButton.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!getIntent().hasExtra(Intents.SESSION_ID)) {
+            throw new RuntimeException("Should have arrived here with a session id");
+        }
+
+        sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
+        state.saving().markCurrentlySaving(sessionId);
+    }
+
+    @Override
+    public void onBackPressed() {
+        currentSessionManager.discardSession(sessionId);
+        finish();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.save_button: {
+                fillSessionDetails(sessionId);
+                Session session = currentSessionManager.getCurrentSession();
+                if (session.isLocationless()) {
+                    currentSessionManager.finishSession(sessionId);
+                } else {
+                    Intents.contribute(this, sessionId);
+                }
+                break;
+            }
+            case R.id.discard_button: {
+                currentSessionManager.discardSession(sessionId);
+                break;
+            }
+        }
+        finish();
+    }
+
+    private void fillSessionDetails(long sessionId) {
+        String title = sessionTitle.getText().toString();
+        String tags = sessionTags.getText().toString();
+        String description = sessionDescription.getText().toString();
+        currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
+    }
 }
