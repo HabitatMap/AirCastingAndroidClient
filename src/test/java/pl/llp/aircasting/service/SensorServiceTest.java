@@ -54,7 +54,7 @@ public class SensorServiceTest {
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.currentSessionManager).startSensors();
+        verify(sensorService.currentSessionSensorManager).startSensors();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class SensorServiceTest {
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.currentSessionManager).stopSensors();
+        verify(sensorService.currentSessionSensorManager).stopSensors();
     }
 
     @Test

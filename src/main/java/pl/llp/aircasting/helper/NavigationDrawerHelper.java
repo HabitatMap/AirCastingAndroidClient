@@ -17,12 +17,13 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 
 /**
  * Created by radek on 09/06/17.
  */
 public class NavigationDrawerHelper {
-    @Inject CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
     @Inject ApplicationState state;
@@ -71,14 +72,14 @@ public class NavigationDrawerHelper {
                         Intents.startAirbeam2Configuration(activity);
                         break;
                     case R.id.connect_microphone:
-                        currentSessionManager.startAudioSensor();
+                        currentSessionSensorManager.startAudioSensor();
                         Intents.startDashboardActivity(activity, true);
                         drawerLayout.closeDrawers();
                         connectMicrophone.setVisible(false);
                         disconnectMicrophone.setVisible(true);
                         break;
                     case R.id.disconnect_microphone:
-                        currentSessionManager.stopAudioSensor();
+                        currentSessionSensorManager.stopAudioSensor();
                         drawerLayout.closeDrawers();
                         disconnectMicrophone.setVisible(false);
                         connectMicrophone.setVisible(true);

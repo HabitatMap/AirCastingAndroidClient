@@ -3,6 +3,7 @@ package pl.llp.aircasting.model;
 import android.content.Context;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
@@ -43,7 +44,9 @@ public class CurrentSessionSensorManager {
     @Inject EventBus eventBus;
     @Inject SettingsHelper settingsHelper;
     @Inject Context context;
+    @Inject ApplicationState state;
     @Inject VisibleSession visibleSession;
+    @Inject SimpleAudioReader audioReader;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
@@ -87,6 +90,36 @@ public class CurrentSessionSensorManager {
     @Subscribe
     public void onEvent(SensorStoppedEvent event) {
         disconnectSensors(event.getDescriptor());
+    }
+
+    public void startSensors() {
+        if (!state.sensors().started()) {
+            externalSensors.start();
+            state.sensors().start();
+        }
+    }
+
+    public void startAudioSensor() {
+        audioReader.start();
+        state.microphoneState().start();
+    }
+
+    public void stopAudioSensor() {
+        audioReader.stop();
+        disconnectPhoneMicrophone();
+        state.microphoneState().stop();
+    }
+
+    public void stopSensors() {
+        if (state.recording().isRecording()) {
+            return;
+        }
+
+        state.sensors().stop();
+    }
+
+    public void restartSensors() {
+        externalSensors.start();
     }
 
     public List<Sensor> getSensorsList() {

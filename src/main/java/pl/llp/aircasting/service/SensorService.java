@@ -23,17 +23,19 @@ import android.app.Notification;
 import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.content.Intent;
 import android.os.IBinder;
 import com.google.inject.Inject;
+import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import roboguice.service.RoboService;
 
 public class SensorService extends RoboService {
     public static final int ACTIVE_SENSORS_ID = 2;
 
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ExternalSensors externalSensors;
 
@@ -48,20 +50,20 @@ public class SensorService extends RoboService {
 
         switch (Intents.getSensorServiceTask(intent)) {
             case Intents.START_SENSORS:
-                currentSessionManager.startSensors();
+                currentSessionSensorManager.startSensors();
                 break;
             case Intents.STOP_SENSORS:
-                currentSessionManager.stopSensors();
+                currentSessionSensorManager.stopSensors();
                 if (!currentSessionManager.isSessionRecording()) {
                     stopSelf();
                 }
                 break;
             case Intents.DISCONNECT_SENSORS:
-                currentSessionManager.stopSensors();
+                currentSessionSensorManager.stopSensors();
                 externalSensors.disconnectAllSensors();
                 break;
             case Intents.RESTART_SENSORS:
-                currentSessionManager.restartSensors();
+                currentSessionSensorManager.restartSensors();
                 break;
         }
 

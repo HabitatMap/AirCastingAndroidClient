@@ -143,46 +143,18 @@ public class CurrentSessionManager {
         return note;
     }
 
-    public void startSensors() {
-        if (!state.sensors().started()) {
-            locationHelper.start();
-            externalSensors.start();
-            state.sensors().start();
-        }
-    }
-
-    public void startAudioSensor() {
-        audioReader.start();
-        state.microphoneState().start();
-    }
-
-    public void stopAudioSensor() {
-        audioReader.stop();
-        currentSessionSensorManager.disconnectPhoneMicrophone();
-        state.microphoneState().stop();
-    }
-
     public synchronized void pauseSession() {
         if (state.recording().isRecording()) {
             paused = true;
-            stopAudioSensor();
+            currentSessionSensorManager.stopAudioSensor();
         }
     }
 
     public synchronized void continueSession() {
         if (paused) {
             paused = false;
-            startAudioSensor();
+            currentSessionSensorManager.startAudioSensor();
         }
-    }
-
-    public void stopSensors() {
-        if (state.recording().isRecording()) {
-            return;
-        }
-
-        locationHelper.stop();
-        state.sensors().stop();
     }
 
     public void setContribute(long sessionId, boolean shouldContribute) {
@@ -244,10 +216,6 @@ public class CurrentSessionManager {
 
     public void deleteNote(Note note) {
         tracker.deleteNote(currentSession, note);
-    }
-
-    public void restartSensors() {
-        externalSensors.start();
     }
 
     public Collection<MeasurementStream> getMeasurementStreams() {
@@ -315,7 +283,7 @@ public class CurrentSessionManager {
     private void startSession(boolean locationLess) {
         eventBus.post(new SessionStartedEvent(getCurrentSession()));
         locationHelper.start();
-        startSensors();
+        currentSessionSensorManager.startSensors();
         state.recording().startRecording();
         notificationHelper.showRecordingNotification();
 
@@ -388,7 +356,7 @@ public class CurrentSessionManager {
         eventBus.post(new SessionStartedEvent(getCurrentSession()));
         setSession(session);
         locationHelper.start();
-        startSensors();
+        currentSessionSensorManager.startSensors();
         state.recording().startRecording();
         notificationHelper.showRecordingNotification();
 

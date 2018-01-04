@@ -252,7 +252,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldStartSensors()
   {
-    currentSessionManager.startSensors();
+    currentSessionManager.currentSessionSensorManager.startSensors();
 
     verify(currentSessionManager.locationHelper).start();
     verify(currentSessionManager.audioReader).start();
@@ -262,8 +262,8 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldOnlyStartSensorsOnce()
   {
-    currentSessionManager.startSensors();
-    currentSessionManager.startSensors();
+    currentSessionManager.currentSessionSensorManager.startSensors();
+    currentSessionManager.currentSessionSensorManager.startSensors();
 
     verify(currentSessionManager.locationHelper, atMost(1)).start();
     verify(currentSessionManager.audioReader, atMost(1)).start();
@@ -272,8 +272,8 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldStopSensors()
   {
-    currentSessionManager.startSensors();
-    currentSessionManager.stopSensors();
+    currentSessionManager.currentSessionSensorManager.startSensors();
+    currentSessionManager.currentSessionSensorManager.stopSensors();
 
     verify(currentSessionManager.audioReader).stop();
     verify(currentSessionManager.locationHelper).stop();
@@ -284,7 +284,7 @@ public class VisibleSessionManagerTest
   public void shouldNotStopSensorsDuringASession()
   {
     currentSessionManager.startMobileSession(title, tags, description, false);
-    currentSessionManager.stopSensors();
+    currentSessionManager.currentSessionSensorManager.stopSensors();
 
     verify(currentSessionManager.locationHelper, never()).stop();
     verify(currentSessionManager.audioReader, never()).stop();
@@ -476,7 +476,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldRestartExternalSensor()
   {
-    currentSessionManager.restartSensors();
+    currentSessionManager.currentSessionSensorManager.restartSensors();
 
     verify(currentSessionManager.externalSensors).start();
   }
