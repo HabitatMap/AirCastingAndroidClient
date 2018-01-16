@@ -19,7 +19,7 @@
  */
 package pl.llp.aircasting.view.overlay;
 
-import pl.llp.aircasting.activity.events.SessionLoadedEvent;
+import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.ResourceHelper;
@@ -115,7 +115,7 @@ public class RouteOverlay extends Overlay
   }
 
   @Subscribe
-  public void onEvent(SessionLoadedEvent event)
+  public void onEvent(SessionLoadedForViewingEvent event)
   {
     this.skipDrawing = false;
   }
