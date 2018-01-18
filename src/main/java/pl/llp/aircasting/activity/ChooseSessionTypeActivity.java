@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import roboguice.inject.InjectView;
 
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
     @InjectView(R.id.mobile_session_button) Button mobileSessionButton;
     @InjectView(R.id.fixed_session_button) Button fixedSessionButton;
 
-    @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,8 +39,8 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
                 Intents.startDashboardActivity(this, true);
                 break;
             case R.id.fixed_session_button:
-                currentSessionManager.createAndSetFixedSession();
-                UUID uuid = currentSessionManager.getCurrentSession().getUUID();
+                viewingSessionsManager.createAndSetFixedSession();
+                UUID uuid = viewingSessionsManager.getStreamingSession().getUUID();
                 String authToken = settingsHelper.getAuthToken();
 
                 // UUID and auth are sent to prolong the AB2 configuration mode

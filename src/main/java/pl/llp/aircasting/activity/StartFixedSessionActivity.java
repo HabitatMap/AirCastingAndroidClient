@@ -36,6 +36,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.util.base64.Base64;
 import roboguice.inject.InjectView;
 
@@ -49,7 +50,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject Application context;
-    @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     int PLACE_PICKER_REQUEST = 1;
 
@@ -113,7 +114,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
         String description = sessionDescription.getText().toString();
 
         Intents.startDashboardActivity(this, true);
-        currentSessionManager.startFixedSession(title, tags, description, isIndoor, latlng);
+        viewingSessionsManager.startFixedSession(title, tags, description, isIndoor, latlng);
 
         finish();
     }

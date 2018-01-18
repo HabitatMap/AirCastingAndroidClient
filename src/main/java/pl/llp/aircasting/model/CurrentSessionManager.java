@@ -251,36 +251,7 @@ public class CurrentSessionManager {
         newSession.setDescription(description);
 
         setSession(newSession);
-        startSession(locationLess);
-    }
 
-    public void createAndSetFixedSession() {
-        Session newSession = new Session(true);
-        setSession(newSession);
-    }
-
-    public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng) {
-        Session session = getCurrentSession();
-        if (!session.isFixed()) {
-            createAndSetFixedSession();
-        }
-        session.setTitle(title);
-        session.setTags(tags);
-        session.setDescription(description);
-        session.setIndoor(isIndoor);
-
-        if (latlng == null) {
-            session.setLatitude(TOTALLY_FAKE_COORDINATE);
-            session.setLongitude(TOTALLY_FAKE_COORDINATE);
-        } else {
-            session.setLatitude(latlng.latitude);
-            session.setLongitude(latlng.longitude);
-        }
-
-        startSession(true);
-    }
-
-    private void startSession(boolean locationLess) {
         eventBus.post(new SessionStartedEvent(getCurrentSession()));
         locationHelper.start();
         currentSessionSensorManager.startSensors();

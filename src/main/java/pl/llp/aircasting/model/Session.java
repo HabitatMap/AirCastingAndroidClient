@@ -115,7 +115,11 @@ public class Session implements Serializable {
     }
 
     public void setEnd(Date end) {
-        this.end = end;
+        if (end.before(getStart())) {
+            this.end = getStart();
+        } else {
+            this.end = end;
+        }
     }
 
     public void setStart(Date start) {

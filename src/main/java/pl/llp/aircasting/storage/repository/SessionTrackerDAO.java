@@ -55,6 +55,10 @@ public class SessionTrackerDAO {
         markComplete(sessionId);
     }
 
+    public void completeFixedSession(final long sessionId) {
+        markComplete(sessionId);
+    }
+
     private void updateAverages(final long sessionId) {
         List<MeasurementStream> streams = streamRepo.findAllForSession(sessionId);
         for (final MeasurementStream stream : streams) {
