@@ -473,6 +473,10 @@ public class SessionRepository {
     public void complete(long sessionId) {
         trackedSessionsDAO.complete(sessionId);
     }
+
+    public void completeFixedSession(long sessionId) {
+        trackedSessionsDAO.completeFixedSession(sessionId);
+    }
 }
 
 
