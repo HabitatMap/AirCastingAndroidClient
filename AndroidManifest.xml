@@ -121,6 +121,8 @@
 
     <service android:name=".service.IOIOService"/>
 
+    <service android:name=".streaming.FixedSessionSyncJobService" />
+
     <!-- Receivers -->
     <receiver android:name=".receiver.NetworkReceiver">
       <intent-filter>
