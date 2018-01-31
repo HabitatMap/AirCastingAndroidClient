@@ -127,15 +127,10 @@ public class StreamRepository {
     @Internal
     void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId, SQLiteDatabase writableDatabase) {
         for (MeasurementStream oneToSave : streamsToSave) {
-            Stopwatch s = new Stopwatch().start();
             oneToSave.setSessionId(sessionId);
             long streamId = saveOne(oneToSave, sessionId, writableDatabase);
-            Log.d(Constants.TAG, "Saving stream took: " + s.elapsedMillis());
-
-            s.reset().start();
             List<Measurement> measurementsToSave = oneToSave.getMeasurements();
             measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
-            Log.d(Constants.TAG, "Saving " + measurementsToSave.size() + " measurements took: " + s.elapsedMillis());
         }
     }
 

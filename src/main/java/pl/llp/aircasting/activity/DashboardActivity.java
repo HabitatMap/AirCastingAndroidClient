@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
-import com.firebase.jobdispatcher.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
@@ -17,7 +16,6 @@ import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
-import pl.llp.aircasting.streaming.FixedSessionSyncJobService;
 
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
@@ -29,7 +27,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject VisibleSession visibleSession;
     @Inject ViewingSessionsManager viewingSessionsManager;
 
-    private FirebaseJobDispatcher dispatcher;
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -44,8 +41,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         setContentView(R.layout.dashboard);
         initToolbar("Dashboard");
         initNavigationDrawer();
-
-        dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(DashboardActivity.this));
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -71,30 +66,10 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (viewingSessionsManager.isAnySessionFixed()) {
-            Log.i("dispatcher", "scheduling job");
-
-            Job syncJob = dispatcher.newJobBuilder()
-                    .setService(FixedSessionSyncJobService.class)
-                    .setTag("streaming-session-sync-job")
-                    .setRecurring(true)
-                    .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
-                    .setTrigger(Trigger.executionWindow(60, 90))
-                    .setReplaceCurrent(true)
-                    .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
-                    .setConstraints(
-                            Constraint.ON_UNMETERED_NETWORK
-                    )
-                    .build();
-
-            dispatcher.mustSchedule(syncJob);
-        }
     }
 
     @Override
     public void onPostResume() {
-        Intents.startDatabaseWriterService(context);
         startSensors(context);
         invalidateOptionsMenu();
 

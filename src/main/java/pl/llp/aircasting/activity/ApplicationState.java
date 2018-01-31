@@ -90,14 +90,6 @@ public class ApplicationState {
             return state == CurrentSessionState.SHOWING_LIVE_DATA;
         }
 
-        public boolean isShowingASession() {
-            return !isJustShowingCurrentValues();
-        }
-
-        public void startShowingOldSession() {
-            state = CurrentSessionState.PLAYBACK;
-        }
-
         public void stopRecording() {
             state = CurrentSessionState.SHOWING_LIVE_DATA;
         }
@@ -110,10 +102,6 @@ public class ApplicationState {
             RECORDING,
             PLAYBACK,
             SHOWING_LIVE_DATA
-        }
-
-        public boolean isShowingOldSession() {
-            return state == CurrentSessionState.PLAYBACK;
         }
 
         public boolean isRecording() {
