@@ -1,7 +1,6 @@
 package pl.llp.aircasting.model;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
@@ -53,8 +52,6 @@ public class ViewingSessionsManager {
 
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);
-        Log.i("sessions for viewing", String.valueOf(sessionsForViewing));
-        Log.i("fixed sessions", String.valueOf(fixedSessions));
         Intents.triggerSync(context);
     }
 
@@ -83,7 +80,6 @@ public class ViewingSessionsManager {
             removeSession(newFixedSession.getId());
             newFixedSession = null;
         } else {
-            Log.i("tracker", "tracking");
             Toast.makeText(context, "The streaming session will be shown when data is retrievable", Toast.LENGTH_SHORT);
         }
     }

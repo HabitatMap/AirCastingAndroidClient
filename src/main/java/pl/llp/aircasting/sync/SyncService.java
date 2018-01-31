@@ -28,7 +28,6 @@ import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
-import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
@@ -81,7 +80,7 @@ public class SyncService extends RoboIntentService {
             syncState.startSync();
 
             if (canUpload()) {
-                sync(intent.getStringExtra("uuid"));
+                sync();
             } else if (!settingsHelper.hasCredentials()) {
                 Intents.notifySyncUpdate(context, accountReminder);
             }
@@ -92,7 +91,7 @@ public class SyncService extends RoboIntentService {
         }
     }
 
-    private void sync(@Nullable String sessionToSyncUUID) throws SessionSyncException {
+    private void sync() throws SessionSyncException {
         List<Session> sessions = sessionRepository.allCompleteSessions();
         Iterable<Session> preparedSessions = prepareSessions(sessions);
 

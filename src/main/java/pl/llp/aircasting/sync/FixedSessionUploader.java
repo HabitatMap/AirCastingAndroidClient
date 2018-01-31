@@ -89,17 +89,6 @@ public class FixedSessionUploader {
         CreateSessionResponse createSessionResponse = result.getContent();
     }
 
-    @Subscribe
-    public void onEvent(FixedSessionsMeasurementEvent event) {
-        if (canUpload()) {
-            performCreateMeasurement(event.getFixedSessionsMeasurement());
-        }
-    }
-
-    private void performCreateMeasurement(FixedSessionsMeasurement fixedSessionsMeasurement) {
-        HttpResult<CreateFixedSessionsMeasurementResponse> result = fixedSessionDriver.create_measurement(fixedSessionsMeasurement);
-    }
-
     private boolean canUpload() {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 

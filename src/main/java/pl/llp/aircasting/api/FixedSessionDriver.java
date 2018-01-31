@@ -19,16 +19,13 @@
  */
 package pl.llp.aircasting.api;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
-import pl.llp.aircasting.api.data.CreateFixedSessionsMeasurementResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
@@ -43,11 +40,8 @@ import static pl.llp.aircasting.util.http.HttpBuilder.http;
 public class FixedSessionDriver {
     public static final String SESSION_KEY = "session";
     public static final String COMPRESSION = "compression";
-    private static final String CREATE_FIXED_SESSIONS_MEASUREMENT_PATH = "/api/realtime/measurements.json";
     private static final String CREATE_FIXED_SESSION_PATH = "/api/realtime/sessions.json";
 
-    @Inject Gson gson;
-    @Inject SessionDriver sessionDriver;
     @Inject GZIPHelper gzipHelper;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
@@ -75,10 +69,6 @@ public class FixedSessionDriver {
         return gzipHelper.zippedSession(session);
     }
 
-    private byte[] gzip(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException {
-        return gzipHelper.zippedFixedSessionsMeasurement(fixedSessionsMeasurement);
-    }
-
     private PerformRequest attachPhotos(Session session, PerformRequest builder) {
         for (int i = 0; i < session.getNotes().size(); i++) {
             Note note = session.getNotes().get(i);
@@ -95,19 +85,7 @@ public class FixedSessionDriver {
         return builder;
     }
 
-    public HttpResult<CreateFixedSessionsMeasurementResponse> create_measurement(FixedSessionsMeasurement fixedSessionsMeasurement) {
-        String zipped;
-        try {
-            zipped = new String(gzip(fixedSessionsMeasurement));
-        } catch (IOException e) {
-            return error();
         }
 
-        return http()
-                .post()
-                .to(CREATE_FIXED_SESSIONS_MEASUREMENT_PATH)
-                .with("data", zipped)
-                .with(COMPRESSION, "true")
-                .into(CreateFixedSessionsMeasurementResponse.class);
     }
 }

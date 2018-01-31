@@ -19,12 +19,10 @@
  */
 package pl.llp.aircasting.model;
 
-import com.google.android.gms.maps.model.LatLng;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
 import pl.llp.aircasting.helper.VisibleSession;
@@ -67,27 +65,21 @@ public class CurrentSessionManager {
 
     @Inject SimpleAudioReader audioReader;
     @Inject EventBus eventBus;
-
     @Inject SessionRepository sessionRepository;
     @Inject DatabaseTaskQueue dbQueue;
-
     @Inject LocationHelper locationHelper;
     @Inject NotificationHelper notificationHelper;
-
     @Inject Application applicationContext;
     @Inject TelephonyManager telephonyManager;
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
-
-    @NotNull Session currentSession = new Session();
-
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
-
     @Inject ApplicationState state;
     @Inject VisibleSession visibleSession;
 
-    private Map<String, Double> recentMeasurements = newHashMap();
+    @NotNull Session currentSession = new Session();
 
+    private Map<String, Double> recentMeasurements = newHashMap();
     private boolean paused;
 
     @Inject

@@ -19,17 +19,13 @@
  */
 package pl.llp.aircasting.api;
 
-import com.google.gson.Gson;
-import pl.llp.aircasting.api.data.CreateRegressionResponse;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
@@ -51,7 +47,6 @@ public class SessionDriver {
     public static final String COMPRESSION = "compression";
     public static final String STREAM_MEASUREMENTS = "stream_measurements";
 
-    @Inject SessionRepository sessionRepository;
     @Inject GZIPHelper gzipHelper;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
