@@ -1,22 +1,22 @@
 /**
-    AirCasting - Share your Air!
-    Copyright (C) 2011-2012 HabitatMap, Inc.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    You can contact the authors by email at <info@habitatmap.org>
-*/
+ * AirCasting - Share your Air!
+ * Copyright (C) 2011-2012 HabitatMap, Inc.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * You can contact the authors by email at <info@habitatmap.org>
+ */
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.util.Constants;
@@ -28,31 +28,37 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
-public class Measurement
-{
-  @Expose private double latitude;
-  @Expose private double longitude;
-  @Expose private double value;
-  @Expose private Date time;
-  @Expose @SerializedName("measured_value") private double measuredValue;
-  @Expose @SerializedName("timezone_offset") private int timeZoneOffsetMinutes;
+public class Measurement {
+    @Expose private double latitude;
+    @Expose private double longitude;
+    @Expose private double value;
+    @Expose private Date time;
 
-  private transient Long seconds;
+    @Expose
+    @SerializedName("measured_value")
+    private double measuredValue;
 
-  public Measurement(double value) {
-    this(0, 0, value);
-  }
+    @Expose
+    @SerializedName("timezone_offset")
 
-  public Measurement(double latitude, double longitude, double value) {
-    this(latitude, longitude, value, new Date());
-  }
+    private int timeZoneOffsetMinutes;
 
-  public Measurement(double latitude, double longitude, double value, Date time) {
-      this.latitude = latitude;
-      this.longitude = longitude;
-      this.value = value;
-      setTime(time);
-  }
+    private transient Long seconds;
+
+    public Measurement(double value) {
+        this(0, 0, value);
+    }
+
+    public Measurement(double latitude, double longitude, double value) {
+        this(latitude, longitude, value, new Date());
+    }
+
+    public Measurement(double latitude, double longitude, double value, Date time) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.value = value;
+        setTime(time);
+    }
 
     public Measurement(double latitude, double longitude, double value, double measuredValue, Date time) {
         this.latitude = latitude;
@@ -70,8 +76,8 @@ public class Measurement
         this.measuredValue = measuredValue;
     }
 
-  public Measurement() {
-  }
+    public Measurement() {
+    }
 
     public double getValue() {
         return value;
@@ -136,55 +142,46 @@ public class Measurement
                 '}';
     }
 
-  public Date getTime() {
-    return time;
-  }
-
-  public void setTime(Date time) {
-    this.time = time;
-  }
-
-  public int getTimeZoneOffsetMinutes()
-  {
-    return timeZoneOffsetMinutes;
-  }
-
-  public void setTimeZoneOffsetMinutes(int timeZoneOffsetMinutes)
-  {
-    this.timeZoneOffsetMinutes = timeZoneOffsetMinutes;
-  }
-
-  /*
-  * seconds since time 0
-  **/
-  public long getSecond()
-  {
-    if(seconds == null && time != null)
-    {
-      seconds = getTime().getTime() / Constants.MILLIS_IN_SECOND;
+    public Date getTime() {
+        return time;
     }
-    return seconds;
-  }
 
-  public static Predicate<Measurement> timeFitsIn(final long start, final long end)
-  {
-    return new Predicate<Measurement>()
-    {
-      @Override
-      public boolean apply(@Nullable Measurement measurement)
-      {
-        if (measurement == null)
-        {
-          return false;
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public int getTimeZoneOffsetMinutes() {
+        return timeZoneOffsetMinutes;
+    }
+
+    public void setTimeZoneOffsetMinutes(int timeZoneOffsetMinutes) {
+        this.timeZoneOffsetMinutes = timeZoneOffsetMinutes;
+    }
+
+    /*
+    * seconds since time 0
+    **/
+    public long getSecond() {
+        if (seconds == null && time != null) {
+            seconds = getTime().getTime() / Constants.MILLIS_IN_SECOND;
         }
+        return seconds;
+    }
 
-        return start <= measurement.getTime().getTime() && measurement.getTime().getTime() <= end;
-      }
-    };
-  }
+    public static Predicate<Measurement> timeFitsIn(final long start, final long end) {
+        return new Predicate<Measurement>() {
+            @Override
+            public boolean apply(@Nullable Measurement measurement) {
+                if (measurement == null) {
+                    return false;
+                }
 
-  public int getMilliseconds()
-  {
-    return (int) (time.getTime() % Constants.MILLIS_IN_SECOND);
-  }
+                return start <= measurement.getTime().getTime() && measurement.getTime().getTime() <= end;
+            }
+        };
+    }
+
+    public int getMilliseconds() {
+        return (int) (time.getTime() % Constants.MILLIS_IN_SECOND);
+    }
 }

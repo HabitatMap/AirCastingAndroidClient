@@ -121,11 +121,13 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     }
 
     private boolean shouldCheckForUnfinishedSessions() {
-        if (currentSessionManager.isSessionRecording())
+        if (currentSessionManager.isSessionRecording()) {
             return false;
+        }
 
-        if (state.saving().isSaving())
+        if (state.saving().isSaving()) {
             return false;
+        }
 
         long timeout = System.currentTimeMillis() - lastChecked;
         return timeout > DELTA;

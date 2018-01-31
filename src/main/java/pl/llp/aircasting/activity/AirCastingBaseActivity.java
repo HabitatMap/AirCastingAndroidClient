@@ -142,11 +142,13 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     }
 
     private boolean shouldCheckForUnfinishedSessions() {
-        if (visibleSession.isVisibleSessionRecording())
+        if (currentSessionManager.isSessionRecording()) {
             return false;
+        }
 
-        if (state.saving().isSaving())
+        if (state.saving().isSaving()) {
             return false;
+        }
 
         long timeout = System.currentTimeMillis() - lastChecked;
         return timeout > DELTA;
