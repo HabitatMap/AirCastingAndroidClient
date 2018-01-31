@@ -40,13 +40,21 @@ public class ViewingSessionsManager {
         eventBus.register(this);
     }
 
-    public void addSessionToViewing(long sessionId, @NotNull ProgressListener listener) {
+    public void viewAndStartSyncing(Long sessionId, ProgressListener progressListener) {
+        Preconditions.checkNotNull(progressListener);
+        Session session = sessionRepository.loadShallow(sessionId);
+        sessionsForViewing.put(sessionId, session);
+        addFixedSession(session);
+        notifyNewSession(session);
+    }
+
+    public void view(Long sessionId, @NotNull ProgressListener listener) {
         Preconditions.checkNotNull(listener);
         Session session = sessionRepository.loadFully(sessionId, listener);
-        sessionsForViewing.put(sessionId, session);
         if (session.isFixed()) {
             addFixedSession(session);
         }
+        sessionsForViewing.put(sessionId, session);
         notifyNewSession(session);
     }
 

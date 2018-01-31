@@ -133,7 +133,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    checker.check(AirCastingBaseActivity.this);
+                    checker.finishIfNeeded(AirCastingBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
                 }

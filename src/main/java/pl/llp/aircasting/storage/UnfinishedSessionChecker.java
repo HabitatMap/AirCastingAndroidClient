@@ -28,7 +28,7 @@ public class UnfinishedSessionChecker {
 
     AtomicBoolean checkInProgress = new AtomicBoolean(false);
 
-    public void check(Activity context) {
+    public void finishIfNeeded(Activity context) {
         if (checkInProgress.compareAndSet(false, true)) {
             try {
                 List<Session> unfinishedSessions = repo.unfinishedSessions();
@@ -62,7 +62,7 @@ public class UnfinishedSessionChecker {
     }
 
     private void finishFixedSession(Session unfinishedSession) {
-        viewingSessionsManager.addSessionToViewing(unfinishedSession.getId(), NoOp.progressListener());
+        viewingSessionsManager.viewAndStartSyncing(unfinishedSession.getId(), NoOp.progressListener());
         repo.completeFixedSession(unfinishedSession.getId());
     }
 }
