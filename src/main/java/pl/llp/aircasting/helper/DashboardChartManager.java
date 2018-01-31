@@ -40,12 +40,10 @@ public class DashboardChartManager {
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
-    private final static int FIXED_INTERVAL = 1000 * 60 * INTERVAL_IN_SECONDS; // 1 hour
     private final static int MAX_X_VALUE = 8;
     private final static String FIXED_LABEL = "1 hr Avg";
     private final static String MOBILE_LABEL = "1 min Avg";
     private static int dynamicAveragesCount = 0;
-    private static int interval;
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private static Map<String, List> averages = newHashMap();
     private static String requestedSensorName;
@@ -53,18 +51,18 @@ public class DashboardChartManager {
     private static long requestedSessionId;
     private boolean isSessionCurrent;
     private Handler handler = new Handler();
+
     private Runnable updateEntriesTask = new Runnable() {
         @Override
         public void run() {
             allowChartUpdate();
-            handler.postDelayed(updateEntriesTask, interval);
+            handler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
         }
     };
 
     public void start() {
         resetState();
-        interval = currentSessionManager.getCurrentSession().isFixed() ? FIXED_INTERVAL : MOBILE_INTERVAL;
-        handler.postDelayed(updateEntriesTask, interval);
+        handler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
     }
 
     public void stop() {

@@ -39,7 +39,7 @@ public class StreamViewHelper {
     }
 
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
-        int now = (int) currentSessionManager.getNow(sensor);
+        int now = (int) sessionData.getNow(sensor, sessionId);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
         RelativeLayout sessionTitleContainer = (RelativeLayout) view.findViewById(R.id.title_container);
 
@@ -51,11 +51,11 @@ public class StreamViewHelper {
 
         nowTextView.setBackgroundDrawable(resourceHelper.streamValueGrey);
 
-        if (sessionState.isSessionRecording(sessionId)){
+        if (sessionState.sessionHasColoredBackground(sessionId)){
             setBackground(sensor, nowTextView, now);
         }
 
-        if (sessionState.isSessionCurrent(sessionId)) {
+        if (sessionState.sessionHasNowValue(sessionId)) {
             nowTextView.setText(String.valueOf(now));
         } else {
             nowTextView.setText(R.string.empty);

@@ -19,8 +19,8 @@ public class SessionState {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID;
     }
 
-    public boolean isSessionRecording(@NotNull long sessionId) {
-        return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
+    public boolean sessionHasNowValue(@NotNull long sessionId) {
+        return isSessionCurrent(sessionId) || viewingSessionsManager.sessionIsFixed(sessionId);
     }
 
     public boolean isCurrentSessionIdle() {
@@ -29,5 +29,13 @@ public class SessionState {
 
     public boolean isSessionBeingViewed(@NotNull long sessionId) {
         return viewingSessionsManager.isSessionBeingViewed(sessionId);
+    }
+
+    private boolean isSessionRecording(@NotNull long sessionId) {
+        return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
+    }
+
+    public boolean sessionHasColoredBackground(long sessionId) {
+        return isSessionRecording(sessionId) || viewingSessionsManager.sessionIsFixed(sessionId);
     }
 }
