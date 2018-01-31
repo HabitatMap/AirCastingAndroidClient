@@ -120,7 +120,7 @@
 
     <service android:name=".service.IOIOService"/>
 
-    <service android:name=".streaming.FixedSessionSyncJobService" />
+    <service android:name=".sync.StreamingSessionsSyncService"/>
 
     <!-- Receivers -->
     <receiver android:name=".receiver.NetworkReceiver">

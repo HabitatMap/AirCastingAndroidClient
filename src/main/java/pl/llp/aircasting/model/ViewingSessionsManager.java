@@ -103,6 +103,10 @@ public class ViewingSessionsManager {
         return sessionsForViewing.get(sessionId);
     }
 
+    public Collection<Session> getFixedSessions() {
+        return fixedSessions.values();
+    }
+
     public Session getStreamingSession() {
         return newFixedSession;
     }
