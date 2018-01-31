@@ -217,7 +217,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... longs) {
-                viewingSessionsManager.addSessionToViewing(longs[0], this);
+                viewingSessionsManager.view(longs[0], this);
 
                 return null;
             }

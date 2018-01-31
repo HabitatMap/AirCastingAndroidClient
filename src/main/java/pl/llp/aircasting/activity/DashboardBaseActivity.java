@@ -112,7 +112,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    checker.check(DashboardBaseActivity.this);
+                    checker.finishIfNeeded(DashboardBaseActivity.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
                 }
