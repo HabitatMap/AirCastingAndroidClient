@@ -118,7 +118,7 @@ public class CurrentSessionManager {
     }
 
     public boolean isSessionIdle() {
-        return currentSessionSensorManager.anySensorConnected() && !isSessionRecording();
+        return currentSessionSensorManager.anySensorConnected() && state.recording().isJustShowingCurrentValues();
     }
 
     public void updateSession(Session from) {

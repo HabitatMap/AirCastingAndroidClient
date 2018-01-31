@@ -104,6 +104,10 @@ public class MeasurementStream implements Serializable {
             return measurements;
     }
 
+    public double getLatestMeasurementValue() {
+        return getLastMeasurements(1).get(0).getValue();
+    }
+
     public List<Measurement> getMeasurementsForPeriod(int amount) {
         frequency = calculateSamplingFrequency();
 

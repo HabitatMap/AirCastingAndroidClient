@@ -115,6 +115,10 @@ public class ViewingSessionsManager {
         return sessionsForViewing.containsKey(sessionId);
     }
 
+    public boolean sessionIsFixed(long sessionId) {
+        return fixedSessions.containsKey(sessionId);
+    }
+
     public boolean isAnySessionFixed() {
         return !fixedSessions.isEmpty();
     }

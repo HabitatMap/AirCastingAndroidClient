@@ -80,6 +80,18 @@ public class SessionDataFactory {
         return size;
     }
 
+    public double getNow(Sensor sensor, long sessionId) {
+        double now = 0;
+
+        if (getSession(sessionId).isFixed()) {
+            now = getStream(sensor.getSensorName(), sessionId).getLatestMeasurementValue();
+        } if (sessionState.isSessionCurrent(sessionId)) {
+            now = currentSessionManager.getNow(sensor);
+        }
+
+        return now;
+    }
+
     public void deleteSession(long sessionId) {
         if (sessionState.isSessionCurrent(sessionId)) {
             currentSessionManager.deleteSession();
