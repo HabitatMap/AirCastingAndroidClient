@@ -94,6 +94,32 @@ public class SessionRepository {
         return session;
     }
 
+    @API
+    public void saveNewData(final Session oldSession, @NotNull final Session downloadedSession) {
+        dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>() {
+            @Override
+            public Object execute(SQLiteDatabase writableDatabase) {
+                long sessionId = oldSession.getId();
+                Collection<MeasurementStream> potentialStreams = downloadedSession.getMeasurementStreams();
+
+                    for (MeasurementStream potentialStream : potentialStreams) {
+                        MeasurementStream existingStream = oldSession.getStream(potentialStream.getSensorName());
+
+                        if (existingStream == null) {
+                            Logger.w("saving streams and measurements for session " + sessionId);
+                            streams.saveStreamAndMeasurements(potentialStream, sessionId, writableDatabase);
+                        } else {
+                            Logger.w("saving only measurements for session " + sessionId);
+                            streams.saveNewMeasurements(potentialStream, existingStream.getId(), sessionId, writableDatabase);
+
+                        }
+                    }
+
+                return null;
+            }
+        });
+    }
+
     private void prepareHeader(Session session, ContentValues values) {
         values.put(SESSION_TITLE, session.getTitle());
         values.put(SESSION_DESCRIPTION, session.getDescription());

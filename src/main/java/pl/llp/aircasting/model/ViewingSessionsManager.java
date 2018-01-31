@@ -11,11 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
+import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.model.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
@@ -29,6 +30,7 @@ public class ViewingSessionsManager {
     @Inject EventBus eventBus;
     @Inject ApplicationState state;
     @Inject ContinuousTracker tracker;
+    @Inject FixedSessionDriver fixedSessionDriver;
     @Inject Context context;
 
     private static Map<Long, Session> sessionsForViewing = newHashMap();
@@ -52,6 +54,7 @@ public class ViewingSessionsManager {
         Preconditions.checkNotNull(listener);
         Session session = sessionRepository.loadFully(sessionId, listener);
         if (session.isFixed()) {
+            fixedSessionDriver.downloadNewData(session);
             addFixedSession(session);
         }
         sessionsForViewing.put(sessionId, session);
