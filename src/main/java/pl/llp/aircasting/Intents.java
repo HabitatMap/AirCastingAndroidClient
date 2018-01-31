@@ -34,6 +34,7 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.service.IOIOService;
 import pl.llp.aircasting.service.SensorService;
 import pl.llp.aircasting.storage.DatabaseWriterService;
+import pl.llp.aircasting.sync.StreamingSessionsSyncService;
 import pl.llp.aircasting.sync.SyncService;
 
 import android.app.Activity;
@@ -162,6 +163,11 @@ public final class Intents {
 
     public static void triggerSync(Context context) {
         Intent intent = new Intent(context, SyncService.class);
+        context.startService(intent);
+    }
+
+    public static void triggerStreamingSessionsSync(Context context) {
+        Intent intent = new Intent(context, StreamingSessionsSyncService.class);
         context.startService(intent);
     }
 

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.*;
 import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
@@ -13,6 +14,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
@@ -21,12 +23,27 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
 public class DashboardActivity extends DashboardBaseActivity {
+    private static final long POLLING_INTERVAL = 30000;
+    private static boolean syncStarted = false;
+
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject VisibleSession visibleSession;
     @Inject ViewingSessionsManager viewingSessionsManager;
 
+    private Handler handler = new Handler() {};
+
+    private Thread pollServerTask = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Logger.w("handler running task");
+
+            Intents.triggerStreamingSessionsSync(context);
+
+            handler.postDelayed(pollServerTask, POLLING_INTERVAL);
+        }
+    });
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -70,6 +87,8 @@ public class DashboardActivity extends DashboardBaseActivity {
 
     @Override
     public void onPostResume() {
+        startSyncIfNecessary();
+
         startSensors(context);
         invalidateOptionsMenu();
 
@@ -80,10 +99,19 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onPostResume();
     }
 
+    private void startSyncIfNecessary() {
+        if (viewingSessionsManager.isAnySessionFixed() && !syncStarted) {
+            handler.postDelayed(pollServerTask, POLLING_INTERVAL);
+            syncStarted = true;
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
         stopSensors(context);
+        handler.removeCallbacks(pollServerTask);
+        syncStarted = false;
     }
 
     @Subscribe
