@@ -297,7 +297,6 @@
       <id>repositories</id>
 
       <repositories>
-
         <repository>
           <id>acra-releases</id>
           <name>Acra Releases</name>
@@ -309,7 +308,7 @@
           <url>https://jitpack.io</url>
         </repository>
 
-      </repositories>
+     </repositories>
 
     </profile>
 
