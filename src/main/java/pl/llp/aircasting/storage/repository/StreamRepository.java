@@ -1,5 +1,6 @@
 package pl.llp.aircasting.storage.repository;
 
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -13,7 +14,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -94,14 +94,21 @@ public class StreamRepository {
     }
 
     @Internal
-    private long saveOne(MeasurementStream stream, long sessionId, SQLiteDatabase writableDatabase) {
+    private MeasurementStream saveOne(MeasurementStream stream, long sessionId, SQLiteDatabase writableDatabase) {
         ContentValues values = values(stream);
 
         values.put(STREAM_SESSION_ID, sessionId);
         long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
         stream.setId(streamId);
 
-        return streamId;
+        return stream;
+    }
+
+    @Internal
+    private void saveMeasurements(MeasurementStream stream, long streamId, long sessionId, SQLiteDatabase writableDatabase) {
+        List<Measurement> measurementsToSave = stream.getMeasurements();
+        measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
+        Logger.w("saved " + measurementsToSave.size() + " for session " + sessionId);
     }
 
     static ContentValues values(MeasurementStream stream) {
@@ -127,11 +134,18 @@ public class StreamRepository {
     @Internal
     void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId, SQLiteDatabase writableDatabase) {
         for (MeasurementStream oneToSave : streamsToSave) {
-            oneToSave.setSessionId(sessionId);
-            long streamId = saveOne(oneToSave, sessionId, writableDatabase);
-            List<Measurement> measurementsToSave = oneToSave.getMeasurements();
-            measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
+            saveStreamAndMeasurements(oneToSave, sessionId, writableDatabase);
         }
+    }
+
+    public void saveStreamAndMeasurements(MeasurementStream toSave, long sessionId, SQLiteDatabase writableDatabase) {
+        toSave.setSessionId(sessionId);
+        MeasurementStream stream = saveOne(toSave, sessionId, writableDatabase);
+        saveMeasurements(stream, stream.getId(), sessionId, writableDatabase);
+    }
+
+    public void saveNewMeasurements(MeasurementStream stream, long streamId, long sessionId, SQLiteDatabase writableDatabase) {
+        saveMeasurements(stream, streamId, sessionId, writableDatabase);
     }
 
     @Internal

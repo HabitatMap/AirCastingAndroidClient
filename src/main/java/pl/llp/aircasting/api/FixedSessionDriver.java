@@ -21,17 +21,22 @@ package pl.llp.aircasting.api;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.storage.repository.RepositoryException;
+import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.PerformRequest;
+import pl.llp.aircasting.util.http.Status;
 import pl.llp.aircasting.util.http.Uploadable;
 
 import java.io.IOException;
+import java.util.Date;
 
 import static pl.llp.aircasting.util.http.HttpBuilder.error;
 import static pl.llp.aircasting.util.http.HttpBuilder.http;
@@ -41,10 +46,12 @@ public class FixedSessionDriver {
     public static final String SESSION_KEY = "session";
     public static final String COMPRESSION = "compression";
     private static final String CREATE_FIXED_SESSION_PATH = "/api/realtime/sessions.json";
+    private static final String SYNC_MEASUREMENTS_PATH = "/api/realtime/sync_measurements.json";
 
     @Inject GZIPHelper gzipHelper;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
+    @Inject SessionRepository sessionRepository;
 
     public HttpResult<CreateSessionResponse> create(Session session) {
         String zipped;
@@ -85,7 +92,33 @@ public class FixedSessionDriver {
         return builder;
     }
 
-        }
+    public void downloadNewData(Session session) {
+        String uuid = session.getUUID().toString();
+        Date lastMeasurementSyncTime = session.getLastMeasurementSyncTime();
+        HttpResult<Session> result = syncMeasurements(uuid, lastMeasurementSyncTime);
+        Logger.w("last meas date is " + lastMeasurementSyncTime);
 
+        if (result.getStatus() == Status.SUCCESS) {
+            Session downloadedSession = result.getContent();
+            if (downloadedSession == null) {
+                Logger.w("Data for session [" + uuid + "] couldn't be downloaded");
+            } else {
+                try {
+                    sessionRepository.saveNewData(session, downloadedSession);
+                } catch (RepositoryException e) {
+                    Logger.e("Error saving data for session [" + uuid + "]", e);
+                }
+            }
+        }
+    }
+
+    private HttpResult<Session> syncMeasurements(String uuid, Date lastMeasurementSyncTime) {
+        PerformRequest builder = http()
+                .get()
+                .from(SYNC_MEASUREMENTS_PATH)
+                .with("uuid", uuid)
+                .with("last_measurement_sync", lastMeasurementSyncTime.toString());
+
+        return builder.into(Session.class);
     }
 }

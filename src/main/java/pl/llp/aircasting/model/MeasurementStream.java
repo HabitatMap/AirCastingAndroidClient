@@ -1,10 +1,12 @@
 package pl.llp.aircasting.model;
 
+import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -111,6 +113,10 @@ public class MeasurementStream implements Serializable {
         } catch (IndexOutOfBoundsException e) {
             return getMeasurementsForPeriod(amount - 1);
         }
+    }
+
+    public Date getLastMeasurementTime() {
+        return getLastMeasurements(1).get(0).getTime();
     }
 
     private double calculateSamplingFrequency() {
