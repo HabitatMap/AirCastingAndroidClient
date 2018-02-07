@@ -50,6 +50,7 @@ public class DashboardChartManager {
     private static String requestedStreamKey;
     private static long requestedSessionId;
     private boolean isSessionCurrent;
+    private boolean isSessionFixed;
     private Handler handler = new Handler();
 
     private Runnable updateEntriesTask = new Runnable() {
@@ -91,6 +92,7 @@ public class DashboardChartManager {
         requestedSessionId = sessionId;
         MeasurementStream stream = getStream();
         isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
+        isSessionFixed = sessionData.getSession(sessionId).isFixed();
         requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
         String descriptionText = getTimestamp(stream);
 
@@ -106,7 +108,7 @@ public class DashboardChartManager {
     }
 
     private void initStaticChart(MeasurementStream stream, LineChart chart, Sensor sensor) {
-        if (!isSessionCurrent && shouldStaticChartInitialize()) {
+        if (isSessionFixed || (!isSessionCurrent && shouldStaticChartInitialize())) {
             prepareEntries(requestedSessionId, stream);
             updateChartData(chart, sensor.getShortType());
             staticChartGeneratedForStream.put(requestedStreamKey, true);

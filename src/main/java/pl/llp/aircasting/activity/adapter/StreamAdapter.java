@@ -14,9 +14,8 @@ import pl.llp.aircasting.activity.FakeActivity;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.helper.*;
-import pl.llp.aircasting.model.CurrentSessionSensorManager;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.ViewingSessionsSensorManager;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 
 import android.app.AlertDialog;
@@ -162,6 +161,16 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     @Subscribe
+    public void onEvent(final FixedSessionsMeasurementEvent event) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                update(false);
+            }
+        });
+    }
+
+    @Subscribe
     public void onEvent(SensorEvent event) {
         updateSessionPosition(Constants.CURRENT_SESSION_FAKE_ID);
 
@@ -175,7 +184,7 @@ public class StreamAdapter extends SimpleAdapter {
         });
     }
 
-   @Subscribe
+    @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
         long sessionId = event.getSessionId();
         int sensorsCount = sessionData.getSessionSensorsCount(sessionId);

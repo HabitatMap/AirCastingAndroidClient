@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,39 @@ public class MeasurementRepository {
         Cursor measurements = readableDatabase.rawQuery("" +
                 "SELECT * FROM " + MEASUREMENT_TABLE_NAME + " " +
                 "WHERE " + MEASUREMENT_SESSION_ID + " = " + session.getId(), null);
+
+        progress.onSizeCalculated(measurements.getCount());
+
+        measurements.moveToFirst();
+        Map<Long, List<Measurement>> results = newHashMap();
+        while (!measurements.isAfterLast()) {
+            Measurement measurement = new Measurement();
+            measurement.setLatitude(getDouble(measurements, MEASUREMENT_LATITUDE));
+            measurement.setLongitude(getDouble(measurements, MEASUREMENT_LONGITUDE));
+            measurement.setValue(getDouble(measurements, MEASUREMENT_VALUE));
+            measurement.setTime(getDate(measurements, MEASUREMENT_TIME));
+            measurement.setMeasuredValue(getDouble(measurements, MEASUREMENT_MEASURED_VALUE));
+
+            long id = getLong(measurements, MEASUREMENT_STREAM_ID);
+            stream(id, results).add(measurement);
+
+            int position = measurements.getPosition();
+            if (position % 100 == 0) {
+                progress.onProgress(position);
+            }
+            measurements.moveToNext();
+        }
+        measurements.close();
+
+        return results;
+    }
+
+    @Internal
+    Map<Long, List<Measurement>> loadNew(Session session, Date after, SQLiteDatabase readableDatabase) {
+        Cursor measurements = readableDatabase.rawQuery("" +
+                "SELECT * FROM " + MEASUREMENT_TABLE_NAME + " " +
+                "WHERE " + MEASUREMENT_SESSION_ID + " = " + session.getId() + " AND " +
+                "TIME" + " > \"" + after.getTime() + "\"", null);
 
         progress.onSizeCalculated(measurements.getCount());
 

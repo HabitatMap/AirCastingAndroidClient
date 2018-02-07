@@ -32,10 +32,19 @@ public class FormatHelper {
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public static String timeText(Session session) {
-        return dateTimeFormat.format(session.getStart()) + " - " + timeFormat.format(session.getEnd());
+        if (session.isFixed()) {
+            return getStartTime(session);
+        } else {
+            return getStartTime(session) + " - " + timeFormat.format(session.getEnd());
+
+        }
     }
 
     public static CharSequence dateTime(Date date) {
         return dateTimeFormat.format(date);
+    }
+
+    private static String getStartTime(Session session) {
+        return dateTimeFormat.format(session.getStart());
     }
 }

@@ -50,11 +50,11 @@ public class ViewingSessionsManager {
         notifyNewSession(session);
     }
 
-    public void view(Long sessionId, @NotNull ProgressListener listener) {
-        Preconditions.checkNotNull(listener);
-        Session session = sessionRepository.loadFully(sessionId, listener);
+    public void view(Long sessionId, @NotNull ProgressListener progressListener) {
+        Preconditions.checkNotNull(progressListener);
+        Session session = sessionRepository.loadFully(sessionId, progressListener);
         if (session.isFixed()) {
-            fixedSessionDriver.downloadNewData(session);
+            fixedSessionDriver.downloadNewData(session, progressListener);
             addFixedSession(session);
         }
         sessionsForViewing.put(sessionId, session);
@@ -105,6 +105,10 @@ public class ViewingSessionsManager {
 
     public Collection<Session> getFixedSessions() {
         return fixedSessions.values();
+    }
+
+    public void setStreamingSession(Session session) {
+        newFixedSession = session;
     }
 
     public Session getStreamingSession() {

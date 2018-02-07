@@ -42,6 +42,8 @@ import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 
+import java.util.List;
+
 import static android.content.Context.VIBRATOR_SERVICE;
 
 /**

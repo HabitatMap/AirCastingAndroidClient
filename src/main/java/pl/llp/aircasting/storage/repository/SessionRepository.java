@@ -19,13 +19,12 @@
  */
 package pl.llp.aircasting.storage.repository;
 
+import com.google.common.eventbus.EventBus;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
-import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
+import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -39,12 +38,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.storage.DBHelper.*;
@@ -58,6 +53,7 @@ public class SessionRepository {
 
     @Inject SessionDAO sessionDAO;
     @Inject SessionTrackerDAO trackedSessionsDAO;
+    @Inject EventBus eventBus;
 
     @API
     public Session save(@NotNull final Session session) {
@@ -95,7 +91,7 @@ public class SessionRepository {
     }
 
     @API
-    public void saveNewData(final Session oldSession, @NotNull final Session downloadedSession) {
+    public void saveNewData(final Session oldSession, @NotNull final Session downloadedSession, ProgressListener progressListener) {
         dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>() {
             @Override
             public Object execute(SQLiteDatabase writableDatabase) {
@@ -105,19 +101,60 @@ public class SessionRepository {
                     for (MeasurementStream potentialStream : potentialStreams) {
                         MeasurementStream existingStream = oldSession.getStream(potentialStream.getSensorName());
 
+                        Logger.w("potential stream: " + potentialStream);
+                        Logger.w("potential stream meas count: " + potentialStream.getMeasurements().size());
+
                         if (existingStream == null) {
                             Logger.w("saving streams and measurements for session " + sessionId);
-                            streams.saveStreamAndMeasurements(potentialStream, sessionId, writableDatabase);
+                            streams.saveNewStreamAndMeasurements(potentialStream, sessionId, writableDatabase);
                         } else {
                             Logger.w("saving only measurements for session " + sessionId);
                             streams.saveNewMeasurements(potentialStream, existingStream.getId(), sessionId, writableDatabase);
-
                         }
                     }
 
                 return null;
             }
         });
+
+        fillNewData(oldSession, progressListener);
+    }
+
+    @API
+    private void fillNewData(final Session oldSession, final ProgressListener progressListener) {
+        final Iterable<MeasurementStream> streams = oldSession.getActiveMeasurementStreams();
+        final MeasurementRepository r = new MeasurementRepository(progressListener);
+
+        dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
+            @Override
+            public Session execute(SQLiteDatabase readOnlyDatabase) {
+
+                Map<Long, List<Measurement>> load = r.loadNew(oldSession, oldSession.getEnd(), readOnlyDatabase);
+
+                for (MeasurementStream stream : streams) {
+                    if (load.containsKey(stream.getId())) {
+                        List<Measurement> measurements = load.get(stream.getId());
+                        if (measurements == null || measurements.isEmpty()) {
+
+                        } else {
+                            stream.addMeasurements(measurements);
+                            oldSession.add(stream);
+                            oldSession.setEnd(stream.getLastMeasurementTime());
+                        }
+                    }
+                }
+
+                return null;
+            }
+        });
+
+        notifyOfNewData(oldSession.getId());
+    }
+
+    private void notifyOfNewData(Long sessionId) {
+        FixedSessionsMeasurementEvent event = new FixedSessionsMeasurementEvent(sessionId);
+
+        eventBus.post(event);
     }
 
     private void prepareHeader(Session session, ContentValues values) {
