@@ -2,7 +2,6 @@ package pl.llp.aircasting.activity.adapter;
 
 import android.content.Intent;
 import android.widget.Button;
-import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
@@ -39,8 +38,6 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String SENSOR_NAME = "sensorName";
     public static final String SENSOR = "sensor";
     public static final String SESSION_ID = "session_id";
-    public static final String FIXED_LABEL = "Last Minute";
-    public static final String MOBILE_LABEL = "Last Second";
 
     private static final String[] FROM = new String[]{
             QUANTITY, SENSOR_NAME
@@ -234,7 +231,6 @@ public class StreamAdapter extends SimpleAdapter {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> item = data.get(position);
         chart = (LineChart) view.findViewById(R.id.chart);
-        TextView lastMeasurementLabel = (TextView) view.findViewById(R.id.last_measurement_label);
         final Sensor sensor = (Sensor) item.get(SENSOR);
         final long sessionId = (Long) item.get(SESSION_ID);
         final Button moveSessionDown = (Button) view.findViewById(R.id.session_down);
@@ -265,21 +261,12 @@ public class StreamAdapter extends SimpleAdapter {
         }
 
         view.setTag(R.id.session_id_tag, sessionId);
-        lastMeasurementLabel.setText(getLastMeasurementLabel(sessionId));
 
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor, sessionId);
         chart.invalidate();
 
         return view;
-    }
-
-    private String getLastMeasurementLabel(long sessionId) {
-        if (sessionData.getSession(sessionId).isFixed()) {
-            return FIXED_LABEL;
-        } else {
-            return MOBILE_LABEL;
-        }
     }
 
     private void moveSessionDown(long sessionId) {
