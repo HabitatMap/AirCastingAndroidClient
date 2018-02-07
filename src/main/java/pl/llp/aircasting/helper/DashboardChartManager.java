@@ -94,9 +94,8 @@ public class DashboardChartManager {
         isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
         isSessionFixed = sessionData.getSession(sessionId).isFixed();
         requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
-        String descriptionText = getTimestamp(stream);
 
-        draw(chart, descriptionText);
+        draw(chart);
         chart.clear();
 
         if (stream == null) {
@@ -141,12 +140,15 @@ public class DashboardChartManager {
         chart.setData(lineData);
     }
 
-    private void draw(LineChart chart, String descriptionText) {
+    private void draw(LineChart chart) {
         YAxis leftAxis = chart.getAxisLeft();
         YAxis rightAxis = chart.getAxisRight();
         XAxis xAxis = chart.getXAxis();
         Legend legend = chart.getLegend();
         Description desc = new Description();
+
+        desc.setText("");
+        chart.setDescription(desc);
 
         leftAxis.setEnabled(false);
         leftAxis.setDrawGridLines(false);
@@ -161,11 +163,6 @@ public class DashboardChartManager {
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         legend.setTextSize(10);
 
-        desc.setText(descriptionText);
-        desc.setPosition(chart.getWidth(), chart.getHeight() - 10);
-        desc.setTextSize(10);
-
-        chart.setDescription(desc);
         chart.setNoDataText("");
         chart.setPinchZoom(false);
         chart.setTouchEnabled(false);
@@ -292,21 +289,6 @@ public class DashboardChartManager {
         Sensor sensor = sessionData.getSensor(requestedSensorName, requestedSessionId);
 
         return sensor;
-    }
-
-    private String getTimestamp(MeasurementStream stream) {
-        double time;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-
-        if (!isSessionCurrent) {
-            Measurement lastMeasurement = stream.getLastMeasurements(1).get(0);
-            time = lastMeasurement.getTime().getTime();
-        } else {
-            Calendar calendar = Calendar.getInstance();
-            time = calendar.getTime().getTime();
-        }
-
-        return dateFormat.format(time);
     }
 
     public class MyValueFormatter implements IValueFormatter {

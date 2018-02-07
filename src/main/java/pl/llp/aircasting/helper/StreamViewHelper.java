@@ -10,11 +10,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.CurrentSessionManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +30,9 @@ import java.util.List;
  */
 @Singleton
 public class StreamViewHelper {
-    @Inject CurrentSessionManager currentSessionManager;
+    public static final String FIXED_LABEL = "Last Minute";
+    public static final String MOBILE_LABEL = "Last Second";
+
     @Inject ResourceHelper resourceHelper;
     @Inject SessionState sessionState;
     @Inject SessionDataFactory sessionData;
@@ -41,7 +47,12 @@ public class StreamViewHelper {
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
         int now = (int) sessionData.getNow(sensor, sessionId);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
+        TextView lastMeasurementLabel = (TextView) view.findViewById(R.id.last_measurement_label);
+        TextView timestamp = (TextView) view.findViewById(R.id.timestamp);
         RelativeLayout sessionTitleContainer = (RelativeLayout) view.findViewById(R.id.title_container);
+
+        lastMeasurementLabel.setText(getLastMeasurementLabel(sessionId));
+        timestamp.setText(getTimestamp(sensor, sessionId));
 
         if (positionsWithTitle.contains(position)) {
             setTitleView(sessionId, sessionTitleContainer);
@@ -81,6 +92,30 @@ public class StreamViewHelper {
         } else {
             sessionTitle.setText(session.getTitle());
         }
+    }
+
+    private String getLastMeasurementLabel(long sessionId) {
+        if (sessionData.getSession(sessionId).isFixed()) {
+            return FIXED_LABEL;
+        } else {
+            return MOBILE_LABEL;
+        }
+    }
+
+    private String getTimestamp(Sensor sensor, long sessionId) {
+        double time;
+        MeasurementStream stream = sessionData.getStream(sensor.getSensorName(), sessionId);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm MM/dd/yy");
+
+        if (!sessionState.isSessionCurrent(sessionId)) {
+            Date lastMeasurement = stream.getLastMeasurementTime();
+            time = lastMeasurement.getTime();
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            time = calendar.getTime().getTime();
+        }
+
+        return dateFormat.format(time);
     }
 
     private void setBackground(Sensor sensor, View view, double value) {

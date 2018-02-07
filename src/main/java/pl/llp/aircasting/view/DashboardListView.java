@@ -164,12 +164,14 @@ public class DashboardListView extends ListView {
      * single time an invalidate call is made.
      */
     private BitmapDrawable getAndAddHoverView(View view) {
-        int w = view.getWidth();
-        int h = view.getHeight();
-        int top = view.getTop();
-        int left = view.getLeft();
+        View v = view.findViewById(R.id.chart_container);
 
-        Bitmap b = getBitmapWithBorder(view);
+        int w = v.getWidth();
+        int h = v.getHeight();
+        int top = view.getTop();
+        int left = v.getLeft();
+
+        Bitmap b = getBitmapWithBorder(v);
 
         BitmapDrawable drawable = new BitmapDrawable(getResources(), b);
 
@@ -181,7 +183,7 @@ public class DashboardListView extends ListView {
         return drawable;
     }
 
-    /** Draws a black border over the screenshot of the view passed in. */
+    /** Draws a blue border over the screenshot of the view passed in. */
     private Bitmap getBitmapWithBorder(View v) {
         Bitmap bitmap = getBitmapFromView(v);
         Canvas can = new Canvas(bitmap);
