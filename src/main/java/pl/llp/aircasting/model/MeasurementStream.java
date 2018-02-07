@@ -367,6 +367,10 @@ public class MeasurementStream implements Serializable {
         return address;
     }
 
+    public void addMeasurements(List<Measurement> measurements) {
+        this.measurements.addAll(measurements);
+    }
+
     public enum Visibility {
         VISIBLE,
         INVISIBLE_DELETED,

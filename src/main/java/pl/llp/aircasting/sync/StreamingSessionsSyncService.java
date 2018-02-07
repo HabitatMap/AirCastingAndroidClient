@@ -3,14 +3,16 @@ package pl.llp.aircasting.sync;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.widget.Toast;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.FixedSessionDriver;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.ViewingSessionsManager;
+import pl.llp.aircasting.model.events.SensorEvent;
 import roboguice.service.RoboIntentService;
 
 import java.util.Collection;
@@ -42,8 +44,7 @@ public class StreamingSessionsSyncService extends RoboIntentService {
         Collection<Session> sessions = viewingSessionsManager.getFixedSessions();
 
         for (Session session : sessions) {
-            Logger.w("syncing session " + session.getId());
-            driver.downloadNewData(session);
+            driver.downloadNewData(session, NoOp.progressListener());
         }
    }
 
@@ -51,7 +52,6 @@ public class StreamingSessionsSyncService extends RoboIntentService {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         return networkInfo != null
-                && networkInfo.isConnected()
-                && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+                && networkInfo.isConnected();
     }
 }

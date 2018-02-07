@@ -134,11 +134,11 @@ public class StreamRepository {
     @Internal
     void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId, SQLiteDatabase writableDatabase) {
         for (MeasurementStream oneToSave : streamsToSave) {
-            saveStreamAndMeasurements(oneToSave, sessionId, writableDatabase);
+            saveNewStreamAndMeasurements(oneToSave, sessionId, writableDatabase);
         }
     }
 
-    public void saveStreamAndMeasurements(MeasurementStream toSave, long sessionId, SQLiteDatabase writableDatabase) {
+    public void saveNewStreamAndMeasurements(MeasurementStream toSave, long sessionId, SQLiteDatabase writableDatabase) {
         toSave.setSessionId(sessionId);
         MeasurementStream stream = saveOne(toSave, sessionId, writableDatabase);
         saveMeasurements(stream, stream.getId(), sessionId, writableDatabase);

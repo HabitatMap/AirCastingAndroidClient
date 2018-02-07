@@ -27,6 +27,7 @@ import pl.llp.aircasting.helper.GZIPHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.RepositoryException;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.util.bitmap.BitmapTransformer;
@@ -36,6 +37,7 @@ import pl.llp.aircasting.util.http.Status;
 import pl.llp.aircasting.util.http.Uploadable;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static pl.llp.aircasting.util.http.HttpBuilder.error;
@@ -45,6 +47,8 @@ import static pl.llp.aircasting.util.http.HttpBuilder.http;
 public class FixedSessionDriver {
     public static final String SESSION_KEY = "session";
     public static final String COMPRESSION = "compression";
+    private static final String UUID_KEY = "uuid";
+    private static final String LAST_SYNC_KEY = "last_measurement_sync";
     private static final String CREATE_FIXED_SESSION_PATH = "/api/realtime/sessions.json";
     private static final String SYNC_MEASUREMENTS_PATH = "/api/realtime/sync_measurements.json";
 
@@ -92,11 +96,11 @@ public class FixedSessionDriver {
         return builder;
     }
 
-    public void downloadNewData(Session session) {
+    public void downloadNewData(Session session, ProgressListener progressListener) {
         String uuid = session.getUUID().toString();
         Date lastMeasurementSyncTime = session.getLastMeasurementSyncTime();
         HttpResult<Session> result = syncMeasurements(uuid, lastMeasurementSyncTime);
-        Logger.w("last meas date is " + lastMeasurementSyncTime);
+        Log.w("last meas date is ", getFormattedDate(lastMeasurementSyncTime));
 
         if (result.getStatus() == Status.SUCCESS) {
             Session downloadedSession = result.getContent();
@@ -104,7 +108,7 @@ public class FixedSessionDriver {
                 Logger.w("Data for session [" + uuid + "] couldn't be downloaded");
             } else {
                 try {
-                    sessionRepository.saveNewData(session, downloadedSession);
+                    sessionRepository.saveNewData(session, downloadedSession, progressListener);
                 } catch (RepositoryException e) {
                     Logger.e("Error saving data for session [" + uuid + "]", e);
                 }
@@ -116,9 +120,15 @@ public class FixedSessionDriver {
         PerformRequest builder = http()
                 .get()
                 .from(SYNC_MEASUREMENTS_PATH)
-                .with("uuid", uuid)
-                .with("last_measurement_sync", lastMeasurementSyncTime.toString());
+                .with(UUID_KEY, uuid)
+                .with(LAST_SYNC_KEY, String.valueOf(getFormattedDate(lastMeasurementSyncTime)));
 
         return builder.into(Session.class);
+    }
+
+    private String getFormattedDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        return sdf.format(date);
     }
 }

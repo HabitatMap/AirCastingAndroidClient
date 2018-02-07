@@ -23,8 +23,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.StrictMode;
-import android.util.Log;
 import android.widget.Toast;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -32,15 +30,11 @@ import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
-import pl.llp.aircasting.api.data.CreateFixedSessionsMeasurementResponse;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
 import roboguice.inject.InjectResource;
-import com.google.common.eventbus.Subscribe;
 
 @Singleton
 public class FixedSessionUploader {

@@ -23,8 +23,7 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
 public class DashboardActivity extends DashboardBaseActivity {
-    private static final long POLLING_INTERVAL = 30000;
-    private static boolean syncStarted = false;
+    private static final long POLLING_INTERVAL = 60000;
 
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
@@ -37,8 +36,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     private Thread pollServerTask = new Thread(new Runnable() {
         @Override
         public void run() {
-            Logger.w("handler running task");
-
             Intents.triggerStreamingSessionsSync(context);
 
             handler.postDelayed(pollServerTask, POLLING_INTERVAL);
@@ -100,9 +97,8 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     private void startSyncIfNecessary() {
-        if (viewingSessionsManager.isAnySessionFixed() && !syncStarted) {
-            handler.postDelayed(pollServerTask, POLLING_INTERVAL);
-            syncStarted = true;
+        if (viewingSessionsManager.isAnySessionFixed()) {
+            handler.post(pollServerTask);
         }
     }
 
@@ -111,7 +107,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onPause();
         stopSensors(context);
         handler.removeCallbacks(pollServerTask);
-        syncStarted = false;
     }
 
     @Subscribe
