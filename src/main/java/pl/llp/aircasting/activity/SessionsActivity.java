@@ -199,7 +199,9 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
 
     private void continueAircastingSession(long id) {
         Session session = sessionRepository.loadShallow(id);
-        currentSessionManager.continueStreamingSession(session, true);
+        viewingSessionsManager.setStreamingSession(session);
+
+        Intents.continueSessionStreaming(this, session.getUUID());
     }
 
     private void editSession(long id) {

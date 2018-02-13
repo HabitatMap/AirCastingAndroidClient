@@ -1,9 +1,12 @@
 package pl.llp.aircasting.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -21,6 +24,10 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
     @InjectView(R.id.fixed_session_button) Button fixedSessionButton;
 
     @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject Context context;
+
+    private final Handler handler = new Handler();
+    private int sleepTime = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,20 +46,22 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
                 Intents.startDashboardActivity(this, true);
                 break;
             case R.id.fixed_session_button:
+                Toast.makeText(context, R.string.configuring_airbeam, sleepTime).show();
+
                 viewingSessionsManager.createAndSetFixedSession();
                 UUID uuid = viewingSessionsManager.getStreamingSession().getUUID();
-                String authToken = settingsHelper.getAuthToken();
+                final String authToken = settingsHelper.getAuthToken();
 
                 // UUID and auth are sent to prolong the AB2 configuration mode
-                airbeam2Configurator.sendUUID(uuid);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                airbeam2Configurator.sendAuthToken(authToken);
+                airbeam2Configurator.sendUUIDAndAuthToken(uuid, authToken);
 
-                startActivity(new Intent(this, ChooseStreamingMethodActivity.class));
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(context, ChooseStreamingMethodActivity.class));
+                    }
+                }, sleepTime);
+
                 break;
         }
 

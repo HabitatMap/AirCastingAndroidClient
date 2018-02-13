@@ -47,7 +47,7 @@
   <string name="edit">Edit</string>
   <string name="delete">Delete</string>
   <string name="share">Share</string>
-  <string name="continue_streaming">Continue fixed-locaton streaming</string>
+  <string name="continue_streaming">Continue fixed-location streaming</string>
   <string name="cancel">Cancel</string>
   <string name="upload">Upload</string>
   <string name="username">Profile name</string>
@@ -256,7 +256,9 @@
   <string name="connect_phone_mic">Connect to phone microphone</string>
   <string name="disconnect_phone_mic">Disconnect phone microphone</string>
   <string name="connect_external_device">Connect to external device</string>
+  <string name="connecting_external_device">Connecting to external device</string>
   <string name="configure_airbeam2">Configure AirBeam 2</string>
+  <string name="configuring_airbeam">Configuring AirBeam2...</string>
   <string name="input_wifi_credentials">Input WiFi Credentials</string>
 
   <string name="drawer_open">Open</string>

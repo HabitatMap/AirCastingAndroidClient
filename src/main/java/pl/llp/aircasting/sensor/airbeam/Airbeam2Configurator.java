@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.util.base64.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class Airbeam2Configurator {
     @Inject EventBus eventBus;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     private static byte streamingMethod;
 
@@ -74,15 +76,36 @@ public class Airbeam2Configurator {
         sendMessage(authTokenMessage);
     }
 
-    public void sendLatLng(LatLng latLng) {
-        double lat, lng;
+    public void sendFinalAb2Config() {
+        sendLatLng();
 
-        if (latLng == null) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        sendPackageName();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        configureStreamingMethod();
+    }
+
+    public void sendLatLng() {
+        double lat = viewingSessionsManager.getStreamingSession().getLatitude();
+        double lng = viewingSessionsManager.getStreamingSession().getLongitude();
+
+        if (lat == 0) {
             lat = 200;
+        }
+
+        if (lng == 0) {
             lng = 200;
-        } else {
-            lat = latLng.latitude;
-            lng = latLng.longitude;
         }
 
         String rawLatLngStr = lat + "," + lng;
@@ -167,5 +190,17 @@ public class Airbeam2Configurator {
         byte[] message = buildMessage(rawPackageNameStr, SENSOR_PACKAGE_CODE);
 
         sendMessage(message);
+    }
+
+    public void sendUUIDAndAuthToken(UUID uuid, String authToken) {
+        sendUUID(uuid);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        sendAuthToken(authToken);
     }
 }

@@ -8,6 +8,8 @@ import android.widget.EditText;
 import pl.llp.aircasting.R;
 import roboguice.inject.InjectView;
 
+import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;
+
 /**
  * Created by radek on 12/12/17.
  */
@@ -16,9 +18,12 @@ public class GetWifiCredentialsActivity extends DialogActivity implements View.O
     @InjectView(R.id.wifi_password) EditText wifi_password;
     @InjectView(R.id.wifi_submit) Button wifi_submit;
 
+    private boolean continueStreaming;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
         setContentView(R.layout.get_wifi_network);
 
         wifi_submit.setOnClickListener(this);
@@ -32,7 +37,13 @@ public class GetWifiCredentialsActivity extends DialogActivity implements View.O
                 String password = wifi_password.getText().toString();
 
                 airbeam2Configurator.setWifi(ssid, password);
-                startActivity(new Intent(this, StartFixedSessionActivity.class));
+
+                if (continueStreaming) {
+                    airbeam2Configurator.sendFinalAb2Config();
+                } else {
+                    startActivity(new Intent(this, StartFixedSessionActivity.class));
+                }
+
                 break;
         }
         finish();

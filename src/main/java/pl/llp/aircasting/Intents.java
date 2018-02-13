@@ -47,6 +47,7 @@ import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public final class Intents {
     public static final String SESSION = "session";
@@ -75,6 +76,8 @@ public final class Intents {
     public static final int REQUEST_ENABLE_BLUETOOTH = 5;
     public static final String EXTRA_SENSOR = "sensor";
     public static final String CONFIGURATION_REQUIRED = "configuration_required";
+    public static final String CONTINUE_STREAMING = "continue_streaming";
+    public static final String UUID_KEY = "uuid";
 
     public static void editSession(Activity activity, Session session) {
         Intent intent = new Intent(activity, EditSessionActivity.class);
@@ -181,6 +184,14 @@ public final class Intents {
     public static void startAirbeam2Configuration(Activity context) {
         Intent intent = new Intent(context, ExternalSensorActivity.class);
         intent.putExtra(CONFIGURATION_REQUIRED, true);
+
+        context.startActivity(intent);
+    }
+
+    public static void continueSessionStreaming(Activity context, UUID uuid) {
+        Intent intent = new Intent(context, ExternalSensorActivity.class);
+        intent.putExtra(CONTINUE_STREAMING, true);
+        intent.putExtra(UUID_KEY, uuid.toString());
 
         context.startActivity(intent);
     }
