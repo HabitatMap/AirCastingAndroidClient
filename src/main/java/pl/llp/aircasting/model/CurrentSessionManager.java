@@ -84,8 +84,6 @@ public class CurrentSessionManager {
 
     @Inject
     public void init() {
-        visibleSession.setSession(Constants.CURRENT_SESSION_FAKE_ID);
-
         telephonyManager.listen(new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
@@ -105,12 +103,10 @@ public class CurrentSessionManager {
         return currentSession;
     }
 
-    void setSession(@NotNull Session session) {
+    public void setSession(@NotNull Session session) {
         Preconditions.checkNotNull(session, "Cannot set null session");
         this.currentSession = session;
-        if (session.getId() != null) {
-            visibleSession.setSession(session.getId());
-        }
+        visibleSession.setSession(Constants.CURRENT_SESSION_FAKE_ID);
     }
 
     public boolean isSessionRecording() {

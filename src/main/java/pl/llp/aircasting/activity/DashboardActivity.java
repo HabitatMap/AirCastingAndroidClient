@@ -187,6 +187,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     public void connectPhoneMicrophone() {
+        currentSessionManager.setSession(new Session());
         currentSessionSensorManager.startAudioSensor();
     }
 

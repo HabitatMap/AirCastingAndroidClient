@@ -43,6 +43,9 @@ public class ViewingSessionsManager {
     }
 
     public void viewAndStartSyncing(Long sessionId, ProgressListener progressListener) {
+        if (sessionsForViewing.containsKey(sessionId)) {
+            return;
+        }
         Preconditions.checkNotNull(progressListener);
         Session session = sessionRepository.loadShallow(sessionId);
         sessionsForViewing.put(sessionId, session);
