@@ -162,8 +162,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
   private void updateLabels(ArrayList<Measurement> measurements) {
     if (!measurements.isEmpty()) {
-      graphBegin.setText(DateFormat.format("hh:mm:ss", measurements.get(0).getTime()));
-      graphEnd.setText(DateFormat.format("hh:mm:ss", getLast(measurements).getTime()));
+      graphBegin.setText(DateFormat.format("HH:mm:ss", measurements.get(0).getTime()));
+      graphEnd.setText(DateFormat.format("HH:mm:ss", getLast(measurements).getTime()));
     }
   }
 
