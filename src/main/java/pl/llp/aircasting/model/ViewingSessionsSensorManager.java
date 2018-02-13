@@ -70,4 +70,8 @@ public class ViewingSessionsSensorManager {
     public void removeSessionSensors(long sessionId) {
         viewingSessionsSensors.remove(sessionId);
     }
+
+    public void removeAllSessionsSensors() {
+        viewingSessionsSensors.clear();
+    }
 }

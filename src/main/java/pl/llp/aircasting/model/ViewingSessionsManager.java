@@ -139,4 +139,8 @@ public class ViewingSessionsManager {
         state.dashboardState().populate();
         eventBus.post(new SessionLoadedForViewingEvent(session));
     }
+
+    public void removeAllSessions() {
+        sessionsForViewing.clear();
+    }
 }

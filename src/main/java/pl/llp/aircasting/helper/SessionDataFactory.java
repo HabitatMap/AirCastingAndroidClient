@@ -129,4 +129,9 @@ public class SessionDataFactory {
         viewingSessionsManager.removeSession(sessionId);
         viewingSessionsSensorManager.removeSessionSensors(sessionId);
     }
+
+    public void clearAllViewingSessions() {
+        viewingSessionsManager.removeAllSessions();
+        viewingSessionsSensorManager.removeAllSessionsSensors();
+    }
 }
