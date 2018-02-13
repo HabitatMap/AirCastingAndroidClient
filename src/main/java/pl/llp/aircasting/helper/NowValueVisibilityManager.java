@@ -10,7 +10,7 @@ public class NowValueVisibilityManager {
     @Inject VisibleSession visibleSession;
 
     int getVisibility() {
-        boolean shouldDisplay = visibleSession.isCurrentSessionVisible();
+        boolean shouldDisplay = visibleSession.isVisibleSessionFixed() || visibleSession.isCurrentSessionVisible();
         int visibility = shouldDisplay ? View.VISIBLE : View.GONE;
         return visibility;
     }

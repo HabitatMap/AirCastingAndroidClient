@@ -69,6 +69,10 @@ public class VisibleSession {
         return session != currentSessionManager.getCurrentSession();
     }
 
+    public boolean isVisibleSessionFixed() {
+        return session.isFixed();
+    }
+
     public double getAvg(Sensor sensor) {
         String sensorName = sensor.getSensorName();
 
