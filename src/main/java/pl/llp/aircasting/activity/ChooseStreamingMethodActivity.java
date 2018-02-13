@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.DashboardChartManager;
-import pl.llp.aircasting.model.ViewingSessionsManager;
 import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;

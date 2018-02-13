@@ -7,18 +7,14 @@ import pl.llp.aircasting.activity.ChooseSessionTypeActivity;
 import pl.llp.aircasting.activity.ChooseStreamingMethodActivity;
 import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
