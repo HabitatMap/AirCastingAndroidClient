@@ -140,6 +140,7 @@ public class SessionRepository {
                             stream.addMeasurements(measurements);
                             oldSession.add(stream);
                             oldSession.setEnd(stream.getLastMeasurementTime());
+                            updateSessionEndDate(oldSession);
                         }
                     }
                 }
@@ -402,6 +403,28 @@ public class SessionRepository {
                 }
 
                 return session;
+            }
+        });
+    }
+
+    @API
+    public void updateSessionEndDate(final Session session) {
+        long endDate = session.getEnd().getTime();
+        final ContentValues values = new ContentValues();
+
+        values.put(SESSION_END, endDate);
+
+        final String whereClause = SESSION_ID + " = " + session.getId();
+
+        dbAccessor.executeWritableTask(new WritableDatabaseTask() {
+            @Override
+            public Object execute(SQLiteDatabase writableDatabase) {
+                try {
+                    writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
+                } catch (SQLException e) {
+                    Logger.e("Error updating session [ " + session.getId() + " ]", e);
+                }
+                return null;
             }
         });
     }
