@@ -14,7 +14,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
-import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
@@ -30,6 +30,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject VisibleSession visibleSession;
     @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject SessionDataFactory sessionData;
 
     private Handler handler = new Handler() {};
 
@@ -120,8 +121,10 @@ public class DashboardActivity extends DashboardBaseActivity {
         MenuInflater inflater = getDelegate().getMenuInflater();
 
         if (viewingSessionsManager.anySessionPresent()) {
+            inflater.inflate(R.menu.toolbar_clear_dashboard, menu);
+
             inflater.inflate(R.menu.toolbar_session_rearrange_toggle, menu);
-            MenuItem toggleReorderItem = menu.getItem(0);
+            MenuItem toggleReorderItem = menu.getItem(1);
 
             chooseToggleSessionsReorderIcon(toggleReorderItem);
         }
@@ -160,6 +163,10 @@ public class DashboardActivity extends DashboardBaseActivity {
                 break;
             case R.id.make_note:
                 Intents.makeANote(this);
+                break;
+            case R.id.clear_dashboard_button:
+                sessionData.clearAllViewingSessions();
+                eventBus.post(new ToggleSessionReorderEvent());
                 break;
             case R.id.session_rearrange_toggle:
                 toggleSessionReorder(menuItem);

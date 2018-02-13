@@ -58,6 +58,7 @@
   <string name="graph">Graph</string>
   <string name="map">Map</string>
   <string name="empty"></string>
+  <string name="clear">Clear</string>
 
   <string name="profile">Profile</string>
   <string name="average_threshold">Average sounds (dB)</string>
