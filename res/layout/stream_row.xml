@@ -121,6 +121,7 @@
                               android:textSize="10dp"
                               android:paddingRight="7dp"
                               android:paddingLeft="7dp"
+                              android:textStyle="bold"
                               android:gravity="center"/>
 
                 </LinearLayout>
