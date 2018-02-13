@@ -28,6 +28,7 @@ import pl.llp.aircasting.api.SyncDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
+import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
@@ -63,6 +64,7 @@ public class SyncService extends RoboIntentService {
     @Inject SettingsHelper settingsHelper;
     @Inject SessionDriver sessionDriver;
     @Inject SyncState syncState;
+    @Inject EventBus eventBus;
     @Inject Context context;
 
     @InjectResource(R.string.account_reminder)
@@ -88,6 +90,7 @@ public class SyncService extends RoboIntentService {
             Toast.makeText(getBaseContext(), R.string.session_sync_failed, Toast.LENGTH_LONG);
         } finally {
             syncState.markSyncComplete();
+            eventBus.post(new SyncStateChangedEvent());
         }
     }
 

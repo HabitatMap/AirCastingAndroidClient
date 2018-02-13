@@ -22,12 +22,15 @@ package pl.llp.aircasting.activity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatCallback;
 import android.support.v7.view.ActionMode;
+import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.SessionAdapter;
 import pl.llp.aircasting.activity.adapter.SessionAdapterFactory;
 import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
+import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.DashboardChartManager;
@@ -49,6 +52,7 @@ import android.view.View;
 import android.widget.ListView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectView;
 
 import java.util.List;
@@ -65,6 +69,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
     @Inject EventBus eventBus;
     @Inject UncalibratedMeasurementCalibrator calibrator;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
+    @Inject SyncState syncState;
 
     @InjectView(R.id.sessions_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -105,6 +110,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         super.onResume();
 
         refreshList();
+        showSpinnerIfSyncInProgress();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intents.ACTION_SYNC_UPDATE);
@@ -112,6 +118,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
         eventBus.register(this);
+    }
+
+    private void showSpinnerIfSyncInProgress() {
+        if (syncState.isInProgress()) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
     }
 
     private void refreshItems() {
@@ -123,7 +135,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         }
 
         sessionAdapter.setSessions(sessions);
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -133,6 +144,16 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(syncBroadcastReceiver);
         eventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void onEvent(SyncStateChangedEvent event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void refreshList() {
