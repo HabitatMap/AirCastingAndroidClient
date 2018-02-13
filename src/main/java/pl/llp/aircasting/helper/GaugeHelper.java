@@ -39,7 +39,7 @@ public class GaugeHelper {
         View nowContainer = view.findViewById(R.id.now_container);
         nowContainer.setVisibility(nowManager.getVisibility());
 
-        int now = (int) currentSessionManager.getNow(sensor);
+        int now = (int) sessionData.getNow(sensor, visibleSession.getVisibleSessionId());
         updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
 
         String nowText = String.format(nowLabel, sensor.getShortType());
