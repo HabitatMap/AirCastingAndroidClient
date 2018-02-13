@@ -1,6 +1,5 @@
 package pl.llp.aircasting.model;
 
-import android.util.Log;
 import com.google.common.base.Optional;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.sync;
 
-import org.jetbrains.annotations.Nullable;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.android.Logger;
@@ -80,7 +79,6 @@ public class SyncService extends RoboIntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             syncState.startSync();
-
             if (canUpload()) {
                 sync();
             } else if (!settingsHelper.hasCredentials()) {

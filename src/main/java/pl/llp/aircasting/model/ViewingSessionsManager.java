@@ -16,7 +16,8 @@ import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.model.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;

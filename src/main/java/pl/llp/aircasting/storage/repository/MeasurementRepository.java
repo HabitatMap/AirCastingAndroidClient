@@ -1,6 +1,5 @@
 package pl.llp.aircasting.storage.repository;
 
-import com.google.gson.Gson;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;

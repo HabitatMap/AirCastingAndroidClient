@@ -24,7 +24,6 @@ import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
-import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -101,11 +100,7 @@ public class SessionRepository {
                     for (MeasurementStream potentialStream : potentialStreams) {
                         MeasurementStream existingStream = oldSession.getStream(potentialStream.getSensorName());
 
-                        Logger.w("potential stream: " + potentialStream);
-                        Logger.w("potential stream meas count: " + potentialStream.getMeasurements().size());
-
                         if (existingStream == null) {
-                            Logger.w("saving streams and measurements for session " + sessionId);
                             streams.saveNewStreamAndMeasurements(potentialStream, sessionId, writableDatabase);
                         } else {
                             Logger.w("saving only measurements for session " + sessionId);
@@ -392,6 +387,8 @@ public class SessionRepository {
 
                 for (MeasurementStream stream : streams) {
                     if (load.containsKey(stream.getId())) {
+                        Logger.w("filling stream " + stream.getSensorName());
+
                         List<Measurement> measurements = load.get(stream.getId());
                         if (measurements == null || measurements.isEmpty()) {
 

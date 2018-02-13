@@ -35,9 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.ViewingSessionsManager;
-import pl.llp.aircasting.util.base64.Base64;
 import roboguice.inject.InjectView;
 
 public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener {
