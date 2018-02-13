@@ -1,21 +1,21 @@
 /**
- AirCasting - Share your Air!
- Copyright (C) 2011-2012 HabitatMap, Inc.
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- You can contact the authors by email at <info@habitatmap.org>
+ * AirCasting - Share your Air!
+ * Copyright (C) 2011-2012 HabitatMap, Inc.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * You can contact the authors by email at <info@habitatmap.org>
  */
 package pl.llp.aircasting.helper;
 
@@ -41,64 +41,64 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 
 @Singleton
-public class SettingsHelper
-{
-  public static final String AUTH_TOKEN = "auth_token";
-  public static final String USER_LOGIN = "user_login";
-  public static final String KEEP_SCREEN_ON = "keep_screen_on";
-  public static final String OFFSET_60_DB = "offset_60_db";
-  public static final String SOUND_LEVEL_MEASUREMENTLESS = "sound_level_measurementless";
-  public static final String CALIBRATION = "calibration";
-  public static final String SATELLITE = "satellite";
-  public static final String BACKEND = "backend";
-  public static final String BACKEND_PORT = "backend_port";
-  public static final String HEAT_MAP_DENSITY = "heat_map_density";
-  public static final String FIRST_LAUNCH = "first_launch";
-  public static final String DISABLE_MAPS = "disable_maps";
-  public static final String FIXED_SESSIONS_STREAMING = "fixed_sessions_streaming";
-  public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
+public class SettingsHelper {
+    public static final String AUTH_TOKEN = "auth_token";
+    public static final String USER_LOGIN = "user_login";
+    public static final String KEEP_SCREEN_ON = "keep_screen_on";
+    public static final String OFFSET_60_DB = "offset_60_db";
+    public static final String SOUND_LEVEL_MEASUREMENTLESS = "sound_level_measurementless";
+    public static final String CALIBRATION = "calibration";
+    public static final String SATELLITE = "satellite";
+    public static final String BACKEND = "backend";
+    public static final String BACKEND_PORT = "backend_port";
+    public static final String HEAT_MAP_DENSITY = "heat_map_density";
+    public static final String FIRST_LAUNCH = "first_launch";
+    public static final String DISABLE_MAPS = "disable_maps";
+    public static final String FIXED_SESSIONS_STREAMING = "fixed_sessions_streaming";
+    public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
 
-  public static final int DEFAULT_CALIBRATION = 100;
-  public static final boolean DEFAULT_SATELLITE = false;
-  public static final String DEFAULT_BACKEND = "aircasting.org";
-  public static final int DEFAULT_BACKEND_PORT = 80;
-  public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
-  public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
-  public static final int DEFAULT_OFFSET_60_DB = 0;
-  public static final int MIN_OFFSET_60_DB = -5;
-  public static final int MAX_OFFSET_60_DB = 5;
-  public static final boolean DEFAULT_SOUND_LEVEL_MEASUREMENTLESS = false;
-  public static final String SAMPLE_INTERVAL = "sample_interval";
-  public static final String AVERAGING_TIME = "averaging_time";
-  private static final int MIN_AVERAGING_TIME = 1;
-  private static final int MAX_AVERAGING_TIME = 3600;
-  public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
-  public static final String SHOW_ROUTE = "show_route";
-  public static final String SENSORS = "external_sensors_json";
-  public static final boolean DEFAULT_FIXED_SESSIONS_STREAMING = false;
-  public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = true;
+    public static final int DEFAULT_CALIBRATION = 100;
+    public static final boolean DEFAULT_SATELLITE = false;
+    public static final String DEFAULT_BACKEND = "aircasting.org";
+    public static final int DEFAULT_BACKEND_PORT = 80;
+    public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
+    public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
+    public static final int DEFAULT_OFFSET_60_DB = 0;
+    public static final int MIN_OFFSET_60_DB = -5;
+    public static final int MAX_OFFSET_60_DB = 5;
+    public static final boolean DEFAULT_SOUND_LEVEL_MEASUREMENTLESS = false;
+    public static final String SAMPLE_INTERVAL = "sample_interval";
+    public static final String AVERAGING_TIME = "averaging_time";
+    private static final int MIN_AVERAGING_TIME = 1;
+    private static final int MAX_AVERAGING_TIME = 3600;
+    public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
+    public static final String SHOW_ROUTE = "show_route";
+    public static final String SENSORS = "external_sensors_json";
+    public static final boolean DEFAULT_FIXED_SESSIONS_STREAMING = false;
+    public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = true;
 
-  public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
+    public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
 
-  @Inject SharedPreferences preferences;
-  @Inject Gson gson;
-  @Inject EventBus eventBus;
+    @Inject
+    SharedPreferences preferences;
+    @Inject
+    Gson gson;
+    @Inject
+    EventBus eventBus;
 
-  @Inject
-  public void init()
-  {
-    eventBus.register(this);
-  }
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
 
-  @Subscribe
-  public void onEvent(ThresholdSetEvent event)
-  {
-    setThreshold(event.getSensor(), event.getLevel(), event.getValue());
-  }
+    @Subscribe
+    public void onEvent(ThresholdSetEvent event) {
+        setThreshold(event.getSensor(), event.getLevel(), event.getValue());
+    }
 
-  public int getCalibration() {
-    return getInt(CALIBRATION, DEFAULT_CALIBRATION);
-  }
+    public int getCalibration() {
+        return getInt(CALIBRATION, DEFAULT_CALIBRATION);
+    }
 
     private int getInt(String key, int defaultValue) {
         String value = preferences.getString(key, Integer.toString(defaultValue));
@@ -194,7 +194,7 @@ public class SettingsHelper
     }
 
     public boolean isSoundLevelMeasurementsDisabled() {
-      return preferences.getBoolean(SOUND_LEVEL_MEASUREMENTLESS, DEFAULT_SOUND_LEVEL_MEASUREMENTLESS);
+        return preferences.getBoolean(SOUND_LEVEL_MEASUREMENTLESS, DEFAULT_SOUND_LEVEL_MEASUREMENTLESS);
     }
 
     public int getOffset60DB() {
@@ -218,9 +218,8 @@ public class SettingsHelper
         return true;
     }
 
-    private boolean validateRange(int value, int max, int min)
-    {
-      return value >= min && value <= max;
+    private boolean validateRange(int value, int max, int min) {
+        return value >= min && value <= max;
     }
 
     public boolean validateAveragingTime() {
@@ -285,81 +284,67 @@ public class SettingsHelper
         return preferences.getBoolean(SHOW_ROUTE, true);
     }
 
-  public void setBackendAddress(String backendAddress)
-  {
-    writeString(BACKEND, backendAddress);
-  }
-
-  public void setBackendPort(String backendAddress)
-    {
-      writeString(BACKEND_PORT, backendAddress);
+    public void setBackendAddress(String backendAddress) {
+        writeString(BACKEND, backendAddress);
     }
 
-  public List<ExternalSensorDescriptor> knownSensors()
-  {
-    String json = getConnectedSensorsAsJSON();
-    if (Strings.isNullOrEmpty(json))
-    {
-      return newArrayList();
+    public void setBackendPort(String backendAddress) {
+        writeString(BACKEND_PORT, backendAddress);
     }
 
-    Type type = new TypeToken<List<ExternalSensorDescriptor>>() {}.getType();
-    try
-    {
-      return gson.fromJson(json, type);
+    public List<ExternalSensorDescriptor> knownSensors() {
+        String json = getConnectedSensorsAsJSON();
+        if (Strings.isNullOrEmpty(json)) {
+            return newArrayList();
+        }
+
+        Type type = new TypeToken<List<ExternalSensorDescriptor>>() {
+        }.getType();
+        try {
+            return gson.fromJson(json, type);
+        } catch (JsonSyntaxException e) {
+            writeString(SENSORS, "");
+        }
+        return newArrayList();
     }
-    catch (JsonSyntaxException e)
-    {
-      writeString(SENSORS, "");
+
+    public void knownSensorsWithout(String addres) {
+        List<ExternalSensorDescriptor> descriptors = knownSensors();
+        for (Iterator<ExternalSensorDescriptor> iterator = descriptors.iterator(); iterator.hasNext(); ) {
+            ExternalSensorDescriptor aDescriptor = iterator.next();
+            if (addres.equals(aDescriptor.getAddress())) {
+                iterator.remove();
+            }
+        }
+        setExternalSensors(descriptors);
     }
-    return newArrayList();
-  }
 
-  public void knownSensorsWithout(String addres)
-  {
-    List<ExternalSensorDescriptor> descriptors = knownSensors();
-    for (Iterator<ExternalSensorDescriptor> iterator = descriptors.iterator(); iterator.hasNext(); )
-    {
-      ExternalSensorDescriptor aDescriptor = iterator.next();
-      if(addres.equals(aDescriptor.getAddress()))
-      {
-        iterator.remove();
-      }
+    public String getConnectedSensorsAsJSON() {
+        return preferences.getString(SENSORS, null);
     }
-    setExternalSensors(descriptors);
-  }
 
-  public String getConnectedSensorsAsJSON()
-  {
-    return preferences.getString(SENSORS, null);
-  }
+    public void setExternalSensors(List<ExternalSensorDescriptor> sensors) {
+        String sensorsAsJson = gson.toJson(sensors);
+        writeString(SENSORS, sensorsAsJson);
+    }
 
-  public void setExternalSensors(List<ExternalSensorDescriptor> sensors)
-  {
-    String sensorsAsJson = gson.toJson(sensors);
-    writeString(SENSORS, sensorsAsJson);
-  }
+    public boolean showGraphMetadata() {
+        return preferences.getBoolean(SHOW_GRAPH_METADATA, false);
+    }
 
-  public boolean showGraphMetadata()
-  {
-    return preferences.getBoolean(SHOW_GRAPH_METADATA, false);
-  }
+    public void setDisableMaps(boolean checked) {
+        writeBoolean(DISABLE_MAPS, checked);
+    }
 
-  public void setDisableMaps(boolean checked)
-  {
-    writeBoolean(DISABLE_MAPS, checked);
-  }
+    public boolean areMapsDisabled() {
+        return preferences.getBoolean(DISABLE_MAPS, false);
+    }
 
-  public boolean areMapsDisabled()
-  {
-    return preferences.getBoolean(DISABLE_MAPS, false);
-  }
-
-  public boolean isContributingToCrowdMap() {
-    return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
-  }
+    public boolean isContributingToCrowdMap() {
+        return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
+    }
 
     public boolean isFixedSessionStreamingEnabled() {
-    return preferences.getBoolean(FIXED_SESSIONS_STREAMING, DEFAULT_FIXED_SESSIONS_STREAMING);
-  }
+        return preferences.getBoolean(FIXED_SESSIONS_STREAMING, DEFAULT_FIXED_SESSIONS_STREAMING);
+    }
 }

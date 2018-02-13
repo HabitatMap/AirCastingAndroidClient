@@ -52,7 +52,7 @@ public class ViewingSessionsSensorManager {
             sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
         }
 
-        viewingSessionsSensors.put(event.getSession().getId(), sessionSensors);
+        viewingSessionsSensors.put(session.getId(), sessionSensors);
         eventBus.post(new SessionSensorsLoadedEvent(session.getId()));
     }
 

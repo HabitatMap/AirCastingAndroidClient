@@ -85,7 +85,7 @@ public class DashboardActivity extends DashboardBaseActivity {
 
     @Override
     public void onPostResume() {
-        startSyncIfNecessary();
+        startUpdatingFixedSessions();
 
         startSensors(context);
         invalidateOptionsMenu();
@@ -97,7 +97,7 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onPostResume();
     }
 
-    private void startSyncIfNecessary() {
+    private void startUpdatingFixedSessions() {
         if (viewingSessionsManager.isAnySessionFixed()) {
             handler.post(pollServerTask);
         }
