@@ -314,17 +314,4 @@ public class CurrentSessionManager {
             }
         });
     }
-
-    public void continueStreamingSession(Session session, boolean locationLess) {
-        eventBus.post(new SessionStartedEvent(getCurrentSession()));
-        setSession(session);
-        locationHelper.start();
-        currentSessionSensorManager.startSensors();
-        state.recording().startRecording();
-        notificationHelper.showRecordingNotification();
-
-        if (!tracker.continueTracking(getCurrentSession(), locationLess)) {
-            cleanup();
-        }
-    }
 }

@@ -1,12 +1,15 @@
 package pl.llp.aircasting.activity.extsens;
 
+import android.os.Handler;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ChooseSessionTypeActivity;
+import pl.llp.aircasting.activity.ChooseStreamingMethodActivity;
 import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
@@ -28,12 +31,17 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
+import java.util.UUID;
+
+import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;
+
 public class ExternalSensorActivity extends DialogActivity {
     @Inject Context context;
     @Inject SensorAdapterFactory adapterFactory;
     @Inject SettingsHelper settingsHelper;
     @Inject ExternalSensors externalSensors;
     @Inject EventBus eventBus;
+    @Inject Airbeam2Configurator airbeam2Configurator;
 
     @InjectView(R.id.paired_sensor_list) ListView pairedSensorList;
     @InjectView(R.id.connected_sensors_list) ListView connectedSensorList;
@@ -48,6 +56,9 @@ public class ExternalSensorActivity extends DialogActivity {
 
     private long bluetoothRequestTimestamp;
     private boolean configurationRequired;
+    private boolean continueStreaming;
+    private long sleepTime = 4000;
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +66,7 @@ public class ExternalSensorActivity extends DialogActivity {
         setContentView(R.layout.external_sensors_list);
         eventBus.register(this);
         configurationRequired = getIntent().getBooleanExtra(Intents.CONFIGURATION_REQUIRED, false);
+        continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -65,31 +77,43 @@ public class ExternalSensorActivity extends DialogActivity {
         pairedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage(R.string.connect_sensor).
-                        setCancelable(true).
-                        setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
-                                ioio.startIfNecessary(connected, context);
-                                Intents.restartSensors(context);
+                final ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
 
-                                if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
-                                    try {
-                                        Thread.sleep(3000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    startActivity(new Intent(context, ChooseSessionTypeActivity.class));
-                                    finish();
-                                } else {
-                                    Intents.startDashboardActivity(ExternalSensorActivity.this, true);
-                                }
-                            }
-                        }).setNegativeButton("No", NoOp.dialogOnClick());
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                if (continueStreaming) {
+                    Toast.makeText(context, R.string.configuring_airbeam, (int) sleepTime).show();
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            String uuid = getIntent().getStringExtra("uuid");
+                            airbeam2Configurator.sendUUIDAndAuthToken(UUID.fromString(uuid), settingsHelper.getAuthToken());;
+                            Intent intent = new Intent(context, ChooseStreamingMethodActivity.class);
+                            intent.putExtra(CONTINUE_STREAMING, true);
+
+                            startActivity(intent);
+                        }
+                    }, sleepTime);
+
+                    finish();
+                } else if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
+                    Toast.makeText(context, R.string.configuring_airbeam, (int) sleepTime).show();
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startActivity(new Intent(context, ChooseSessionTypeActivity.class));
+                        }
+                    }, sleepTime);
+
+                    finish();
+                } else {
+                    Toast.makeText(context, R.string.connecting_external_device, Toast.LENGTH_SHORT).show();
+
+                    ioio.startIfNecessary(connected, context);
+                    Intents.restartSensors(context);
+
+                    Intents.startDashboardActivity(ExternalSensorActivity.this, true);
+                }
             }
         });
 
@@ -97,21 +121,20 @@ public class ExternalSensorActivity extends DialogActivity {
         connectedSensorList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage(R.string.disconnect_sensor).
-                        setCancelable(true).
-                        setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                disconnectFrom(sensorLists.disconnect(position));
-                            }
-                        }).setNegativeButton("No", NoOp.dialogOnClick());
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                disconnectFrom(sensorLists.disconnect(position));
             }
         });
 
         sensorLists = new AdapterInteractor(this, pairedSensorAdapter, connectedSensorAdapter, settingsHelper);
+        disconnectAirBeam2();
+    }
+
+    private void disconnectAirBeam2() {
+         Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
+
+        for (ExternalSensorDescriptor descriptor : descriptors) {
+            disconnectFrom(descriptor);
+        }
     }
 
     private void disconnectFrom(final ExternalSensorDescriptor disconnected) {

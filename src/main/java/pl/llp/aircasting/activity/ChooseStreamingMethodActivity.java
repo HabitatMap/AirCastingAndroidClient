@@ -9,7 +9,10 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.DashboardChartManager;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import roboguice.inject.InjectView;
+
+import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;
 
 /**
  * Created by radek on 01/09/17.
@@ -21,9 +24,12 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
 
+    private boolean continueStreaming;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
         setContentView(R.layout.choose_streaming_method);
 
         wifiButton.setOnClickListener(this);
@@ -34,11 +40,19 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.wifi_button:
-                startActivity(new Intent(this, GetWifiCredentialsActivity.class));
+                Intent intent = new Intent(this, GetWifiCredentialsActivity.class);
+                intent.putExtra(CONTINUE_STREAMING, continueStreaming);
+
+                startActivity(intent);
                 break;
             case R.id.cellular_button:
                 airbeam2Configurator.setCellular();
-                startFixedAirCasting();
+
+                if (continueStreaming) {
+                    airbeam2Configurator.sendFinalAb2Config();
+                } else {
+                    startFixedAirCasting();
+                }
                 break;
         }
         finish();

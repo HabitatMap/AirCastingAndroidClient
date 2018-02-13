@@ -101,41 +101,22 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
                 Place place = PlacePicker.getPlace(data, this);
                 LatLng latlng = place.getLatLng();
 
+
+
                 startFixedSession(false, latlng);
             }
         }
     }
 
     private void startFixedSession(boolean isIndoor, LatLng latlng) {
-        sendFinalAb2Config(latlng);
-
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
         String description = sessionDescription.getText().toString();
 
         Intents.startDashboardActivity(this, true);
         viewingSessionsManager.startFixedSession(title, tags, description, isIndoor, latlng);
+        airbeam2Configurator.sendFinalAb2Config();
 
         finish();
-    }
-
-    private void sendFinalAb2Config(LatLng latLng) {
-        airbeam2Configurator.sendLatLng(latLng);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        airbeam2Configurator.sendPackageName();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        airbeam2Configurator.configureStreamingMethod();
     }
 }
