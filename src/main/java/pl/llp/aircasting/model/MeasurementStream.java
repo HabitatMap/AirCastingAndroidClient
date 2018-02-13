@@ -6,6 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -104,39 +105,56 @@ public class MeasurementStream implements Serializable {
             return measurements;
     }
 
+    private List<Measurement> getFirstMeasurements(int amount) {
+        int size = measurements.size();
+
+        if (size > amount) {
+            return measurements.subList(0, amount - 1);
+        } else {
+            return measurements;
+        }
+    }
+
     public double getLatestMeasurementValue() {
+        if (measurements.isEmpty()) {
+            return 0;
+        }
         return getLastMeasurements(1).get(0).getValue();
     }
 
-    public List<Measurement> getMeasurementsForPeriod(int amount) {
-        frequency = calculateSamplingFrequency();
+    public List<Measurement> getMeasurementsForPeriod(int amount, double divisor) {
+        frequency = calculateSamplingFrequency(divisor);
 
         try {
             int measurementsInPeriod = (int) (60 / frequency) * amount;
             return getLastMeasurements(measurementsInPeriod);
         } catch (IndexOutOfBoundsException e) {
-            return getMeasurementsForPeriod(amount - 1);
+            return getMeasurementsForPeriod(amount - 1, divisor);
         }
     }
 
     public Date getLastMeasurementTime() {
+        if (measurements.isEmpty()) {
+            Calendar calendar = Calendar.getInstance();
+            return calendar.getTime();
+        }
         return getLastMeasurements(1).get(0).getTime();
     }
 
-    private double calculateSamplingFrequency() {
+    private double calculateSamplingFrequency(double divisor) {
         if (frequency > 0.0) {
             return frequency;
         }
 
         double deltaSum = 0;
-        List<Measurement> sample = getLastMeasurements(5);
+        List<Measurement> sample = getFirstMeasurements(10);
 
         for (int i = 0; i < sample.size() - 1; i++) {
             double delta = sample.get(i + 1).getTime().getTime() - sample.get(i).getTime().getTime();
             deltaSum += delta;
         }
 
-        double average = deltaSum / (4 * 1000);
+        double average = deltaSum / (divisor);
 
         return average;
     }
@@ -217,13 +235,9 @@ public class MeasurementStream implements Serializable {
         return sum / (measurements.isEmpty() ? 1 : measurements.size());
     }
 
-    public double getFrequency(boolean isFixed) {
+    public double getFrequency(double divisor) {
         if (frequency <= 0.0) {
-            if (isFixed) {
-                frequency = Double.valueOf(1);
-            } else {
-                frequency = calculateSamplingFrequency();
-            }
+            frequency = calculateSamplingFrequency(divisor);
         }
         return frequency;
     }
