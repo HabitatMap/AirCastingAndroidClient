@@ -7,12 +7,18 @@ import pl.llp.aircasting.model.Session;
  */
 public class SessionLoadedForViewingEvent {
     private final Session session;
+    private boolean newFixedSession = false;
 
-    public SessionLoadedForViewingEvent(Session session) {
+    public SessionLoadedForViewingEvent(Session session, boolean newFixedSession) {
         this.session = session;
+        this.newFixedSession = newFixedSession;
     }
 
     public Session getSession() {
         return session;
+    }
+
+    public boolean isNewFixedSession() {
+        return newFixedSession;
     }
 }

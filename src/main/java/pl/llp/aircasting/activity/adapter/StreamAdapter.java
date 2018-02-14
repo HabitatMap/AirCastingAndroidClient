@@ -195,7 +195,12 @@ public class StreamAdapter extends SimpleAdapter {
             sessionStreamCount.remove(sessionId);
         }
 
-        update(false);
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                update(false);
+            }
+        });
     }
 
     @Subscribe
@@ -265,6 +270,7 @@ public class StreamAdapter extends SimpleAdapter {
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor, sessionId);
         chart.invalidate();
+        context.invalidateOptionsMenu();
 
         return view;
     }
@@ -454,6 +460,7 @@ public class StreamAdapter extends SimpleAdapter {
         if (!sessionState.isSessionCurrent(sessionId) &&
                 sessionData.getSession(sessionId).getStreamsSize() <= clearedStreamsSize) {
             sessionData.clearViewingSession(sessionId);
+            context.invalidateOptionsMenu();
         }
     }
 

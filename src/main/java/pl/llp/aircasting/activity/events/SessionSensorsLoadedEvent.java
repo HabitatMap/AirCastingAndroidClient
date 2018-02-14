@@ -6,13 +6,11 @@ package pl.llp.aircasting.activity.events;
 public class SessionSensorsLoadedEvent {
     private final long sessionId;
 
-    public SessionSensorsLoadedEvent(long sessionId)
-    {
+    public SessionSensorsLoadedEvent(long sessionId) {
         this.sessionId = sessionId;
     }
 
-    public long getSessionId()
-    {
+    public long getSessionId() {
         return sessionId;
     }
 }

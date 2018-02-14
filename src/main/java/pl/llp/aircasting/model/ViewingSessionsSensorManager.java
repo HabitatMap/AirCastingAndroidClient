@@ -6,6 +6,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
+import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
+    protected static final String PLACEHOLDER_SENSOR_NAME = "Sensor Placeholder";
 
     @Inject
     public void init() {
@@ -41,7 +44,16 @@ public class ViewingSessionsSensorManager {
     @Subscribe
     public void onEvent(SessionLoadedForViewingEvent event) {
         Session session = event.getSession();
-        Map<SensorName, Sensor> sessionSensors = newHashMap();
+        boolean newFixedSession = event.isNewFixedSession();
+        Map<SensorName, Sensor> sessionSensors = viewingSessionsSensors.get(session.getId());
+
+        if (sessionSensors == null) {
+            sessionSensors = newHashMap();
+        }
+
+        if (newFixedSession) {
+            addPlaceholderStream(session);
+        }
 
         for (MeasurementStream stream : session.getMeasurementStreams()) {
             if (stream.isMarkedForRemoval()) {
@@ -53,7 +65,19 @@ public class ViewingSessionsSensorManager {
         }
 
         viewingSessionsSensors.put(session.getId(), sessionSensors);
+
         eventBus.post(new SessionSensorsLoadedEvent(session.getId()));
+    }
+
+    @Subscribe
+    public void onEvent(FixedSessionsMeasurementEvent event) {
+        deletePlaceholderSensor(event.getSessionId());
+    }
+
+    private void deletePlaceholderSensor(long sessionId) {
+        if (viewingSessionsSensors.containsKey(sessionId)) {
+            viewingSessionsSensors.get(sessionId).remove(SensorName.from(PLACEHOLDER_SENSOR_NAME));
+        }
     }
 
     public List<Sensor> getSensorsList(long sessionId) {
@@ -73,5 +97,12 @@ public class ViewingSessionsSensorManager {
 
     public void removeAllSessionsSensors() {
         viewingSessionsSensors.clear();
+    }
+
+    private void addPlaceholderStream(Session session) {
+        MeasurementStream placeholderStream = new MeasurementStream("", PLACEHOLDER_SENSOR_NAME, "", "", "", "",
+                0, 0, 0, 0, 0);
+
+        session.add(placeholderStream);
     }
 }

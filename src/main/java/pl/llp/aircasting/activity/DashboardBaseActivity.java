@@ -39,8 +39,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     private ToggleAircastingManager toggleAircastingManager;
     private boolean initialized = false;
-    private long lastChecked = 0;
-    public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Override
     protected void onResume() {
@@ -113,7 +111,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
                 @Override
                 protected Void doInBackground(Void... voids) {
                     checker.finishIfNeeded(DashboardBaseActivity.this);
-                    lastChecked = System.currentTimeMillis();
                     return null;
                 }
             }.execute();
@@ -129,7 +126,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
             return false;
         }
 
-        long timeout = System.currentTimeMillis() - lastChecked;
-        return timeout > DELTA;
+        return true;
     }
 }
