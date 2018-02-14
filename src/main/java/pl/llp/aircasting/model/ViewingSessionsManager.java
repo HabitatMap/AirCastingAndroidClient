@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
@@ -12,6 +13,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.api.FixedSessionDriver;
+import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.model.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
+import static pl.llp.aircasting.model.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
 
 /**
  * Created by radek on 10/10/17.
@@ -51,7 +54,7 @@ public class ViewingSessionsManager {
         Session session = sessionRepository.loadShallow(sessionId);
         sessionsForViewing.put(sessionId, session);
         addFixedSession(session);
-        notifyNewSession(session);
+        notifyNewSession(session, true);
     }
 
     public void view(Long sessionId, @NotNull ProgressListener progressListener) {
@@ -62,12 +65,23 @@ public class ViewingSessionsManager {
             addFixedSession(session);
         }
         sessionsForViewing.put(sessionId, session);
-        notifyNewSession(session);
+        notifyNewSession(session, false);
     }
 
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);
         Intents.triggerSync(context);
+    }
+
+    @Subscribe
+    public void onEvent(FixedSessionsMeasurementEvent event) {
+        long sessionId = event.getSessionId();
+        Session session = getSession(sessionId);
+
+        if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
+            MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
+            session.removeStream(stream);
+        }
     }
 
     public void createAndSetFixedSession() {
@@ -139,9 +153,9 @@ public class ViewingSessionsManager {
         return !sessionsForViewing.isEmpty();
     }
 
-    private void notifyNewSession(Session session) {
+    private void notifyNewSession(Session session, boolean newFixedSession) {
         state.dashboardState().populate();
-        eventBus.post(new SessionLoadedForViewingEvent(session));
+        eventBus.post(new SessionLoadedForViewingEvent(session, newFixedSession));
     }
 
     public void removeAllSessions() {

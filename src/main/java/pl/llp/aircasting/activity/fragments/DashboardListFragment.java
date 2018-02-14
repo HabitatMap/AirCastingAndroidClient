@@ -62,7 +62,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        if (state.dashboardState().isPopulated()) {
+        if (state != null && state.dashboardState().isPopulated()) {
             setListAdapter(adapter);
             adapter.forceUpdate();
         }

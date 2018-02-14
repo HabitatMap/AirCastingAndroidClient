@@ -136,6 +136,7 @@ public class SessionRepository {
                             oldSession.add(stream);
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
+                            notifyOfNewData(oldSession.getId());
                         }
                     }
                 }
@@ -143,8 +144,6 @@ public class SessionRepository {
                 return null;
             }
         });
-
-        notifyOfNewData(oldSession.getId());
     }
 
     private void notifyOfNewData(Long sessionId) {
