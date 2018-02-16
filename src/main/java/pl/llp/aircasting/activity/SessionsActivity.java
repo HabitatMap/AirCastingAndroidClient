@@ -31,6 +31,7 @@ import pl.llp.aircasting.activity.task.CalibrateSessionsTask;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.SelectSensorHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.DashboardChartManager;
@@ -218,9 +219,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         refreshList();
     }
 
-    private void continueAircastingSession(long id) {
-        Session session = sessionRepository.loadShallow(id);
+    private void continueAircastingSession(long sessionId) {
+        Session session = sessionRepository.loadShallow(sessionId);
         viewingSessionsManager.setStreamingSession(session);
+        viewingSessionsManager.view(sessionId, NoOp.progressListener());
 
         Intents.continueSessionStreaming(this, session.getUUID());
     }
