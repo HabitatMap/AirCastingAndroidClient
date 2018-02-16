@@ -122,15 +122,6 @@ public class ExternalSensorActivity extends DialogActivity {
         });
 
         sensorLists = new AdapterInteractor(this, pairedSensorAdapter, connectedSensorAdapter, settingsHelper);
-        disconnectAirBeam2();
-    }
-
-    private void disconnectAirBeam2() {
-         Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
-
-        for (ExternalSensorDescriptor descriptor : descriptors) {
-            disconnectFrom(descriptor);
-        }
     }
 
     private void disconnectFrom(final ExternalSensorDescriptor disconnected) {
