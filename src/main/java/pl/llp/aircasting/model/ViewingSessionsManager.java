@@ -140,6 +140,10 @@ public class ViewingSessionsManager {
         return !fixedSessions.isEmpty();
     }
 
+    public int getSessionsCount() {
+        return sessionsForViewing.size();
+    }
+
     public MeasurementStream getMeasurementStream(long sessionId, String sensorName) {
         return sessionsForViewing.get(sessionId).getStream(sensorName);
     }
