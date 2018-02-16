@@ -5,7 +5,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ViewingSessionsManager;
+import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
+import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.base64.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -19,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class Airbeam2Configurator {
     @Inject EventBus eventBus;
     @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject ExternalSensors externalSensors;
+    @Inject SettingsHelper settingsHelper;
 
     private static byte streamingMethod;
 
@@ -94,6 +100,17 @@ public class Airbeam2Configurator {
         }
 
         configureStreamingMethod();
+        disconnectAirBeam2();
+    }
+
+    private void disconnectAirBeam2() {
+         Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
+
+        for (ExternalSensorDescriptor descriptor : descriptors) {
+            if (descriptor.getName().startsWith(ExternalSensors.AIRBEAM)) {
+                externalSensors.disconnect(descriptor.getAddress());
+            }
+        }
     }
 
     public void sendLatLng() {
