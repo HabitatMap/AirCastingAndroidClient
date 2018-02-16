@@ -128,7 +128,9 @@ public class DashboardActivity extends DashboardBaseActivity {
 
         if (viewingSessionsManager.anySessionPresent()) {
             inflater.inflate(R.menu.toolbar_clear_dashboard, menu);
+        }
 
+        if (viewingSessionsManager.getSessionsCount() > 1) {
             inflater.inflate(R.menu.toolbar_session_rearrange_toggle, menu);
             MenuItem toggleReorderItem = menu.getItem(1);
 
