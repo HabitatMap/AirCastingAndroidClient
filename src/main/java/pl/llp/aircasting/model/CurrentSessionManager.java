@@ -84,6 +84,8 @@ public class CurrentSessionManager {
 
     @Inject
     public void init() {
+        setSession(new Session());
+
         telephonyManager.listen(new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {

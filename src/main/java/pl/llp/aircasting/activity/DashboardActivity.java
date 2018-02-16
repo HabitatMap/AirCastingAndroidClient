@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
+import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.SessionDataFactory;
@@ -113,6 +114,11 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
         invalidateOptionsMenu();
+    }
+
+    @Subscribe
+    public void onEvent(SessionLoadedForViewingEvent event) {
+        startUpdatingFixedSessions();
     }
 
     @Override

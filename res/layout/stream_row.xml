@@ -48,12 +48,28 @@
 
     </RelativeLayout>
 
+    <LinearLayout android:id="@+id/placeholder_chart"
+                  android:layout_width="match_parent"
+                  android:layout_height="170dp"
+                  android:visibility="gone"
+                  android:orientation="horizontal">
+
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:gravity="center"
+                  android:textStyle="bold"
+                  android:layout_marginTop="-70dp"
+                  android:text="@string/retrieving_streams"/>
+
+    </LinearLayout>
+
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="170dp"
                   android:id="@+id/chart_container"
                   android:orientation="horizontal">
 
-        <LinearLayout android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/actual_chart"
+                      android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:orientation="vertical"
                       android:layout_weight="1">

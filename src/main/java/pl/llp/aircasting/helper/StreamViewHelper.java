@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static pl.llp.aircasting.model.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
+
 /**
  * Created with IntelliJ IDEA.
  * User: marcin
@@ -45,11 +47,19 @@ public class StreamViewHelper {
     }
 
     public void updateMeasurements(long sessionId, Sensor sensor, View view, int position) {
+        RelativeLayout sessionTitleContainer = (RelativeLayout) view.findViewById(R.id.title_container);
+
+        if (sensor.getSensorName().startsWith(PLACEHOLDER_SENSOR_NAME)) {
+            setTitleView(sessionId, sessionTitleContainer);
+            view.findViewById(R.id.placeholder_chart).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.actual_chart).setVisibility(View.GONE);
+            return;
+        }
+
         int now = (int) sessionData.getNow(sensor, sessionId);
         TextView nowTextView = (TextView) view.findViewById(R.id.now);
         TextView lastMeasurementLabel = (TextView) view.findViewById(R.id.last_measurement_label);
         TextView timestamp = (TextView) view.findViewById(R.id.timestamp);
-        RelativeLayout sessionTitleContainer = (RelativeLayout) view.findViewById(R.id.title_container);
 
         lastMeasurementLabel.setText(getLastMeasurementLabel(sessionId));
         timestamp.setText(getTimestamp(sensor, sessionId));

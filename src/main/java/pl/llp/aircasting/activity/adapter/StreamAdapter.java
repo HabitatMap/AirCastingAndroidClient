@@ -198,6 +198,7 @@ public class StreamAdapter extends SimpleAdapter {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                context.startActivity(new Intent(context, FakeActivity.class));
                 update(false);
             }
         });
@@ -235,9 +236,11 @@ public class StreamAdapter extends SimpleAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> item = data.get(position);
-        chart = (LineChart) view.findViewById(R.id.chart);
         final Sensor sensor = (Sensor) item.get(SENSOR);
         final long sessionId = (Long) item.get(SESSION_ID);
+        view.setTag(R.id.session_id_tag, sessionId);
+
+        chart = (LineChart) view.findViewById(R.id.chart);
         final Button moveSessionDown = (Button) view.findViewById(R.id.session_down);
         final Button moveSessionUp = (Button) view.findViewById(R.id.session_up);
 
@@ -264,8 +267,6 @@ public class StreamAdapter extends SimpleAdapter {
                 }
             });
         }
-
-        view.setTag(R.id.session_id_tag, sessionId);
 
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
         dashboardChartManager.drawChart(chart, sensor, sessionId);
@@ -460,6 +461,7 @@ public class StreamAdapter extends SimpleAdapter {
         if (!sessionState.isSessionCurrent(sessionId) &&
                 sessionData.getSession(sessionId).getStreamsSize() <= clearedStreamsSize) {
             sessionData.clearViewingSession(sessionId);
+            sortedSessionPositions.remove(sessionId);
             context.invalidateOptionsMenu();
         }
     }
