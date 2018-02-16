@@ -26,7 +26,7 @@ public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
-    protected static final String PLACEHOLDER_SENSOR_NAME = "Sensor Placeholder";
+    public static final String PLACEHOLDER_SENSOR_NAME = "Sensor Placeholder";
 
     @Inject
     public void init() {
@@ -53,6 +53,8 @@ public class ViewingSessionsSensorManager {
 
         if (newFixedSession) {
             addPlaceholderStream(session);
+        } else {
+            deletePlaceholderSensor(session.getId());
         }
 
         for (MeasurementStream stream : session.getMeasurementStreams()) {
@@ -100,9 +102,11 @@ public class ViewingSessionsSensorManager {
     }
 
     private void addPlaceholderStream(Session session) {
-        MeasurementStream placeholderStream = new MeasurementStream("", PLACEHOLDER_SENSOR_NAME, "", "", "", "",
-                0, 0, 0, 0, 0);
+        if (!session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
+            MeasurementStream placeholderStream = new MeasurementStream("", PLACEHOLDER_SENSOR_NAME, "", "", "", "",
+                    0, 0, 0, 0, 0);
 
-        session.add(placeholderStream);
+            session.add(placeholderStream);
+        }
     }
 }

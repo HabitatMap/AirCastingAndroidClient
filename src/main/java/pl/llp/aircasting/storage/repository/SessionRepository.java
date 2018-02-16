@@ -52,6 +52,7 @@ public class SessionRepository {
 
     @Inject SessionDAO sessionDAO;
     @Inject SessionTrackerDAO trackedSessionsDAO;
+    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject EventBus eventBus;
 
     @API
@@ -94,6 +95,7 @@ public class SessionRepository {
         dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>() {
             @Override
             public Object execute(SQLiteDatabase writableDatabase) {
+                boolean streamsAdded = false;
                 long sessionId = oldSession.getId();
                 Collection<MeasurementStream> potentialStreams = downloadedSession.getMeasurementStreams();
 
@@ -102,11 +104,16 @@ public class SessionRepository {
 
                         if (existingStream == null) {
                             streams.saveNewStreamAndMeasurements(potentialStream, sessionId, writableDatabase);
+                            streamsAdded = true;
                         } else {
                             Logger.w("saving only measurements for session " + sessionId);
                             streams.saveNewMeasurements(potentialStream, existingStream.getId(), sessionId, writableDatabase);
                         }
                     }
+
+                if (streamsAdded) {
+                    viewingSessionsManager.view(sessionId, NoOp.progressListener());
+                }
 
                 return null;
             }
@@ -123,7 +130,7 @@ public class SessionRepository {
         dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
             @Override
             public Session execute(SQLiteDatabase readOnlyDatabase) {
-
+                boolean measurementsAdded = false;
                 Map<Long, List<Measurement>> load = r.loadNew(oldSession, oldSession.getEnd(), readOnlyDatabase);
 
                 for (MeasurementStream stream : streams) {
@@ -136,9 +143,13 @@ public class SessionRepository {
                             oldSession.add(stream);
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
-                            notifyOfNewData(oldSession.getId());
+                            measurementsAdded = true;
                         }
                     }
+                }
+
+                if (measurementsAdded) {
+                    notifyOfNewData(oldSession.getId());
                 }
 
                 return null;

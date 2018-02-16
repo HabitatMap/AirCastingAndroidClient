@@ -59,7 +59,13 @@ public class ViewingSessionsManager {
 
     public void view(Long sessionId, @NotNull ProgressListener progressListener) {
         Preconditions.checkNotNull(progressListener);
+
         Session session = sessionRepository.loadFully(sessionId, progressListener);
+        if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
+            MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
+            session.removeStream(stream);
+        }
+
         if (session.isFixed()) {
             fixedSessionDriver.downloadNewData(session, progressListener);
             addFixedSession(session);
@@ -71,17 +77,6 @@ public class ViewingSessionsManager {
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);
         Intents.triggerSync(context);
-    }
-
-    @Subscribe
-    public void onEvent(FixedSessionsMeasurementEvent event) {
-        long sessionId = event.getSessionId();
-        Session session = getSession(sessionId);
-
-        if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
-            MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
-            session.removeStream(stream);
-        }
     }
 
     public void createAndSetFixedSession() {
