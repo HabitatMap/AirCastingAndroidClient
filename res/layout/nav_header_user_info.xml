@@ -18,11 +18,10 @@
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:id="@+id/profile_header"
+                  android:id="@+id/profile_name"
                   android:layout_toRightOf="@+id/aircasting_icon"
                   android:layout_marginTop="30dp"
                   android:layout_marginLeft="20dp"
-                  android:text="Profile Name"
                   android:textStyle="bold"
                   android:textSize="18sp"
                   android:textColor="@color/toolbar_blue"
@@ -30,13 +29,12 @@
 
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:id="@+id/profile_name"
+                  android:id="@+id/profile_email"
                   android:layout_toRightOf="@id/aircasting_icon"
-                  android:layout_below="@+id/profile_header"
+                  android:layout_below="@+id/profile_name"
                   android:layout_marginLeft="20dp"
                   android:textColor="@color/toolbar_blue"
-                  android:textSize="16sp"
-                  android:text="radoslaw.wieczorek@lunarlogic.io"/>
+                  android:textSize="16sp"/>
     </RelativeLayout>
 
 </LinearLayout>
