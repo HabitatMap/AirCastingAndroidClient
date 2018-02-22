@@ -145,6 +145,7 @@
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
     correct.
   </string>
+  <string name="sign_in_to_configure">Create a profile or login to configure your AirBeam2</string>
 
   <string name="fixed_sessions_streaming">Streaming</string>
   <string name="fixed_sessions_streaming_summary">Check to stream data from a fixed location to a web server for real-time viewing</string>
