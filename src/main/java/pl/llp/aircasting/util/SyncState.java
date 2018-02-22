@@ -11,12 +11,10 @@ public class SyncState {
     private States state = States.NOT_IN_PROGRESS;
 
     public void markSyncComplete() {
-        Logger.w("sync complete");
         state = States.NOT_IN_PROGRESS;
     }
 
     public void startSync() {
-        Logger.w("sync started");
         state = States.IN_PROGRESS;
     }
 
