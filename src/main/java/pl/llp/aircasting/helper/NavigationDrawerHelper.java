@@ -115,10 +115,15 @@ public class NavigationDrawerHelper {
         if (navigationView != null) {
             navigationView.addHeaderView(navHeader);
             View header = navigationView.getHeaderView(0);
-            TextView email = (TextView) header.findViewById(R.id.profile_name);
+            TextView profileName = (TextView) header.findViewById(R.id.profile_name);
+            TextView email = (TextView) header.findViewById(R.id.profile_email);
+
+            if (profileName != null) {
+                profileName.setText(settingsHelper.getUserLogin());
+            }
 
             if (email != null) {
-                email.setText(settingsHelper.getUserLogin());
+                email.setText(settingsHelper.getUserEmail());
             }
         }
     }

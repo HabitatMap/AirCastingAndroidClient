@@ -44,6 +44,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class SettingsHelper {
     public static final String AUTH_TOKEN = "auth_token";
     public static final String USER_LOGIN = "user_login";
+    public static final String USER_EMAIL = "user_email";
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
     public static final String OFFSET_60_DB = "offset_60_db";
     public static final String CALIBRATION = "calibration";
@@ -165,11 +166,20 @@ public class SettingsHelper {
         return preferences.getString(USER_LOGIN, null);
     }
 
+    public void setUserEmail(String email) {
+        writeString(USER_EMAIL, email);
+    }
+
+    public String getUserEmail() {
+        return preferences.getString(USER_EMAIL, null);
+    }
+
     public void removeCredentials() {
         SharedPreferences.Editor editor = preferences.edit();
 
         editor.remove(AUTH_TOKEN);
         editor.remove(USER_LOGIN);
+        editor.remove(USER_EMAIL);
 
         editor.commit();
     }

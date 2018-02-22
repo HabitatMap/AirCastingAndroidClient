@@ -98,6 +98,7 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
         if (result.getStatus() == SUCCESS) {
           settingsHelper.setAuthToken(result.getContent().getAuthenticationToken());
           settingsHelper.setUserLogin(result.getContent().getUsername());
+          settingsHelper.setUserEmail(result.getContent().getEmail());
         }
 
         return result;
