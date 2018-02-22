@@ -4,7 +4,6 @@ import android.content.Context;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
@@ -103,8 +102,6 @@ public class ViewingSessionsManager {
         if (!tracker.startTracking(newFixedSession, true)) {
             removeSession(newFixedSession.getId());
             newFixedSession = null;
-        } else {
-            Toast.makeText(context, "The streaming session will be shown when data is retrievable", Toast.LENGTH_SHORT);
         }
     }
 
@@ -153,7 +150,6 @@ public class ViewingSessionsManager {
     }
 
     private void notifyNewSession(Session session, boolean newFixedSession) {
-        state.dashboardState().populate();
         eventBus.post(new SessionLoadedForViewingEvent(session, newFixedSession));
     }
 

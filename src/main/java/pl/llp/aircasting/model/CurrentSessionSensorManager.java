@@ -42,8 +42,6 @@ public class CurrentSessionSensorManager {
     @Inject ExternalSensors externalSensors;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
-    @Inject SettingsHelper settingsHelper;
-    @Inject Context context;
     @Inject ApplicationState state;
     @Inject VisibleSession visibleSession;
     @Inject SimpleAudioReader audioReader;
@@ -140,43 +138,6 @@ public class CurrentSessionSensorManager {
 
     public boolean anySensorConnected() {
         return !getSensorsMap().isEmpty();
-    }
-
-    /**
-     * @param sensor toggle enabled/disabled status of this Sensor
-     */
-    public void toggleSensor(Sensor sensor) {
-        String name = sensor.getSensorName();
-        Sensor actualSensor = currentSessionSensors.get(SensorName.from(name));
-
-        if (isSensorToggleable(actualSensor)) {
-            actualSensor.toggle();
-        } else {
-            Toast.makeText(context, R.string.sensor_is_disabled_in_settings, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void setSensorsStatusesToDefaultsFromSettings() {
-        if (getSensorByName("Phone Microphone") != null) {
-            if (settingsHelper.isSoundLevelMeasurementsDisabled()) {
-                currentSessionSensors.get(SensorName.from("Phone Microphone")).disable();
-            } else {
-                currentSessionSensors.get(SensorName.from("Phone Microphone")).enable();
-            }
-        }
-    }
-
-    public boolean isSensorToggleable(Sensor sensor) {
-        if (sensor.getSensorName() == "Phone Microphone" && settingsHelper.isSoundLevelMeasurementsDisabled()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    @Subscribe
-    public void onEvent(SessionStartedEvent event) {
-        setSensorsStatusesToDefaultsFromSettings();
     }
 
     public void deleteSensorFromCurrentSession(Sensor sensor) {

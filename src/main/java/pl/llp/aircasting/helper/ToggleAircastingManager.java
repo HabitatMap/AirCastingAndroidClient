@@ -55,11 +55,7 @@ public class ToggleAircastingManager {
         Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
 
-        if (session.isFixed()) {
-            stopFixedAirCasting(session);
-        } else {
-            stopMobileAirCasting(session);
-        }
+        stopMobileAirCasting(session);
     }
 
     private void stopMobileAirCasting(Session session) {
@@ -80,31 +76,9 @@ public class ToggleAircastingManager {
         }
     }
 
-    private void stopFixedAirCasting(Session session) {
-        locationHelper.stop();
-        Long sessionId = session.getId();
-        if (session.isEmpty()) {
-            Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
-            currentSessionManager.discardSession(sessionId);
-        } else {
-            currentSessionManager.stopSession();
-            currentSessionManager.finishSession(sessionId);
-        }
-    }
-
     public void startMobileAirCasting() {
         dashboardChartManager.start();
 
         activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
-    }
-
-    public void startFixedAirCasting() {
-        dashboardChartManager.start();
-
-        if (settingsHelper.hasNoCredentials()) {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
-        } else {
-            activity.startActivity(new Intent(activity, StartFixedSessionActivity.class));
-        }
     }
 }
