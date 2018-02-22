@@ -46,7 +46,6 @@ public class SettingsHelper {
     public static final String USER_LOGIN = "user_login";
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
     public static final String OFFSET_60_DB = "offset_60_db";
-    public static final String SOUND_LEVEL_MEASUREMENTLESS = "sound_level_measurementless";
     public static final String CALIBRATION = "calibration";
     public static final String SATELLITE = "satellite";
     public static final String BACKEND = "backend";
@@ -54,7 +53,6 @@ public class SettingsHelper {
     public static final String HEAT_MAP_DENSITY = "heat_map_density";
     public static final String FIRST_LAUNCH = "first_launch";
     public static final String DISABLE_MAPS = "disable_maps";
-    public static final String FIXED_SESSIONS_STREAMING = "fixed_sessions_streaming";
     public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
 
     public static final int DEFAULT_CALIBRATION = 100;
@@ -66,7 +64,6 @@ public class SettingsHelper {
     public static final int DEFAULT_OFFSET_60_DB = 0;
     public static final int MIN_OFFSET_60_DB = -5;
     public static final int MAX_OFFSET_60_DB = 5;
-    public static final boolean DEFAULT_SOUND_LEVEL_MEASUREMENTLESS = false;
     public static final String SAMPLE_INTERVAL = "sample_interval";
     public static final String AVERAGING_TIME = "averaging_time";
     private static final int MIN_AVERAGING_TIME = 1;
@@ -74,17 +71,13 @@ public class SettingsHelper {
     public static final String SYNC_ONLY_WIFI = "sync_only_wifi";
     public static final String SHOW_ROUTE = "show_route";
     public static final String SENSORS = "external_sensors_json";
-    public static final boolean DEFAULT_FIXED_SESSIONS_STREAMING = false;
     public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = true;
 
     public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
 
-    @Inject
-    SharedPreferences preferences;
-    @Inject
-    Gson gson;
-    @Inject
-    EventBus eventBus;
+    @Inject SharedPreferences preferences;
+    @Inject Gson gson;
+    @Inject EventBus eventBus;
 
     @Inject
     public void init() {
@@ -191,10 +184,6 @@ public class SettingsHelper {
 
     public boolean isKeepScreenOn() {
         return preferences.getBoolean(KEEP_SCREEN_ON, DEFAULT_KEEP_SCREEN_ON);
-    }
-
-    public boolean isSoundLevelMeasurementsDisabled() {
-        return preferences.getBoolean(SOUND_LEVEL_MEASUREMENTLESS, DEFAULT_SOUND_LEVEL_MEASUREMENTLESS);
     }
 
     public int getOffset60DB() {
@@ -342,9 +331,5 @@ public class SettingsHelper {
 
     public boolean isContributingToCrowdMap() {
         return preferences.getBoolean(CONTRIBUTE_TO_CROWDMAP, DEFAULT_CONTRIBUTE_TO_CROWDMAP);
-    }
-
-    public boolean isFixedSessionStreamingEnabled() {
-        return preferences.getBoolean(FIXED_SESSIONS_STREAMING, DEFAULT_FIXED_SESSIONS_STREAMING);
     }
 }
