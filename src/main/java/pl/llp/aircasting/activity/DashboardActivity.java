@@ -63,7 +63,7 @@ public class DashboardActivity extends DashboardBaseActivity {
                 return;
             }
 
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, state);
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, settingsHelper);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
         }
     }

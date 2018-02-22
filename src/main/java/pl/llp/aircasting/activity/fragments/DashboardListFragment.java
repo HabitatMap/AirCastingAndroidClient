@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Toast;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -17,7 +18,8 @@ import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.view.DashboardListView;
+import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 
 /**
  * Created by radek on 28/06/17.
@@ -29,15 +31,16 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private Button airbeam2ConfigButton;
     private StreamAdapterFactory adapterFactory;
     private StreamAdapter adapter;
-    private ApplicationState state;
+    private SettingsHelper settingsHelper;
+    private Context context;
 
     public DashboardListFragment() {
     }
 
     public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory,
-                                                    ApplicationState state) {
+                                                    SettingsHelper settingsHelper) {
         DashboardListFragment fragment = new DashboardListFragment();
-        fragment.setData(adapterFactory, state);
+        fragment.setData(adapterFactory, settingsHelper);
 
         return fragment;
     }
@@ -89,25 +92,29 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.dashboard_microphone:
-                DashboardActivity activity = (DashboardActivity) getActivity();
+                DashboardActivity activity = (DashboardActivity) context;
                 activity.connectPhoneMicrophone();
                 activity.reloadNavigationDrawer();
                 setListAdapter(adapter);
-                state.dashboardState.populate();
+//                state.dashboardState.populate();
                 activity.invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
                 startActivity(new Intent(getActivity(), ExternalSensorActivity.class));
                 break;
             case R.id.configure_airbeam2:
-                Intents.startAirbeam2Configuration(getActivity());
+                if (settingsHelper.hasCredentials()) {
+                    Intents.startAirbeam2Configuration(getActivity());
+                } else {
+                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
+                }
                 break;
         }
     }
 
-    private void setData(StreamAdapterFactory adapterFactory, ApplicationState state) {
+    private void setData(StreamAdapterFactory adapterFactory, SettingsHelper settingsHelper) {
         this.adapterFactory = adapterFactory;
-        this.state = state;
+        this.settingsHelper = settingsHelper;
     }
 
     @Override
