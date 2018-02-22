@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.DashboardChartManager;
+import pl.llp.aircasting.helper.ToastHelper;
 import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;
@@ -61,7 +62,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
         dashboardChartManager.start();
 
         if (settingsHelper.hasNoCredentials()) {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
         } else {
             startActivity(new Intent(this, StartFixedSessionActivity.class));
         }

@@ -189,7 +189,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, R.string.mic_error, Toast.LENGTH_LONG).show();
+                ToastHelper.show(context, R.string.mic_error, Toast.LENGTH_LONG);
             }
         });
     }

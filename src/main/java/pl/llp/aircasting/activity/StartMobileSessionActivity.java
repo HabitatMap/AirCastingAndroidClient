@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import roboguice.inject.InjectView;
 
@@ -74,15 +75,15 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
 
     private void showWarnings() {
         if (settingsHelper.hasNoCredentials()) {
-            Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
         }
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (locationHelper.hasNoGPSFix()) {
-                Toast.makeText(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG).show();
+                ToastHelper.show(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG);
             }
         } else {
-            Toast.makeText(context, R.string.gps_off_warning, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.gps_off_warning, Toast.LENGTH_LONG);
         }
     }
 }

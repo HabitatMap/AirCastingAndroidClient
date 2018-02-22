@@ -27,6 +27,7 @@ import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.CSVHelper;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ShareHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.repository.SessionRepository;
@@ -108,9 +109,9 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     if (session.getLocation() != null) {
       shareHelper.shareLink(this, session);
     } else if (settingsHelper.hasCredentials()) {
-      Toast.makeText(context, R.string.session_not_uploaded, Toast.LENGTH_LONG).show();
+      ToastHelper.show(context, R.string.session_not_uploaded, Toast.LENGTH_LONG);
     } else {
-      Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+      ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
     }
     finish();
   }
@@ -142,7 +143,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         super.onPostExecute(uri);
 
         if (uri == null) {
-          Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_SHORT).show();
+          ToastHelper.show(context, R.string.unknown_error, Toast.LENGTH_SHORT);
         } else {
           Intents.shareCSV(ShareSessionActivity.this, uri, shareChooserTitle, shareTitle, shareText);
         }

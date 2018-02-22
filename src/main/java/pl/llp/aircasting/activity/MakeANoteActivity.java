@@ -25,6 +25,7 @@ import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.FormatHelper;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.PhotoHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.app.Application;
@@ -106,7 +107,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
       String text = noteText.getText().toString();
       if (Strings.isNullOrEmpty(text))
       {
-        Toast.makeText(this, "Please enter text", Toast.LENGTH_SHORT).show();
+        ToastHelper.show(this, R.string.enter_text, Toast.LENGTH_SHORT);
         return;
       }
       switch (view.getId()) {
@@ -124,7 +125,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
         try {
             photoPath = Intents.takePhoto(this);
         } catch (IOException e) {
-            Toast.makeText(context, R.string.storage_error, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.storage_error, Toast.LENGTH_LONG);
             Logger.e("Error while attaching a photo", e);
         }
     }
@@ -140,7 +141,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
 
     private void processBitmap() {
         if (photoPath != null && photoHelper.photoExists(photoPath)) {
-            Toast.makeText(context, R.string.photo_success, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.photo_success, Toast.LENGTH_LONG);
 
             attachPhoto.setVisibility(View.GONE);
             photoAttached = true;

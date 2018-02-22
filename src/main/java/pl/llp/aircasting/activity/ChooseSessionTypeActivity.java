@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.ViewingSessionsManager;
 import roboguice.inject.InjectView;
@@ -46,7 +46,7 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
                 Intents.startDashboardActivity(this, true);
                 break;
             case R.id.fixed_session_button:
-                Toast.makeText(context, R.string.configuring_airbeam, sleepTime).show();
+                ToastHelper.show(context, R.string.configuring_airbeam, sleepTime);
 
                 viewingSessionsManager.createAndSetFixedSession();
                 UUID uuid = viewingSessionsManager.getStreamingSession().getUUID();

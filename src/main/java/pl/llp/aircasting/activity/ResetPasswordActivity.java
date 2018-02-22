@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.activity.task.SimpleProgressTask;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.util.http.HttpResult;
 import roboguice.inject.InjectView;
 
@@ -80,10 +81,10 @@ public class ResetPasswordActivity extends DialogActivity implements View.OnClic
                 super.onPostExecute(result);
 
                 if (result.getStatus() == SUCCESS) {
-                    Toast.makeText(context, R.string.reset_email_sent, Toast.LENGTH_LONG).show();
+                    ToastHelper.show(context, R.string.reset_email_sent, Toast.LENGTH_LONG);
                     finish();
                 } else {
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show();
+                    ToastHelper.show(context, R.string.unknown_error, Toast.LENGTH_LONG);
                 }
             }
         }.execute();

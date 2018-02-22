@@ -13,7 +13,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.api.FixedSessionDriver;
-import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;

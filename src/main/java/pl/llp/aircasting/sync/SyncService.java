@@ -29,6 +29,7 @@ import pl.llp.aircasting.api.data.DeleteSessionResponse;
 import pl.llp.aircasting.api.data.SyncResponse;
 import pl.llp.aircasting.event.SyncStateChangedEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
@@ -85,7 +86,7 @@ public class SyncService extends RoboIntentService {
                 Intents.notifySyncUpdate(context, accountReminder);
             }
         } catch (SessionSyncException exception) {
-            Toast.makeText(getBaseContext(), R.string.session_sync_failed, Toast.LENGTH_LONG);
+            ToastHelper.show(getBaseContext(), R.string.session_sync_failed, Toast.LENGTH_LONG);
         } finally {
             syncState.markSyncComplete();
             eventBus.post(new SyncStateChangedEvent());

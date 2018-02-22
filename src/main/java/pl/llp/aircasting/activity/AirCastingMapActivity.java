@@ -35,6 +35,7 @@ import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.LocationConversionHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
@@ -408,7 +409,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private void checkConnection() {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnectedOrConnecting()) {
-            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
+            ToastHelper.show(this, R.string.no_internet, Toast.LENGTH_SHORT);
         }
     }
 
