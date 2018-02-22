@@ -69,29 +69,34 @@ public class AboutActivity extends RoboActivity implements AppCompatCallback
 
   public void initializeSections() {
     headings = new String[]{
-        getString(R.string.hardware_developers),
-        getString(R.string.connect_external_device),
-        getString(R.string.about_start),
+        getString(R.string.about_hardware_developers),
+        getString(R.string.about_airbeam2),
+        getString(R.string.about_phone_microphone),
+        getString(R.string.about_connect_external_device),
+        getString(R.string.about_record_mobile),
         getString(R.string.about_view_data),
         getString(R.string.about_note),
-        getString(R.string.about_stop),
-        getString(R.string.about_open_session),
-        getString(R.string.disable_maps),
+        getString(R.string.about_stop_mobile),
+        getString(R.string.about_session_options),
+        getString(R.string.about_disable_maps),
         getString(R.string.about_open_source),
+        getString(R.string.about_privacy_policy),
         getString(R.string.about_thanks),
         getString(R.string.about_version)
     };
     contents = new String[]{
-
-        getString(R.string.hardware_developers_content),
-        getString(R.string.connect_external_device_content),
-        getString(R.string.about_start_content),
+        getString(R.string.about_hardware_developers_content),
+        getString(R.string.about_airbeam2_content),
+        getString(R.string.about_phone_microphone_content),
+        getString(R.string.about_connect_external_device_content),
+        getString(R.string.about_record_mobile_content),
         getString(R.string.about_view_data_content),
         getString(R.string.about_note_content),
-        getString(R.string.about_stop_content),
-        getString(R.string.about_open_session_content),
-        getString(R.string.disable_maps_content),
+        getString(R.string.about_stop_mobile_content),
+        getString(R.string.about_session_options_content),
+        getString(R.string.about_disable_maps_content),
         getString(R.string.about_open_source_content),
+        getString(R.string.about_privacy_policy_content),
         getString(R.string.about_thanks_content),
         getVersion()
     };
