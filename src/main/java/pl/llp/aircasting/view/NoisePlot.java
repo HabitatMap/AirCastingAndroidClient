@@ -210,7 +210,7 @@ public class NoisePlot extends View
   {
     paint.setColor(Color.WHITE);
     paint.setAlpha(OPAQUE);
-    paint.setStrokeWidth(3);
+    paint.setStrokeWidth(9);
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeJoin(Paint.Join.ROUND);
     paint.setStrokeCap(Paint.Cap.ROUND);
