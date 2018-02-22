@@ -24,13 +24,6 @@
                   android:id="@android:id/list"
         >
 
-  <android.preference.CheckBoxPreference android:defaultValue="false"
-      android:key="fixed_sessions_streaming"
-      android:title="@string/fixed_sessions_streaming"
-      android:summary="@string/fixed_sessions_streaming_summary"
-      android:disableDependentsState="true"
-      />
-
   <android.preference.CheckBoxPreference android:defaultValue="true"
                                          android:title="Contribute to CrowdMap"
                                          android:key="contribute_to_crowdmap"
@@ -53,11 +46,6 @@
                                            android:key="offset_60_db"
                                            android:title="@string/offset_60_db"
                                            android:summary="@string/offset_60_db_summary"
-            />
-    <android.preference.CheckBoxPreference android:defaultValue="false"
-                                           android:key="sound_level_measurementless"
-                                           android:title="@string/sound_level_measurementless"
-                                           android:summary="@string/sound_level_measurementless_summary"
             />
 
     <android.preference.EditTextPreference android:defaultValue="10"
