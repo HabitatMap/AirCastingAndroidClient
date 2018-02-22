@@ -14,7 +14,7 @@
                     android:id="@+id/title_container">
 
         <TextView android:id="@+id/session_title"
-                  android:background="@color/dashboard_light_gray"
+                  android:background="@color/list_viewing_session_even"
                   android:textColor="@color/dashboard_text_gray"
                   android:drawablePadding="4dp"
                   android:textSize="15dp"
