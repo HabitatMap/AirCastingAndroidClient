@@ -185,10 +185,8 @@ public class DashboardChartManager {
         dataSet.setDrawHighlightIndicators(false);
         dataSet.setCircleColors(colors);
 
-        if (!isSessionCurrent) {
-            int color = context.getResources().getColor(R.color.gray);
-            dataSet.setColor(color);
-        }
+        int color = context.getResources().getColor(R.color.gray);
+        dataSet.setColor(color);
 
         return dataSet;
     }
