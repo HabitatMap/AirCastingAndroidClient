@@ -20,7 +20,7 @@ public class SessionState {
     }
 
     public boolean sessionHasNowValue(@NotNull long sessionId) {
-        return isSessionCurrent(sessionId) || viewingSessionsManager.sessionIsFixed(sessionId);
+        return isSessionCurrent(sessionId) || isSessionBeingViewed(sessionId);
     }
 
     public boolean isCurrentSessionIdle() {
@@ -36,6 +36,6 @@ public class SessionState {
     }
 
     public boolean sessionHasColoredBackground(long sessionId) {
-        return isSessionRecording(sessionId) || viewingSessionsManager.sessionIsFixed(sessionId);
+        return isSessionRecording(sessionId) || isSessionBeingViewed(sessionId);
     }
 }

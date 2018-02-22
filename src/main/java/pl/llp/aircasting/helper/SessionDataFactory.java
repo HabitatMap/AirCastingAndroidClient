@@ -83,7 +83,7 @@ public class SessionDataFactory {
     public double getNow(Sensor sensor, long sessionId) {
         double now = 0;
 
-        if (getSession(sessionId).isFixed()) {
+        if (sessionState.isSessionBeingViewed(sessionId)) {
             now = getStream(sensor.getSensorName(), sessionId).getLatestMeasurementValue();
         } if (sessionState.isSessionCurrent(sessionId)) {
             now = currentSessionManager.getNow(sensor);
