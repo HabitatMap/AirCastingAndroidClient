@@ -47,30 +47,26 @@ public class StreamAdapter extends SimpleAdapter {
             R.id.quantity, R.id.sensor_name
     };
 
-    private final Comparator<Map<String, Object>> initialComparator = new Comparator<Map<String, Object>>() {
+    private final Comparator<Map<String, Object>> comparator = new Comparator<Map<String, Object>>() {
         @Override
         public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            int result;
             long leftSessionId = (Long) left.get(SESSION_ID);
             long rightSessionId = (Long) right.get(SESSION_ID);
 
             Sensor leftSensor = (Sensor) left.get(SENSOR);
             Sensor rightSensor = (Sensor) right.get(SENSOR);
 
-            return ComparisonChain.start()
-                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId))
-                    .compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
-        }
-    };
+            ComparisonChain chain = ComparisonChain.start()
+                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId));
 
-    private final Comparator<Map<String, Object>> positionComparator = new Comparator<Map<String, Object>>() {
-        @Override
-        public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
-            long leftSessionId = (Long) left.get(SESSION_ID);
-            long rightSessionId = (Long) right.get(SESSION_ID);
+            if (streamsReordered.get(leftSessionId) == true) {
+                result = chain.compare(getPosition(left, leftSessionId), getPosition(right, leftSessionId)).result();
+            } else {
+                result = chain.compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
+            }
 
-            return ComparisonChain.start()
-                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId))
-                    .compare(getPosition(left), getPosition(right)).result();
+            return result;
         }
     };
 
@@ -86,7 +82,6 @@ public class StreamAdapter extends SimpleAdapter {
     ApplicationState state;
 
     private List<Map<String, Object>> data;
-    private Map<String, Map<String, Object>> sensors = newHashMap();
     private LineChart chart;
     public int streamDeleteMessage;
 
@@ -96,9 +91,8 @@ public class StreamAdapter extends SimpleAdapter {
     private static TreeMap<Integer, Long> sortedSessionPositions = new TreeMap<Integer, Long>();
     private static Map<Long, Integer> sessionStreamCount = newHashMap();
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
-    private static boolean streamsReordered;
+    private static Map<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
     private static boolean reorderInProgress = false;
-    private static Comparator comparator;
 
     public StreamAdapter(DashboardBaseActivity context,
                          List<Map<String, Object>> data,
@@ -222,13 +216,16 @@ public class StreamAdapter extends SimpleAdapter {
         Map item2 = data.get(pos2);
         Sensor s1 = (Sensor) item1.get(SENSOR);
         Sensor s2 = (Sensor) item2.get(SENSOR);
+        Long sessionId = (Long) item1.get(SESSION_ID);
+        String positionKey1 = getPositionKey(sessionId, s1);
+        String positionKey2 = getPositionKey(sessionId, s2);
 
-        positions.put(s1.toString(), pos2);
-        positions.put(s2.toString(), pos1);
+        positions.put(positionKey1, pos2);
+        positions.put(positionKey2, pos1);
 
-        resetSwappedCharts((Long) item1.get(SESSION_ID), s1.getSensorName(), s2.getSensorName());
+        resetSwappedCharts(sessionId, s1.getSensorName(), s2.getSensorName());
 
-        streamsReordered = true;
+        streamsReordered.put(sessionId, true);
         update(false);
     }
 
@@ -314,14 +311,9 @@ public class StreamAdapter extends SimpleAdapter {
 
         prepareData(onlyCurrentStreams);
 
-        if (streamsReordered) {
-            comparator = positionComparator;
-        } else {
-            preparePositions();
-            comparator = initialComparator;
-        }
-
         sort(data, comparator);
+        preparePositions();
+
         setSessionTitles();
 
         notifyDataSetChanged();
@@ -386,6 +378,10 @@ public class StreamAdapter extends SimpleAdapter {
                 data.remove(map);
                 data.add(map);
             }
+
+            if (streamsReordered.get(sessionId) == null) {
+                streamsReordered.put(sessionId, false);
+            }
         }
     }
 
@@ -397,18 +393,24 @@ public class StreamAdapter extends SimpleAdapter {
         int currentPosition = 0;
         for (Map<String, Object> map : data) {
             Sensor sensor = (Sensor) map.get(SENSOR);
-            positions.put(sensor.toString(), Integer.valueOf(currentPosition));
+            String positionKey = getPositionKey((Long) map.get(SESSION_ID), sensor);
+            positions.put(positionKey, Integer.valueOf(currentPosition));
             currentPosition++;
         }
     }
 
-    private int getPosition(Map<String, Object> stream) {
+    private int getPosition(Map<String, Object> stream, long sessionId) {
         Sensor sensor = (Sensor) stream.get(SENSOR);
-        Integer position = positions.get(sensor.toString());
+        String positionKey = getPositionKey(sessionId, sensor);
+        Integer position = positions.get(positionKey);
         if (position == null) {
             return 0;
         }
         return position.intValue();
+    }
+
+    private String getPositionKey(Long sessionId, Sensor sensor) {
+        return sessionId + "_" + sensor.toString();
     }
 
     private void updateSessionPosition(long sessionId) {
@@ -453,7 +455,7 @@ public class StreamAdapter extends SimpleAdapter {
         List clearedStreamsForSession = clearedStreams.get(sessionId);
 
         clearViewingSessionIfNeeded(sessionId, clearedStreamsForSession.size());
-        streamsReordered = true;
+        streamsReordered.put(sessionId, true);
         update(false);
     }
 
@@ -461,7 +463,7 @@ public class StreamAdapter extends SimpleAdapter {
         if (!sessionState.isSessionCurrent(sessionId) &&
                 sessionData.getSession(sessionId).getStreamsSize() <= clearedStreamsSize) {
             sessionData.clearViewingSession(sessionId);
-            sortedSessionPositions.remove(sessionId);
+            sortedSessionPositions.remove(getSessionPosition(sessionId));
             context.invalidateOptionsMenu();
         }
     }
