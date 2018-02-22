@@ -60,7 +60,7 @@ import static java.util.Collections.sort;
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final long MIN_ZOOM = 120000;
     private static final long SCROLL_TIMEOUT = 1000;
-    private static final int INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS = 1440;
+    private static final int MAX_NUMBER_OF_MEASUREMENTS = 1440;
 
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
@@ -74,7 +74,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private int measurementsSize;
 
     private int anchor;
-    private long visibleMilliseconds = MIN_ZOOM;
+    private long visibleMilliseconds = 3600000;
     private long lastScrolled;
     private Date timeAnchor;
 
@@ -205,12 +205,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         if (stream == null) {
             measurements = newArrayList();
         } else {
-            // To avoid app crashes, in case of larger sessions, we simply limit the number of initially loaded measurements
-            // when user opens the graph with fixed session (since fixed sessions are often much longer).
-            if (visibleSession.getSession().isFixed())
-                measurements = stream.getLastMeasurements(INITIAL_MAX_NUMBER_OF_FIXED_SESSION_MEASUREMENTS);
-            else
-                measurements = stream.getMeasurements();
+            measurements = stream.getLastMeasurements(MAX_NUMBER_OF_MEASUREMENTS, 0);
         }
 
         ImmutableListMultimap<Long, Measurement> forAveraging =
