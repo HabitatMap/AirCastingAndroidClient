@@ -62,7 +62,7 @@ public class StreamViewHelper {
         TextView timestamp = (TextView) view.findViewById(R.id.timestamp);
 
         lastMeasurementLabel.setText(getLastMeasurementLabel(sessionId));
-        timestamp.setText(getTimestamp(sensor, sessionId));
+        showAndSetTimestamp(timestamp, sensor, sessionId);
 
         if (positionsWithTitle.contains(position)) {
             setTitleView(sessionId, sessionTitleContainer);
@@ -109,6 +109,14 @@ public class StreamViewHelper {
             return FIXED_LABEL;
         } else {
             return MOBILE_LABEL;
+        }
+    }
+
+    private void showAndSetTimestamp(TextView timestamp, Sensor sensor, long sessionId) {
+        if (sessionState.isSessionCurrent(sessionId)) {
+            timestamp.setVisibility(View.GONE);
+        } else {
+            timestamp.setText(getTimestamp(sensor, sessionId));
         }
     }
 
