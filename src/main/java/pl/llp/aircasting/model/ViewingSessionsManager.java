@@ -107,6 +107,7 @@ public class ViewingSessionsManager {
 
     public void removeSession(long sessionId) {
         sessionsForViewing.remove(sessionId);
+        fixedSessions.remove(sessionId);
     }
 
     public Session getSession(long sessionId) {
@@ -155,5 +156,6 @@ public class ViewingSessionsManager {
 
     public void removeAllSessions() {
         sessionsForViewing.clear();
+        fixedSessions.clear();
     }
 }
