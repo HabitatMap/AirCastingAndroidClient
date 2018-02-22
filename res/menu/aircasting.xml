@@ -59,7 +59,7 @@
         />
         <item android:id="@+id/external_sensors"
               android:icon="@drawable/menu_sensors_icon_black"
-              android:title="Connect to external device"
+              android:title="@string/connect_external_device"
         />
     </group>
 </menu>
