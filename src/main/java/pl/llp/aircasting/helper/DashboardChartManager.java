@@ -205,13 +205,13 @@ public class DashboardChartManager {
         double xValue = MAX_X_VALUE;
         double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
         List entries = new CopyOnWriteArrayList();
-        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR);
+        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
         periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
 
         if (periodData.size() > 0) {
             synchronized (periodData) {
                 for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
-                    if (dataChunk.size() > measurementsInPeriod - getTolerance(streamFrequency)) {
+                    if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
                         double yValue = getAverage(dataChunk);
                         entries.add(new Entry((float) xValue, (float) yValue));
                         xValue--;
@@ -228,29 +228,37 @@ public class DashboardChartManager {
     }
 
     private void prepareFixedSessionEntries(long sessionId, MeasurementStream stream) {
+        List<Measurement> measurements;
         double xValue = MAX_X_VALUE;
         List entries = new CopyOnWriteArrayList();
         List<List<Measurement>> periodData = new ArrayList<List<Measurement>>();
 
         double streamFrequency = stream.getFrequency(FIXED_FREQUENCY_DIVISOR);
-
         double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
-        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR);
-        if (measurements.isEmpty()) { return; }
-        Date firstMeasurementTime = measurements.get(0).getTime();
+        double maxMeasurementsAmount = MAX_AVERAGES_AMOUNT * measurementsInPeriod;
 
-        double minutes = firstMeasurementTime.getMinutes();
+        if (stream.getMeasurementsCount() < maxMeasurementsAmount) {
+            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, 0);
 
-        if (minutes > 5) {
+            if (measurements.isEmpty()) { return; }
+
+            Date firstMeasurementTime = measurements.get(0).getTime();
+            double minutes = firstMeasurementTime.getMinutes();
+
             double firstHourCutoff = MINUTES_IN_HOUR - minutes;
-            if (measurements.size() >= firstHourCutoff) {
+            if (measurements.size() > firstHourCutoff) {
                 List<Measurement> firstHourMeasurements = measurements.subList(0, (int) firstHourCutoff - 1);
                 if (!firstHourMeasurements.isEmpty()) {
                     periodData.add(firstHourMeasurements);
                 }
                 List<Measurement> measurementsRemainder = measurements.subList((int) (firstHourCutoff), measurements.size() - 1);
                 measurements = measurementsRemainder;
+            } else {
+                return;
             }
+        } else {
+            int offset = (int) (sessionData.getSession(sessionId).getEnd().getMinutes() / streamFrequency);
+            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, offset);
         }
 
         periodData.addAll(new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod)));
@@ -258,7 +266,7 @@ public class DashboardChartManager {
         List<Measurement> lastPeriodData = periodData.get(periodData.size() - 1);
 
         // remove incomplete last hour average
-        if (periodData.size() > 1 && lastPeriodData.size() < 60) {
+        if (periodData.size() > 1 && lastPeriodData.size() < measurementsInPeriod - getTolerance(measurementsInPeriod)) {
             periodData.remove(lastPeriodData);
         }
 
@@ -279,12 +287,8 @@ public class DashboardChartManager {
         averages.put(getKey(sessionId, stream.getSensorName()), Lists.reverse(entries));
     }
 
-    private double getTolerance(double streamFrequency) {
-        if (0.9 <= streamFrequency && streamFrequency < 1.1) {
-            return 4;
-        } else {
-            return 7;
-        }
+    private double getTolerance(double measurementsInPeriod) {
+        return 0.1 * measurementsInPeriod;
     }
 
     private double getAverage(List<Measurement> measurements) {
