@@ -20,8 +20,8 @@
                   android:id="@id/android:empty"
                   xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <Button android:layout_height="130dp"
-                android:layout_width="130dp"
+        <Button android:layout_height="150dp"
+                android:layout_width="150dp"
                 android:id="@+id/configure_airbeam2"
                 android:background="@drawable/dashboard_button"
                 android:layout_centerHorizontal="true"
@@ -35,34 +35,34 @@
                 android:text="@string/configure_airbeam2"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textAlignment="gravity"/>
 
-        <LinearLayout android:layout_width="300dp"
-                      android:layout_height="wrap_content"
-                      android:layout_marginTop="50dp"
+        <LinearLayout android:layout_width="340dp"
+                      android:layout_height="155dp"
+                      android:layout_marginTop="40dp"
                       android:orientation="horizontal"
                       android:layout_gravity="center_horizontal">
 
-            <Button android:layout_height="130dp"
-                    android:layout_width="130dp"
+            <Button android:layout_height="150dp"
+                    android:layout_width="150dp"
                     android:id="@+id/dashboard_microphone"
                     android:background="@drawable/dashboard_button"
                     android:layout_centerHorizontal="true"
                     android:drawableTop="@drawable/dashboard_microphone_icon"
                     android:paddingTop="17dp"
                     android:paddingBottom="18dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
                     android:elevation="6dp"
                     android:text="@string/connect_phone_mic"
                     android:textColor="@android:color/white"
                     android:textAllCaps="false"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textAlignment="gravity"/>
 
-            <Button android:layout_height="130dp"
-                    android:layout_width="130dp"
+            <Button android:layout_height="150dp"
+                    android:layout_width="150dp"
                     android:id="@+id/dashboard_sensors"
                     android:background="@drawable/dashboard_button"
                     android:layout_centerHorizontal="true"
@@ -76,7 +76,7 @@
                     android:text="@string/connect_external_device"
                     android:textColor="@android:color/white"
                     android:textAllCaps="false"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textAlignment="gravity"/>
 
         </LinearLayout>
