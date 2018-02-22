@@ -32,6 +32,10 @@
             android:id="@+id/continue_streaming"
             />
     <Button style="@style/DialogButton"
+            android:text="@string/share"
+            android:id="@+id/share"
+    />
+    <Button style="@style/DialogButton"
             android:text="@string/edit"
             android:id="@+id/edit"
             />

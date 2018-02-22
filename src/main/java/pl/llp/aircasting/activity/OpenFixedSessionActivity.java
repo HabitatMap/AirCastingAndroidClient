@@ -34,6 +34,7 @@ import roboguice.inject.InjectView;
 public class OpenFixedSessionActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.view) Button view;
     @InjectView(R.id.continue_streaming) Button continueStreaming;
+    @InjectView(R.id.share) Button share;
     @InjectView(R.id.edit) Button edit;
     @InjectView(R.id.delete_session) Button delete;
 
@@ -44,6 +45,7 @@ public class OpenFixedSessionActivity extends DialogActivity implements View.OnC
 
         view.setOnClickListener(this);
         continueStreaming.setOnClickListener(this);
+        share.setOnClickListener(this);
         edit.setOnClickListener(this);
         delete.setOnClickListener(this);
     }
