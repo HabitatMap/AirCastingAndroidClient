@@ -61,25 +61,14 @@ public class ApplicationState {
     public static class MicrophoneState extends SensorState {}
 
     public static class DashboardState {
-        DashboardListStates state = DashboardListStates.EMPTY;
         boolean sessionReorderInProgress = false;
 
-        public boolean isPopulated() { return state == DashboardListStates.POPULATED; }
-
-        public void populate() { state = DashboardListStates.POPULATED; }
-
-        public void empty() { state = DashboardListStates.EMPTY; }
         public boolean isSessionReorderInProgress() {
             return sessionReorderInProgress;
         }
 
         public void toggleSessionReorder() {
             sessionReorderInProgress = !sessionReorderInProgress;
-        }
-
-        enum DashboardListStates {
-            POPULATED,
-            EMPTY
         }
     }
 

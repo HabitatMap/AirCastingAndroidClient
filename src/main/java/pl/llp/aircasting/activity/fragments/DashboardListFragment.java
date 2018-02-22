@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -51,6 +52,9 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         sensorsButton = (Button) view.findViewById(R.id.dashboard_sensors);
         airbeam2ConfigButton = (Button) view.findViewById(R.id.configure_airbeam2);
 
+        context = getActivity();
+        adapter = adapterFactory.getAdapter((DashboardBaseActivity) context);
+
         setListAdapter(adapter);
 
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
@@ -62,21 +66,18 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        if (state != null && state.dashboardState().isPopulated()) {
-            setListAdapter(adapter);
-            adapter.forceUpdate();
-        }
+        super.onResume();
 
-        DashboardListView listView = (DashboardListView) getListView();
-        listView.setOnItemClickListener(this);
+        setListAdapter(adapter);
+        adapter.forceUpdate();
 
-        adapter = adapterFactory.getAdapter((DashboardBaseActivity) getActivity());
+        getListView().setOnItemClickListener(this);
+
+        adapter = adapterFactory.getAdapter((DashboardBaseActivity) context);
 
         adapter.resetAllStaticCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
-
-        super.onResume();
     }
 
     @Override

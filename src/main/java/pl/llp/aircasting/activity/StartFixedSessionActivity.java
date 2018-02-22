@@ -112,7 +112,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
         String tags = sessionTags.getText().toString();
         String description = sessionDescription.getText().toString();
 
-        Intents.startDashboardActivity(this, true);
+        Intents.startDashboardActivity(this);
         viewingSessionsManager.startFixedSession(title, tags, description, isIndoor, latlng);
         airbeam2Configurator.sendFinalAb2Config();
 

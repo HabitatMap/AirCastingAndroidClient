@@ -52,7 +52,6 @@ public class NavigationDrawerHelper {
                 switch (menuItem.getItemId()){
                     case R.id.dashboard:
                         Intent intent = new Intent(context, DashboardActivity.class);
-                        intent.putExtra("startPopulated", true);
                         activity.startActivity(intent);
                         drawerLayout.closeDrawers();
                         break;
@@ -73,7 +72,7 @@ public class NavigationDrawerHelper {
                         break;
                     case R.id.connect_microphone:
                         currentSessionSensorManager.startAudioSensor();
-                        Intents.startDashboardActivity(activity, true);
+                        Intents.startDashboardActivity(activity);
                         drawerLayout.closeDrawers();
                         connectMicrophone.setVisible(false);
                         disconnectMicrophone.setVisible(true);
