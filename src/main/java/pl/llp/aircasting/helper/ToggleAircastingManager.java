@@ -66,7 +66,7 @@ public class ToggleAircastingManager {
         locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
-            Toast.makeText(context, R.string.no_data, Toast.LENGTH_SHORT).show();
+            ToastHelper.show(context, R.string.no_data, Toast.LENGTH_SHORT);
             currentSessionManager.discardSession(sessionId);
         } else {
             currentSessionManager.stopSession();

@@ -8,6 +8,7 @@ import pl.llp.aircasting.activity.ChooseStreamingMethodActivity;
 import pl.llp.aircasting.activity.DialogActivity;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
@@ -76,7 +77,7 @@ public class ExternalSensorActivity extends DialogActivity {
                 final ExternalSensorDescriptor connected = sensorLists.connectToActive(position);
 
                 if (continueStreaming) {
-                    Toast.makeText(context, R.string.configuring_airbeam, (int) sleepTime).show();
+                    ToastHelper.show(context, R.string.configuring_airbeam, (int) sleepTime);
 
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -92,7 +93,7 @@ public class ExternalSensorActivity extends DialogActivity {
 
                     finish();
                 } else if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
-                    Toast.makeText(context, R.string.configuring_airbeam, (int) sleepTime).show();
+                    ToastHelper.show(context, R.string.configuring_airbeam, (int) sleepTime);
 
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -103,7 +104,7 @@ public class ExternalSensorActivity extends DialogActivity {
 
                     finish();
                 } else {
-                    Toast.makeText(context, R.string.connecting_external_device, Toast.LENGTH_SHORT).show();
+                    ToastHelper.show(context, R.string.connecting_external_device, Toast.LENGTH_SHORT);
 
                     ioio.startIfNecessary(connected, context);
                     Intents.restartSensors(context);
@@ -152,7 +153,7 @@ public class ExternalSensorActivity extends DialogActivity {
         eventBus.register(this);
 
         if (bluetoothAdapter == null) {
-            Toast.makeText(context, R.string.bluetooth_not_supported, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.bluetooth_not_supported, Toast.LENGTH_LONG);
             finish();
             return;
         }

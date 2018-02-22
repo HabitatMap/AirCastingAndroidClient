@@ -233,6 +233,7 @@
   <string name="wrong_session_type">You can\'t clear or delete a stream for a recording mobile session</string>
   <string name="cannot_delete_stream">You can\'t clear or delete this stream - you should view a session or start streaming a new one</string>
   <string name="retrieving_streams">Retrieving streams, please wait</string>
+  <string name="enter_text">Please enter text</string>
 
   <string name="center_map">Center Map</string>
   <string name="record_session">Start Recording</string>

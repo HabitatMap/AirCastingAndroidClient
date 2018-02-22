@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.helper.ToastHelper;
 
 /**
  * Created by IntelliJ IDEA.

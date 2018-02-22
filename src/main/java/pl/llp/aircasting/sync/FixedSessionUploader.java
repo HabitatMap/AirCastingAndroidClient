@@ -31,6 +31,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.api.data.CreateSessionResponse;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.util.http.HttpResult;
 import pl.llp.aircasting.util.http.Status;
@@ -65,11 +66,11 @@ public class FixedSessionUploader {
                 }.execute();
                 return (true);
             } else {
-                Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
+                ToastHelper.show(context, R.string.fixed_session_creation_failed, Toast.LENGTH_LONG);
                 return (false);
             }
         } catch (SessionSyncException exception) {
-            Toast.makeText(context, fixed_session_creation_failed, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.fixed_session_creation_failed, Toast.LENGTH_LONG);
             return (false);
         }
     }

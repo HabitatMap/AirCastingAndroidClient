@@ -25,6 +25,7 @@ import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.api.data.UserInfo;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.util.http.HttpResult;
 
 import android.app.Application;
@@ -73,11 +74,11 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
   private boolean validateInput() {
     if (getLogin().isEmpty() || getPassword().isEmpty()) {
       if (getLogin().isEmpty()) {
-        Toast.makeText(context, R.string.profile_name_or_email_field_blank, Toast.LENGTH_LONG).show();
+        ToastHelper.show(context, R.string.profile_name_or_email_field_blank, Toast.LENGTH_LONG);
       }
 
       if (getPassword().isEmpty()) {
-        Toast.makeText(context, R.string.password_blank, Toast.LENGTH_LONG).show();
+        ToastHelper.show(context, R.string.password_blank, Toast.LENGTH_LONG);
       }
 
       return(false);
@@ -108,10 +109,10 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
 
         switch (result.getStatus()) {
           case ERROR:
-            Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.unknown_error, Toast.LENGTH_LONG);
             break;
           case FAILURE:
-            Toast.makeText(context, R.string.login_error, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.login_error, Toast.LENGTH_LONG);
             break;
           default:
             syncInBackground();

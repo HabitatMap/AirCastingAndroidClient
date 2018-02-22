@@ -10,6 +10,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.helper.NoOp;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.model.events.SensorEvent;
@@ -36,7 +37,7 @@ public class StreamingSessionsSyncService extends RoboIntentService {
                  sync();
             }
         } catch (SessionSyncException exception) {
-            Toast.makeText(getBaseContext(), R.string.measurement_sync_failed, Toast.LENGTH_LONG);
+            ToastHelper.show(getBaseContext(), R.string.measurement_sync_failed, Toast.LENGTH_LONG);
         }
     }
 

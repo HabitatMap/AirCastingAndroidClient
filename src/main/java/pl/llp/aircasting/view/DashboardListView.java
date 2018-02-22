@@ -41,6 +41,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
+import pl.llp.aircasting.helper.ToastHelper;
 
 import java.util.List;
 
@@ -360,7 +361,7 @@ public class DashboardListView extends ListView {
                     hoverViewAnimator.start();
                 } else {
                     touchEventsEnded();
-                    Toast.makeText(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT).show();
+                    ToastHelper.show(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT);
                 }
             } else if (swipedRight) {
                 if (getStreamAdapter().canStreamBeClearedOrDeleted(sessionId)) {
@@ -383,7 +384,7 @@ public class DashboardListView extends ListView {
                     hoverViewAnimator.start();
                 } else {
                     touchEventsEnded();
-                    Toast.makeText(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT).show();
+                    ToastHelper.show(context, getStreamAdapter().getStreamDeleteMessage(), Toast.LENGTH_SHORT);
                 }
             }
         }

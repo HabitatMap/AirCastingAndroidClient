@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.ViewingSessionsManager;
 import roboguice.inject.InjectView;
 
@@ -89,7 +90,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
         } catch (GooglePlayServicesRepairableException e) {
             GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
         } catch (GooglePlayServicesNotAvailableException e) {
-            Toast.makeText(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
         }
     }
 

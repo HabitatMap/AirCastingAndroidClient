@@ -22,6 +22,7 @@ package pl.llp.aircasting.activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.CurrentSessionManager;
 
 import android.content.Context;
@@ -47,7 +48,7 @@ public class ContributeActivity extends DialogActivity
     super.onResume();
     if (!settingsHelper.hasCredentials())
     {
-      Toast.makeText(context, R.string.account_reminder, Toast.LENGTH_LONG).show();
+      ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
     }
   }
 

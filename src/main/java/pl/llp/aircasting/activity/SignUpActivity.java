@@ -33,6 +33,7 @@ import pl.llp.aircasting.activity.task.SimpleProgressTask;
 import pl.llp.aircasting.api.data.UserInfo;
 import pl.llp.aircasting.api.UsersDriver;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.util.http.HttpResult;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -102,7 +103,7 @@ public class SignUpActivity extends DialogActivity implements View.OnClickListen
                 super.onPostExecute(result);
 
                 if (result.getStatus() == ERROR) {
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show();
+                    ToastHelper.show(context, R.string.unknown_error, Toast.LENGTH_LONG);
                 } else if (result.getStatus() == FAILURE) {
                     toastErrors(result);
                 }
@@ -112,13 +113,13 @@ public class SignUpActivity extends DialogActivity implements View.OnClickListen
 
     private void toastErrors(HttpResult<UserInfo> result) {
         if (result.getErrors().get("email") != null) {
-            Toast.makeText(context, email + " " + TextUtils.join(", ", result.getErrors().get("email")), Toast.LENGTH_LONG).show();
+            ToastHelper.showText(context, email + " " + TextUtils.join(", ", result.getErrors().get("email")), Toast.LENGTH_LONG);
         }
         if (result.getErrors().get("username") != null) {
-            Toast.makeText(context, username + " " + TextUtils.join(", ", result.getErrors().get("username")), Toast.LENGTH_LONG).show();
+            ToastHelper.showText(context, username + " " + TextUtils.join(", ", result.getErrors().get("username")), Toast.LENGTH_LONG);
         }
         if (result.getErrors().get("password") != null) {
-            Toast.makeText(context, password + " " + TextUtils.join(", ", result.getErrors().get("password")), Toast.LENGTH_LONG).show();
+            ToastHelper.showText(context, password + " " + TextUtils.join(", ", result.getErrors().get("password")), Toast.LENGTH_LONG);
         }
     }
 

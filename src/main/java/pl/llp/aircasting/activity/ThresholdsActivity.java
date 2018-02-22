@@ -23,6 +23,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 
@@ -152,7 +153,7 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
             quiet = quietEdit.getText().length() == 0 ? 0 : Integer.parseInt(quietEdit.getText().toString());
         } catch (NumberFormatException e) {
             updateEdits();
-            Toast.makeText(context, R.string.setting_error, Toast.LENGTH_LONG).show();
+            ToastHelper.show(context, R.string.setting_error, Toast.LENGTH_LONG);
         }
     }
 
