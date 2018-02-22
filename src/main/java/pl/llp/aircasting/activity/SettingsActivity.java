@@ -103,7 +103,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (MEASUREMENT_STREAMS_KEY.equals(preference.getKey())) {
-            Intents.startDashboardActivity(this, true);
+            Intents.startDashboardActivity(this);
             return true;
         } else if (BACKEND_SETTINGS_KEY.equals(preference.getKey())) {
             startActivity(new Intent(this, BackendSettingsActivity.class));

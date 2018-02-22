@@ -264,9 +264,8 @@ public final class Intents {
         context.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
     }
 
-    public static void startDashboardActivity(Activity activity, boolean startPopulated) {
+    public static void startDashboardActivity(Activity activity) {
         Intent intent = new Intent(activity, DashboardActivity.class);
-        intent.putExtra("startPopulated", startPopulated);
         activity.startActivity(intent);
     }
 

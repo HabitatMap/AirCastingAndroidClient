@@ -91,10 +91,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         startSensors(context);
         invalidateOptionsMenu();
 
-        if (getIntent().hasExtra("startPopulated") && getIntent().getExtras().getBoolean("startPopulated")) {
-            state.dashboardState().populate();
-        }
-
         super.onPostResume();
     }
 
