@@ -97,7 +97,7 @@
                 android:id="@+id/note_save"
                 />
 
-        <Button style="@style/DialogLastButton"
+        <Button style="@style/DialogButton"
                 android:text="@string/delete"
                 android:id="@+id/note_delete"
                 />

@@ -40,8 +40,9 @@
 
 
   <Button android:text="@string/pair_with_new_devices"
-                android:layout_height="40dip"
-                android:layout_width="fill_parent"
-                android:id="@+id/pair_with_new_sensors_button"
+          style="@style/DialogButton"
+          android:layout_height="wrap_content"
+          android:layout_width="fill_parent"
+          android:id="@+id/pair_with_new_sensors_button"
       />
 </LinearLayout>

@@ -27,7 +27,7 @@
             android:id="@+id/share_link"
             />
 
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:text="@string/share_file"
             android:id="@+id/share_file"
             />

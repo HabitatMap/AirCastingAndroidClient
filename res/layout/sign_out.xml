@@ -27,9 +27,10 @@
 
     <TextView style="@style/DialogText"
               android:id="@+id/summary"
-              android:padding="2dp"
+              android:textSize="15dp"
+              android:padding="10dp"
             />
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:id="@+id/sign_out"
             android:text="@string/sign_out"
             />

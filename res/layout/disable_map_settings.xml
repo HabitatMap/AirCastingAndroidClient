@@ -19,7 +19,7 @@
     You can contact the authors by email at <info@habitatmap.org>
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
         >
 
@@ -34,22 +34,23 @@
             style="@style/DialogText"
             />
 
-    <CheckBox android:id="@+id/disable_maps_checkbox"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_below="@+id/disable_maps_description"
-              android:layout_marginLeft="1sp"
-              android:gravity="center_vertical"
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <CheckBox android:id="@+id/disable_maps_checkbox"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="1sp"
+                  android:layout_marginTop="6dp"
+                  android:gravity="center_vertical"
         />
 
-    <Button
-            android:text="@string/ok"
-            android:id="@+id/disable_maps_ok"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/disable_maps_checkbox"
-            android:layout_below="@+id/disable_maps_description"
-            android:gravity="center_vertical"
-            />
+        <Button android:text="@string/ok"
+                style="@style/DialogButton"
+                android:id="@+id/disable_maps_ok"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/disable_maps_checkbox"
+                android:gravity="center_vertical"
+        />
+    </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

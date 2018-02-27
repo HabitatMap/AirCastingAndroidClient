@@ -41,7 +41,7 @@
               android:inputType="textPassword"
             />
 
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:text="@string/ok"
             android:id="@+id/ok"
             />
