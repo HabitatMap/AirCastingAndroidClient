@@ -22,7 +22,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
           style="@style/Wide"
           android:clickable="true"
-          android:background="@color/lighter_gray"
+          android:background="@color/dashboard_background"
           android:textColor="@android:color/black"
           android:textColorLink="@android:color/white"
           android:padding="1dp"
