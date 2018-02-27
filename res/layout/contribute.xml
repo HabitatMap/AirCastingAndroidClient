@@ -36,7 +36,7 @@
             android:id="@+id/yes"
             />
 
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:text="@string/no_contribute"
             android:id="@+id/no"
             />

@@ -54,7 +54,7 @@
             android:text="@string/start_session"
             android:id="@+id/start_session"/>
 
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:text="@string/cancel"
             android:id="@+id/cancel"/>
 

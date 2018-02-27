@@ -24,7 +24,5 @@
         >
     <solid android:color="@color/lighter_gray"
             />
-    <corners android:bottomLeftRadius="4dp"
-             android:bottomRightRadius="4dp"
-            />
+
 </shape>

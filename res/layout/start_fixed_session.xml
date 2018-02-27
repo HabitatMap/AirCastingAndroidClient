@@ -62,7 +62,7 @@
         android:text="@string/start_outdoor_session"
         android:id="@+id/start_outdoor_session"
         />
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
         android:text="@string/cancel"
         android:id="@+id/cancel"
         />

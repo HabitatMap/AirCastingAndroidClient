@@ -35,7 +35,7 @@
             android:id="@+id/create_profile"
             />
 
-    <Button style="@style/DialogLastButton"
+    <Button style="@style/DialogButton"
             android:text="@string/forgot_password"
             android:id="@+id/forgot_password"
             />
