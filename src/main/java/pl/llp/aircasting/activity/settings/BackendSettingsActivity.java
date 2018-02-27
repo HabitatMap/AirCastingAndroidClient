@@ -48,6 +48,7 @@ public class BackendSettingsActivity extends DialogActivity implements View.OnCl
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.backend_settings);
+    initDialogToolbar("Backend Settings");
 
     ok.setOnClickListener(this);
   }

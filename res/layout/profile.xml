@@ -23,6 +23,8 @@
               style="@style/DialogMain"
         >
 
+    <include layout="@layout/toolbar"/>
+
     <Button style="@style/DialogButton"
             android:text="@string/sign_in"
             android:id="@+id/sign_in"

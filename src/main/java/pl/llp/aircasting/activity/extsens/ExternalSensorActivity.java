@@ -60,7 +60,9 @@ public class ExternalSensorActivity extends DialogActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.external_sensors_list);
+        initDialogToolbar("Available Devices");
         eventBus.register(this);
         configurationRequired = getIntent().getBooleanExtra(Intents.CONFIGURATION_REQUIRED, false);
         continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);

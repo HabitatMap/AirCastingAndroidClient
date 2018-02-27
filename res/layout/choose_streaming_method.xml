@@ -22,6 +22,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
 >
+    <include layout="@layout/toolbar"/>
+
     <Button style="@style/DialogButton"
             android:text="@string/wifi"
             android:id="@+id/wifi_button"

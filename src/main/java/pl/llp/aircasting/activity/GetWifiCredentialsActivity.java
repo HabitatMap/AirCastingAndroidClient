@@ -25,6 +25,7 @@ public class GetWifiCredentialsActivity extends DialogActivity implements View.O
         super.onCreate(savedInstanceState);
         continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
         setContentView(R.layout.get_wifi_network);
+        initDialogToolbar("WiFi Name & Password");
 
         wifi_submit.setOnClickListener(this);
     }

@@ -23,6 +23,8 @@
               style="@style/DialogMain"
         >
 
+    <include layout="@layout/toolbar"/>
+
     <TextView style="@style/DialogText"
               android:text="@string/email"
             />

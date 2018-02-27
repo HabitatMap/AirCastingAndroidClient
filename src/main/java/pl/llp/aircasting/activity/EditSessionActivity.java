@@ -51,6 +51,7 @@ public class EditSessionActivity extends DialogActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.session_details);
+        initDialogToolbar("Edit Session");
 
         session = (Session) getIntent().getSerializableExtra(Intents.SESSION);
         sessionTitle.setText(session.getTitle());

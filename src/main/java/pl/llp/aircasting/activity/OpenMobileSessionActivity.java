@@ -42,6 +42,7 @@ public class OpenMobileSessionActivity extends DialogActivity implements View.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_mobile_session);
+        initDialogToolbar("Session Options");
 
         view.setOnClickListener(this);
         share.setOnClickListener(this);

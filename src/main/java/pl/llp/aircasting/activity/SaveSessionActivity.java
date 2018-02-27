@@ -56,6 +56,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
     currentSessionManager.pauseSession();
 
     setContentView(R.layout.session_details);
+    initDialogToolbar("Save Session");
 
     saveButton.setOnClickListener(this);
     discardButton.setOnClickListener(this);

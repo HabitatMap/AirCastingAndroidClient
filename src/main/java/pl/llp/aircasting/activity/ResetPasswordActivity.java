@@ -55,6 +55,7 @@ public class ResetPasswordActivity extends DialogActivity implements View.OnClic
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.reset_password);
+        initDialogToolbar("Reset Password");
 
         ok.setOnClickListener(this);
     }

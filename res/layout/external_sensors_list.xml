@@ -6,6 +6,8 @@
               android:orientation="vertical"
     >
 
+  <include layout="@layout/toolbar"/>
+
   <TextView android:text="@string/connected_sensors_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

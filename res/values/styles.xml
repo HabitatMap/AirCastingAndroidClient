@@ -19,8 +19,9 @@
         You can contact the authors by email at <info@habitatmap.org>
     -->
     <style name="Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
-        <item name="android:windowBackground">@drawable/panel_background</item>
-    </style>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+     </style>
 
     <style name="AirCastingTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:panelFullBackground">@android:color/black</item>
@@ -52,6 +53,10 @@
     <style name="Widget.MyApp.Toolbar.Solid" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/toolbar_blue</item>
         <item name="android:elevation" tools:ignore="NewApi">4dp</item>
+    </style>
+
+    <style name="Widget.MyApp.Toolbar.Dialog.Solid" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/toolbar_blue</item>
     </style>
 
     <style name="ThemeOverlay.MyApp.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">

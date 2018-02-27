@@ -58,6 +58,8 @@ public class ContributeActivity extends DialogActivity
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.contribute);
+    initDialogToolbar("Contribute Session");
+
     if(!getIntent().hasExtra(Intents.SESSION_ID))
     {
       throw new RuntimeException("Should have arrived here with a session id");

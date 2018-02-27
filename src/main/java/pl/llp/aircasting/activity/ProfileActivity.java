@@ -46,6 +46,7 @@ public class ProfileActivity extends DialogActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.profile);
+        initDialogToolbar("Profile Options");
 
         signIn.setOnClickListener(this);
         createProfile.setOnClickListener(this);
