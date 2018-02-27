@@ -382,6 +382,7 @@ public class MeasurementStream implements Serializable {
 
     public void addMeasurements(List<Measurement> measurements) {
         this.measurements.addAll(measurements);
+        calculatePeak();
     }
 
     public enum Visibility {
