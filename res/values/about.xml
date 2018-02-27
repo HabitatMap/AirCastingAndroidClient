@@ -24,11 +24,9 @@
     <![CDATA[
         <p>
             It’s simple to connect sensors to the AirCasting app to display and record measurements. Just do the following:
-            <p>
-                Download the <a href="https://github.com/HabitatMap/AirCastingAndroidClient/blob/master/arduino/aircasting/aircasting_lm335a.ino">AirCasting Arduino sketch</a>, which controls the sensors and sends data to the app via Bluetooth.
-                Alter the Arduino sketch to communicate your sensor data.
-                Use the AirCasting app to send your data to the AirCasting servers for display on the AirCasting website. Want to send the data to your own servers? Just specify the URL in the AirCasting app settings under "Backend settings".
-            </p>
+            Download the <a href="https://github.com/HabitatMap/AirCastingAndroidClient/blob/master/arduino/aircasting/aircasting_lm335a.ino">AirCasting Arduino sketch</a>, which controls the sensors and sends data to the app via Bluetooth.
+            Alter the Arduino sketch to communicate your sensor data.
+            Use the AirCasting app to send your data to the AirCasting servers for display on the AirCasting website. Want to send the data to your own servers? Just specify the URL in the AirCasting app settings under "Backend settings".
         </p>
     ]]>
   </string>
@@ -150,8 +148,17 @@
 
         <p>
             Location: To geolocate your measurements, the AirCasting app requests permission to access your location. The AirCasting app has several features that enable location data to remain private. AirCasters can “disable maps” in the app settings, which turns off GPS tracking. When AirCasters record data with the GPS disabled, the data never leaves the Android device and is never synced to our servers. AirCasters can elect to save their data to the AirCasting server but not contribute it to the “CrowdMap”. This means the data can only be viewed on the website via a link that you generate inside the app when signed in. AirCasters can also elect to send the data from the app directly to their own server, entirely bypassing the AirCasting server. In addition, when recording fixed indoor sessions, GPS coordinates are never logged.
+        </p>
+
+        <p>
             Microphone: To record sound level measurements, the AirCasting app requests permission to access your microphone. The raw audio captured by AirCasters’ microphones is never recorded; rather the audio signal is immediately converted to a sound level measurement before it is stored on the phone and communicated to the AirCasting server.
+        </p>
+
+        <p>
             Phone Status: To record sound level measurements, the AirCasting app requests permission to read your phone’s state. Knowing the state of an AirCaster’s phone allows the app to temporarily suspend the recording of sound level measurements during phone calls.
+        </p>
+
+        <p>
             USB Storage: To attach photos to notes, the AirCasting app requests permission to read the contents of your USB storage.
         </p>
     ]]>

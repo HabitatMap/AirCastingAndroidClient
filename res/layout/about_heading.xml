@@ -23,6 +23,7 @@
           style="@style/DialogButton"
           android:gravity="center"
           android:textColor="@android:color/black"
+          android:background="@color/list_viewing_session_even"
           android:textSize="16dp"
           android:text="Placeholder"
           android:id="@+id/heading"
