@@ -34,8 +34,6 @@ public class DialogActivity extends RoboActivityWithProgress {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_LEFT_ICON);
     }
 
     @Override
@@ -43,6 +41,5 @@ public class DialogActivity extends RoboActivityWithProgress {
         super.onResume();
 
         getWindow().setLayout(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ic_dialog_menu_generic);
     }
 }

@@ -31,6 +31,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
         super.onCreate(savedInstanceState);
         continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
         setContentView(R.layout.choose_streaming_method);
+        initDialogToolbar("Streaming Method");
 
         wifiButton.setOnClickListener(this);
         cellularButton.setOnClickListener(this);

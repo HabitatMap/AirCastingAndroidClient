@@ -52,6 +52,7 @@ public class SignOutActivity extends DialogActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.sign_out);
+        initDialogToolbar("Sign Out");
 
         signOut.setOnClickListener(this);
 

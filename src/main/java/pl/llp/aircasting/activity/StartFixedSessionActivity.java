@@ -58,6 +58,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.start_fixed_session);
+        initDialogToolbar("Session Details");
 
         startIndoorSessionButton.setOnClickListener(this);
         startOutdoorSessionButton.setOnClickListener(this);

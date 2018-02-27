@@ -33,6 +33,7 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.session_type);
+        initDialogToolbar("Session Type");
 
         mobileSessionButton.setOnClickListener(this);
         fixedSessionButton.setOnClickListener(this);

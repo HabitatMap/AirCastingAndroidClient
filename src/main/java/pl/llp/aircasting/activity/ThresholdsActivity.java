@@ -78,6 +78,7 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.color_scale);
+        initDialogToolbar("Heat Legend Units");
 
         sensor = (Sensor) getIntent().getSerializableExtra(Intents.EXTRA_SENSOR);
 

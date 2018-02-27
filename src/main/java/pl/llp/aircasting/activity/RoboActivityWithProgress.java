@@ -192,6 +192,12 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
         this.setTitle(title);
     }
 
+    public void initDialogToolbar(String title) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        this.setSupportActionBar(toolbar);
+        this.setTitle(title);
+    }
+
     public void initNavigationDrawer() {
         navigationDrawerHelper.initNavigationDrawer(toolbar, this);
     }

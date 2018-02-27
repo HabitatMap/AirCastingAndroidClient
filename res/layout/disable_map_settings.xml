@@ -23,6 +23,8 @@
               style="@style/DialogMain"
         >
 
+  <include layout="@layout/toolbar"/>
+
   <TextView android:id="@+id/disable_maps_description"
             android:text="@string/disable_maps_description"
             android:layout_width="fill_parent"

@@ -67,6 +67,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.make_a_note);
+        initDialogToolbar("Make Note");
 
         date = new Date();
         dateText.setText(FormatHelper.dateTime(date));

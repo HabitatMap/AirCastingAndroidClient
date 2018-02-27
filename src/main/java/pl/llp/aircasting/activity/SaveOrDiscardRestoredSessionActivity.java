@@ -35,6 +35,7 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
         currentSessionManager.pauseSession();
 
         setContentView(R.layout.save_lost_session);
+        initDialogToolbar("Recover a Session");
 
         sessionTitle.setText(session.getTitle());
         sessionTags.setText(session.getTags());

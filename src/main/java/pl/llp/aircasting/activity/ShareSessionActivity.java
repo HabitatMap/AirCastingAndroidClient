@@ -68,6 +68,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.share_session);
+    initDialogToolbar("Share Session");
 
     shareFile.setOnClickListener(this);
     shareLink.setOnClickListener(this);

@@ -28,6 +28,7 @@ public class DisableMapSettingsActivity extends DialogActivity
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.disable_map_settings);
+    initDialogToolbar("Disable Maps");
   }
 
   @Override

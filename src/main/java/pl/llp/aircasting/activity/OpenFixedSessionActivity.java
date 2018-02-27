@@ -42,6 +42,7 @@ public class OpenFixedSessionActivity extends DialogActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_fixed_session);
+        initDialogToolbar("Session Options");
 
         view.setOnClickListener(this);
         continueStreaming.setOnClickListener(this);

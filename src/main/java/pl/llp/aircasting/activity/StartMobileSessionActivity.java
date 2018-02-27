@@ -35,6 +35,7 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.start_mobile_session);
+        initDialogToolbar("Session Details");
 
         cancelButton.setOnClickListener(this);
         startButton.setOnClickListener(this);
