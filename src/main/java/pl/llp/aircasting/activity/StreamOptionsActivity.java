@@ -20,7 +20,7 @@ public class StreamOptionsActivity extends DialogActivity implements View.OnClic
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dashboard_chart_options);
+        setContentView(R.layout.view_stream);
         initDialogToolbar("Stream View");
 
         graphButton.setOnClickListener(this);
