@@ -1,14 +1,11 @@
 package pl.llp.aircasting.sensor.airbeam;
 
-import android.util.*;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.sensor.external.ExternalSensor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.base64.Base64;
 
@@ -38,6 +35,7 @@ public class Airbeam2Configurator {
     private static final byte LAT_LNG_CODE = (byte) 0x06;
     // for testing purposes only
     private static final byte SENSOR_PACKAGE_CODE = (byte) 0x07;
+    private int sleepTime = 2000;
     private String wifiSSID;
     private String wifiPassword;
 
@@ -84,27 +82,16 @@ public class Airbeam2Configurator {
 
     public void sendFinalAb2Config() {
         sendLatLng();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleepFor(sleepTime);
         sendPackageName();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleepFor(sleepTime);
         configureStreamingMethod();
+        sleepFor(3000);
         disconnectAirBeam2();
     }
 
     private void disconnectAirBeam2() {
-         Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
+        Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
 
         for (ExternalSensorDescriptor descriptor : descriptors) {
             if (descriptor.getName().startsWith(ExternalSensors.AIRBEAM)) {
@@ -198,7 +185,7 @@ public class Airbeam2Configurator {
         return offsetInHours;
     }
 
-    private void sendMessage(byte[] message) {
+    private void sendMessage(final byte[] message) {
         eventBus.post(new Airbeam2ConfigMessageEvent(message));
     }
 
@@ -211,13 +198,15 @@ public class Airbeam2Configurator {
 
     public void sendUUIDAndAuthToken(UUID uuid, String authToken) {
         sendUUID(uuid);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleepFor(sleepTime);
         sendAuthToken(authToken);
+    }
+
+    private void sleepFor(long sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException ignore) {
+
+        }
     }
 }

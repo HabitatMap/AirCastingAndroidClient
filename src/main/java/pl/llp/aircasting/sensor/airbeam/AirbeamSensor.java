@@ -2,9 +2,9 @@ package pl.llp.aircasting.sensor.airbeam;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Singleton;
 import pl.llp.aircasting.sensor.AbstractSensor;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.ReaderWorker;
@@ -14,6 +14,7 @@ import pl.llp.aircasting.sensor.external.LineDataReader;
 /**
  * Created by radek on 07/12/17.
  */
+@Singleton
 public class AirbeamSensor extends AbstractSensor {
     ReaderWorker readerWorker;
     LineDataReader lineReader;
@@ -28,7 +29,6 @@ public class AirbeamSensor extends AbstractSensor {
     protected void startWorking() {
         readerWorker.start();
         writerWorker.start();
-        Log.i("airbeam", "started working");
     }
 
     @Override
@@ -48,6 +48,8 @@ public class AirbeamSensor extends AbstractSensor {
         if (writerWorker != null) {
             writerWorker.stop();
         }
+
+        eventBus.unregister(this);
     }
 
     @Subscribe
