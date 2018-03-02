@@ -215,16 +215,12 @@ public class MeasurementStream implements Serializable {
     }
 
     public double getPeak() {
-        if (peak == null) {
-            peak = calculatePeak();
-        }
+        peak = calculatePeak();
         return peak;
     }
 
     public double getAvg() {
-        if (avg == null) {
-            avg = calculateAvg();
-        }
+        avg = calculateAvg();
         return avg;
     }
 
@@ -302,12 +298,16 @@ public class MeasurementStream implements Serializable {
     public void setMeasurements(List<Measurement> measurements) {
         this.measurements = measurements;
 
+        calculateSum();
+
+        avg = null;
+    }
+
+    private void calculateSum() {
         sum = 0.0;
         for (Measurement measurement : measurements) {
             sum += measurement.getValue();
         }
-
-        avg = null;
     }
 
     public Double getSum() {
@@ -382,7 +382,16 @@ public class MeasurementStream implements Serializable {
 
     public void addMeasurements(List<Measurement> measurements) {
         this.measurements.addAll(measurements);
-        calculatePeak();
+
+        for (Measurement measurement : measurements) {
+            sum += measurement.getValue();
+
+            if (measurement.getValue() > peak) {
+                peak = measurement.getValue();
+            }
+        }
+
+        calculateAvg();
     }
 
     public enum Visibility {
