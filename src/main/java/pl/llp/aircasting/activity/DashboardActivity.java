@@ -170,7 +170,7 @@ public class DashboardActivity extends DashboardBaseActivity {
                 break;
             case R.id.clear_dashboard_button:
                 sessionData.clearAllViewingSessions();
-                eventBus.post(new ToggleSessionReorderEvent());
+                eventBus.post(new ToggleSessionReorderEvent(true));
                 break;
             case R.id.session_rearrange_toggle:
                 toggleSessionReorder(menuItem);
@@ -182,7 +182,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     private void toggleSessionReorder(MenuItem menuItem) {
         state.dashboardState().toggleSessionReorder();
         chooseToggleSessionsReorderIcon(menuItem);
-        eventBus.post(new ToggleSessionReorderEvent());
+        eventBus.post(new ToggleSessionReorderEvent(false));
     }
 
     @Override
