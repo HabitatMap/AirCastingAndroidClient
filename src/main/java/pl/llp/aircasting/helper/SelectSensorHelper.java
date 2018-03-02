@@ -1,5 +1,8 @@
 package pl.llp.aircasting.helper;
 
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
 

@@ -43,9 +43,6 @@ public class SignOutActivity extends DialogActivity implements View.OnClickListe
     @Inject SessionRepository sessionRepository;
 
     @InjectView(R.id.sign_out) Button signOut;
-    @InjectView(R.id.summary) TextView summary;
-
-    @InjectResource(R.string.profile_template) String profileTemplate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +52,6 @@ public class SignOutActivity extends DialogActivity implements View.OnClickListe
         initDialogToolbar("Sign Out");
 
         signOut.setOnClickListener(this);
-
-        String email = settingsHelper.getUserLogin();
-        String text = String.format(profileTemplate, email);
-        summary.setText(text);
     }
 
     @Override

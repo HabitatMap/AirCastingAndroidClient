@@ -17,6 +17,7 @@
                   android:layout_height="wrap_content"
                   android:textSize="20dp"
                   android:textStyle="bold"
+                  android:textColor="@android:color/black"
                   android:text="Name"
                   android:layout_margin="3dp"/>
 
@@ -25,6 +26,7 @@
                   android:layout_width="wrap_content"
                   android:layout_weight="1"
                   android:textSize="20dp"
+                  android:textColor="@android:color/black"
                   android:layout_margin="3dp"
                   android:text="Address"
                   android:ellipsize="end"/>

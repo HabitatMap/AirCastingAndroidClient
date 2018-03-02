@@ -25,32 +25,26 @@
     <include layout="@layout/toolbar"/>
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/title_label"
             />
-    <EditText style="@style/Wide"
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
               android:singleLine="false"
               android:gravity="top"
               android:id="@+id/session_title"
             />
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/tags_label"
             />
-    <EditText style="@style/Wide"
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
               android:lines="2"
               android:singleLine="false"
               android:gravity="top"
               android:id="@+id/session_tags"
-            />
-
-    <TextView style="@style/DialogText"
-              android:text="@string/description_label"
-            />
-    <EditText style="@style/Wide"
-              android:lines="2"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/session_description"
             />
 
     <Button style="@style/DialogButton"

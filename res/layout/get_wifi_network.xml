@@ -3,20 +3,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/wifi_ssid"/>
 
-    <EditText style="@style/Wide"
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
               android:singleLine="false"
               android:gravity="top"
               android:id="@+id/wifi_ssid"/>
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/wifi_password"/>
 
-    <EditText style="@style/Wide"
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
               android:singleLine="false"
               android:gravity="top"
               android:inputType="textPassword"

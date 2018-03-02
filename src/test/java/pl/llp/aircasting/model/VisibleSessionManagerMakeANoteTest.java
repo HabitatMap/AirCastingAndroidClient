@@ -53,7 +53,7 @@ public class VisibleSessionManagerMakeANoteTest
     currentSessionManager.locationHelper = mock(LocationHelper.class);
     when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(location);
     currentSessionManager.eventBus = mock(EventBus.class);
-    currentSessionManager.startMobileSession(null, null, null, false);
+    currentSessionManager.startMobileSession(null, null, false);
 
     date = new Date();
   }

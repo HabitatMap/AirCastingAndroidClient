@@ -39,22 +39,22 @@
   <string name="session">Session</string>
   <string name="title">Title</string>
   <string name="avg">Avg</string>
-  <string name="password">Password</string>
+  <string name="password">Password:</string>
   <string name="peak">Peak</string>
   <string name="calibration">Microphone maximum</string>
   <string name="view">View</string>
-  <string name="add_to_dashboard">Add to dashboard</string>
+  <string name="add_to_dashboard">Add to Dashboard</string>
   <string name="edit">Edit</string>
   <string name="delete">Delete</string>
   <string name="share">Share</string>
-  <string name="continue_streaming">Continue fixed-location streaming</string>
+  <string name="continue_streaming">Continue Streaming</string>
   <string name="cancel">Cancel</string>
   <string name="upload">Upload</string>
-  <string name="username">Profile name</string>
+  <string name="username">Profile Name:</string>
   <string name="low">Low</string>
   <string name="high">High</string>
   <string name="ok">OK</string>
-  <string name="email">Email</string>
+  <string name="email">Email:</string>
   <string name="graph">Graph</string>
   <string name="map">Map</string>
   <string name="empty"></string>
@@ -62,13 +62,13 @@
 
   <string name="profile">Profile</string>
   <string name="average_threshold">Average sounds (dB)</string>
-  <string name="color_scale">Heat legend units</string>
-  <string name="edit_session">Edit session</string>
+  <string name="color_scale">Heat Legend Units</string>
+  <string name="edit_session">Edit Session</string>
   <string name="heat_map_density">Crowd Map resolution</string>
   <string name="loud_threshold">Loud sounds (dB)</string>
   <string name="make_a_note">Make Note</string>
   <string name="satellite_view">Satellite map</string>
-  <string name="save_session">Save session</string>
+  <string name="save_session">Save Session</string>
   <string name="very_loud_threshold">Very loud sounds (dB)</string>
 
   <string name="profile_summary">Create an account or sign in</string>
@@ -118,27 +118,27 @@
   <string name="reset_to_default">Reset to Default</string>
 
   <string name="no_data">No data recorded</string>
-  <string name="share_link">Share link</string>
-  <string name="share_file">Share file</string>
+  <string name="share_link">Share Link</string>
+  <string name="share_file">Share File</string>
   <string name="share_title">View my AirCasting session</string>
   <string name="im_aircasting">I\'m AirCasting</string>
-  <string name="session_options">Session options</string>
-  <string name="discard_session">Discard session</string>
-  <string name="session_details">Session details</string>
-  <string name="stream_options">Stream options</string>
-  <string name="choose_session_type">Choose session type</string>
-  <string name="choose_streaming_method">Choose streaming method</string>
+  <string name="session_options">Session Options</string>
+  <string name="discard_session">Discard Session</string>
+  <string name="session_details">Session Details</string>
+  <string name="stream_options">Stream Options</string>
+  <string name="choose_session_type">Choose Session Type</string>
+  <string name="choose_streaming_method">Choose Streaming Method</string>
   <string name="note">Note</string>
-  <string name="sign_out">Sign out</string>
+  <string name="sign_out">Sign Out</string>
   <string name="contribute_to_crowd_map">Contribute to CrowdMap</string>
-  <string name="forgot_password">Forgot password</string>
+  <string name="forgot_password">Forgot Password</string>
   <string name="reset_email_sent">An email with further instructions has been sent</string>
   <string name="account_does_not_exist">An account with this email does not exist</string>
   <string name="working">Working...</string>
-  <string name="create_profile">Create a profile</string>
-  <string name="sign_in">Sign in</string>
-  <string name="reset_password">Reset password</string>
-  <string name="username_or_email">Profile name or email</string>
+  <string name="create_profile">Create Profile</string>
+  <string name="sign_in">Log In</string>
+  <string name="reset_password">Reset Password</string>
+  <string name="username_or_email">Profile Name or Email:</string>
   <string name="gps_off_warning">Please enable your GPS receiver.</string>
   <string name="send_emails">Send me emails from AirCasting</string>
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
@@ -162,7 +162,7 @@
   <string name="sound_level_measurementless">Disable phone microphone</string>
   <string name="sound_level_measurementless_summary">Check to disable sound level measurements from phone microphone.</string>
   <string name="offset_error">The offset should be between -5 and +5 dB.</string>
-  <string name="share_session">Share session</string>
+  <string name="share_session">Share Session</string>
   <string name="account_reminder">To save and upload your AirCasting sessions navigate to the Settings screen and sign
     in or create a profile.
   </string>
@@ -180,7 +180,7 @@
     will average these one second readings together prior to displaying them on the map and graph.
   </string>
   <string name="averaging_time_error">The averaging time should be greater than 0</string>
-  <string name="attach_photo">Attach a photo</string>
+  <string name="attach_photo">Attach a Photo</string>
   <string name="view_photo">View photo</string>
   <string name="photo_success">Photo attached</string>
   <string name="storage_error">Could not access the SD card</string>
@@ -201,7 +201,7 @@
   <string name="now_label_template" formatted="false">Now %s</string>
   <string name="avg_label_template" formatted="false">Avg %s</string>
 
-  <string name="select_sensor">Select a parameter - sensor</string>
+  <string name="select_sensor">Select a Sensor</string>
   <string name="all">All</string>
   <string name="delete_button_description">Delete stream button</string>
   <string name="record_button_description">Record stream button</string>
@@ -213,19 +213,19 @@
   <string name="wifi">WiFi</string>
   <string name="cellular">Cellular</string>
 
-  <string name="backend_address">Backend address</string>
-  <string name="backend_port">Backend port</string>
+  <string name="backend_address">Backend Address:</string>
+  <string name="backend_port">Backend Port:</string>
   <string name="backend_settings">Backend settings</string>
   <string name="backend_settings_summary">Set backend address and port</string>
   <string name="show_graph_metadata">Show graph metadata</string>
   <string name="rearrange">Rearrange sessions</string>
-  <string name="disable_maps">Disable maps</string>
+  <string name="disable_maps">Disable Maps</string>
 
   <string name="available_sensors_label">Available</string>
   <string name="known_sensors_label">Exter</string>
   <string name="connected_sensors_label">Connected</string>
   <string name="paired_sensors_label">Paired</string>
-  <string name="pair_with_new_devices">Pair with new devices</string>
+  <string name="pair_with_new_devices">Pair New Device</string>
   <string name="session_sync_failed">Session sync failed, check your network connection</string>
   <string name="measurement_sync_failed">New measurements could not be downloaded, check your network connection</string>
   <string name="disable_maps_description">Allows you to record sessions without a GPS fix. Sessions recorded when maps are disabled are saved to your Android device, but they are not saved to aircasting.org. As a result, when signing out of the app these sessions will be erased.  Email sessions as CSV files to prevent data loss.</string>
@@ -248,14 +248,14 @@
 
   <string name="sensor_is_disabled_in_settings">This sensor is disabled. To turn it on, stop recording and go to settings.</string>
 
-  <string name="mobile_session">Mobile session</string>
-  <string name="fixed_session">Fixed session</string>
+  <string name="mobile_session">Mobile</string>
+  <string name="fixed_session">Fixed</string>
   <string name="fixed_session_creation_failed">Session could not be created on the web server.</string>
-  <string name="start_session">Start session</string>
-  <string name="start_mobile_session">Start mobile session</string>
-  <string name="start_fixed_session">Start fixed-location session</string>
-  <string name="start_indoor_session">Start indoor session</string>
-  <string name="start_outdoor_session">Start outdoor session</string>
+  <string name="start_session">Start Session</string>
+  <string name="start_mobile_session">Start Mobile Session</string>
+  <string name="start_fixed_session">Start Fixed-location Session</string>
+  <string name="start_indoor_session">Start Indoor Session</string>
+  <string name="start_outdoor_session">Start Outdoor Session</string>
   <string name="google_play_services_not_available">This feature requires Google Play Services installed on the device.</string>
   <string name="connect_phone_mic">Connect phone mic</string>
   <string name="disconnect_phone_mic">Disconnect phone mic</string>
@@ -268,7 +268,7 @@
   <string name="drawer_open">Open</string>
   <string name="drawer_close">Close</string>
 
-  <string name="wifi_ssid">WiFi SSID</string>
+  <string name="wifi_ssid">WiFi Network Name</string>
   <string name="wifi_password">WiFi Password</string>
   <string name="submit">Submit</string>
 </resources>

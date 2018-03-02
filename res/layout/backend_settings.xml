@@ -23,20 +23,24 @@
               style="@style/DialogMain"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/backend_address"
             />
-    <EditText style="@style/Wide"
+    <EditText android:theme="@style/AirCastingEditText"
+              style="@style/AirCastingEditText"
               android:id="@+id/backend_address_field"
               android:inputType="text"
             />
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/backend_port"
             />
-    <EditText style="@style/Wide"
+    <EditText android:theme="@style/AirCastingEditText"
+              style="@style/AirCastingEditText"
               android:id="@+id/backend_port_field"
               android:inputType="numberDecimal"
             />

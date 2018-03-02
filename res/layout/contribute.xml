@@ -23,7 +23,7 @@
               style="@style/DialogMain"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
               android:text="@string/contribute_explanation"

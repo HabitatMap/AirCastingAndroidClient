@@ -23,13 +23,14 @@
               style="@style/DialogMain"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
               android:id="@+id/date"
             />
 
-    <EditText style="@style/Wide"
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
               android:id="@+id/note_text"
               android:lines="4"
             />

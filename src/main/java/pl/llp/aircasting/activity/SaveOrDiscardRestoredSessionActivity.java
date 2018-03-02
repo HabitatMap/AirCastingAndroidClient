@@ -19,7 +19,6 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
 
     @InjectView(R.id.session_title) EditText sessionTitle;
     @InjectView(R.id.session_tags) EditText sessionTags;
-    @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
@@ -39,7 +38,6 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
 
         sessionTitle.setText(session.getTitle());
         sessionTags.setText(session.getTags());
-        sessionDescription.setText(session.getDescription());
 
         saveButton.setOnClickListener(this);
         discardButton.setOnClickListener(this);
@@ -86,7 +84,6 @@ public class SaveOrDiscardRestoredSessionActivity extends DialogActivity impleme
     private void fillSessionDetails(long sessionId) {
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
-        String description = sessionDescription.getText().toString();
-        currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
+        currentSessionManager.setTitleTags(sessionId, title, tags);
     }
 }

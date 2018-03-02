@@ -23,13 +23,17 @@
               style="@style/DialogMain"
 >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <Button style="@style/DialogButton"
+            android:drawableLeft="@drawable/stream_view_graph_icon"
+            android:drawablePadding="7dp"
             android:text="@string/graph"
             android:id="@+id/graph_button"
     />
     <Button style="@style/DialogButton"
+            android:drawableLeft="@drawable/stream_view_map_icon"
+            android:drawablePadding="7dp"
             android:text="@string/map"
             android:id="@+id/map_button"
     />
