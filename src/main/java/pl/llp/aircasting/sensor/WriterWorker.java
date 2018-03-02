@@ -1,5 +1,6 @@
 package pl.llp.aircasting.sensor;
 
+import com.google.inject.Singleton;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
 import android.bluetooth.BluetoothDevice;
@@ -20,15 +21,16 @@ public class WriterWorker extends Worker {
         super(eventBus);
         this.device = device;
         this.socketWriter = socketWriter;
+        queue.clear();
         this.thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (active.get()) {
-                    sleepFor(100);
+                    sleepFor(500);
                     try {
                         socketWriter.writeCyclic();
                         if (queue.isEmpty()) {
-                            sleepFor(100);
+                            sleepFor(500);
                         } else {
                             byte[] bytes = queue.remove();
                             socketWriter.write(bytes);
