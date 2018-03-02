@@ -204,6 +204,10 @@ public class StreamAdapter extends SimpleAdapter {
         // so that the OnItemClick and OnItemTouch listeners get reset properly.
 
         context.startActivity(new Intent(context, FakeActivity.class));
+        if (event.areSessionsCleared()) {
+            sortedSessionPositions.clear();
+            sessionPositions.clear();
+        }
         update(false);
     }
 
