@@ -1,7 +1,6 @@
 package pl.llp.aircasting.sensor.airbeam;
 
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.sensor.BluetoothSocketWriter;
 
