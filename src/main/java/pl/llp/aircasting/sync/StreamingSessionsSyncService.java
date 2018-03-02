@@ -44,8 +44,10 @@ public class StreamingSessionsSyncService extends RoboIntentService {
     private void sync() {
         Collection<Session> sessions = viewingSessionsManager.getFixedSessions();
 
-        for (Session session : sessions) {
-            driver.downloadNewData(session, NoOp.progressListener());
+        synchronized (sessions) {
+            for (Session session : sessions) {
+                driver.downloadNewData(session, NoOp.progressListener());
+            }
         }
    }
 
