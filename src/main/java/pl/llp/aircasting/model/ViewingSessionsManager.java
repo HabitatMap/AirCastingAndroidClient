@@ -1,6 +1,7 @@
 package pl.llp.aircasting.model;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
@@ -56,17 +57,24 @@ public class ViewingSessionsManager {
         notifyNewSession(session, true);
     }
 
-    public void view(Long sessionId, @NotNull ProgressListener progressListener) {
+    public void view(Long sessionId, @NotNull final ProgressListener progressListener) {
         Preconditions.checkNotNull(progressListener);
 
-        Session session = sessionRepository.loadFully(sessionId, progressListener);
+        final Session session = sessionRepository.loadFully(sessionId, progressListener);
         if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
             MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
             session.removeStream(stream);
         }
 
         if (session.isFixed()) {
-            fixedSessionDriver.downloadNewData(session, progressListener);
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    fixedSessionDriver.downloadNewData(session, progressListener);
+                    return null;
+                }
+            };
+
             addFixedSession(session);
         }
         sessionsForViewing.put(sessionId, session);
