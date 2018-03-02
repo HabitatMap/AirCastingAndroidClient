@@ -39,24 +39,27 @@ public class SelectSensorHelper {
     int selected = selectedSensorIndex(sensors);
     String[] listItems = listItems(sensors);
 
-    return new AlertDialog.Builder(context)
-        .setTitle(title)
-        .setSingleChoiceItems(listItems, selected, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            Sensor sensor = sensors.get(which);
-            visibleSession.setSensor(sensor.getSensorName());
+    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+    LayoutInflater inflater = context.getLayoutInflater();
+    Toolbar toolbar = (Toolbar) inflater.inflate(R.layout.dialog_toolbar, null);
+    toolbar.setTitle(title);
 
-            context.removeDialog(DIALOG_ID);
-          }
-        })
-        .setOnCancelListener(new DialogInterface.OnCancelListener() {
-          @Override
-          public void onCancel(DialogInterface dialog) {
-            context.removeDialog(DIALOG_ID);
-          }
-        })
-        .create();
+    dialog.setCustomTitle(toolbar);
+
+    return dialog.setSingleChoiceItems(listItems, selected, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        Sensor sensor = sensors.get(which);
+        visibleSession.setSensor(sensor.getSensorName());
+
+        context.removeDialog(DIALOG_ID);
+      }
+    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+      @Override
+      public void onCancel(DialogInterface dialog) {
+        context.removeDialog(DIALOG_ID);
+      }
+    }).create();
   }
 
   private String[] listItems(List<Sensor> sensors) {
