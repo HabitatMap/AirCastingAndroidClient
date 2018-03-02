@@ -17,12 +17,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.util.ChartAveragesCreator;
 import pl.llp.aircasting.util.Constants;
-import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -37,12 +36,8 @@ public class DashboardChartManager {
     @Inject SessionDataFactory sessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
-    private final static int MINUTES_IN_HOUR = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
-    private final static int MAX_X_VALUE = 8;
-    private final static double MOBILE_FREQUENCY_DIVISOR = 8 * 1000;
-    private final static double FIXED_FREQUENCY_DIVISOR = 8 * 1000 * 60;
     private final static String FIXED_LABEL = "1 hr avg";
     private final static String MOBILE_LABEL = "1 min avg";
     private static int dynamicAveragesCount = 0;
@@ -110,9 +105,13 @@ public class DashboardChartManager {
 
     private void initStaticChart(MeasurementStream stream) {
         if (isSessionFixed) {
-            prepareFixedSessionEntries(requestedSessionId, stream);
+            Session session = sessionData.getSession(requestedSessionId);
+            List<Entry> entries = ChartAveragesCreator.getFixedEntries(session, stream);
+            averages.put(getKey(requestedSessionId, stream.getSensorName()), Lists.reverse(entries));
         } else if (!isSessionFixed && !isSessionCurrent && shouldStaticChartInitialize()) {
-            prepareEntries(requestedSessionId, stream);
+
+            List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
+            averages.put(requestedStreamKey, Lists.reverse(entries));
             staticChartGeneratedForStream.put(requestedStreamKey, true);
         }
     }
@@ -130,7 +129,7 @@ public class DashboardChartManager {
         }
 
         List<Entry> entries = getEntriesForCurrentStream();
-        if (entries == null) {
+        if (entries == null || entries.isEmpty()) {
             return;
         }
 
@@ -199,108 +198,6 @@ public class DashboardChartManager {
         }
     }
 
-    private void prepareEntries(long sessionId, MeasurementStream stream) {
-        List<List<Measurement>> periodData;
-        double streamFrequency = stream.getFrequency(MOBILE_FREQUENCY_DIVISOR);
-        double xValue = MAX_X_VALUE;
-        double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
-        List entries = new CopyOnWriteArrayList();
-        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
-        periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
-
-        if (periodData.size() > 0) {
-            synchronized (periodData) {
-                for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
-                    if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
-                        double yValue = getAverage(dataChunk);
-                        entries.add(new Entry((float) xValue, (float) yValue));
-                        xValue--;
-                    }
-                }
-            }
-        }
-
-        if (entries.size() == 0) {
-            return;
-        }
-
-        averages.put(getKey(sessionId, stream.getSensorName()), Lists.reverse(entries));
-    }
-
-    private void prepareFixedSessionEntries(long sessionId, MeasurementStream stream) {
-        List<Measurement> measurements;
-        double xValue = MAX_X_VALUE;
-        List entries = new CopyOnWriteArrayList();
-        List<List<Measurement>> periodData = new ArrayList<List<Measurement>>();
-
-        double streamFrequency = stream.getFrequency(FIXED_FREQUENCY_DIVISOR);
-        double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
-        double maxMeasurementsAmount = MAX_AVERAGES_AMOUNT * measurementsInPeriod;
-
-        if (stream.getMeasurementsCount() < maxMeasurementsAmount) {
-            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, 0);
-
-            if (measurements.isEmpty()) { return; }
-
-            Date firstMeasurementTime = measurements.get(0).getTime();
-            double minutes = firstMeasurementTime.getMinutes();
-
-            double firstHourCutoff = MINUTES_IN_HOUR - minutes;
-            if (measurements.size() > firstHourCutoff) {
-                List<Measurement> firstHourMeasurements = measurements.subList(0, (int) firstHourCutoff - 1);
-                if (!firstHourMeasurements.isEmpty()) {
-                    periodData.add(firstHourMeasurements);
-                }
-                List<Measurement> measurementsRemainder = measurements.subList((int) (firstHourCutoff), measurements.size() - 1);
-                measurements = measurementsRemainder;
-            } else {
-                return;
-            }
-        } else {
-            int offset = (int) (sessionData.getSession(sessionId).getEnd().getMinutes() / streamFrequency);
-            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, offset);
-        }
-
-        periodData.addAll(new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod)));
-
-        List<Measurement> lastPeriodData = periodData.get(periodData.size() - 1);
-
-        // remove incomplete last hour average
-        if (periodData.size() > 1 && lastPeriodData.size() < measurementsInPeriod - getTolerance(measurementsInPeriod)) {
-            periodData.remove(lastPeriodData);
-        }
-
-        if (periodData.size() > 0) {
-            synchronized (periodData) {
-                for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
-                    double yValue = getAverage(dataChunk);
-                    entries.add(new Entry((float) xValue, (float) yValue));
-                    xValue--;
-                }
-            }
-        }
-
-        if (entries.size() == 0) {
-            return;
-        }
-
-        averages.put(getKey(sessionId, stream.getSensorName()), Lists.reverse(entries));
-    }
-
-    private double getTolerance(double measurementsInPeriod) {
-        return 0.1 * measurementsInPeriod;
-    }
-
-    private double getAverage(List<Measurement> measurements) {
-        MeasurementAggregator aggregator = new MeasurementAggregator();
-
-        for (int i = 0; i < measurements.size(); i++) {
-            aggregator.add(measurements.get(i));
-        }
-
-        return Math.round(aggregator.getAverage().getValue());
-    }
-
     private void allowChartUpdate() {
         List<MeasurementStream> streams = (List) currentSessionManager.getMeasurementStreams();
 
@@ -309,7 +206,9 @@ public class DashboardChartManager {
         }
 
         for (MeasurementStream stream : streams) {
-            prepareEntries(Constants.CURRENT_SESSION_FAKE_ID, stream);
+
+            List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
+            averages.put(getKey(Constants.CURRENT_SESSION_FAKE_ID, stream.getSensorName()), Lists.reverse(entries));
         }
     }
 
