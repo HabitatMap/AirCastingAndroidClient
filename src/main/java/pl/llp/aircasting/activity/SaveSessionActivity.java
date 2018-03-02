@@ -39,7 +39,6 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
 
   @InjectView(R.id.session_title) EditText sessionTitle;
   @InjectView(R.id.session_tags) EditText sessionTags;
-  @InjectView(R.id.session_description) EditText sessionDescription;
 
   @Inject CurrentSessionManager currentSessionManager;
   @Inject SettingsHelper settingsHelper;
@@ -63,7 +62,6 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
 
     sessionTitle.setText(session.getTitle());
     sessionTags.setText(session.getTags());
-    sessionDescription.setText(session.getDescription());
 
     if (settingsHelper.isContributingToCrowdMap()) {
       discardButton.setVisibility(View.GONE);
@@ -124,8 +122,7 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
   {
     String title = sessionTitle.getText().toString();
     String tags = sessionTags.getText().toString();
-    String description = sessionDescription.getText().toString();
-    currentSessionManager.setTitleTagsDescription(sessionId, title, tags, description);
+    currentSessionManager.setTitleTags(sessionId, title, tags);
   }
 }
 

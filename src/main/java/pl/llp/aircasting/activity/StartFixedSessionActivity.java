@@ -42,11 +42,9 @@ import roboguice.inject.InjectView;
 public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.start_indoor_session) Button startIndoorSessionButton;
     @InjectView(R.id.start_outdoor_session) Button startOutdoorSessionButton;
-    @InjectView(R.id.cancel) Button cancelButton;
 
     @InjectView(R.id.session_title) EditText sessionTitle;
     @InjectView(R.id.session_tags) EditText sessionTags;
-    @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject Application context;
     @Inject ViewingSessionsManager viewingSessionsManager;
@@ -62,7 +60,6 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
 
         startIndoorSessionButton.setOnClickListener(this);
         startOutdoorSessionButton.setOnClickListener(this);
-        cancelButton.setOnClickListener(this);
     }
 
     @Override
@@ -74,10 +71,6 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
             }
             case R.id.start_outdoor_session: {
                 runLocationPicker();
-                break;
-            }
-            case R.id.cancel: {
-                finish();
                 break;
             }
         }
@@ -111,10 +104,9 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     private void startFixedSession(boolean isIndoor, LatLng latlng) {
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
-        String description = sessionDescription.getText().toString();
 
         Intents.startDashboardActivity(this);
-        viewingSessionsManager.startFixedSession(title, tags, description, isIndoor, latlng);
+        viewingSessionsManager.startFixedSession(title, tags, isIndoor, latlng);
         airbeam2Configurator.sendFinalAb2Config();
 
         finish();

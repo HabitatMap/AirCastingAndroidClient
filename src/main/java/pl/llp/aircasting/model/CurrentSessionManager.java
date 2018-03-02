@@ -121,9 +121,9 @@ public class CurrentSessionManager {
 
     public void updateSession(Session from) {
         Preconditions.checkNotNull(from.getId(), "Unsaved session?");
-        setTitleTagsDescription(from.getId(), from.getTitle(),
-                from.getTags(),
-                from.getDescription());
+        setTitleTags(from.getId(), from.getTitle(),
+                from.getTags()
+        );
     }
 
     public Note makeANote(Date date, String text, String picturePath) {
@@ -234,11 +234,11 @@ public class CurrentSessionManager {
         }
     }
 
-    public void startMobileSession(String title, String tags, String description, boolean locationLess) {
+    public void startMobileSession(String title, String tags, boolean locationLess) {
         Session newSession = new Session(false);
         newSession.setTitle(title);
         newSession.setTags(tags);
-        newSession.setDescription(description);
+        newSession.setDescription("");
 
         setSession(newSession);
 
@@ -293,10 +293,9 @@ public class CurrentSessionManager {
         notificationHelper.hideRecordingNotification();
     }
 
-    public void setTitleTagsDescription(long sessionId, String title, String tags, String description) {
+    public void setTitleTags(long sessionId, String title, String tags) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);
-        tracker.setDescription(sessionId, description);
     }
 
     public void updateNote(final Note currentNote) {

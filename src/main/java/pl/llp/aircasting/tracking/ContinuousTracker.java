@@ -76,10 +76,6 @@ public class ContinuousTracker {
         sessionTracker.setTags(sessionId, tags);
     }
 
-    public void setDescription(long sessionId, String description) {
-        sessionTracker.setDescription(sessionId, description);
-    }
-
     public void setContribute(long sessionId, boolean shouldContribute) {
         sessionTracker.setContribute(sessionId, shouldContribute);
     }

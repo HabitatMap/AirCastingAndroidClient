@@ -26,7 +26,7 @@
               android:orientation="vertical"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <LinearLayout style="@style/Wide"
                   android:padding="10dp"

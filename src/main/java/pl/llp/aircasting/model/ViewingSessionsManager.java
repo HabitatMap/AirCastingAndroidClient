@@ -82,13 +82,12 @@ public class ViewingSessionsManager {
         newFixedSession = new Session(true);
     }
 
-    public void startFixedSession(String title, String tags, String description, boolean isIndoor, LatLng latlng) {
+    public void startFixedSession(String title, String tags, boolean isIndoor, LatLng latlng) {
         if (newFixedSession == null) {
             createAndSetFixedSession();
         }
         newFixedSession.setTitle(title);
         newFixedSession.setTags(tags);
-        newFixedSession.setDescription(description);
         newFixedSession.setIndoor(isIndoor);
 
         if (latlng == null) {

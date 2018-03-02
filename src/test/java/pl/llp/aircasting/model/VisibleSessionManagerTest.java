@@ -117,7 +117,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldCreateMeasurementStreams()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     triggerMeasurement();
 
@@ -130,7 +130,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldCreateOnlyOneStreamPerSensor()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     triggerMeasurement();
     triggerMeasurement();
@@ -141,7 +141,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldCreateAStreamForEachSensor()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     triggerMeasurement();
     SensorEvent event = new SensorEvent("CERN", "LHC2", "Siggh boson", "SB", "number", "#", 1, 2, 3, 4, 5, 10);
@@ -154,7 +154,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldAllowAccessToAParticularStream()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     triggerMeasurement();
 
@@ -208,7 +208,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldStoreMeasurements()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     triggerMeasurement(22);
 
@@ -220,7 +220,7 @@ public class VisibleSessionManagerTest
   @Test
   public void measurements_withoutLocation_should_get_a_fake()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     currentSessionManager.currentSession.setLocationless(true);
     when(currentSessionManager.locationHelper.getLastLocation()).thenReturn(null);
 
@@ -283,7 +283,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldNotStopSensorsDuringASession()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     currentSessionManager.currentSessionSensorManager.stopSensors();
 
     verify(currentSessionManager.locationHelper, never()).stop();
@@ -294,7 +294,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldStartASession()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     verify(currentSessionManager.locationHelper, times(2)).start();
     verify(currentSessionManager.audioReader).start();
@@ -304,7 +304,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldDiscardASession()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     currentSessionManager.getCurrentSession().setId(1234);
 
     triggerMeasurement(13.5);
@@ -352,7 +352,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldSetSessionStart()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     int oneSecond = 1000;
     assertThat(new Date().getTime() - currentSessionManager.currentSession.getStart().getTime() < oneSecond, equalTo(true));
@@ -364,7 +364,7 @@ public class VisibleSessionManagerTest
     // given
 
     // when
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
 
     // then
     org.fest.assertions.Assertions.assertThat(currentSessionManager.state.recording().isRecording()).isTrue();
@@ -374,7 +374,7 @@ public class VisibleSessionManagerTest
   public void stopSession_should_changeRecordingState() throws Exception
   {
       // given
-      currentSessionManager.startMobileSession(title, tags, description, false);
+      currentSessionManager.startMobileSession(title, tags, false);
 
       // when
       currentSessionManager.stopSession();
@@ -387,7 +387,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldSetSessionEnd()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     triggerMeasurement();
 
     currentSessionManager.finishSession(0);
@@ -440,7 +440,7 @@ public class VisibleSessionManagerTest
   @Test
   public void shouldJustDeleteNotesIfSessionInProgress()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     Note note = currentSessionManager.makeANote(null, null, null);
 
     currentSessionManager.deleteNote(note);
@@ -451,7 +451,7 @@ public class VisibleSessionManagerTest
   @Test
   public void afterDeletingNotesShouldHaveNewNumbers()
   {
-    currentSessionManager.startMobileSession(title, tags, description, false);
+    currentSessionManager.startMobileSession(title, tags, false);
     Note note1 = currentSessionManager.makeANote(null, "Note1", null);
     Note note2 = currentSessionManager.makeANote(null, "Note2", null);
 

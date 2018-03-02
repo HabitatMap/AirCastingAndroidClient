@@ -6,7 +6,7 @@
               android:orientation="vertical"
     >
 
-  <include layout="@layout/toolbar"/>
+  <include layout="@layout/dialog_toolbar"/>
 
   <TextView android:text="@string/connected_sensors_label"
             android:layout_width="fill_parent"
@@ -20,24 +20,17 @@
 
   <ListView android:layout_height="wrap_content"
             android:layout_width="fill_parent"
+            android:divider="@color/lighter_gray"
+            android:dividerHeight="1dp"
             android:id="@+id/connected_sensors_list"
-      />
-
-  <TextView android:text="@string/paired_sensors_label"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/paired_sensors_label"
-            android:textSize="16dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
       />
 
   <ListView android:layout_height="wrap_content"
             android:layout_width="fill_parent"
+            android:divider="@color/lighter_gray"
+            android:dividerHeight="1dp"
             android:id="@+id/paired_sensor_list"
       />
-
 
   <Button android:text="@string/pair_with_new_devices"
           style="@style/DialogButton"

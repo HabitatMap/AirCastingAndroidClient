@@ -43,7 +43,6 @@ public class EditSessionActivity extends DialogActivity implements View.OnClickL
 
     @InjectView(R.id.session_title) EditText sessionTitle;
     @InjectView(R.id.session_tags) EditText sessionTags;
-    @InjectView(R.id.session_description) EditText sessionDescription;
 
     private Session session;
 
@@ -56,7 +55,6 @@ public class EditSessionActivity extends DialogActivity implements View.OnClickL
         session = (Session) getIntent().getSerializableExtra(Intents.SESSION);
         sessionTitle.setText(session.getTitle());
         sessionTags.setText(session.getTags());
-        sessionDescription.setText(session.getDescription());
 
         saveButton.setOnClickListener(this);
 
@@ -66,7 +64,6 @@ public class EditSessionActivity extends DialogActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         session.setTitle(sessionTitle.getText().toString());
-        session.setDescription(sessionDescription.getText().toString());
         session.setTags(sessionTags.getText().toString());
 
         Intent intent = new Intent();

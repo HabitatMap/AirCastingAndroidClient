@@ -21,7 +21,7 @@
 
   <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="22"/>
 
-  <!-- Settings -->d
+  <!-- Settings -->
   <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
 
   <!-- Permissions -->

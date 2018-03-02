@@ -67,6 +67,13 @@
         <item name="colorControlNormal">@android:color/white</item>
     </style>
 
+    <style name="AirCastingEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="colorControlActivated">@color/toolbar_blue</item>
+        <item name="colorControlHighlight">@color/toolbar_blue</item>
+    </style>
+
     <style name="Wide">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">fill_parent</item>

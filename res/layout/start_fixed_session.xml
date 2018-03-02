@@ -23,36 +23,30 @@
     style="@style/DialogMain"
     >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
-        android:text="@string/title_label"
-        />
-    <EditText style="@style/Wide"
-        android:singleLine="false"
-        android:gravity="top"
-        android:id="@+id/session_title"
-        />
+              android:textStyle="bold"
+              android:text="@string/title_label"
+    />
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
+              android:singleLine="false"
+              android:gravity="top"
+              android:id="@+id/session_title"
+    />
 
     <TextView style="@style/DialogText"
-        android:text="@string/tags_label"
-        />
-    <EditText style="@style/Wide"
-        android:lines="2"
-        android:singleLine="false"
-        android:gravity="top"
-        android:id="@+id/session_tags"
-        />
-
-    <TextView style="@style/DialogText"
-        android:text="@string/description_label"
-        />
-    <EditText style="@style/Wide"
-        android:lines="2"
-        android:singleLine="false"
-        android:gravity="top"
-        android:id="@+id/session_description"
-        />
+              android:textStyle="bold"
+              android:text="@string/tags_label"
+    />
+    <EditText style="@style/AirCastingEditText"
+              android:theme="@style/AirCastingEditText"
+              android:lines="2"
+              android:singleLine="false"
+              android:gravity="top"
+              android:id="@+id/session_tags"
+    />
 
     <Button style="@style/DialogButton"
         android:text="@string/start_indoor_session"
@@ -61,9 +55,5 @@
     <Button style="@style/DialogButton"
         android:text="@string/start_outdoor_session"
         android:id="@+id/start_outdoor_session"
-        />
-    <Button style="@style/DialogButton"
-        android:text="@string/cancel"
-        android:id="@+id/cancel"
         />
 </LinearLayout>

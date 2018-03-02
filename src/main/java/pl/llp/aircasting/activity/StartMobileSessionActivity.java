@@ -18,12 +18,10 @@ import roboguice.inject.InjectView;
  * Created by radek on 04/09/17.
  */
 public class StartMobileSessionActivity extends DialogActivity implements View.OnClickListener {
-    @InjectView(R.id.cancel) Button cancelButton;
     @InjectView(R.id.start_session) Button startButton;
 
     @InjectView(R.id.session_title) EditText sessionTitle;
     @InjectView(R.id.session_tags) EditText sessionTags;
-    @InjectView(R.id.session_description) EditText sessionDescription;
 
     @Inject Application context;
     @Inject CurrentSessionManager currentSessionManager;
@@ -37,7 +35,6 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
         setContentView(R.layout.start_mobile_session);
         initDialogToolbar("Session Details");
 
-        cancelButton.setOnClickListener(this);
         startButton.setOnClickListener(this);
     }
 
@@ -47,26 +44,22 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
             case R.id.start_session:
                 startMobileSession();
                 break;
-            case R.id.cancel:
-                finish();
-                break;
-        }
+       }
     }
 
     private void startMobileSession() {
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
-        String description = sessionDescription.getText().toString();
 
         if (settingsHelper.areMapsDisabled()) {
-            currentSessionManager.startMobileSession(title, tags, description, true);
+            currentSessionManager.startMobileSession(title, tags, true);
         } else {
             if (locationHelper.getLastLocation() == null) {
-                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, description, this, delegate, currentSessionManager, true);
+                RecordWithoutGPSAlert recordAlert = new RecordWithoutGPSAlert(title, tags, this, delegate, currentSessionManager, true);
                 recordAlert.display();
                 return;
             } else {
-                currentSessionManager.startMobileSession(title, tags, description, false);
+                currentSessionManager.startMobileSession(title, tags, false);
                 showWarnings();
             }
         }

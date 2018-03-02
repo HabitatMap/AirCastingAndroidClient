@@ -23,26 +23,30 @@
               style="@style/DialogMain"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/username_or_email"
             />
-    <EditText style="@style/Wide"
+    <EditText android:theme="@style/AirCastingEditText"
+              style="@style/AirCastingEditText"
               android:id="@+id/login"
               android:inputType="textEmailAddress"
             />
 
     <TextView style="@style/DialogText"
+              android:textStyle="bold"
               android:text="@string/password"
             />
-    <EditText style="@style/Wide"
+    <EditText android:theme="@style/AirCastingEditText"
+              style="@style/AirCastingEditText"
               android:id="@+id/password"
               android:inputType="textPassword"
             />
 
     <Button style="@style/DialogButton"
-            android:text="@string/ok"
+            android:text="@string/submit"
             android:id="@+id/ok"
             />
 

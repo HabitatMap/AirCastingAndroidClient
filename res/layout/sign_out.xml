@@ -23,13 +23,8 @@
               style="@style/DialogMain"
         >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:id="@+id/summary"
-              android:textSize="15dp"
-              android:padding="10dp"
-            />
     <Button style="@style/DialogButton"
             android:id="@+id/sign_out"
             android:text="@string/sign_out"

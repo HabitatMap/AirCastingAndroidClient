@@ -32,10 +32,8 @@ class AdapterInteractor {
         pairedSensorAdapter.updateIfNecessary();
         if (pairedSensorAdapter.getCount() > 0) {
             parent.findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);
-            parent.findViewById(R.id.paired_sensors_label).setVisibility(View.VISIBLE);
         } else {
             parent.findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
-            parent.findViewById(R.id.paired_sensors_label).setVisibility(View.GONE);
         }
         if (connectedSensorAdapter.getCount() > 0) {
             parent.findViewById(R.id.connected_sensors_label).setVisibility(View.VISIBLE);

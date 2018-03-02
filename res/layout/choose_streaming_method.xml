@@ -22,7 +22,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
 >
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/dialog_toolbar"/>
 
     <Button style="@style/DialogButton"
             android:text="@string/wifi"
