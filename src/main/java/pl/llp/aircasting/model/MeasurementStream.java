@@ -141,7 +141,6 @@ public class MeasurementStream implements Serializable {
     }
 
     private double calculateSamplingFrequency(double divisor) {
-
         double deltaSum = 0;
         List<Measurement> sample = getFirstMeasurements(10);
 
@@ -228,7 +227,7 @@ public class MeasurementStream implements Serializable {
     }
 
     public double getFrequency(double divisor) {
-            frequency = calculateSamplingFrequency(divisor);
+        frequency = calculateSamplingFrequency(divisor);
         return frequency;
     }
 

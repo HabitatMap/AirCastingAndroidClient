@@ -1,6 +1,5 @@
 package pl.llp.aircasting.storage;
 
-import android.util.Log;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.SaveOrDiscardRestoredSessionActivity;
