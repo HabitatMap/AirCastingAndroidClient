@@ -19,6 +19,8 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.app.AlertDialog;
+import android.content.*;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatCallback;
 import android.support.v7.view.ActionMode;
@@ -44,10 +46,6 @@ import pl.llp.aircasting.storage.repository.SessionRepository;
 
 import android.app.Application;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -232,10 +230,19 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
         Intents.editSession(this, session);
     }
 
-    private void deleteSession(long id) {
-        sessionRepository.markSessionForRemoval(id);
-
-        refreshList();
+    private void deleteSession(final long id) {
+        AlertDialog.Builder b = new AlertDialog.Builder(SessionsActivity.this);
+        b.setMessage("Delete session?").
+                setCancelable(true).
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sessionRepository.markSessionForRemoval(id);
+                        refreshList();
+                    }
+                }).setNegativeButton("No", NoOp.dialogOnClick());
+        AlertDialog dialog = b.create();
+        dialog.show();
     }
 
     private void viewSession(long id) {
