@@ -42,7 +42,6 @@ public class Sensor implements Serializable
          stream.getThresholdHigh(), stream.getThresholdVeryHigh(), stream.getAddress(), sessionId);
   }
 
-
   public Sensor(String packageName, String name, String type, String shortType, String unit, String symbol,
                 int veryLow, int low, int mid, int high, int veryHigh, String address, long sessionId)
   {
@@ -175,13 +174,5 @@ public class Sensor implements Serializable
 
   void toggle() {
     enabled = !enabled;
-  }
-
-  void disable() {
-    enabled = false;
-  }
-
-  void enable() {
-    enabled = true;
   }
 }

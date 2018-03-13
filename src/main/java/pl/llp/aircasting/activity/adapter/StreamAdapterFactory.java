@@ -1,6 +1,5 @@
 package pl.llp.aircasting.activity.adapter;
 
-import android.view.View;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.helper.DashboardChartManager;
@@ -8,7 +7,6 @@ import pl.llp.aircasting.helper.SessionDataFactory;
 import pl.llp.aircasting.helper.SessionState;
 import pl.llp.aircasting.helper.StreamViewHelper;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
-import pl.llp.aircasting.model.CurrentSessionManager;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
