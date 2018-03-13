@@ -9,6 +9,7 @@ import android.view.*;
 import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
@@ -63,7 +64,7 @@ public class DashboardActivity extends DashboardBaseActivity {
                 return;
             }
 
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(adapterFactory, settingsHelper);
+            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(settingsHelper);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
         }
     }
@@ -72,6 +73,11 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    @NotNull
+    public StreamAdapterFactory getAdapterFactory() {
+        return adapterFactory;
     }
 
     @Override

@@ -33,14 +33,14 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private StreamAdapter adapter;
     private SettingsHelper settingsHelper;
     private Context context;
+    private DashboardActivity activity;
 
     public DashboardListFragment() {
     }
 
-    public static DashboardListFragment newInstance(StreamAdapterFactory adapterFactory,
-                                                    SettingsHelper settingsHelper) {
+    public static DashboardListFragment newInstance(SettingsHelper settingsHelper) {
         DashboardListFragment fragment = new DashboardListFragment();
-        fragment.setData(adapterFactory, settingsHelper);
+        fragment.setData(settingsHelper);
 
         return fragment;
     }
@@ -56,7 +56,9 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         airbeam2ConfigButton = (Button) view.findViewById(R.id.configure_airbeam2);
 
         context = getActivity();
-        adapter = adapterFactory.getAdapter((DashboardBaseActivity) context);
+        activity = (DashboardActivity) context;
+        adapterFactory = activity.getAdapterFactory();
+        adapter = adapterFactory.getAdapter(activity);
 
         setListAdapter(adapter);
 
@@ -71,12 +73,15 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     public void onResume() {
         super.onResume();
 
+        adapterFactory = activity.getAdapterFactory();
+        adapter = adapterFactory.getAdapter(activity);
+
         setListAdapter(adapter);
+
         adapter.forceUpdate();
 
         getListView().setOnItemClickListener(this);
 
-        adapter = adapterFactory.getAdapter((DashboardBaseActivity) context);
 
         adapter.resetAllStaticCharts();
         adapter.start();
@@ -96,7 +101,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
                 activity.connectPhoneMicrophone();
                 activity.reloadNavigationDrawer();
                 setListAdapter(adapter);
-//                state.dashboardState.populate();
                 activity.invalidateOptionsMenu();
                 break;
             case R.id.dashboard_sensors:
@@ -112,8 +116,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         }
     }
 
-    private void setData(StreamAdapterFactory adapterFactory, SettingsHelper settingsHelper) {
-        this.adapterFactory = adapterFactory;
+    private void setData(SettingsHelper settingsHelper) {
         this.settingsHelper = settingsHelper;
     }
 
