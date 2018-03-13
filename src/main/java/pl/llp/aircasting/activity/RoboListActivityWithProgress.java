@@ -27,7 +27,6 @@ import roboguice.activity.RoboListActivity;
  * Time: 3:19 PM
  */
 public class RoboListActivityWithProgress extends RoboListActivity implements ActivityWithProgress, AppCompatCallback {
-    @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject NavigationDrawerHelper navigationDrawerHelper;
     @Inject Context context;

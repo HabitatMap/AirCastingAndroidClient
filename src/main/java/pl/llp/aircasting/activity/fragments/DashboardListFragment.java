@@ -82,7 +82,6 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         getListView().setOnItemClickListener(this);
 
-
         adapter.resetAllStaticCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
