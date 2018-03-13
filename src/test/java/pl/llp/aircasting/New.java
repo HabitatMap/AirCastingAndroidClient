@@ -47,7 +47,7 @@ public class New
   }
 
   public static Sensor sensor() {
-    return new Sensor(sensorEvent());
+    return new Sensor(sensorEvent(), Constants.CURRENT_SESSION_FAKE_ID);
   }
 
   public static SensorEvent sensorEvent(String sensorName, double value)

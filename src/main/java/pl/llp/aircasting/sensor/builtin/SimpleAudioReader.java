@@ -47,7 +47,7 @@ public class SimpleAudioReader extends AudioReader.Listener {
   public static final int VERY_HIGH = 100;
 
   public static final Sensor sensor = new Sensor(
-      SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH, SENSOR_ADDRESS_BUILTIN
+      SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL, VERY_LOW, LOW, MID, HIGH, VERY_HIGH, SENSOR_ADDRESS_BUILTIN, Constants.CURRENT_SESSION_FAKE_ID
   );
 
   @Inject SettingsHelper settingsHelper;
