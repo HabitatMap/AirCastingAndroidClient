@@ -61,7 +61,7 @@ public class StreamAdapter extends SimpleAdapter {
                     .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId));
 
             if (streamsReordered.get(leftSessionId) == true) {
-                result = chain.compare(getPosition(left, leftSessionId), getPosition(right, leftSessionId)).result();
+                result = chain.compare(getPosition(left), getPosition(right)).result();
             } else {
                 result = chain.compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
             }
@@ -221,8 +221,8 @@ public class StreamAdapter extends SimpleAdapter {
         Sensor s1 = (Sensor) item1.get(SENSOR);
         Sensor s2 = (Sensor) item2.get(SENSOR);
         Long sessionId = (Long) item1.get(SESSION_ID);
-        String positionKey1 = getPositionKey(sessionId, s1);
-        String positionKey2 = getPositionKey(sessionId, s2);
+        String positionKey1 = s1.toString();
+        String positionKey2 = s2.toString();
 
         positions.put(positionKey1, pos2);
         positions.put(positionKey2, pos1);
@@ -397,24 +397,20 @@ public class StreamAdapter extends SimpleAdapter {
         int currentPosition = 0;
         for (Map<String, Object> map : data) {
             Sensor sensor = (Sensor) map.get(SENSOR);
-            String positionKey = getPositionKey((Long) map.get(SESSION_ID), sensor);
+            String positionKey = sensor.toString();
             positions.put(positionKey, Integer.valueOf(currentPosition));
             currentPosition++;
         }
     }
 
-    private int getPosition(Map<String, Object> stream, long sessionId) {
+    private int getPosition(Map<String, Object> stream) {
         Sensor sensor = (Sensor) stream.get(SENSOR);
-        String positionKey = getPositionKey(sessionId, sensor);
+        String positionKey = sensor.toString();
         Integer position = positions.get(positionKey);
         if (position == null) {
             return 0;
         }
         return position.intValue();
-    }
-
-    private String getPositionKey(Long sessionId, Sensor sensor) {
-        return sessionId + "_" + sensor.toString();
     }
 
     private void updateSessionPosition(long sessionId) {

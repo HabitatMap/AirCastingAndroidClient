@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import pl.llp.aircasting.util.Constants;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,7 +40,7 @@ public class VisibleSessionSensorManagerTest
     currentSessionManager.state = new ApplicationState();
 
     sensorEvent = New.sensorEvent();
-    SOME_SENSOR = new Sensor(sensorEvent);
+    SOME_SENSOR = new Sensor(sensorEvent, Constants.CURRENT_SESSION_FAKE_ID);
 
     currentSessionSensorManager.onEvent(sensorEvent);
   }

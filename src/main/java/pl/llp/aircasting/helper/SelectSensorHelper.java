@@ -66,7 +66,7 @@ public class SelectSensorHelper {
     return Lists.transform(sensors, new Function<Sensor, String>() {
       @Override
       public String apply(@Nullable Sensor input) {
-        return input.toString();
+        return input.toSensorString();
       }
     }).toArray(new String[]{});
   }

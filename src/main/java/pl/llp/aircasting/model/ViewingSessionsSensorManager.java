@@ -43,6 +43,7 @@ public class ViewingSessionsSensorManager {
     @Subscribe
     public void onEvent(SessionLoadedForViewingEvent event) {
         Session session = event.getSession();
+        long sessionId = session.getId();
         boolean newFixedSession = event.isNewFixedSession();
         Map<SensorName, Sensor> sessionSensors = viewingSessionsSensors.get(session.getId());
 
@@ -53,7 +54,7 @@ public class ViewingSessionsSensorManager {
         if (newFixedSession) {
             addPlaceholderStream(session);
         } else {
-            deletePlaceholderSensor(session.getId());
+            deletePlaceholderSensor(sessionId);
         }
 
         for (MeasurementStream stream : session.getMeasurementStreams()) {
@@ -61,13 +62,13 @@ public class ViewingSessionsSensorManager {
                 continue;
             }
 
-            Sensor sensor = new Sensor(stream);
+            Sensor sensor = new Sensor(stream, sessionId);
             sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
         }
 
         viewingSessionsSensors.put(session.getId(), sessionSensors);
 
-        eventBus.post(new SessionSensorsLoadedEvent(session.getId()));
+        eventBus.post(new SessionSensorsLoadedEvent(sessionId));
     }
 
     @Subscribe

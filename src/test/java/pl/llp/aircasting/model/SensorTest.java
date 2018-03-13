@@ -9,6 +9,7 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import pl.llp.aircasting.util.Constants;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -23,7 +24,7 @@ public class SensorTest
   public void setup()
   {
     event = New.sensorEvent();
-    sensor = new Sensor(event);
+    sensor = new Sensor(event, Constants.CURRENT_SESSION_FAKE_ID);
   }
 
   @Test
