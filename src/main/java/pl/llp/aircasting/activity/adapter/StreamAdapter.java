@@ -85,7 +85,6 @@ public class StreamAdapter extends SimpleAdapter {
     private LineChart chart;
     public int streamDeleteMessage;
 
-    // these are static to retain after activity recreation
     private static Map<String, Integer> positions = newHashMap();
     private static Map<Long, Integer> sessionPositions = newHashMap();
     private static TreeMap<Integer, Long> sortedSessionPositions = new TreeMap<Integer, Long>();
@@ -93,6 +92,7 @@ public class StreamAdapter extends SimpleAdapter {
     private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static Map<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
     private static boolean reorderInProgress = false;
+    private static boolean updateAllowed = false;
 
     public StreamAdapter(DashboardBaseActivity context,
                          List<Map<String, Object>> data,
@@ -168,7 +168,7 @@ public class StreamAdapter extends SimpleAdapter {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!reorderInProgress) {
+                if (!reorderInProgress && updateAllowed) {
                     update(true);
                 }
             }
@@ -182,6 +182,8 @@ public class StreamAdapter extends SimpleAdapter {
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);
+
+        prepareData();
 
         if (sensorsCount > 0) {
             sessionStreamCount.put(sessionId, sessionData.getSessionSensorsCount(sessionId));
@@ -207,11 +209,13 @@ public class StreamAdapter extends SimpleAdapter {
         if (event.areSessionsCleared()) {
             sortedSessionPositions.clear();
             sessionPositions.clear();
+            prepareData();
         }
         update(false);
     }
 
     public void forceUpdate() {
+        prepareData();
         update(false);
     }
 
@@ -309,12 +313,6 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void update(boolean onlyCurrentStreams) {
-        if (!onlyCurrentStreams) {
-            data.clear();
-        }
-
-        prepareData(onlyCurrentStreams);
-
         sort(data, comparator);
         preparePositions();
 
@@ -342,14 +340,15 @@ public class StreamAdapter extends SimpleAdapter {
         streamViewHelper.setPositionsWithTitle(positionsWithTitle);
     }
 
-    private void prepareData(boolean onlyCurrentStreams) {
-        Map<Long, Map<SensorName, Sensor>> allSensors = newHashMap();
+    private void prepareData() {
+        updateAllowed = false;
+
+        data.clear();
+
+        Map<Long, Map<SensorName, Sensor>> allSensors;
         Map<SensorName, Sensor> currentSensors = currentSessionSensorManager.getSensorsMap();
 
-        if (!onlyCurrentStreams) {
-            allSensors = viewingSessionsSensorManager.getAllViewingSensors();
-        }
-
+        allSensors = viewingSessionsSensorManager.getAllViewingSensors();
         allSensors.put(Constants.CURRENT_SESSION_FAKE_ID, currentSensors);
 
         if (allSensors.isEmpty()) {
@@ -375,11 +374,9 @@ public class StreamAdapter extends SimpleAdapter {
                 HashMap<String, Object> map = new HashMap<String, Object>();
 
                 map.put(SESSION_ID, sessionId);
-                map.put(QUANTITY, sensor.getMeasurementType() + " - " + sensor.getSymbol());
                 map.put(SENSOR_NAME, sensor.getSensorName());
                 map.put(SENSOR, sensor);
 
-                data.remove(map);
                 data.add(map);
             }
 
@@ -387,6 +384,7 @@ public class StreamAdapter extends SimpleAdapter {
                 streamsReordered.put(sessionId, false);
             }
         }
+        updateAllowed = true;
     }
 
     private boolean sensorIsHidden(Sensor sensor, @Nullable List<String> clearedStreamsForSession) {
@@ -456,6 +454,7 @@ public class StreamAdapter extends SimpleAdapter {
 
         clearViewingSessionIfNeeded(sessionId, clearedStreamsForSession.size());
         streamsReordered.put(sessionId, true);
+        prepareData();
         update(false);
     }
 
@@ -512,6 +511,7 @@ public class StreamAdapter extends SimpleAdapter {
                         sessionData.deleteSession(sessionId);
                         cleanupSession(sessionId);
                         Intents.triggerSync(context);
+                        prepareData();
                         update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
@@ -528,6 +528,7 @@ public class StreamAdapter extends SimpleAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         sessionData.deleteSensorStream(sensor, sessionId);
                         Intents.triggerSync(context);
+                        prepareData();
                         update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());

@@ -81,6 +81,7 @@ public class CurrentSessionSensorManager {
             if (!currentSessionSensors.containsKey(name)) {
                 currentSessionSensors.put(name, sensor);
                 eventBus.post(new SensorConnectedEvent());
+                eventBus.post(new SessionSensorsLoadedEvent(Constants.CURRENT_SESSION_FAKE_ID));
             }
         }
     }
