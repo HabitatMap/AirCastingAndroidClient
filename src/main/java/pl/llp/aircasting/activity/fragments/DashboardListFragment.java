@@ -36,6 +36,8 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private Context context;
     private DashboardActivity activity;
     private ListView listView;
+    private int index = 0;
+    private int top = 0;
 
     public DashboardListFragment() {
     }
@@ -89,11 +91,17 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
         adapter.start();
         adapter.notifyDataSetChanged();
         adapter.setStartFakeActivity();
+
+        listView.setSelectionFromTop(index, top);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+        index = listView.getFirstVisiblePosition();
+        View v = listView.getChildAt(0);
+        top = (v == null) ? 0 : (v.getTop() - listView.getPaddingTop());
 
         adapter.stopFakeActivityCallback();
     }
