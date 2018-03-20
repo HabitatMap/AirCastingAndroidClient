@@ -33,9 +33,7 @@ public class Airbeam2Configurator {
     private static final byte UUID_CODE = (byte) 0x04;
     private static final byte AUTH_TOKEN_CODE = (byte) 0x05;
     private static final byte LAT_LNG_CODE = (byte) 0x06;
-    // for testing purposes only
-    private static final byte SENSOR_PACKAGE_CODE = (byte) 0x07;
-    private int sleepTime = 2000;
+
     private String wifiSSID;
     private String wifiPassword;
 
@@ -54,6 +52,18 @@ public class Airbeam2Configurator {
         streamingMethod = WIFI_CODE;
         wifiSSID = ssid;
         wifiPassword = password;
+    }
+
+    public void sendUUIDAndAuthToken(UUID uuid, String authToken) {
+        sendUUID(uuid);
+        sendAuthToken(authToken);
+    }
+
+    public void sendFinalAb2Config() {
+        sendLatLng();
+        configureStreamingMethod();
+        sleepFor(4000);
+        disconnectAirBeam2();
     }
 
     public void sendUUID(UUID uuid) {
@@ -80,16 +90,6 @@ public class Airbeam2Configurator {
         sendMessage(authTokenMessage);
     }
 
-    public void sendFinalAb2Config() {
-        sendLatLng();
-        sleepFor(sleepTime);
-        sendPackageName();
-        sleepFor(sleepTime);
-        configureStreamingMethod();
-        sleepFor(3000);
-        disconnectAirBeam2();
-    }
-
     private void disconnectAirBeam2() {
         Iterable<ExternalSensorDescriptor> descriptors = settingsHelper.knownSensors();
 
@@ -112,7 +112,7 @@ public class Airbeam2Configurator {
             lng = 200;
         }
 
-        String rawLatLngStr = lat + "," + lng;
+        String rawLatLngStr = lng + "," + lat;
         byte[] latLngMessage = buildMessage(rawLatLngStr, LAT_LNG_CODE);
 
         sendMessage(latLngMessage);
@@ -187,19 +187,6 @@ public class Airbeam2Configurator {
 
     private void sendMessage(final byte[] message) {
         eventBus.post(new Airbeam2ConfigMessageEvent(message));
-    }
-
-    public void sendPackageName() {
-        String rawPackageNameStr = "AirBeam:";
-        byte[] message = buildMessage(rawPackageNameStr, SENSOR_PACKAGE_CODE);
-
-        sendMessage(message);
-    }
-
-    public void sendUUIDAndAuthToken(UUID uuid, String authToken) {
-        sendUUID(uuid);
-        sleepFor(sleepTime);
-        sendAuthToken(authToken);
     }
 
     private void sleepFor(long sleepTime) {

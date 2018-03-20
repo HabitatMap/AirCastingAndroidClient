@@ -45,7 +45,7 @@ public class LineDataReader implements BluetoothSocketReader {
             event.setAddress(getAddress());
             eventBus.post(event);
         } catch (ParseException e) {
-            Logger.e("External sensor error", e);
+//            Logger.e("External sensor error", e);
         }
     }
 
