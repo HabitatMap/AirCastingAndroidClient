@@ -1,8 +1,8 @@
 package pl.llp.aircasting.activity.adapter;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.widget.Button;
-import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -12,6 +12,7 @@ import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.FakeActivity;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
@@ -29,6 +30,7 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.util.Constants;
 
 import java.util.*;
+import java.util.List;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.sort;
@@ -38,6 +40,7 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String SENSOR_NAME = "sensorName";
     public static final String SENSOR = "sensor";
     public static final String SESSION_ID = "session_id";
+    private static final int INTERVAL = 60000;
 
     private static final String[] FROM = new String[]{
             QUANTITY, SENSOR_NAME
@@ -82,7 +85,6 @@ public class StreamAdapter extends SimpleAdapter {
     ApplicationState state;
 
     private List<Map<String, Object>> data;
-    private LineChart chart;
     public int streamDeleteMessage;
 
     private static Map<String, Integer> positions = newHashMap();
@@ -93,6 +95,8 @@ public class StreamAdapter extends SimpleAdapter {
     private static Map<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
     private static boolean reorderInProgress = false;
     private static boolean updateAllowed = false;
+    private static Handler handler = new Handler();
+    private static boolean shouldRunFakeActivity = false;
 
     public StreamAdapter(DashboardBaseActivity context,
                          List<Map<String, Object>> data,
@@ -198,7 +202,30 @@ public class StreamAdapter extends SimpleAdapter {
                 update(false);
             }
         });
+
+        setStartFakeActivity();
     }
+
+    public void setStartFakeActivity() {
+        shouldRunFakeActivity = true;
+    }
+
+    public void stopFakeActivityCallback() {
+        shouldRunFakeActivity = false;
+    }
+
+    private Runnable startFakeActivity = new Runnable() {
+        @Override
+        public void run() {
+            // pretty ugly way to make the GC run in update() successful
+            if (!reorderInProgress && !data.isEmpty() && shouldRunFakeActivity) {
+                context.startActivity(new Intent(context, FakeActivity.class));
+                update(true);
+            }
+            handler.removeCallbacksAndMessages(null);
+            handler.postDelayed(startFakeActivity, INTERVAL);
+        }
+    };
 
     @Subscribe
     public void onEvent(ToggleSessionReorderEvent event) {
@@ -242,10 +269,10 @@ public class StreamAdapter extends SimpleAdapter {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> item = data.get(position);
         final Sensor sensor = (Sensor) item.get(SENSOR);
+        String sensorName = sensor.getSensorName();
         final long sessionId = (Long) item.get(SESSION_ID);
         view.setTag(R.id.session_id_tag, sessionId);
 
-        chart = (LineChart) view.findViewById(R.id.chart);
         final Button moveSessionDown = (Button) view.findViewById(R.id.session_down);
         final Button moveSessionUp = (Button) view.findViewById(R.id.session_up);
 
@@ -273,9 +300,9 @@ public class StreamAdapter extends SimpleAdapter {
             });
         }
 
+        dashboardChartManager.drawChart(view, sensor, sessionId);
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
-        dashboardChartManager.drawChart(chart, sensor, sessionId);
-        chart.invalidate();
+
         context.invalidateOptionsMenu();
 
         return view;
@@ -317,6 +344,10 @@ public class StreamAdapter extends SimpleAdapter {
         preparePositions();
 
         setSessionTitles();
+
+        System.gc();
+        System.gc();
+        System.gc();
 
         notifyDataSetChanged();
     }

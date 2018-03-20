@@ -2,6 +2,7 @@ package pl.llp.aircasting.helper;
 
 import android.content.Context;
 import android.os.Handler;
+import android.view.View;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -84,55 +85,51 @@ public class DashboardChartManager {
         }
     }
 
-    public void drawChart(LineChart chart, final Sensor sensor, long sessionId) {
+    public void drawChart(View view, final Sensor sensor, long sessionId) {
         requestedSensorName = sensor.getSensorName();
         requestedSessionId = sessionId;
         MeasurementStream stream = getStream();
         isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
         isSessionFixed = sessionData.getSession(sessionId).isFixed();
         requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
+        LineChart chart = (LineChart) view.findViewById(R.id.chart);
 
-        draw(chart);
         chart.clear();
+        draw(chart);
 
         if (stream == null) {
             return;
         }
 
-        initStaticChart(stream);
-        updateChart(chart, sensor.getSymbol());
+        if (shouldStaticChartInitialize()) {
+            initStaticChart(stream);
+        }
+
+        updateChartData(chart, sensor.getSymbol());
     }
 
     private void initStaticChart(MeasurementStream stream) {
-        if (isSessionFixed) {
-            Session session = sessionData.getSession(requestedSessionId);
-            List<Entry> entries = ChartAveragesCreator.getFixedEntries(session, stream);
-            averages.put(getKey(requestedSessionId, stream.getSensorName()), Lists.reverse(entries));
-        } else if (!isSessionFixed && !isSessionCurrent && shouldStaticChartInitialize()) {
+        if (!isSessionCurrent) {
+            if (isSessionFixed) {
+                Session session = sessionData.getSession(requestedSessionId);
+                List<Entry> entries = ChartAveragesCreator.getFixedEntries(session, stream);
+                averages.put(getKey(requestedSessionId, stream.getSensorName()), Lists.reverse(entries));
+            } else if (!isSessionFixed && shouldStaticChartInitialize()) {
+                List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
+                averages.put(requestedStreamKey, Lists.reverse(entries));
+            }
 
-            List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
-            averages.put(requestedStreamKey, Lists.reverse(entries));
             staticChartGeneratedForStream.put(requestedStreamKey, true);
         }
     }
 
-    private void updateChart(LineChart chart, String unitSymbol) {
-        updateChartData(chart, unitSymbol);
-        chart.notifyDataSetChanged();
-    }
-
     private void updateChartData(LineChart chart, String unitSymbol) {
-        LineData lineData = chart.getLineData();
-
-        if (lineData == null) {
-            lineData = new LineData();
-        }
-
         List<Entry> entries = getEntriesForCurrentStream();
         if (entries == null || entries.isEmpty()) {
             return;
         }
 
+        LineData lineData = new LineData();
         LineDataSet dataSet = prepareDataSet(unitSymbol);
 
         lineData.removeDataSet(0);
@@ -140,6 +137,9 @@ public class DashboardChartManager {
         lineData.setValueFormatter(new MyValueFormatter());
 
         chart.setData(lineData);
+
+        chart.notifyDataSetChanged();
+        chart.invalidate();
     }
 
     private void draw(LineChart chart) {
@@ -201,14 +201,11 @@ public class DashboardChartManager {
     private void allowChartUpdate() {
         List<MeasurementStream> streams = (List) currentSessionManager.getMeasurementStreams();
 
-        if (dynamicAveragesCount < MAX_AVERAGES_AMOUNT) {
-            dynamicAveragesCount++;
-        }
-
         for (MeasurementStream stream : streams) {
-
+            String streamKey = getKey(Constants.CURRENT_SESSION_FAKE_ID, stream.getSensorName());
             List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
-            averages.put(getKey(Constants.CURRENT_SESSION_FAKE_ID, stream.getSensorName()), Lists.reverse(entries));
+
+            averages.put(streamKey, Lists.reverse(entries));
         }
     }
 

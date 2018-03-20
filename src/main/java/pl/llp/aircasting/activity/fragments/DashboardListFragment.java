@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -34,6 +35,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     private SettingsHelper settingsHelper;
     private Context context;
     private DashboardActivity activity;
+    private ListView listView;
 
     public DashboardListFragment() {
     }
@@ -73,6 +75,7 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
     public void onResume() {
         super.onResume();
 
+        listView = getListView();
         adapterFactory = activity.getAdapterFactory();
         adapter = adapterFactory.getAdapter(activity);
 
@@ -80,16 +83,19 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         adapter.forceUpdate();
 
-        getListView().setOnItemClickListener(this);
+        listView.setOnItemClickListener(this);
 
         adapter.resetAllStaticCharts();
         adapter.start();
         adapter.notifyDataSetChanged();
+        adapter.setStartFakeActivity();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+        adapter.stopFakeActivityCallback();
     }
 
     @Override
