@@ -1,18 +1,9 @@
 package pl.llp.aircasting.model;
 
-import android.content.Context;
-import android.widget.Toast;
-import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
-import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.helper.VisibleSession;
-import pl.llp.aircasting.helper.ResourceHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.events.MeasurementLevelEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
@@ -38,12 +29,10 @@ import static com.google.common.collect.Sets.newHashSet;
 
 @Singleton
 public class CurrentSessionSensorManager {
-    @Inject ResourceHelper resourceHelper;
     @Inject ExternalSensors externalSensors;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
     @Inject ApplicationState state;
-    @Inject VisibleSession visibleSession;
     @Inject SimpleAudioReader audioReader;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
@@ -58,21 +47,13 @@ public class CurrentSessionSensorManager {
 
     @Subscribe
     public void onEvent(SensorEvent event) {
-        // IOIO
-        Sensor currentSensor = visibleSession.getSensor();
-        if (visibleSession.getSession() != null && currentSensor.matches(getSensorByName(event.getSensorName()))) {
-            double now = (int) currentSessionManager.getNow(currentSensor);
-            MeasurementLevel level = resourceHelper.getLevel(currentSensor, now);
-            eventBus.post(new MeasurementLevelEvent(currentSensor, level));
-        }
-        // end of IOIO
 
         if (currentSessionSensors.containsKey(SensorName.from(event.getSensorName()))) {
             return;
         }
 
         if (externalSensors.knows(event.getAddress())) {
-            Sensor sensor = new Sensor(event);
+            Sensor sensor = new Sensor(event, Constants.CURRENT_SESSION_FAKE_ID);
             if (disabled.contains(sensor)) {
                 sensor.toggle();
             }
@@ -181,10 +162,5 @@ public class CurrentSessionSensorManager {
         }
 
         currentSessionSensors = newSensors;
-        String sensorName = visibleSession.getSensor().getSensorName();
-
-        if (!currentSessionSensors.containsKey(SensorName.from(sensorName))) {
-            visibleSession.setSensor(AUDIO_SENSOR.getSensorName());
-        }
     }
 }

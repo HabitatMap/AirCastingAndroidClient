@@ -1,10 +1,12 @@
 package pl.llp.aircasting.helper;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.activity.events.CurrentSessionSetEvent;
 import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.*;
@@ -21,7 +23,6 @@ import static com.google.inject.internal.Lists.newArrayList;
 @Singleton
 public class VisibleSession {
     @Inject EventBus eventBus;
-    @Inject SessionDataFactory sessionDataFactory;
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
 
@@ -29,13 +30,30 @@ public class VisibleSession {
     private Session session;
     private Sensor sensor;
 
-    public void setSession(@NotNull Long sessionId) {
-        this.session = sessionDataFactory.getSession(sessionId);
+    @Inject
+    public VisibleSession(EventBus eventBus, ApplicationState state, CurrentSessionManager currentSessionManager) {
+        this.eventBus = eventBus;
+        this.state = state;
+        this.currentSessionManager = currentSessionManager;
+    }
+
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
+
+    @Subscribe
+    public void onEvent(CurrentSessionSetEvent event) {
+        this.session = event.getSession();
+    }
+
+    public void setSession(@NotNull Session session) {
+        this.session = session;
         eventBus.post(new VisibleSessionUpdatedEvent(session));
     }
 
-    public void setSensor(@NotNull String sensorName) {
-        this.sensor = sessionDataFactory.getSensor(sensorName, getVisibleSessionId());
+    public void setSensor(@NotNull Sensor sensor) {
+        this.sensor = sensor;
         eventBus.post(new VisibleStreamUpdatedEvent(sensor));
     }
 

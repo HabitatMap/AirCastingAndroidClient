@@ -21,6 +21,7 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.activity.ApplicationState;
+import pl.llp.aircasting.activity.events.CurrentSessionSetEvent;
 import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
@@ -75,7 +76,6 @@ public class CurrentSessionManager {
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
     @Inject ApplicationState state;
-    @Inject VisibleSession visibleSession;
 
     @NotNull Session currentSession = new Session();
 
@@ -108,7 +108,7 @@ public class CurrentSessionManager {
     public void setSession(@NotNull Session session) {
         Preconditions.checkNotNull(session, "Cannot set null session");
         this.currentSession = session;
-        visibleSession.setSession(Constants.CURRENT_SESSION_FAKE_ID);
+        eventBus.post(new CurrentSessionSetEvent(session));
     }
 
     public boolean isSessionRecording() {
