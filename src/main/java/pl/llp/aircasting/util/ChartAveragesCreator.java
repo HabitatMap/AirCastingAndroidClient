@@ -2,11 +2,11 @@ package pl.llp.aircasting.util;
 
 import com.github.mikephil.charting.data.Entry;
 import com.google.common.collect.Lists;
+import com.google.inject.Singleton;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.view.presenter.MeasurementAggregator;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by radek on 27/02/18.
  */
+@Singleton
 public class ChartAveragesCreator {
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MINUTES_IN_HOUR = 60;
@@ -21,29 +22,35 @@ public class ChartAveragesCreator {
     private final static int MAX_X_VALUE = 8;
     private final static double MOBILE_FREQUENCY_DIVISOR = 8 * 1000;
     private final static double FIXED_FREQUENCY_DIVISOR = 8 * 1000 * 60;
+    private static List oldEntries = new CopyOnWriteArrayList();
 
-    public static List getMobileEntries(MeasurementStream stream) {
-        List<List<Measurement>> periodData;
+    public synchronized static List getMobileEntries(MeasurementStream stream) {
+        final ArrayList<List<Measurement>> periodData;
         double streamFrequency = stream.getFrequency(MOBILE_FREQUENCY_DIVISOR);
         double xValue = MAX_X_VALUE;
         int measurementsInPeriod = (int) (INTERVAL_IN_SECONDS / streamFrequency);
 
-        Logger.w("frequency " + streamFrequency);
-        Logger.w("measurements in period " + measurementsInPeriod);
-
         List entries = new CopyOnWriteArrayList();
-        List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
-        periodData = new ArrayList(Lists.partition(measurements, (int) measurementsInPeriod));
 
-        Logger.w("period data size " + periodData.size());
-        if (periodData.size() > 0) {
-            synchronized (periodData) {
-                for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
-                    Logger.w("datachunk size " + dataChunk.size());
-                    if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
-                        double yValue = getAverage(dataChunk);
-                        entries.add(new Entry((float) xValue, (float) yValue));
-                        xValue--;
+        final List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
+        periodData = new ArrayList(Lists.partition(measurements, measurementsInPeriod));
+        final List<List<Measurement>> reversedPeriodData = Lists.reverse(periodData);
+
+        synchronized (reversedPeriodData) {
+            Logger.w(stream.getSensorName());
+            if (periodData.size() > 0) {
+                for (int i = 0; i < reversedPeriodData.size(); i++) {
+                   try {
+                        List<Measurement> dataChunk = Collections.synchronizedList(reversedPeriodData.get(i));
+                        synchronized (dataChunk) {
+                            if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
+                                double yValue = getAverage(dataChunk);
+                                entries.add(new Entry((float) xValue, (float) yValue));
+                                xValue--;
+                            }
+                        }
+                    } catch (ConcurrentModificationException e) {
+                        return oldEntries;
                     }
                 }
             }
@@ -53,6 +60,7 @@ public class ChartAveragesCreator {
             return entries;
         }
 
+        oldEntries = entries;
         return entries;
     }
 
@@ -80,9 +88,8 @@ public class ChartAveragesCreator {
         }
 
         if (periodData.size() > 0) {
-            Logger.w("period data size " + periodData.size());
-            synchronized (periodData) {
-                for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
+            for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
+                synchronized (dataChunk) {
                     double yValue = getAverage(dataChunk);
                     entries.add(new Entry((float) xValue, (float) yValue));
                     xValue--;
@@ -101,14 +108,24 @@ public class ChartAveragesCreator {
         return 0.1 * measurementsInPeriod;
     }
 
-    private static double getAverage(List<Measurement> measurements) {
-        MeasurementAggregator aggregator = new MeasurementAggregator();
+    private static int getAverage(List<Measurement> measurements) {
+        double sum = 0;
+        int lastIndex = 1;
+        List<Measurement> m = Collections.synchronizedList(measurements);
+        int size = m.size();
 
-        for (int i = 0; i < measurements.size(); i++) {
-            aggregator.add(measurements.get(i));
-        }
+            synchronized (m) {
+                try {
+                    for (int i = 0; i < size; i++) {
+                        lastIndex = i;
+                        sum += m.get(i).getValue();
+                    }
+                } catch (ConcurrentModificationException e) {
+                    return (int) sum / lastIndex;
+                }
+            }
 
-        return Math.round(aggregator.getAverage().getValue());
+        return (int) (sum / size);
     }
 
     private static List<List<Measurement>> getPeriodData(List<Measurement> measurements, double streamFrequency) {

@@ -5,11 +5,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static pl.llp.aircasting.model.internal.MeasurementLevel.*;
 
 public class MeasurementStream implements Serializable {
@@ -142,7 +144,7 @@ public class MeasurementStream implements Serializable {
 
     private double calculateSamplingFrequency(double divisor) {
         double deltaSum = 0;
-        List<Measurement> sample = getFirstMeasurements(10);
+        final ArrayList<Measurement> sample =  newArrayList(getFirstMeasurements(10));
 
         for (int i = 0; i < sample.size() - 1; i++) {
             double delta = sample.get(i + 1).getTime().getTime() - sample.get(i).getTime().getTime();
