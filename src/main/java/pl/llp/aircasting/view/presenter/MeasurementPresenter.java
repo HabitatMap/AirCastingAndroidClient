@@ -60,7 +60,8 @@ import static java.util.Collections.sort;
 public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final long MIN_ZOOM = 120000;
     private static final long SCROLL_TIMEOUT = 1000;
-    private static final int MAX_NUMBER_OF_MEASUREMENTS = 1440;
+    private static final int MAX_FIXED_MEASUREMENTS = 1440;
+    private static final int MAX_MOBILE_MEASUREMENTS = 86400;
 
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
@@ -89,7 +90,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private Sensor sensor = SimpleAudioReader.getSensor();
-    private Session session;
 
     @Inject
     public void init() {
@@ -176,9 +176,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Subscribe
     public void onEvent(VisibleSessionUpdatedEvent event) {
         this.sensor = visibleSession.getSensor();
-        this.session = event.getSession();
         reset();
-        anchor = 0;
+//        anchor = 0;
+        fixAnchor();
     }
 
     @Subscribe
@@ -205,7 +205,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         if (stream == null) {
             measurements = newArrayList();
         } else {
-            measurements = stream.getLastMeasurements(MAX_NUMBER_OF_MEASUREMENTS, 0);
+            int amount = visibleSession.isVisibleSessionFixed() ? MAX_FIXED_MEASUREMENTS : MAX_MOBILE_MEASUREMENTS;
+            measurements = stream.getLastMeasurements(amount, 0);
         }
 
         ImmutableListMultimap<Long, Measurement> forAveraging =
