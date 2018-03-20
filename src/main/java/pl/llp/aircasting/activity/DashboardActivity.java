@@ -206,8 +206,11 @@ public class DashboardActivity extends DashboardBaseActivity {
         String sensorName = (String) sensorTitle.getText();
         Long sessionId = (Long) view.getTag(R.id.session_id_tag);
 
-        visibleSession.setSession(sessionId);
-        visibleSession.setSensor(sensorName);
+        Session session = sessionData.getSession(sessionId);
+        Sensor sensor = sessionData.getSensor(sensorName, sessionId);
+
+        visibleSession.setSession(session);
+        visibleSession.setSensor(sensor);
 
         startActivity(new Intent(context, StreamOptionsActivity.class));
     }

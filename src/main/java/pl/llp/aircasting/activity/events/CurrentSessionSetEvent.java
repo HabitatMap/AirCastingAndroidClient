@@ -1,8 +1,18 @@
 package pl.llp.aircasting.activity.events;
 
+import pl.llp.aircasting.model.Session;
+
 /**
  * Created by radek on 03/11/17.
  */
 public class CurrentSessionSetEvent {
-    public CurrentSessionSetEvent() {}
+    private Session session;
+
+    public CurrentSessionSetEvent(Session session) {
+        this.session = session;
+    }
+
+    public Session getSession() {
+        return session;
+    }
 }
