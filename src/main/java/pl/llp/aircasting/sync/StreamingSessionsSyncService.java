@@ -4,19 +4,18 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.ViewingSessionsManager;
-import pl.llp.aircasting.model.events.SensorEvent;
 import roboguice.service.RoboIntentService;
 
-import java.util.Collection;
+import java.util.ArrayList;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Created by radek on 23/01/18.
@@ -42,14 +41,15 @@ public class StreamingSessionsSyncService extends RoboIntentService {
     }
 
     private void sync() {
-        Collection<Session> sessions = viewingSessionsManager.getFixedSessions();
+        final ArrayList<Session> sessions = newArrayList(viewingSessionsManager.getFixedSessions());
+        int size = sessions.size();
 
         synchronized (sessions) {
-            for (Session session : sessions) {
-                driver.downloadNewData(session, NoOp.progressListener());
+            for (int i = 0; i < size; i++) {
+                driver.downloadNewData(sessions.get(i), NoOp.progressListener());
             }
         }
-   }
+    }
 
     private boolean canDownload() {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
