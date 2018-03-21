@@ -1,6 +1,7 @@
 package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.*;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Created by radek on 20/10/17.
  */
+@Singleton
 public class SessionDataFactory {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
