@@ -1,6 +1,7 @@
 package pl.llp.aircasting.helper;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.model.CurrentSessionManager;
@@ -10,6 +11,7 @@ import pl.llp.aircasting.util.Constants;
 /**
  * Created by radek on 08/11/17.
  */
+@Singleton
 public class SessionState {
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
