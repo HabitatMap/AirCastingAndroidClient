@@ -275,11 +275,6 @@ public class CurrentSessionManager {
         cleanup();
     }
 
-    public void resetSession(long sessionId) {
-        tracker.stopTracking();
-        cleanup();
-    }
-
     public void deleteSession() {
         Long sessionId = currentSession.getId();
         sessionRepository.markSessionForRemoval(sessionId);

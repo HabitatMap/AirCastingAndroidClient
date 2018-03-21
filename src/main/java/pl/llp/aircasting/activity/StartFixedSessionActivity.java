@@ -94,8 +94,6 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
                 Place place = PlacePicker.getPlace(data, this);
                 LatLng latlng = place.getLatLng();
 
-
-
                 startFixedSession(false, latlng);
             }
         }

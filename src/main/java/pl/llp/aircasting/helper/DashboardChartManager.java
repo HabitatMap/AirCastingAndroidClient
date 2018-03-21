@@ -37,11 +37,9 @@ public class DashboardChartManager {
     @Inject SessionDataFactory sessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
-    private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static String FIXED_LABEL = "1 hr avg";
     private final static String MOBILE_LABEL = "1 min avg";
-    private static int dynamicAveragesCount = 0;
     private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
     private static Map<String, List> averages = newHashMap();
     private static String requestedSensorName;
@@ -70,7 +68,6 @@ public class DashboardChartManager {
     }
 
     private void resetState() {
-        dynamicAveragesCount = 0;
         averages.clear();
         resetAllStaticCharts();
     }
