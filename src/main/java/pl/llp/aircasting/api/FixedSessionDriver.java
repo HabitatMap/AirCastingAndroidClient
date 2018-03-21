@@ -100,7 +100,6 @@ public class FixedSessionDriver {
         String uuid = session.getUUID().toString();
         Date lastMeasurementSyncTime = session.getLastMeasurementSyncTime();
         HttpResult<Session> result = syncMeasurements(uuid, lastMeasurementSyncTime);
-        Log.w("last meas date is ", getFormattedDate(lastMeasurementSyncTime));
 
         if (result.getStatus() == Status.SUCCESS) {
             Session downloadedSession = result.getContent();
