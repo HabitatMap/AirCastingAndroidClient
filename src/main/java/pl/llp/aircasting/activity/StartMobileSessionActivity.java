@@ -19,6 +19,7 @@ import roboguice.inject.InjectView;
  */
 public class StartMobileSessionActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.start_session) Button startButton;
+    @InjectView(R.id.start_session_and_share) Button startAndShareButton;
 
     @InjectView(R.id.session_title) EditText sessionTitle;
     @InjectView(R.id.session_tags) EditText sessionTags;
@@ -36,6 +37,12 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
         initDialogToolbar("Session Details");
 
         startButton.setOnClickListener(this);
+
+        if (settingsHelper.isContributingToCrowdMap()) {
+            startAndShareButton.setVisibility(View.GONE);
+        } else {
+            startAndShareButton.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -44,7 +51,11 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
             case R.id.start_session:
                 startMobileSession();
                 break;
-       }
+            case R.id.start_session_and_share:
+                settingsHelper.setContributeToCrowdmap(true);
+                startMobileSession();
+                break;
+        }
     }
 
     private void startMobileSession() {

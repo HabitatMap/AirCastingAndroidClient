@@ -49,4 +49,8 @@
             android:text="@string/start_session"
             android:id="@+id/start_session"/>
 
+    <Button style="@style/DialogButton"
+            android:text="@string/start_session_and_share"
+            android:id="@+id/start_session_and_share"/>
+
 </LinearLayout>
