@@ -23,6 +23,7 @@ public class ChartAveragesCreator {
     private final static double MOBILE_FREQUENCY_DIVISOR = 8 * 1000;
     private final static double FIXED_FREQUENCY_DIVISOR = 8 * 1000 * 60;
     private static List oldEntries = new CopyOnWriteArrayList();
+    private static boolean usePreviousEntry = false;
 
     public synchronized static List getMobileEntries(MeasurementStream stream) {
         final ArrayList<List<Measurement>> periodData;
@@ -30,21 +31,26 @@ public class ChartAveragesCreator {
         double xValue = MAX_X_VALUE;
         int measurementsInPeriod = (int) (INTERVAL_IN_SECONDS / streamFrequency);
 
-        List entries = new CopyOnWriteArrayList();
+        List<Entry> entries = new CopyOnWriteArrayList();
 
         final List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
         periodData = new ArrayList(Lists.partition(measurements, measurementsInPeriod));
         final List<List<Measurement>> reversedPeriodData = Lists.reverse(periodData);
 
         synchronized (reversedPeriodData) {
-            Logger.w(stream.getSensorName());
             if (periodData.size() > 0) {
                 for (int i = 0; i < reversedPeriodData.size(); i++) {
-                   try {
+                    double yValue;
+                    try {
                         List<Measurement> dataChunk = Collections.synchronizedList(reversedPeriodData.get(i));
                         synchronized (dataChunk) {
                             if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
-                                double yValue = getAverage(dataChunk);
+                                yValue = getAverage(dataChunk);
+                                if (usePreviousEntry) {
+                                    yValue = entries.get(i - 1).getY();
+                                    usePreviousEntry = false;
+                                }
+
                                 entries.add(new Entry((float) xValue, (float) yValue));
                                 xValue--;
                             }
@@ -121,7 +127,12 @@ public class ChartAveragesCreator {
                         sum += m.get(i).getValue();
                     }
                 } catch (ConcurrentModificationException e) {
-                    return (int) sum / lastIndex;
+                    if (lastIndex == 0) {
+                        usePreviousEntry = true;
+                        return (int) sum;
+                    } else {
+                        return (int) sum / lastIndex;
+                    }
                 }
             }
 
@@ -133,16 +144,11 @@ public class ChartAveragesCreator {
         List<List<Measurement>> result = new ArrayList<List<Measurement>>();
         Calendar calendar = GregorianCalendar.getInstance();
 
-        Logger.w("measurements count " + measurements.size());
-        Logger.w("frequency " + streamFrequency);
-
         if (measurements.isEmpty()) {
             return result;
         }
 
         for (int i = 0; i < MAX_AVERAGES_AMOUNT; i++) {
-            Logger.w("first index " + firstMeasurementIndex);
-
             if (measurements.size() > firstMeasurementIndex) {
                 int cutoff;
                 List<Measurement> measurementsFromHour;
@@ -155,8 +161,6 @@ public class ChartAveragesCreator {
                     cutoff = (int) (MINUTES_IN_HOUR / streamFrequency);
                 }
                 int lastMeasurementIndex = firstMeasurementIndex + cutoff;
-                Logger.w("cutoff " + cutoff);
-                Logger.w("last meas index " + lastMeasurementIndex);
 
                 try {
                     measurementsFromHour = measurements.subList(firstMeasurementIndex, lastMeasurementIndex);
@@ -174,20 +178,11 @@ public class ChartAveragesCreator {
                     int lastMeasurementMinutes = calendar.get(Calendar.MINUTE);
                     double cutoffOffset = 0;
 
-                    Logger.w("meas in hour cout " + measurementsInHourCount);
-                    Logger.w("first meas hour " + firstMeasurementHour);
-                    Logger.w("last meas hour " + lastMeasurementHour);
-                    Logger.w("first meas minutes " + minutes);
-                    Logger.w("last meas minutes " + lastMeasurementMinutes);
-
                     if (isAcceptableValue(lastMeasurementMinutes)) {
-                        Logger.w("acceptable");
                         result.add(measurementsFromHour);
                     } else {
                         cutoffOffset = getCutoffOffset(firstMeasurementHour, lastMeasurementHour, lastMeasurementMinutes, streamFrequency);
                         cutoff = (int) (cutoff + cutoffOffset);
-
-                        Logger.w("cutoff offset " + cutoffOffset);
 
                         try {
                             measurementsFromHour = measurements.subList(firstMeasurementIndex, firstMeasurementIndex + cutoff);
