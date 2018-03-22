@@ -252,6 +252,7 @@
   <string name="fixed_session">Fixed</string>
   <string name="fixed_session_creation_failed">Session could not be created on the web server.</string>
   <string name="start_session">Start Session</string>
+  <string name="start_session_and_share">Start &amp; Share to CrowdMap</string>
   <string name="start_mobile_session">Start Mobile Session</string>
   <string name="start_fixed_session">Start Fixed-location Session</string>
   <string name="start_indoor_session">Start Indoor Session</string>
