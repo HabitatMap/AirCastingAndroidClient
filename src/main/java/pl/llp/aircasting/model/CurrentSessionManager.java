@@ -238,7 +238,6 @@ public class CurrentSessionManager {
         Session newSession = new Session(false);
         newSession.setTitle(title);
         newSession.setTags(tags);
-        newSession.setDescription("");
 
         setSession(newSession);
 

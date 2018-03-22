@@ -130,7 +130,7 @@
   <string name="choose_streaming_method">Choose Streaming Method</string>
   <string name="note">Note</string>
   <string name="sign_out">Sign Out</string>
-  <string name="contribute_to_crowd_map">Contribute to CrowdMap</string>
+  <string name="contribute_to_crowd_map">Share to CrowdMap</string>
   <string name="forgot_password">Forgot Password</string>
   <string name="reset_email_sent">An email with further instructions has been sent</string>
   <string name="account_does_not_exist">An account with this email does not exist</string>
