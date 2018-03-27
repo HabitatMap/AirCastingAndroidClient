@@ -290,7 +290,6 @@ public class StreamAdapter extends SimpleAdapter {
         View view = super.getView(position, convertView, parent);
         Map<String, Object> item = data.get(position);
         final Sensor sensor = (Sensor) item.get(SENSOR);
-        String sensorName = sensor.getSensorName();
         final long sessionId = (Long) item.get(SESSION_ID);
         view.setTag(R.id.session_id_tag, sessionId);
 
