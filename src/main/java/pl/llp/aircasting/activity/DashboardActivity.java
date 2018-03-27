@@ -26,6 +26,8 @@ import static pl.llp.aircasting.Intents.stopSensors;
 
 public class DashboardActivity extends DashboardBaseActivity {
     private static final long POLLING_INTERVAL = 60000;
+    private static final String LIST_FRAGMENT_TAG = "list_fragment";
+    private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
@@ -54,18 +56,18 @@ public class DashboardActivity extends DashboardBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            viewingSessionsManager.restoreSessions(savedInstanceState.getLongArray(VIEWING_SESSIONS_IDS));
+        }
+
         Intents.startDatabaseWriterService(context);
         setContentView(R.layout.dashboard);
         initToolbar("Dashboard");
         initNavigationDrawer();
 
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-
             DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(settingsHelper);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment, LIST_FRAGMENT_TAG).commit();
         }
     }
 
@@ -111,6 +113,13 @@ public class DashboardActivity extends DashboardBaseActivity {
         super.onPause();
         stopSensors(context);
         handler.removeCallbacks(pollServerTask);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLongArray(VIEWING_SESSIONS_IDS, viewingSessionsManager.getSessionIds());
     }
 
     @Subscribe

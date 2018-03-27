@@ -66,11 +66,22 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
         setListAdapter(adapter);
 
+        if (savedInstanceState != null) {
+            adapter.restoreAdapterState(savedInstanceState);
+        }
+
         if (microphoneButton != null) { microphoneButton.setOnClickListener(this); }
         if (sensorsButton != null) { sensorsButton.setOnClickListener(this); }
         if (airbeam2ConfigButton != null) { airbeam2ConfigButton.setOnClickListener(this); }
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        adapter.saveAdapterState(outState);
     }
 
     @Override
