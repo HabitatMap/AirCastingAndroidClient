@@ -68,10 +68,9 @@ public class ToggleAircastingManager {
             currentSessionManager.stopSession();
 
             if(session.isLocationless()) {
-                currentSessionManager.finishSession(sessionId);
+                currentSessionManager.finishSession(sessionId, false);
             } else if (settingsHelper.isContributingToCrowdMap()) {
-                currentSessionManager.setContribute(sessionId, true);
-                currentSessionManager.finishSession(sessionId);
+                currentSessionManager.finishSession(sessionId, true);
             }
         }
     }

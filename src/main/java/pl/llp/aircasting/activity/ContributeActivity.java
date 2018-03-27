@@ -72,8 +72,7 @@ public class ContributeActivity extends DialogActivity
       @Override
       public void onClick(View v)
       {
-        currentSessionManager.setContribute(sessionId, true);
-        saveSession(sessionId);
+        currentSessionManager.finishSession(sessionId, true);
         finish();
       }
     });
@@ -82,8 +81,7 @@ public class ContributeActivity extends DialogActivity
       @Override
       public void onClick(View v)
       {
-        currentSessionManager.setContribute(sessionId, false);
-        saveSession(sessionId);
+        currentSessionManager.finishSession(sessionId, false);
         finish();
       }
     });
@@ -94,11 +92,5 @@ public class ContributeActivity extends DialogActivity
   {
     currentSessionManager.continueSession();
     finish();
-  }
-
-  private void saveSession(long sessionId)
-  {
-    //noinspection unchecked
-    currentSessionManager.finishSession(sessionId);
   }
 }

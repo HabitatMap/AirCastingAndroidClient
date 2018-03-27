@@ -147,10 +147,6 @@ public class CurrentSessionManager {
         }
     }
 
-    public void setContribute(long sessionId, boolean shouldContribute) {
-        tracker.setContribute(sessionId, shouldContribute);
-    }
-
     @Subscribe
     public synchronized void onEvent(SensorEvent event) {
         double value = event.getValue();
@@ -260,8 +256,9 @@ public class CurrentSessionManager {
         eventBus.post(new SessionStoppedEvent(getCurrentSession()));
     }
 
-    public void finishSession(long sessionId) {
+    public void finishSession(long sessionId, boolean shouldContribute) {
         synchronized (this) {
+            tracker.setContribute(sessionId, shouldContribute);
             tracker.complete(sessionId);
             Intents.triggerSync(applicationContext);
         }

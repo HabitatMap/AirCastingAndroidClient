@@ -98,11 +98,10 @@ public class SaveSessionActivity extends DialogActivity implements View.OnClickL
         fillSessionDetails(sessionId);
         Session session = currentSessionManager.getCurrentSession();
         if(session.isLocationless()) {
-          currentSessionManager.finishSession(sessionId);
+          currentSessionManager.finishSession(sessionId, false);
         }
         else if (settingsHelper.isContributingToCrowdMap()) {
-          currentSessionManager.setContribute(sessionId, true);
-          currentSessionManager.finishSession(sessionId);
+          currentSessionManager.finishSession(sessionId, true);
         }
         else {
           Intents.contribute(this, sessionId);
