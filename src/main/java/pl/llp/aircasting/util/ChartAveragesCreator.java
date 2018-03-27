@@ -45,11 +45,13 @@ public class ChartAveragesCreator {
                         synchronized (dataChunk) {
                             if (dataChunk.size() > measurementsInPeriod - getTolerance(measurementsInPeriod)) {
                                 yValue = getAverage(dataChunk);
-                                if (usePreviousEntry) {
+                                if (usePreviousEntry && !entries.isEmpty()) {
                                     yValue = entries.get(i - 1).getY();
-                                    usePreviousEntry = false;
+                                } else if (usePreviousEntry && entries.isEmpty()) {
+                                    yValue = measurements.get(0).getValue();
                                 }
 
+                                usePreviousEntry = false;
                                 entries.add(new Entry((float) xValue, (float) yValue));
                                 xValue--;
                             }
