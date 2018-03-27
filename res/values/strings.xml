@@ -234,6 +234,7 @@
   <string name="cannot_delete_stream">You can\'t clear or delete this stream - you should view a session or start streaming a new one</string>
   <string name="retrieving_streams">Retrieving streams, please wait</string>
   <string name="enter_text">Please enter text</string>
+  <string name="session_retrieved">AirCasting crashed, but your session was saved</string>
 
   <string name="center_map">Center Map</string>
   <string name="record_session">Start Recording</string>

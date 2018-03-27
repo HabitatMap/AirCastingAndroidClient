@@ -322,7 +322,7 @@ public class VisibleSessionManagerTest
   public void shouldStopASession()
   {
     triggerMeasurement(11);
-    currentSessionManager.finishSession(0);
+    currentSessionManager.finishSession(0, true);
 
     verify(currentSessionManager.audioReader, never()).stop();
     verify(currentSessionManager.locationHelper).stop();
@@ -390,7 +390,7 @@ public class VisibleSessionManagerTest
     currentSessionManager.startMobileSession(title, tags, false);
     triggerMeasurement();
 
-    currentSessionManager.finishSession(0);
+    currentSessionManager.finishSession(0, true);
 
     verify(currentSessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
@@ -415,7 +415,7 @@ public class VisibleSessionManagerTest
   public void shouldSaveAdditionalData()
   {
     triggerMeasurement(100);
-    currentSessionManager.finishSession(0);
+    currentSessionManager.finishSession(0, true);
 
     verify(currentSessionManager.sessionRepository).save(Mockito.argThat(new BaseMatcher<Session>()
     {
