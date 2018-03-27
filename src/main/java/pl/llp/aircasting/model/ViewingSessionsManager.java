@@ -10,16 +10,15 @@ import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
+import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.FixedSessionDriver;
-import pl.llp.aircasting.helper.ToastHelper;
+import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.model.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
@@ -32,7 +31,6 @@ import static pl.llp.aircasting.model.ViewingSessionsSensorManager.PLACEHOLDER_S
 public class ViewingSessionsManager {
     @Inject SessionRepository sessionRepository;
     @Inject EventBus eventBus;
-    @Inject ApplicationState state;
     @Inject ContinuousTracker tracker;
     @Inject FixedSessionDriver fixedSessionDriver;
     @Inject Context context;
@@ -86,6 +84,17 @@ public class ViewingSessionsManager {
         Intents.triggerSync(context);
     }
 
+    public void restoreSessions(long[] savedIds) {
+        if (savedIds == null || savedIds.length == 0) {
+            return;
+        }
+
+        for (int i = 0; i < savedIds.length; i++) {
+            view(savedIds[i], NoOp.progressListener());
+            Logger.w(String.valueOf(savedIds[i]));
+        }
+    }
+
     public void createAndSetFixedSession() {
         newFixedSession = new Session(true);
     }
@@ -123,6 +132,18 @@ public class ViewingSessionsManager {
 
     public Collection<Session> getFixedSessions() {
         return fixedSessions.values();
+    }
+
+    public long[] getSessionIds() {
+        long[] l = new long[sessionsForViewing.size()];
+        Set<Long> set = sessionsForViewing.keySet();
+        List<Long> list = new ArrayList<Long>(set);
+
+        for (int i = 0; i < sessionsForViewing.size(); i++) {
+            l[i] = list.get(i);
+        }
+
+        return l;
     }
 
     public void setStreamingSession(Session session) {

@@ -1,6 +1,7 @@
 package pl.llp.aircasting.activity.adapter;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
 import com.google.common.collect.ComparisonChain;
@@ -40,6 +41,10 @@ public class StreamAdapter extends SimpleAdapter {
     public static final String SENSOR_NAME = "sensorName";
     public static final String SENSOR = "sensor";
     public static final String SESSION_ID = "session_id";
+    public static final String POSITIONS = "positions";
+    public static final String SESSION_STREAM_COUNT = "session_stream_count";
+    public static final String CLEARED_STREAMS = "cleared_streams";
+    public static final String STREAMS_REORDERED = "streams_reordered";
     private static final int INTERVAL = 60000;
 
     private static final String[] FROM = new String[]{
@@ -87,12 +92,12 @@ public class StreamAdapter extends SimpleAdapter {
     private List<Map<String, Object>> data;
     public int streamDeleteMessage;
 
-    private static Map<String, Integer> positions = newHashMap();
-    private static Map<Long, Integer> sessionPositions = newHashMap();
+    private static HashMap<String, Integer> positions = newHashMap();
+    private static HashMap<Long, Integer> sessionPositions = newHashMap();
     private static TreeMap<Integer, Long> sortedSessionPositions = new TreeMap<Integer, Long>();
-    private static Map<Long, Integer> sessionStreamCount = newHashMap();
-    private static Map<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
-    private static Map<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
+    private static HashMap<Long, Integer> sessionStreamCount = newHashMap();
+    private static HashMap<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
+    private static HashMap<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
     private static boolean reorderInProgress = false;
     private static boolean updateAllowed = false;
     private static Handler handler = new Handler();
@@ -133,6 +138,22 @@ public class StreamAdapter extends SimpleAdapter {
      */
     public void stop() {
         eventBus.unregister(this);
+    }
+
+    public void saveAdapterState(Bundle outState) {
+        outState.putSerializable(POSITIONS, positions);
+        outState.putSerializable(SESSION_STREAM_COUNT, sessionStreamCount);
+        outState.putSerializable(CLEARED_STREAMS, clearedStreams);
+        outState.putSerializable(STREAMS_REORDERED, streamsReordered);
+    }
+
+    public void restoreAdapterState(Bundle state) {
+        positions = (HashMap<String, Integer>) state.getSerializable(POSITIONS);
+        sessionStreamCount = (HashMap<Long, Integer>) state.getSerializable(SESSION_STREAM_COUNT);
+        clearedStreams = (HashMap<Long, List<String>>) state.getSerializable(CLEARED_STREAMS);
+        streamsReordered = (HashMap<Long, Boolean>) state.getSerializable(STREAMS_REORDERED);
+
+        update(false);
     }
 
     public void resetAllStaticCharts() {
