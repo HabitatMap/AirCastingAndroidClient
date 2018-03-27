@@ -3,7 +3,6 @@ package pl.llp.aircasting.util;
 import com.github.mikephil.charting.data.Entry;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;

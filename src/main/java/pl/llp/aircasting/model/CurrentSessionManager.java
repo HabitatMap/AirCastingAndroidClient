@@ -26,7 +26,6 @@ import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
-import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -51,7 +50,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import pl.llp.aircasting.util.Constants;
 
 import java.util.Collection;
 import java.util.Date;

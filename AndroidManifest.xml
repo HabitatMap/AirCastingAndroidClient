@@ -58,8 +58,6 @@
 
     <activity android:label="@string/session_details" android:name=".activity.SaveSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/session_details" android:name=".activity.SaveOrDiscardRestoredSessionActivity" android:theme="@style/Dialog"/>
-
     <activity android:label="@string/session_details" android:name=".activity.EditSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".activity.SettingsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>

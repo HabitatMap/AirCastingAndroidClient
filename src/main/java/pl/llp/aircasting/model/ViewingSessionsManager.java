@@ -2,7 +2,6 @@ package pl.llp.aircasting.model;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
