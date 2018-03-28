@@ -221,6 +221,10 @@ public class DashboardActivity extends DashboardBaseActivity {
         visibleSession.setSession(session);
         visibleSession.setSensor(sensor);
 
-        startActivity(new Intent(context, StreamOptionsActivity.class));
+        if (session.isFixed() && session.isIndoor()) {
+            startActivity(new Intent(context, GraphActivity.class));
+        } else {
+            startActivity(new Intent(context, StreamOptionsActivity.class));
+        }
     }
 }
