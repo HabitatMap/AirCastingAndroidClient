@@ -370,7 +370,12 @@ public class StreamAdapter extends SimpleAdapter {
         System.gc();
         System.gc();
 
-        notifyDataSetChanged();
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     private void setSessionTitles() {
@@ -409,7 +414,7 @@ public class StreamAdapter extends SimpleAdapter {
 
         for (Map.Entry<Long, Map<SensorName, Sensor>> entry : allSensors.entrySet()) {
             int hiddenStreamsSize = 0;
-            Long sessionId = entry.getKey();
+            final Long sessionId = entry.getKey();
             Map<SensorName, Sensor> sensors = entry.getValue();
             List clearedStreamsForSession = clearedStreams.get(sessionId);
             if (clearedStreamsForSession != null) {
@@ -418,18 +423,23 @@ public class StreamAdapter extends SimpleAdapter {
 
             sessionStreamCount.put(sessionId, sensors.size() - hiddenStreamsSize);
 
-            for (Sensor sensor : sensors.values()) {
+            for (final Sensor sensor : sensors.values()) {
                 if (sensorIsHidden(sensor, clearedStreamsForSession)) {
                     continue;
                 }
 
-                HashMap<String, Object> map = new HashMap<String, Object>();
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        HashMap<String, Object> map = new HashMap<String, Object>();
 
-                map.put(SESSION_ID, sessionId);
-                map.put(SENSOR_NAME, sensor.getSensorName());
-                map.put(SENSOR, sensor);
+                        map.put(SESSION_ID, sessionId);
+                        map.put(SENSOR_NAME, sensor.getSensorName());
+                        map.put(SENSOR, sensor);
 
-                data.add(map);
+                         data.add(map);
+                    }
+                });
             }
 
             if (streamsReordered.get(sessionId) == null) {
