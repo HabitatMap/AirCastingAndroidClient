@@ -153,6 +153,7 @@ public class StreamAdapter extends SimpleAdapter {
         clearedStreams = (HashMap<Long, List<String>>) state.getSerializable(CLEARED_STREAMS);
         streamsReordered = (HashMap<Long, Boolean>) state.getSerializable(STREAMS_REORDERED);
 
+        prepareData();
         update(false);
     }
 

@@ -92,6 +92,10 @@ public class ViewingSessionsManager {
             view(savedIds[i], NoOp.progressListener());
             Logger.w(String.valueOf(savedIds[i]));
         }
+
+        for (Map.Entry<Long, Session> entry : sessionsForViewing.entrySet()) {
+            notifyNewSession(entry.getValue(), false);
+        }
     }
 
     public void createAndSetFixedSession() {
