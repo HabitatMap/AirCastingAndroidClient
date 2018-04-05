@@ -34,6 +34,7 @@
 
   <Button android:text="@string/pair_with_new_devices"
           style="@style/DialogButton"
+          android:background="@color/dashboard_background"
           android:layout_height="wrap_content"
           android:layout_width="fill_parent"
           android:id="@+id/pair_with_new_sensors_button"

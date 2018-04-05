@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity.extsens;
 
+import android.widget.ListView;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
@@ -36,7 +37,10 @@ class AdapterInteractor {
             parent.findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
         }
         if (connectedSensorAdapter.getCount() > 0) {
-            parent.findViewById(R.id.connected_sensors_label).setVisibility(View.VISIBLE);
+            ListView lv = (ListView) parent.findViewById(R.id.connected_sensors_list);
+            lv.addFooterView(new View(parent), null, true);
+            lv.setVisibility(View.VISIBLE);
+
             parent.findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
         } else {
             parent.findViewById(R.id.connected_sensors_label).setVisibility(View.GONE);
