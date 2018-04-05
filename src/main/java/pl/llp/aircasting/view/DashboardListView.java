@@ -30,6 +30,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -193,8 +194,8 @@ public class DashboardListView extends ListView {
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(ContextCompat.getColor(context, R.color.toolbar_blue));
         paint.setStrokeWidth(LINE_THICKNESS);
-        paint.setColor(R.color.toolbar_blue);
 
         can.drawBitmap(bitmap, 0, 0, null);
         can.drawRect(rect, paint);
