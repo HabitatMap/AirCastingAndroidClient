@@ -116,6 +116,7 @@ public class StreamViewHelper {
         if (sessionState.isSessionCurrent(sessionId)) {
             timestamp.setVisibility(View.GONE);
         } else {
+            timestamp.setVisibility(View.VISIBLE);
             timestamp.setText(getTimestamp(sensor, sessionId));
         }
     }
