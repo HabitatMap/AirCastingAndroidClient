@@ -162,8 +162,8 @@ class SessionWriter
   private void writeMeasurement(CsvWriter writer, Measurement measurement) throws IOException
   {
     writer.write(TIMESTAMP_FORMAT.format(measurement.getTime()));
-    writer.write(valueOf(measurement.getLongitude()));
     writer.write(valueOf(measurement.getLatitude()));
+    writer.write(valueOf(measurement.getLongitude()));
     writer.write(valueOf(measurement.getValue()));
     writer.endRecord();
   }
