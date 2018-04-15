@@ -114,13 +114,14 @@
                               android:gravity="center"
                               android:id="@+id/peak_container"
                         >
-                    <ImageView android:layout_height="wrap_content"
-                               android:layout_width="wrap_content"
-                               android:id="@+id/session_peak_marker"
-                               android:background="@drawable/orange"
-                               android:layout_marginTop="4dp"
-                               android:layout_marginBottom="1dp"
-                            />
+                    <ImageView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:id="@+id/session_peak_marker"
+                            android:background="@drawable/orange"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="1dp"
+                    />
                     <TextView style="@style/SessionsBigText"
                               android:id="@+id/session_peak"
                               android:text="80 dB"
