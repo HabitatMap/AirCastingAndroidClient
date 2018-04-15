@@ -43,7 +43,6 @@ class AdapterInteractor {
 
             parent.findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
         } else {
-            parent.findViewById(R.id.connected_sensors_label).setVisibility(View.GONE);
             parent.findViewById(R.id.connected_sensors_list).setVisibility(View.GONE);
         }
     }

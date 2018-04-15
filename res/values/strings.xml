@@ -223,7 +223,6 @@
 
   <string name="available_sensors_label">Available</string>
   <string name="known_sensors_label">Exter</string>
-  <string name="connected_sensors_label">Connected</string>
   <string name="paired_sensors_label">Paired</string>
   <string name="pair_with_new_devices">Pair New Device</string>
   <string name="session_sync_failed">Session sync failed, check your network connection</string>
