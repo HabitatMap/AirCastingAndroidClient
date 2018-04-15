@@ -190,7 +190,7 @@
   <string name="sync_failed">Sync failed. Check your network connection.</string>
   <string name="sync_only_wifi">Sync only through Wi-Fi</string>
   <string name="aircasting_is_recording">AirCasting is recording a session</string>
-  <string name="sensors_are_active">Sensors are active</string>
+  <string name="sensors_are_active">AirCasting Location Services Active</string>
   <string name="show_route">Show route trace</string>
   <string name="external_devices">External devices</string>
   <string name="bluetooth_not_supported">Your phone does not support bluetooth.</string>
