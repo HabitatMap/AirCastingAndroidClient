@@ -68,7 +68,7 @@ public class StreamAdapter extends SimpleAdapter {
             ComparisonChain chain = ComparisonChain.start()
                     .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId));
 
-            if (streamsReordered.get(leftSessionId) == true) {
+            if (stateRestored || streamsReordered.get(leftSessionId) == true) {
                 result = chain.compare(getPosition(left), getPosition(right)).result();
             } else {
                 result = chain.compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
@@ -98,10 +98,12 @@ public class StreamAdapter extends SimpleAdapter {
     private static HashMap<Long, Integer> sessionStreamCount = newHashMap();
     private static HashMap<Long, List<String>> clearedStreams = new HashMap<Long, List<String>>();
     private static HashMap<Long, Boolean> streamsReordered = new HashMap<Long, Boolean>();
+    private static HashMap<String, Boolean> currentSessionSensors = newHashMap();
     private static boolean reorderInProgress = false;
     private static boolean updateAllowed = false;
     private static Handler handler = new Handler();
     private static boolean shouldRunFakeActivity = false;
+    private static boolean stateRestored = false;
 
     public StreamAdapter(DashboardBaseActivity context,
                          List<Map<String, Object>> data,
@@ -148,12 +150,13 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     public void restoreAdapterState(Bundle state) {
+        stateRestored = true;
         positions = (HashMap<String, Integer>) state.getSerializable(POSITIONS);
         sessionStreamCount = (HashMap<Long, Integer>) state.getSerializable(SESSION_STREAM_COUNT);
         clearedStreams = (HashMap<Long, List<String>>) state.getSerializable(CLEARED_STREAMS);
         streamsReordered = (HashMap<Long, Boolean>) state.getSerializable(STREAMS_REORDERED);
 
-        prepareData();
+        prepareSessionPositions();
         update(false);
     }
 
@@ -495,6 +498,12 @@ public class StreamAdapter extends SimpleAdapter {
                 sessionPositions.put(sessionId, sessionPositions.size());
                 sortedSessionPositions.put(sessionPositions.size() - 1, sessionId);
             }
+        }
+    }
+
+    private void prepareSessionPositions() {
+        for (Map.Entry<Long, Boolean> entry : streamsReordered.entrySet()) {
+            updateSessionPosition(entry.getKey());
         }
     }
 

@@ -90,7 +90,6 @@ public class ViewingSessionsManager {
 
         for (int i = 0; i < savedIds.length; i++) {
             view(savedIds[i], NoOp.progressListener());
-            Logger.w(String.valueOf(savedIds[i]));
         }
 
         for (Map.Entry<Long, Session> entry : sessionsForViewing.entrySet()) {
