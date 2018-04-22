@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.sensor.ThresholdsHolder;
 import pl.llp.aircasting.view.NoisePlot;
 import pl.llp.aircasting.view.presenter.MeasurementPresenter;
@@ -58,6 +60,18 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
   @Inject MeasurementPresenter measurementPresenter;
   @Inject ThresholdsHolder thresholdsHolder;
+  @Inject ViewingSessionsManager viewingSessionsManager;
+
+  private Handler handler = new Handler() {};
+
+  private Thread pollServerTask = new Thread(new Runnable() {
+      @Override
+      public void run() {
+          Intents.triggerStreamingSessionsSync(context);
+
+          handler.postDelayed(pollServerTask, 60000);
+      }
+  });
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +96,20 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
   @Override
   public void onPostResume() {
     super.onPostResume();
+    startUpdatingFixedSessions();
     getDelegate().invalidateOptionsMenu();
+  }
+
+  private void startUpdatingFixedSessions() {
+      if (viewingSessionsManager.isAnySessionFixed()) {
+          handler.post(pollServerTask);
+      }
   }
 
   @Override
   protected void onPause() {
     super.onPause();
+    handler.removeCallbacks(pollServerTask);
     measurementPresenter.unregisterListener(this);
   }
 

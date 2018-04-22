@@ -24,6 +24,7 @@ import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.NoOp;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
+import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -144,6 +145,9 @@ public class SessionRepository {
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
                             measurementsAdded = true;
+                            MeasurementEvent event = new MeasurementEvent(measurements.get(measurements.size() -1 ), new Sensor(stream.getSensorName()));
+                            event.setSessionId(oldSession.getId());
+                            eventBus.post(event);
                         }
                     }
                 }
@@ -397,8 +401,6 @@ public class SessionRepository {
 
                 for (MeasurementStream stream : streams) {
                     if (load.containsKey(stream.getId())) {
-                        Logger.w("filling stream " + stream.getSensorName());
-
                         List<Measurement> measurements = load.get(stream.getId());
                         if (measurements == null || measurements.isEmpty()) {
 
