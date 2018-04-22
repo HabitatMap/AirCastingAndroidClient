@@ -12,8 +12,8 @@ import pl.llp.aircasting.activity.DashboardActivity;
 import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.FakeActivity;
 import pl.llp.aircasting.activity.events.SessionSensorsLoadedEvent;
+import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
-import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
@@ -188,9 +188,8 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     @Subscribe
-    public void onEvent(SensorEvent event) {
+    public void onEvent(final SensorEvent event) {
         updateSessionPosition(Constants.CURRENT_SESSION_FAKE_ID);
-
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -202,14 +201,17 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     @Subscribe
+    public void onEvent(SessionStoppedEvent event) {
+        currentSessionSensors.clear();
+    }
+
+    @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
         long sessionId = event.getSessionId();
         int sensorsCount = sessionData.getSessionSensorsCount(sessionId);
 
         clearedStreams.remove(sessionId);
         updateSessionPosition(sessionId);
-
-        prepareData();
 
         if (sensorsCount > 0) {
             sessionStreamCount.put(sessionId, sessionData.getSessionSensorsCount(sessionId));
@@ -251,20 +253,18 @@ public class StreamAdapter extends SimpleAdapter {
 
     @Subscribe
     public void onEvent(ToggleSessionReorderEvent event) {
-        // this is a bit hacky way to make the ListFragment call onResume,
+        // this is a hacky way to make the ListFragment call onResume,
         // so that the OnItemClick and OnItemTouch listeners get reset properly.
 
         context.startActivity(new Intent(context, FakeActivity.class));
         if (event.areSessionsCleared()) {
             sortedSessionPositions.clear();
             sessionPositions.clear();
-            prepareData();
         }
         update(false);
     }
 
     public void forceUpdate() {
-        prepareData();
         update(false);
     }
 
@@ -289,7 +289,7 @@ public class StreamAdapter extends SimpleAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-        Map<String, Object> item = data.get(position);
+        Map<String, Object> item = (Map<String, Object>) getItem(position);
         final Sensor sensor = (Sensor) item.get(SENSOR);
         final long sessionId = (Long) item.get(SESSION_ID);
         view.setTag(R.id.session_id_tag, sessionId);
@@ -329,6 +329,16 @@ public class StreamAdapter extends SimpleAdapter {
         return view;
     }
 
+    @Override
+    public int getCount() {
+        return data.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return data.get(position);
+    }
+
     private void moveSessionDown(long sessionId) {
         int sessionPosition = sessionPositions.get(sessionId);
         int switchSessionPosition = sessionPosition + 1;
@@ -361,6 +371,8 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void update(boolean onlyCurrentStreams) {
+        prepareData();
+
         sort(data, comparator);
         preparePositions();
 
@@ -370,12 +382,14 @@ public class StreamAdapter extends SimpleAdapter {
         System.gc();
         System.gc();
 
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        if (data.size() == positions.size()) {
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     private void setSessionTitles() {
@@ -516,7 +530,6 @@ public class StreamAdapter extends SimpleAdapter {
 
         clearViewingSessionIfNeeded(sessionId, clearedStreamsForSession.size());
         streamsReordered.put(sessionId, true);
-        prepareData();
         update(false);
     }
 
@@ -573,7 +586,6 @@ public class StreamAdapter extends SimpleAdapter {
                         sessionData.deleteSession(sessionId);
                         cleanupSession(sessionId);
                         Intents.triggerSync(context);
-                        prepareData();
                         update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
@@ -590,7 +602,6 @@ public class StreamAdapter extends SimpleAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         sessionData.deleteSensorStream(sensor, sessionId);
                         Intents.triggerSync(context);
-                        prepareData();
                         update(false);
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
