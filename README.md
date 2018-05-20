@@ -1,6 +1,6 @@
-##AirCasting - Share your Air!
+## AirCasting - Share your Air!
 
-###About
+### About
 
 This is the android app for the AirCasting project - the project aims to build a platform for gathering, visualization and sharing of environmental data. To learn more about the platform visit [aircasting.org](http://aircasting.org).
 
