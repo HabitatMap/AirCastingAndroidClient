@@ -185,7 +185,9 @@ public class StreamAdapter extends SimpleAdapter {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                update(false);
+                if (!reorderInProgress) {
+                    update(false);
+                }
             }
         });
     }
@@ -471,6 +473,7 @@ public class StreamAdapter extends SimpleAdapter {
     }
 
     private void preparePositions() {
+        positions.clear();
         int currentPosition = 0;
         for (Map<String, Object> map : data) {
             Sensor sensor = (Sensor) map.get(SENSOR);

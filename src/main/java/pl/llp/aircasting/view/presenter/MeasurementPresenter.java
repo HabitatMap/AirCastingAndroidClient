@@ -103,30 +103,20 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private void onMeasurement(MeasurementEvent event) {
-        if (timelineShouldUpdate(event)) {
+        if (!visibleSession.isCurrentSessionVisible()) return;
+        if (!state.recording().isRecording()) return;
+        if (!event.getSensor().equals(this.sensor)) return;
 
-            Measurement measurement = event.getMeasurement();
+        Measurement measurement = event.getMeasurement();
 
-            prepareFullView();
-            updateFullView(measurement);
+        prepareFullView();
+        updateFullView(measurement);
 
-            if (anchor == 0) {
-                updateTimelineView();
-            }
-
-            notifyListeners();
+        if (anchor == 0) {
+            updateTimelineView();
         }
-    }
 
-    private boolean timelineShouldUpdate(MeasurementEvent event) {
-        boolean sessionUpdatable = state.recording().isRecording() || visibleSession.getSession().isFixed();
-        if (!sessionUpdatable) { return false; }
-
-        String visibleSensorName = visibleSession.getStream().getSensorName();
-        long visibleSessionId = visibleSession.getVisibleSessionId();
-
-        return event.getSessionId() == visibleSessionId &&
-                event.getSensor().getSensorName() == visibleSensorName;
+        notifyListeners();
     }
 
     private synchronized void updateTimelineView() {
@@ -199,6 +189,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private synchronized void reset() {
         fullView = null;
         timelineView.clear();
+
+        prepareTimelineView();
 
         notifyListeners();
     }
