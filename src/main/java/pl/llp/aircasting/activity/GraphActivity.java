@@ -93,6 +93,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         initNavigationDrawer();
 
         plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
+
+        refresh();
     }
 
     @Override
