@@ -434,8 +434,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void refreshSoundTrace() {
-        if (refreshTask != null && refreshTask.getStatus() != AsyncTask.Status.FINISHED) return;
-
         soundTraceComplete = false;
         refresh();
 

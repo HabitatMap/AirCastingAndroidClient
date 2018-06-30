@@ -185,9 +185,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
                 plot.update(visibleSession.getSensor(), measurements, notes);
 
-                scrollLeft.setVisibility(measurementPresenter.canScrollLeft() ? View.VISIBLE : View.GONE);
-                scrollRight.setVisibility(measurementPresenter.canScrollRight() ? View.VISIBLE : View.GONE);
-
                 updateLabels(measurements);
             }
         });
