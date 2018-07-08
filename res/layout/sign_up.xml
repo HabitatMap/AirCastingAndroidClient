@@ -57,6 +57,7 @@
     <CheckBox style="@style/DialogText"
               android:text="@string/send_emails"
               android:checked="true"
+              android:buttonTint="@color/toolbar_blue"
               android:id="@+id/send_emails"
             />
 

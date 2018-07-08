@@ -24,7 +24,7 @@
           android:clickable="true"
           android:background="@color/dashboard_background"
           android:textColor="@android:color/black"
-          android:textColorLink="@android:color/white"
+          android:textColorLink="@color/toolbar_blue"
           android:padding="1dp"
           android:id="@+id/content"
         />

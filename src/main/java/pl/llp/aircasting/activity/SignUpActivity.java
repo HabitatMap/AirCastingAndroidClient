@@ -67,7 +67,7 @@ public class SignUpActivity extends DialogActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
-        initDialogToolbar("Sign Up");
+        initDialogToolbar("Create Profile");
 
         ok.setOnClickListener(this);
     }
