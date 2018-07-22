@@ -19,7 +19,9 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.preference.CheckBoxPreference;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -27,6 +29,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.settings.BackendSettingsActivity;
 import pl.llp.aircasting.activity.settings.DisableMapSettingsActivity;
+import pl.llp.aircasting.activity.settings.StreamingAlertListener;
 import pl.llp.aircasting.helper.SettingsHelper;
 
 import android.app.Application;
@@ -65,7 +68,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         offset60DbInputListener = new Offset60DbInputListener();
 
         final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
+        final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.STREAMING_ALERT);
 
+        alertPreference.setOnPreferenceChangeListener(new StreamingAlertListener());
         offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
     }
 

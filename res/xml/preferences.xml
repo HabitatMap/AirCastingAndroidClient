@@ -24,63 +24,69 @@
                   android:id="@android:id/list"
         >
 
-  <android.preference.CheckBoxPreference android:defaultValue="true"
-                                         android:title="Contribute to CrowdMap"
-                                         android:key="contribute_to_crowdmap"
-                                         android:summary="Check to contribute your sessions to the CrowdMap by default"
-          />
+    <android.preference.CheckBoxPreference android:defaultValue="true"
+                                           android:title="Contribute to CrowdMap"
+                                           android:key="contribute_to_crowdmap"
+                                           android:summary="Check to contribute your sessions to the CrowdMap by default"
+    />
 
-  <android.preference.CheckBoxPreference android:defaultValue="false"
+    <CheckBoxPreference android:defaultValue="false"
+                        android:title="Streaming Alert"
+                        android:key="streaming_alert"
+                        android:summary="Check to receive an email when fixed sessions stop streaming data for >10 minutes"
+    />
+
+    <android.preference.CheckBoxPreference android:defaultValue="false"
                                            android:key="satellite"
                                            android:title="@string/satellite_view"
-            />
+    />
 
     <android.preference.EditTextPreference android:defaultValue="100"
                                            android:numeric="integer"
                                            android:key="calibration"
                                            android:title="@string/calibration"
                                            android:summary="@string/calibration_summary"
-            />
+    />
     <android.preference.EditTextPreference android:defaultValue="0"
                                            android:numeric="signed"
                                            android:key="offset_60_db"
                                            android:title="@string/offset_60_db"
                                            android:summary="@string/offset_60_db_summary"
-            />
+    />
 
     <android.preference.EditTextPreference android:defaultValue="10"
                                            android:numeric="integer"
                                            android:key="heat_map_density"
                                            android:title="@string/heat_map_density"
                                            android:summary="@string/heat_map_density_summary"
-            />
+    />
     <android.preference.CheckBoxPreference android:defaultValue="false"
                                            android:key="keep_screen_on"
                                            android:title="@string/keep_screen_on"
-            />
+    />
 
     <android.preference.Preference android:key="backend_settings"
                                    android:title="@string/backend_settings"
                                    android:summary="@string/backend_settings_summary"
-            />
+    />
     <android.preference.CheckBoxPreference android:defaultValue="false"
                                            android:key="sync_only_wifi"
                                            android:title="@string/sync_only_wifi"
-            />
+    />
     <android.preference.CheckBoxPreference android:defaultValue="true"
                                            android:key="show_route"
                                            android:title="@string/show_route"
-            />
+    />
 
-  <android.preference.CheckBoxPreference android:defaultValue="false"
-                                         android:key="show_graph_metadata"
-                                         android:title="@string/show_graph_metadata"
-          />
+    <android.preference.CheckBoxPreference android:defaultValue="false"
+                                           android:key="show_graph_metadata"
+                                           android:title="@string/show_graph_metadata"
+    />
 
-  <android.preference.Preference android:key="disable_maps"
-                                         android:title="@string/disable_maps"
-                                         android:defaultValue="false"
+    <android.preference.Preference android:key="disable_maps"
+                                   android:title="@string/disable_maps"
+                                   android:defaultValue="false"
 
-      />
+    />
 
 </PreferenceScreen>
