@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     You can contact the authors by email at <info@habitatmap.org>
---><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="83" android:versionName="1.4.8" package="pl.llp.aircasting">
+--><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="84" android:versionName="1.4.9" package="pl.llp.aircasting">
 
   <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="22" />
 
