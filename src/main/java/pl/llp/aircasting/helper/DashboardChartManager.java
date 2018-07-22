@@ -108,8 +108,7 @@ public class DashboardChartManager {
     private void initStaticChart(MeasurementStream stream) {
         if (!isSessionCurrent) {
             if (isSessionFixed) {
-                Session session = sessionData.getSession(requestedSessionId);
-                List<Entry> entries = ChartAveragesCreator.getFixedEntries(session, stream);
+                List<Entry> entries = ChartAveragesCreator.getFixedEntries(stream);
                 averages.put(getKey(requestedSessionId, stream.getSensorName()), Lists.reverse(entries));
             } else if (!isSessionFixed && shouldStaticChartInitialize()) {
                 List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);

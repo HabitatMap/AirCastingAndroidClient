@@ -97,11 +97,11 @@ public class MeasurementStream implements Serializable {
         return measurements.size();
     }
 
-    public List<Measurement> getLastMeasurements(int amount, int offset) {
+    public List<Measurement> getLastMeasurements(int amount) {
         int size = measurements.size();
 
         if (size > amount)
-            return measurements.subList(size - amount - offset, size);
+            return measurements.subList(size - amount, size);
         else
             return measurements;
     }
@@ -120,17 +120,17 @@ public class MeasurementStream implements Serializable {
         if (measurements.isEmpty()) {
             return 0;
         }
-        return getLastMeasurements(1, 0).get(0).getValue();
+        return getLastMeasurements(1).get(0).getValue();
     }
 
-    public List<Measurement> getMeasurementsForPeriod(int amount, double divisor, int offset) {
+    public List<Measurement> getMeasurementsForPeriod(int amount, double divisor) {
         frequency = calculateSamplingFrequency(divisor);
 
         try {
             int measurementsInPeriod = (int) (60 / frequency) * amount;
-            return getLastMeasurements(measurementsInPeriod, offset);
+            return getLastMeasurements(measurementsInPeriod);
         } catch (IndexOutOfBoundsException e) {
-            return getMeasurementsForPeriod(amount - 1, divisor, offset);
+            return getMeasurementsForPeriod(amount - 1, divisor);
         }
     }
 
@@ -139,7 +139,7 @@ public class MeasurementStream implements Serializable {
             Calendar calendar = Calendar.getInstance();
             return calendar.getTime();
         }
-        return getLastMeasurements(1, 0).get(0).getTime();
+        return getLastMeasurements(1).get(0).getTime();
     }
 
     private double calculateSamplingFrequency(double divisor) {

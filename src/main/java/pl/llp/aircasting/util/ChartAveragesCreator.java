@@ -16,11 +16,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Singleton
 public class ChartAveragesCreator {
     private final static int INTERVAL_IN_SECONDS = 60;
-    private final static int MINUTES_IN_HOUR = 60;
     private final static int MAX_AVERAGES_AMOUNT = 9;
     private final static int MAX_X_VALUE = 8;
     private final static double MOBILE_FREQUENCY_DIVISOR = 8 * 1000;
-    private final static double FIXED_FREQUENCY_DIVISOR = 8 * 1000 * 60;
     private static List oldEntries = new CopyOnWriteArrayList();
     private static boolean usePreviousEntry = false;
 
@@ -32,7 +30,7 @@ public class ChartAveragesCreator {
 
         List<Entry> entries = new CopyOnWriteArrayList();
 
-        final List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR, 0);
+        final List<Measurement> measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, MOBILE_FREQUENCY_DIVISOR);
         periodData = new ArrayList(Lists.partition(measurements, measurementsInPeriod));
         final List<List<Measurement>> reversedPeriodData = Lists.reverse(periodData);
 
@@ -71,27 +69,34 @@ public class ChartAveragesCreator {
         return entries;
     }
 
-    public static List<Entry> getFixedEntries(Session session, MeasurementStream stream) {
+    public static List<Entry> getFixedEntries(MeasurementStream stream) {
         List<Measurement> measurements;
         double xValue = MAX_X_VALUE;
         List entries = new CopyOnWriteArrayList();
-        List<List<Measurement>> periodData;
+        List<List<Measurement>> periodData = new ArrayList();
 
-        double streamFrequency = stream.getFrequency(FIXED_FREQUENCY_DIVISOR);
-        double measurementsInPeriod = INTERVAL_IN_SECONDS / streamFrequency;
-        double maxMeasurementsAmount = MAX_AVERAGES_AMOUNT * measurementsInPeriod;
+        int maxMeasurementsAmount = 540;
 
-        if (stream.getMeasurementsCount() < maxMeasurementsAmount) {
-            int offset = (int) (session.getEnd().getMinutes() / streamFrequency);
-            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, offset);
-        } else {
-            measurements = stream.getMeasurementsForPeriod(MAX_AVERAGES_AMOUNT, FIXED_FREQUENCY_DIVISOR, 0);
-        }
+        measurements = stream.getLastMeasurements(maxMeasurementsAmount);
 
-        periodData = getPeriodData(measurements, streamFrequency);
+        int hour = measurements.get(0).getTime().getHours();
+        List<Measurement> measurementsInHour = new ArrayList<Measurement>();
 
-        if (measurements.isEmpty() || periodData.isEmpty()) {
-            return entries;
+        Log.w("first hour", String.valueOf(hour));
+
+        for (int i = 0; i < measurements.size(); i++) {
+            Measurement measurement = measurements.get(i);
+            int measurementHour = measurement.getTime().getHours();
+
+            if (hour == measurementHour) {
+                measurementsInHour.add(measurement);
+            } else {
+                Log.w("measuremennts in hour", String.valueOf(measurementsInHour.size()));
+
+                periodData.add(measurementsInHour);
+                hour = measurementHour;
+                measurementsInHour = new ArrayList<Measurement>();
+            }
         }
 
         if (periodData.size() > 0) {
@@ -138,90 +143,5 @@ public class ChartAveragesCreator {
             }
 
         return (int) (sum / size);
-    }
-
-    private static List<List<Measurement>> getPeriodData(List<Measurement> measurements, double streamFrequency) {
-        int firstMeasurementIndex = 0;
-        List<List<Measurement>> result = new ArrayList<List<Measurement>>();
-        Calendar calendar = GregorianCalendar.getInstance();
-
-        if (measurements.isEmpty()) {
-            return result;
-        }
-
-        for (int i = 0; i < MAX_AVERAGES_AMOUNT; i++) {
-            if (measurements.size() > firstMeasurementIndex) {
-                int cutoff;
-                List<Measurement> measurementsFromHour;
-                Date firstMeasurementTime = measurements.get(firstMeasurementIndex).getTime();
-                calendar.setTime(firstMeasurementTime);
-                double minutes = calendar.get(Calendar.MINUTE);
-                if (i == 0) {
-                    cutoff = (int) ((MINUTES_IN_HOUR - minutes) / streamFrequency);
-                } else {
-                    cutoff = (int) (MINUTES_IN_HOUR / streamFrequency);
-                }
-                int lastMeasurementIndex = firstMeasurementIndex + cutoff;
-
-                try {
-                    measurementsFromHour = measurements.subList(firstMeasurementIndex, lastMeasurementIndex);
-                } catch (IndexOutOfBoundsException e) {
-                    return result;
-                }
-
-                if (measurementsFromHour.size() > 0) {
-                    int firstMeasurementHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int measurementsInHourCount = measurementsFromHour.size();
-
-                    Date lastMeasurementTime = measurementsFromHour.get(measurementsInHourCount - 1).getTime();
-                    calendar.setTime(lastMeasurementTime);
-                    int lastMeasurementHour = calendar.get(Calendar.HOUR_OF_DAY);
-                    int lastMeasurementMinutes = calendar.get(Calendar.MINUTE);
-                    double cutoffOffset = 0;
-
-                    if (isAcceptableValue(lastMeasurementMinutes)) {
-                        result.add(measurementsFromHour);
-                    } else {
-                        cutoffOffset = getCutoffOffset(firstMeasurementHour, lastMeasurementHour, lastMeasurementMinutes, streamFrequency);
-                        cutoff = (int) (cutoff + cutoffOffset);
-
-                        try {
-                            measurementsFromHour = measurements.subList(firstMeasurementIndex, firstMeasurementIndex + cutoff);
-                            result.add(measurementsFromHour);
-                        } catch (IndexOutOfBoundsException e) {
-                            return result;
-                        }
-
-                    }
-
-                    firstMeasurementIndex = (int) (lastMeasurementIndex + cutoffOffset);
-
-                } else {
-                    return result;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static double getCutoffOffset(int firstMeasurementHour, int lastMeasurementHour, int lastMeasurementMinutes, double streamFrequency) {
-        if (firstMeasurementHour == lastMeasurementHour) {
-            return (MINUTES_IN_HOUR - lastMeasurementMinutes) / streamFrequency;
-        } else {
-            return -lastMeasurementMinutes / streamFrequency;
-        }
-    }
-
-    private static boolean isAcceptableValue(int lastMeasurementMinutes) {
-        int[] acceptableValues = {59, 00, 01, 02};
-
-        for (int value : acceptableValues) {
-            if (lastMeasurementMinutes == value) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

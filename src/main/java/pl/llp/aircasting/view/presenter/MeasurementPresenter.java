@@ -194,7 +194,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
             measurements = newArrayList();
         } else {
             int amount = visibleSession.isVisibleSessionFixed() ? MAX_FIXED_MEASUREMENTS : MAX_MOBILE_MEASUREMENTS;
-            measurements = stream.getLastMeasurements(amount, 0);
+            measurements = stream.getLastMeasurements(amount);
         }
 
         ImmutableListMultimap<Long, Measurement> forAveraging =
