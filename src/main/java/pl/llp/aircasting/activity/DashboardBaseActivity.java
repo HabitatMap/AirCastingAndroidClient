@@ -45,7 +45,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         super.onResume();
 
         initialize();
-        locationHelper.start();
 
         if (currentSessionSensorManager.anySensorConnected()) {
             Intents.startSensors(context);

@@ -3,6 +3,7 @@ package pl.llp.aircasting.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.*;
@@ -25,6 +26,9 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.Intents.stopSensors;
 
 public class DashboardActivity extends DashboardBaseActivity {
+    public static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 2;
+
     private static final long POLLING_INTERVAL = 60000;
     private static final String LIST_FRAGMENT_TAG = "list_fragment";
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
@@ -168,10 +172,6 @@ public class DashboardActivity extends DashboardBaseActivity {
         }
     }
 
-    public void reloadNavigationDrawer() {
-        initNavigationDrawer();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         super.onOptionsItemSelected(menuItem);
@@ -194,6 +194,23 @@ public class DashboardActivity extends DashboardBaseActivity {
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    connectPhoneMicrophone();
+                }
+                return;
+            }
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationHelper.start();
+                }
+                return;
+        }
+    }
+
     private void toggleSessionReorder(MenuItem menuItem) {
         state.dashboardState().toggleSessionReorder();
         chooseToggleSessionsReorderIcon(menuItem);
@@ -208,6 +225,12 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void connectPhoneMicrophone() {
         currentSessionManager.setSession(new Session());
         currentSessionSensorManager.startAudioSensor();
+        reloadNavigationDrawer();
+        invalidateOptionsMenu();
+    }
+
+    private void reloadNavigationDrawer() {
+        initNavigationDrawer();
     }
 
     public void viewChartOptions(View view) {

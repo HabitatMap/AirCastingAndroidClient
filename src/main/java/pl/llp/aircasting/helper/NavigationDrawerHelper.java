@@ -3,7 +3,10 @@ package pl.llp.aircasting.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +21,9 @@ import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
+
+import static android.Manifest.permission.RECORD_AUDIO;
+import static pl.llp.aircasting.activity.DashboardActivity.MY_PERMISSIONS_REQUEST_RECORD_AUDIO;
 
 /**
  * Created by radek on 09/06/17.
@@ -71,11 +77,17 @@ public class NavigationDrawerHelper {
                         Intents.startAirbeam2Configuration(activity);
                         break;
                     case R.id.connect_microphone:
-                        currentSessionSensorManager.startAudioSensor();
-                        Intents.startDashboardActivity(activity);
+                        if (ContextCompat.checkSelfPermission(activity, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{ RECORD_AUDIO }, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+                        } else {
+                            currentSessionSensorManager.startAudioSensor();
+                            Intents.startDashboardActivity(activity);
+                            connectMicrophone.setVisible(false);
+                            disconnectMicrophone.setVisible(true);
+                        }
+
                         drawerLayout.closeDrawers();
-                        connectMicrophone.setVisible(false);
-                        disconnectMicrophone.setVisible(true);
                         break;
                     case R.id.disconnect_microphone:
                         currentSessionSensorManager.stopAudioSensor();
