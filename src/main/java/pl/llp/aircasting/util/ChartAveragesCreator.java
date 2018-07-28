@@ -1,5 +1,6 @@
 package pl.llp.aircasting.util;
 
+import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
@@ -78,6 +79,10 @@ public class ChartAveragesCreator {
         int maxMeasurementsAmount = 540;
 
         measurements = stream.getLastMeasurements(maxMeasurementsAmount);
+
+        if (measurements.isEmpty()) {
+            return entries;
+        }
 
         int hour = measurements.get(0).getTime().getHours();
         List<Measurement> measurementsInHour = new ArrayList<Measurement>();
