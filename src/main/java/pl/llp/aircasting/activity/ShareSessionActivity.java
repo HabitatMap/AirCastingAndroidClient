@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.activity;
 
+import android.app.Activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.task.OpenSessionTask;
@@ -128,11 +129,12 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
 
     private void prepareAndShare() {
         //noinspection unchecked
+        final Activity context = this;
         new SimpleProgressTask<Void, Void, Uri>(this) {
             @Override
             protected Uri doInBackground(Void... voids) {
                 try {
-                    return csvHelper.prepareCSV(session);
+                    return csvHelper.prepareCSV(context, session);
                 } catch (IOException e) {
                     Logger.e("Error while creating session CSV", e);
                     return null;

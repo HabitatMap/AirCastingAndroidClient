@@ -1,0 +1,5 @@
+<paths>
+    <files-path path="files" name="." />
+    <files-path path="data" name="." />
+    <files-path path="aircasting_sessions" name="." />
+</paths>

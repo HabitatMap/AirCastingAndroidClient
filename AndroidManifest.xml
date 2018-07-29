@@ -127,5 +127,14 @@
         <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
       </intent-filter>
     </receiver>
+
+    <provider android:name="android.support.v4.content.FileProvider"
+            android:authorities="pl.llp.aircasting.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+      <meta-data
+              android:name="android.support.FILE_PROVIDER_PATHS"
+              android:resource="@xml/filepaths" />
+    </provider>
   </application>
 </manifest>

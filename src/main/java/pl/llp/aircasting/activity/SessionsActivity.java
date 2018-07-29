@@ -21,6 +21,9 @@ package pl.llp.aircasting.activity;
 
 import android.app.AlertDialog;
 import android.content.*;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatCallback;
 import android.support.v7.view.ActionMode;
@@ -56,7 +59,9 @@ import roboguice.inject.InjectView;
 
 import java.util.List;
 
-public class SessionsActivity extends RoboListActivityWithProgress implements AppCompatCallback {
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+public class SessionsActivity extends RoboListActivityWithProgress implements ActivityCompat.OnRequestPermissionsResultCallback, AppCompatCallback {
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject SessionRepository sessionRepository;
@@ -78,6 +83,8 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
             refreshList();
         }
     };
+
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
 
     private SessionAdapter sessionAdapter;
     private long sessionId;
@@ -198,12 +205,29 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ap
                 updateSession(data);
                 break;
             case R.id.share:
-                Intents.shareSession(this, sessionId);
+                if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{ WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                } else {
+                    Intents.shareSession(this, sessionId);
+                }
+
                 break;
             case R.id.continue_streaming:
                 continueAircastingSession(sessionId);
                 finish();
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intents.shareSession(this, sessionId);
+                }
+                return;
+            }
         }
     }
 
