@@ -56,7 +56,7 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.sign_in);
-    initDialogToolbar("Sign In");
+    initDialogToolbar("Log In");
 
     ok.setOnClickListener(this);
   }
