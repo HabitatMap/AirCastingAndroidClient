@@ -20,19 +20,16 @@
 package pl.llp.aircasting.guice;
 
 import com.google.inject.Module;
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
 import roboguice.application.RoboApplication;
 
 import java.util.List;
 
-@ReportsCrashes(formKey = "dGFfWkhaNFY4eFZCRFJLS3NwUjdremc6MQ",
-        mode = ReportingInteractionMode.SILENT)
+//@ReportsCrashes(formKey = "dGFfWkhaNFY4eFZCRFJLS3NwUjdremc6MQ",
+//        mode = ReportingInteractionMode.SILENT)
 public class AirCastingApplication extends RoboApplication {
     @Override
     public void onCreate() {
-        ACRA.init(this);
+//        ACRA.init(this);
 
         super.onCreate();
     }
