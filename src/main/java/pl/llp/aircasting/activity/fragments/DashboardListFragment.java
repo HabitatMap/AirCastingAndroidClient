@@ -164,10 +164,15 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        DashboardActivity activity = (DashboardActivity) getActivity();
-        View item = getListAdapter().getView(position, view, parent);
+        if (ContextCompat.checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{ ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        } else {
+            DashboardActivity activity = (DashboardActivity) getActivity();
+            View item = getListAdapter().getView(position, view, parent);
 
-        activity.viewChartOptions(item);
+            activity.viewChartOptions(item);
+        }
     }
 }
 
