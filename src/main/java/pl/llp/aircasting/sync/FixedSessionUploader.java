@@ -45,8 +45,10 @@ public class FixedSessionUploader {
     @Inject FixedSessionDriver fixedSessionDriver;
     @Inject EventBus eventBus;
 
-    @InjectResource(R.string.fixed_session_creation_failed)
-    String fixed_session_creation_failed;
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
 
     public boolean create(final Session session) {
         try {
