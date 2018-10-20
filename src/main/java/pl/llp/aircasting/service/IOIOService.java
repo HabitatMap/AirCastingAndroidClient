@@ -92,10 +92,12 @@ public class IOIOService extends RoboService implements IOIOLooperProvider {
     public void onEvent(MeasurementEvent event) {
         Sensor currentSensor = visibleSession.getSensor();
 
-        if (visibleSession.getSession() != null && currentSensor.matches(event.getSensor())) {
-            double now = (int) event.getMeasurement().getValue();
-            MeasurementLevel level = resourceHelper.getLevel(currentSensor, now);
-            setLedColors(level);
+        if (currentSensor != null) {
+            if (visibleSession.getSession() != null && currentSensor.matches(event.getSensor())) {
+                double now = (int) event.getMeasurement().getValue();
+                MeasurementLevel level = resourceHelper.getLevel(currentSensor, now);
+                setLedColors(level);
+            }
         }
     }
 

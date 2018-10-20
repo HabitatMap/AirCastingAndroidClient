@@ -88,7 +88,10 @@ public class VisibleSession {
     }
 
     public boolean isVisibleSessionFixed() {
-        return session.isFixed();
+        if (session != null) {
+            return session.isFixed();
+        }
+        return false;
     }
 
     public double getAvg(Sensor sensor) {
@@ -135,14 +138,10 @@ public class VisibleSession {
     }
 
     public long getVisibleSessionId() {
-        long sessionId;
-
-        if (isCurrentSessionVisible()) {
-            sessionId = Constants.CURRENT_SESSION_FAKE_ID;
-        } else {
-            sessionId = session.getId();
+        if (session != null && !isCurrentSessionVisible()) {
+            return session.getId();
         }
 
-        return sessionId;
+        return Constants.CURRENT_SESSION_FAKE_ID;
     }
 }
