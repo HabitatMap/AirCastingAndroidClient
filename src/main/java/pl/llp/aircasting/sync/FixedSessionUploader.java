@@ -51,34 +51,34 @@ public class FixedSessionUploader {
     }
 
     public boolean create(final Session session) {
-        try {
-            if (canUpload()) {
-                new AsyncTask<Void, Void, Boolean>() {
-                    @Override
-                    protected Boolean doInBackground(Void... voids) {
-                        performCreateSession(session);
+        if (canUpload()) {
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    performCreateSession(session);
 
-                        return true;
-                    }
-                }.execute();
-                return (true);
-            } else {
-                ToastHelper.show(context, R.string.fixed_session_creation_failed, Toast.LENGTH_LONG);
-                return (false);
-            }
-        } catch (SessionSyncException exception) {
+                    return true;
+                }
+            }.execute();
+            return (true);
+        } else {
             ToastHelper.show(context, R.string.fixed_session_creation_failed, Toast.LENGTH_LONG);
             return (false);
         }
     }
 
-    private void performCreateSession(Session session) throws SessionSyncException {
+    private void performCreateSession(Session session) {
         HttpResult<CreateSessionResponse> result = fixedSessionDriver.create(session);
 
         Status status = result.getStatus();
-        if (status == Status.ERROR || status == Status.FAILURE)
-            throw new SessionSyncException("Session creation failed");
-        CreateSessionResponse createSessionResponse = result.getContent();
+        try {
+            if (status == Status.ERROR || status == Status.FAILURE) {
+                throw new SessionSyncException("Session creation failed");
+            }
+        } catch (SessionSyncException e) {
+            ToastHelper.show(context, R.string.fixed_session_creation_failed, Toast.LENGTH_LONG);
+        }
+//        CreateSessionResponse createSessionResponse = result.getContent();
     }
 
     private boolean canUpload() {
