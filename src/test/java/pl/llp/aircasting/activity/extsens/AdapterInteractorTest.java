@@ -33,7 +33,7 @@ public class AdapterInteractorTest
     paired = mock(PairedSensorAdapter.class);
     ExternalSensorActivity activity = mock(ExternalSensorActivity.class);
     View mock = mock(View.class);
-    when(activity.findViewById(anyInt())).thenReturn(mock);
+    when(activity.getDelegate().findViewById(anyInt())).thenReturn(mock);
     interactor = new AdapterInteractor(activity,
                                        paired,
                                        connected,

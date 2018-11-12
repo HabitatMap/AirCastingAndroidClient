@@ -20,6 +20,10 @@
 package pl.llp.aircasting.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -67,6 +71,7 @@ public class SensorService extends RoboService {
                 break;
         }
 
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.aircasting)
                 .setContentTitle(getString(R.string.app_name))
@@ -74,8 +79,21 @@ public class SensorService extends RoboService {
                 .setAutoCancel(true);
 
         Notification notification = builder.build();
+
         startForeground(ACTIVE_SENSORS_ID, notification);
 
         return START_STICKY;
     }
+
+//    @RequiresApi(26)
+//    private String createNotificationChannel(NotificationManager notificationManager) {
+//        String channelId = "sensor_service_channel_id";
+//        String channelName = "AirCasting Sensor Service";
+//        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+//         omitted the LED color
+//        channel.setImportance(NotificationManager.IMPORTANCE_NONE);
+//        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+//        notificationManager.createNotificationChannel(channel);
+//        return channelId;
+//    }
 }

@@ -185,7 +185,7 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
     }
 
     public void initToolbar(String title) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getDelegate().findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
         toolbar.setContentInsetStartWithNavigation(0);
         this.setSupportActionBar(toolbar);
@@ -193,7 +193,7 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
     }
 
     public void initDialogToolbar(String title) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getDelegate().findViewById(R.id.toolbar);
         this.setSupportActionBar(toolbar);
         this.setTitle(title);
     }

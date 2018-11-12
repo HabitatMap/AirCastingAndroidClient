@@ -30,11 +30,10 @@
     <maven-release-plugin.version>2.4.1</maven-release-plugin.version>
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 
-    <android-maven-plugin.platform>25</android-maven-plugin.platform>
+    <android-maven-plugin.platform>26</android-maven-plugin.platform>
   </properties>
 
   <dependencies>
-
 
     <dependency>
       <groupId>com.google.android</groupId>
@@ -43,12 +42,13 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>android-test</artifactId>
-      <version>${android.version}</version>
-      <scope>provided</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.google.android</groupId>-->
+      <!--<artifactId>android-test</artifactId>-->
+      <!--<version>${android.version}</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>/Users/radek/code/sdk/platforms/android-26/android.jar</systemPath>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>com.google.android.maps</groupId>
@@ -63,26 +63,36 @@
       <artifactId>gson</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.android.support</groupId>
-      <artifactId>appcompat-v7</artifactId>
-      <version>25.3.1</version>
-      <type>aar</type>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.android.support</groupId>-->
+      <!--<artifactId>appcompat-v7</artifactId>-->
+      <!--<version>26.0.0</version>-->
+      <!--<scope>compile</scope>-->
+      <!--<type>aar</type>-->
+    <!--</dependency>-->
 
-    <dependency>
-      <groupId>com.android.support</groupId>
-      <artifactId>support-v4</artifactId>
-      <version>25.3.1</version>
-      <type>aar</type>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.android.support</groupId>-->
+      <!--<artifactId>support-v4</artifactId>-->
+      <!--<version>26.0.0</version>-->
+      <!--<scope>compile</scope>-->
+      <!--<type>aar</type>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>com.android.support</groupId>
       <artifactId>design</artifactId>
-      <version>25.3.1</version>
-      <type>aar</type>
+      <version>26.1.0</version>
+      <scope>compile</scope>
     </dependency>
+
+    <!--<dependency>-->
+      <!--<groupId>com.android.support</groupId>-->
+      <!--<artifactId>support-vector-drawable</artifactId>-->
+      <!--<version>26.0.0</version>-->
+      <!--<scope>compile</scope>-->
+      <!--<type>aar</type>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>com.google.inject</groupId>
@@ -182,6 +192,13 @@
     </dependency>
 
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>maven</id>
+      <url>https://maven.google.com</url>
+    </repository>
+  </repositories>
 
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -303,9 +320,14 @@
           <url>http://acra.googlecode.com/svn/repository/releases/</url>
         </repository>
 
+        <!--<repository>-->
+          <!--<id>jitpack.io</id>-->
+          <!--<url>https://jitpack.io</url>-->
+        <!--</repository>-->
+
         <repository>
-          <id>jitpack.io</id>
-          <url>https://jitpack.io</url>
+          <id>maven</id>
+          <url>https://maven.google.com</url>
         </repository>
 
      </repositories>
@@ -333,10 +355,10 @@
                   <includes>
                     <include>target/*.apk</include>
                   </includes>
-                  <keystore>${aircasting.keystore.path}</keystore>
-                  <storepass>${aircasting.keystore.pass}</storepass>
-                  <keypass>${aircasting.key.pass}</keypass>
-                  <alias>${aircasting.key.alias}</alias>
+                  <keystore>aircasting.keystore</keystore>
+                  <storepass>humanbehavior100</storepass>
+                  <keypass>kingkongdonkeykong77</keypass>
+                  <alias>aircasting</alias>
                   <arguments>
                     <argument>-sigalg</argument><argument>MD5withRSA</argument>
                     <argument>-digestalg</argument><argument>SHA1</argument>

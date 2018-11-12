@@ -69,7 +69,7 @@ public class DashboardActivity extends DashboardBaseActivity {
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        if (findViewById(R.id.fragment_container) != null) {
+        if (getDelegate().findViewById(R.id.fragment_container) != null) {
             DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(settingsHelper);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment, LIST_FRAGMENT_TAG).commit();
         }

@@ -32,18 +32,18 @@ class AdapterInteractor {
 
         pairedSensorAdapter.updateIfNecessary();
         if (pairedSensorAdapter.getCount() > 0) {
-            parent.findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);
+            parent.getDelegate().findViewById(R.id.paired_sensor_list).setVisibility(View.VISIBLE);
         } else {
-            parent.findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
+            parent.getDelegate().findViewById(R.id.paired_sensor_list).setVisibility(View.GONE);
         }
         if (connectedSensorAdapter.getCount() > 0) {
-            ListView lv = (ListView) parent.findViewById(R.id.connected_sensors_list);
+            ListView lv = (ListView) parent.getDelegate().findViewById(R.id.connected_sensors_list);
             lv.addFooterView(new View(parent), null, true);
             lv.setVisibility(View.VISIBLE);
 
-            parent.findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
+            parent.getDelegate().findViewById(R.id.connected_sensors_list).setVisibility(View.VISIBLE);
         } else {
-            parent.findViewById(R.id.connected_sensors_list).setVisibility(View.GONE);
+            parent.getDelegate().findViewById(R.id.connected_sensors_list).setVisibility(View.GONE);
         }
     }
 

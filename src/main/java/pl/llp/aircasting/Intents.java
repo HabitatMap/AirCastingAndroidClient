@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting;
 
+import android.support.v4.content.ContextCompat;
 import pl.llp.aircasting.activity.ContributeActivity;
 import pl.llp.aircasting.activity.EditSessionActivity;
 import pl.llp.aircasting.activity.MakeANoteActivity;
@@ -96,7 +97,8 @@ public final class Intents {
         Intent intent = new Intent(context, SensorService.class);
         intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
-        context.startService(intent);
+//        context.startService(intent);
+        ContextCompat.startForegroundService(context, intent);
     }
 
     public static void stopSensors(Context context) {
