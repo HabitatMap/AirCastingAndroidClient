@@ -19,8 +19,7 @@
 */
 package pl.llp.aircasting.util.http;
 
-import android.util.Log;
-import org.apache.http.client.methods.HttpDelete;
+import cz.msebera.android.httpclient.client.methods.HttpDelete;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.util.Constants;
@@ -30,26 +29,26 @@ import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
+import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.HttpException;
+import cz.msebera.android.httpclient.HttpRequest;
+import cz.msebera.android.httpclient.HttpRequestInterceptor;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.auth.AuthScope;
+import cz.msebera.android.httpclient.auth.AuthState;
+import cz.msebera.android.httpclient.auth.Credentials;
+import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.client.methods.HttpUriRequest;
+import cz.msebera.android.httpclient.client.protocol.ClientContext;
+import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
+import cz.msebera.android.httpclient.entity.mime.content.ByteArrayBody;
+import cz.msebera.android.httpclient.entity.mime.content.ContentBody;
+import cz.msebera.android.httpclient.entity.mime.content.StringBody;
+import cz.msebera.android.httpclient.impl.auth.BasicScheme;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.protocol.HttpContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -241,13 +240,13 @@ public class HttpBuilder implements ChooseMethod, ChoosePath, PerformRequest
     }
 
     private HttpEntity prepareMultipart() throws UnsupportedEncodingException {
-        MultipartEntity result = new MultipartEntity();
+        MultipartEntityBuilder result = MultipartEntityBuilder.create();
 
         for (Parameter parameter : parameters) {
             result.addPart(parameter.getKey(), parameter.toBody());
         }
 
-        return result;
+        return result.build();
     }
 
   private <T> HttpResult<T> doRequest(HttpUriRequest request, Type target)

@@ -6,6 +6,8 @@ out
 # intellij
 *.iml
 .idea
+.gradle
+build/
 tmp
 classes
 
