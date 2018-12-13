@@ -42,6 +42,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +97,7 @@ public final class Intents {
         Intent intent = new Intent(context, SensorService.class);
         intent.putExtra(SESSION_SERVICE_TASK, START_SENSORS);
 
-        context.startService(intent);
+        ContextCompat.startForegroundService(context, intent);
     }
 
     public static void stopSensors(Context context) {

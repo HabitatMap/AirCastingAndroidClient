@@ -20,6 +20,10 @@
 package pl.llp.aircasting.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -35,9 +39,11 @@ import roboguice.service.RoboService;
 public class SensorService extends RoboService {
     public static final int ACTIVE_SENSORS_ID = 2;
 
-    @Inject CurrentSessionSensorManager currentSessionSensorManager;
-    @Inject CurrentSessionManager currentSessionManager;
-    @Inject ExternalSensors externalSensors;
+    @Inject CurrentSessionSensorManager mCurrentSessionSensorManager;
+    @Inject CurrentSessionManager mCurrentSesssionManager;
+    @Inject ExternalSensors mExternalSensors;
+
+    private NotificationManager mNotificationManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -48,34 +54,60 @@ public class SensorService extends RoboService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         switch (Intents.getSensorServiceTask(intent)) {
             case Intents.START_SENSORS:
-                currentSessionSensorManager.startSensors();
+                mCurrentSessionSensorManager.startSensors();
                 break;
             case Intents.STOP_SENSORS:
-                currentSessionSensorManager.stopSensors();
-                if (!currentSessionManager.isSessionRecording()) {
+                mCurrentSessionSensorManager.stopSensors();
+                if (!mCurrentSesssionManager.isSessionRecording()) {
                     stopSelf();
                 }
                 break;
             case Intents.DISCONNECT_SENSORS:
-                currentSessionSensorManager.stopSensors();
-                externalSensors.disconnectAllSensors();
+                mCurrentSessionSensorManager.stopSensors();
+                mExternalSensors.disconnectAllSensors();
                 break;
             case Intents.RESTART_SENSORS:
-                currentSessionSensorManager.restartSensors();
+                mCurrentSessionSensorManager.restartSensors();
                 break;
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.aircasting)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.sensors_are_active))
-                .setAutoCancel(true);
+        if (Build.VERSION.SDK_INT >= 26) {
+            Notification.Builder builder = new Notification.Builder(this, createNotificationChannel(mNotificationManager))
+                    .setSmallIcon(R.drawable.aircasting)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.sensors_are_active))
+                    .setAutoCancel(true);
 
-        Notification notification = builder.build();
-        startForeground(ACTIVE_SENSORS_ID, notification);
+            Notification notification = builder.build();
+
+            startForeground(ACTIVE_SENSORS_ID, notification);
+        } else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.aircasting)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.sensors_are_active))
+                    .setAutoCancel(true);
+
+            Notification notification = builder.build();
+
+            startForeground(ACTIVE_SENSORS_ID, notification);
+        }
 
         return START_STICKY;
+    }
+
+    @RequiresApi(26)
+    private String createNotificationChannel(NotificationManager notificationManager) {
+        String channelId = "sensor_service_channel_id";
+        String channelName = "AirCasting Sensor Service";
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationManager.createNotificationChannel(channel);
+        return channelId;
     }
 }

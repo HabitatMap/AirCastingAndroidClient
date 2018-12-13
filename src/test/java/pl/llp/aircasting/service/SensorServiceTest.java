@@ -44,7 +44,7 @@ public class SensorServiceTest {
 
     @Before
     public void setup() {
-        sensorService.currentSessionManager = mock(CurrentSessionManager.class);
+        sensorService.mCurrentSesssionManager = mock(CurrentSessionManager.class);
         intent = new Intent(mock(Context.class), SensorService.class);
     }
 
@@ -54,23 +54,23 @@ public class SensorServiceTest {
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.currentSessionSensorManager).startSensors();
+        verify(sensorService.mCurrentSessionSensorManager).startSensors();
     }
 
     @Test
     public void shouldStopMeasurementsWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.currentSessionManager.isSessionRecording()).thenReturn(false);
+        when(sensorService.mCurrentSesssionManager.isSessionRecording()).thenReturn(false);
 
         sensorService.onStartCommand(intent, 0, 0);
 
-        verify(sensorService.currentSessionSensorManager).stopSensors();
+        verify(sensorService.mCurrentSessionSensorManager).stopSensors();
     }
 
     @Test
     public void shouldStopSelfWithoutASession() {
         intent.putExtra(Intents.SESSION_SERVICE_TASK, Intents.STOP_SENSORS);
-        when(sensorService.currentSessionManager.isSessionRecording()).thenReturn(false);
+        when(sensorService.mCurrentSesssionManager.isSessionRecording()).thenReturn(false);
         sensorService = spy(sensorService);
 
         sensorService.onStartCommand(intent, 0, 0);
