@@ -31,8 +31,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import roboguice.inject.SharedPreferencesName;
 import roboguice.inject.SystemServiceProvider;
 

@@ -19,9 +19,13 @@
  */
 package pl.llp.aircasting.helper;
 
+import android.util.Base64OutputStream;
+
 import pl.llp.aircasting.model.FixedSessionsMeasurement;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.util.base64.Base64OutputStream;
+//import pl.llp.aircasting.util.base64.Base64OutputStream;
+
+
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -38,7 +42,7 @@ public class GZIPHelper
   public byte[] zippedSession(Session session) throws IOException
   {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream);
+    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream, 0);
     GZIPOutputStream gzip = new GZIPOutputStream(base64OutputStream);
     OutputStreamWriter writer = new OutputStreamWriter(gzip);
     gson.toJson(session, session.getClass(), writer);
@@ -53,7 +57,7 @@ public class GZIPHelper
   public byte[] zippedFixedSessionsMeasurement(FixedSessionsMeasurement fixedSessionsMeasurement) throws IOException
   {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream);
+    Base64OutputStream base64OutputStream = new Base64OutputStream(byteStream, 0);
     GZIPOutputStream gzip = new GZIPOutputStream(base64OutputStream);
     OutputStreamWriter writer = new OutputStreamWriter(gzip);
     gson.toJson(fixedSessionsMeasurement, fixedSessionsMeasurement.getClass(), writer);
