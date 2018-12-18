@@ -68,15 +68,15 @@ public class VisibleSession {
     }
 
     public MeasurementStream getStream() {
-        return session.getStream(sensor.getSensorName());
+        return getSession().getStream(sensor.getSensorName());
     }
 
     public boolean isSessionLocationless() {
-        return session.isLocationless();
+        return getSession().isLocationless();
     }
 
     public boolean isCurrentSessionVisible() {
-        return session == currentSessionManager.getCurrentSession();
+        return getSession() == currentSessionManager.getCurrentSession();
     }
 
     public boolean isVisibleSessionRecording() {
@@ -84,12 +84,12 @@ public class VisibleSession {
     }
 
     public boolean isVisibleSessionViewed() {
-        return session != currentSessionManager.getCurrentSession();
+        return getSession() != currentSessionManager.getCurrentSession();
     }
 
     public boolean isVisibleSessionFixed() {
-        if (session != null) {
-            return session.isFixed();
+        if (getSession() != null) {
+            return getSession().isFixed();
         }
         return false;
     }
@@ -97,8 +97,8 @@ public class VisibleSession {
     public double getAvg(Sensor sensor) {
         String sensorName = sensor.getSensorName();
 
-        if (session.hasStream(sensorName)) {
-            return session.getStream(sensorName).getAvg();
+        if (getSession().hasStream(sensorName)) {
+            return getSession().getStream(sensorName).getAvg();
         } else {
             return 0;
         }
@@ -107,30 +107,30 @@ public class VisibleSession {
     public double getPeak(Sensor sensor) {
         String sensorName = sensor.getSensorName();
 
-        if (session.hasStream(sensorName)) {
-            return session.getStream(sensorName).getPeak();
+        if (getSession().hasStream(sensorName)) {
+            return getSession().getStream(sensorName).getPeak();
         } else {
             return 0;
         }
     }
 
     public Iterable<Note> getSessionNotes() {
-        return session.getNotes();
+        return getSession().getNotes();
     }
 
     public Note getSessionNote(int i) {
-        return session.getNotes().get(i);
+        return getSession().getNotes().get(i);
     }
 
     public int getSessionNoteCount() {
-        return session.getNotes().size();
+        return getSession().getNotes().size();
     }
 
     public List<Measurement> getMeasurements(Sensor sensor) {
         String name = sensor.getSensorName();
 
-        if (session.hasStream(name)) {
-            MeasurementStream stream = session.getStream(name);
+        if (getSession().hasStream(name)) {
+            MeasurementStream stream = getSession().getStream(name);
             return stream.getMeasurements();
         } else {
             return newArrayList();
@@ -138,8 +138,8 @@ public class VisibleSession {
     }
 
     public long getVisibleSessionId() {
-        if (session != null && !isCurrentSessionVisible()) {
-            return session.getId();
+        if (getSession() != null && !isCurrentSessionVisible()) {
+            return getSession().getId();
         }
 
         return Constants.CURRENT_SESSION_FAKE_ID;

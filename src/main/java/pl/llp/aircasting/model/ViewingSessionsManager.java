@@ -2,6 +2,8 @@ package pl.llp.aircasting.model;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -13,6 +15,7 @@ import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.android.Logger;
 import pl.llp.aircasting.api.FixedSessionDriver;
 import pl.llp.aircasting.helper.NoOp;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
@@ -33,6 +36,7 @@ public class ViewingSessionsManager {
     @Inject ContinuousTracker tracker;
     @Inject FixedSessionDriver fixedSessionDriver;
     @Inject Context context;
+    @Inject VisibleSession visibleSession;
 
     private static Map<Long, Session> sessionsForViewing = newHashMap();
     private static Map<Long, Session> fixedSessions = newHashMap();
@@ -76,6 +80,27 @@ public class ViewingSessionsManager {
         }
         sessionsForViewing.put(sessionId, session);
         notifyNewSession(session, false);
+    }
+
+    public void setVisibleSession(long sessionId) {
+        List sessionIds = getSessionIdsList();
+
+        if (!sessionIds.contains(sessionId)) {
+            view(sessionId, NoOp.progressListener());
+        }
+
+        visibleSession.setSession(getSession(sessionId));
+    }
+
+    public void setVisibleSensor(Sensor sensor) {
+        visibleSession.setSensor(sensor);
+    }
+
+    public void setVisibleSensorFromName(long sessionId, String sensorName) {
+        MeasurementStream stream = getMeasurementStream(sessionId, sensorName);
+        Sensor sensor = new Sensor(stream, sessionId);
+
+        visibleSession.setSensor(sensor);
     }
 
     public void addFixedSession(Session session) {
@@ -136,7 +161,7 @@ public class ViewingSessionsManager {
         return fixedSessions.values();
     }
 
-    public long[] getSessionIds() {
+    public long[] getSessionIdsArray() {
         long[] l = new long[sessionsForViewing.size()];
         Set<Long> set = sessionsForViewing.keySet();
         List<Long> list = new ArrayList<Long>(set);
@@ -146,6 +171,13 @@ public class ViewingSessionsManager {
         }
 
         return l;
+    }
+
+    public List getSessionIdsList() {
+        Set<Long> set = sessionsForViewing.keySet();
+        List<Long> list = new ArrayList<Long>(set);
+
+        return list;
     }
 
     public void setStreamingSession(Session session) {

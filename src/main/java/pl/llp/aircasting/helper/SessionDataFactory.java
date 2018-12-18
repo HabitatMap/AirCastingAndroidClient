@@ -1,5 +1,7 @@
 package pl.llp.aircasting.helper;
 
+import android.support.annotation.NonNull;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.activity.ApplicationState;
@@ -34,6 +36,7 @@ public class SessionDataFactory {
         return session;
     }
 
+    @NonNull
     public Sensor getSensor(String sensorName, long sessionId) {
         Sensor sensor;
 
