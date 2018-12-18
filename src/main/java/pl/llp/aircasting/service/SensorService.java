@@ -44,6 +44,7 @@ public class SensorService extends RoboService {
     @Inject ExternalSensors mExternalSensors;
 
     private NotificationManager mNotificationManager;
+    private boolean mServiceStarted = false;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -58,23 +59,37 @@ public class SensorService extends RoboService {
 
         switch (Intents.getSensorServiceTask(intent)) {
             case Intents.START_SENSORS:
-                mCurrentSessionSensorManager.startSensors();
+                if (!mServiceStarted) {
+                    mCurrentSessionSensorManager.startSensors();
+                    startSensorService();
+                    mServiceStarted = true;
+                }
                 break;
             case Intents.STOP_SENSORS:
-                mCurrentSessionSensorManager.stopSensors();
-                if (!mCurrentSesssionManager.isSessionRecording()) {
-                    stopSelf();
+                if (mServiceStarted) {
+                    mCurrentSessionSensorManager.stopSensors();
+                    if (!mCurrentSesssionManager.isSessionRecording()) {
+                        stopSelf();
+                        mServiceStarted = false;
+                    }
                 }
                 break;
             case Intents.DISCONNECT_SENSORS:
                 mCurrentSessionSensorManager.stopSensors();
                 mExternalSensors.disconnectAllSensors();
+                mServiceStarted = false;
                 break;
             case Intents.RESTART_SENSORS:
                 mCurrentSessionSensorManager.restartSensors();
+                startSensorService();
+                mServiceStarted = true;
                 break;
         }
 
+        return START_STICKY;
+    }
+
+    private void startSensorService() {
         if (Build.VERSION.SDK_INT >= 26) {
             Notification.Builder builder = new Notification.Builder(this, createNotificationChannel(mNotificationManager))
                     .setSmallIcon(R.drawable.aircasting)
@@ -96,15 +111,13 @@ public class SensorService extends RoboService {
 
             startForeground(ACTIVE_SENSORS_ID, notification);
         }
-
-        return START_STICKY;
     }
 
     @RequiresApi(26)
     private String createNotificationChannel(NotificationManager notificationManager) {
         String channelId = "sensor_service_channel_id";
         String channelName = "AirCasting Sensor Service";
-        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE);
         channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationManager.createNotificationChannel(channel);
