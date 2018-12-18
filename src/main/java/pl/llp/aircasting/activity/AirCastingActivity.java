@@ -32,6 +32,7 @@ import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 
@@ -56,6 +57,8 @@ import static pl.llp.aircasting.Intents.triggerSync;
 
 public abstract class AirCastingActivity extends AirCastingBaseActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
+    public static final String VISIBLE_SESSION_ID = "visibleSessionId";
+    public static final String VISIBLE_SENSOR_ID = "visibleSensorId";
 
     @InjectView(R.id.gauge_container) View gauges;
 
@@ -76,6 +79,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
+    @Inject ViewingSessionsManager viewingSessionsManager;
 
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
@@ -123,6 +127,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         super.onSaveInstanceState(outState);
 
         outState.putInt(NOTE_INDEX, noteIndex);
+        outState.putInt(VISIBLE_SESSION_ID, (int) visibleSession.getVisibleSessionId());
+        outState.putString(VISIBLE_SENSOR_ID, visibleSession.getSensor().getSensorName());
     }
 
     @Override
@@ -130,6 +136,11 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         super.onRestoreInstanceState(savedInstanceState);
 
         noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+        int visibleSessionId = savedInstanceState.getInt(VISIBLE_SESSION_ID);
+        String visibleSensorName = savedInstanceState.getString(VISIBLE_SENSOR_ID);
+
+        viewingSessionsManager.setVisibleSession(visibleSessionId);
+        viewingSessionsManager.setVisibleSensorFromName(visibleSessionId, visibleSensorName);
     }
 
     private void updateKeepScreenOn() {
