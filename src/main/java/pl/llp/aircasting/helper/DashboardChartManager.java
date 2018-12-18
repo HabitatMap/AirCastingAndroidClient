@@ -31,64 +31,66 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class DashboardChartManager {
-    @Inject CurrentSessionManager currentSessionManager;
-    @Inject ResourceHelper resourceHelper;
-    @Inject Context context;
-    @Inject SessionDataFactory sessionData;
+    @Inject CurrentSessionManager mCurrentSessionManager;
+    @Inject ResourceHelper mResourceHelper;
+    @Inject Context mContext;
+    @Inject SessionDataFactory mSessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static String FIXED_LABEL = "1 hr avg";
     private final static String MOBILE_LABEL = "1 min avg";
-    private static Map<String, Boolean> staticChartGeneratedForStream = newHashMap();
-    private static Map<String, List> averages = newHashMap();
-    private static String requestedSensorName;
-    private static String requestedStreamKey;
-    private static long requestedSessionId;
-    private boolean isSessionCurrent;
-    private boolean isSessionFixed;
-    private Handler handler = new Handler();
+    private static Map<String, Boolean> mStaticChartGeneratedForStream = newHashMap();
+    private static Map<String, List> mAverages = newHashMap();
+    private Sensor mSensor;
+    private static String mRequestedSensorName;
+    private static String mRequestedStreamKey;
+    private static long mRequestedSessionId;
+    private boolean mIsSessionCurrent;
+    private boolean mIsSessionFixed;
+    private Handler mHandler = new Handler();
 
     private Runnable updateEntriesTask = new Runnable() {
         @Override
         public void run() {
             allowChartUpdate();
-            handler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
+            mHandler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
         }
     };
 
     public void start() {
         resetState();
-        handler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
+        mHandler.postDelayed(updateEntriesTask, MOBILE_INTERVAL);
     }
 
     public void stop() {
         resetState();
-        handler.removeCallbacks(updateEntriesTask);
+        mHandler.removeCallbacks(updateEntriesTask);
     }
 
     private void resetState() {
-        averages.clear();
+        mAverages.clear();
         resetAllStaticCharts();
     }
 
     public void resetAllStaticCharts() {
-        staticChartGeneratedForStream.clear();
+        mStaticChartGeneratedForStream.clear();
     }
 
     public void resetSpecificStaticCharts(Long sessionId, String[] sensors) {
         for (String sensorName : sensors) {
-            staticChartGeneratedForStream.remove(getKey(sessionId, sensorName));
+            mStaticChartGeneratedForStream.remove(getKey(sessionId, sensorName));
         }
     }
 
     public void drawChart(View view, final Sensor sensor, long sessionId) {
-        requestedSensorName = sensor.getSensorName();
-        requestedSessionId = sessionId;
+        mSensor = sensor;
+        mRequestedSensorName = sensor.getSensorName();
+        mRequestedSessionId = sessionId;
         MeasurementStream stream = getStream();
-        isSessionCurrent = requestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
-        isSessionFixed = sessionData.getSession(sessionId).isFixed();
-        requestedStreamKey = getKey(requestedSessionId, requestedSensorName);
+        mIsSessionCurrent = mRequestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
+        mIsSessionFixed = mSessionData.getSession(sessionId).isFixed();
+        mRequestedStreamKey = getKey(mRequestedSessionId, mRequestedSensorName);
         LineChart chart = (LineChart) view.findViewById(R.id.chart);
 
         chart.clear();
@@ -106,16 +108,16 @@ public class DashboardChartManager {
     }
 
     private void initStaticChart(MeasurementStream stream) {
-        if (!isSessionCurrent) {
-            if (isSessionFixed) {
+        if (!mIsSessionCurrent) {
+            if (mIsSessionFixed) {
                 List<Entry> entries = ChartAveragesCreator.getFixedEntries(stream);
-                averages.put(getKey(requestedSessionId, stream.getSensorName()), Lists.reverse(entries));
-            } else if (!isSessionFixed && shouldStaticChartInitialize()) {
+                mAverages.put(getKey(mRequestedSessionId, stream.getSensorName()), Lists.reverse(entries));
+            } else if (!mIsSessionFixed && shouldStaticChartInitialize()) {
                 List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
-                averages.put(requestedStreamKey, Lists.reverse(entries));
+                mAverages.put(mRequestedStreamKey, Lists.reverse(entries));
             }
 
-            staticChartGeneratedForStream.put(requestedStreamKey, true);
+            mStaticChartGeneratedForStream.put(mRequestedStreamKey, true);
         }
     }
 
@@ -180,14 +182,14 @@ public class DashboardChartManager {
         dataSet.setDrawHighlightIndicators(false);
         dataSet.setCircleColors(colors);
 
-        int color = context.getResources().getColor(R.color.gray);
+        int color = mContext.getResources().getColor(R.color.gray);
         dataSet.setColor(color);
 
         return dataSet;
     }
 
     private String getDatasetLabel(String unitSymbol) {
-        if (sessionData.getSession(requestedSessionId).isFixed()) {
+        if (mSessionData.getSession(mRequestedSessionId).isFixed()) {
             return FIXED_LABEL + " - " + unitSymbol;
         } else {
             return MOBILE_LABEL + " - " + unitSymbol;
@@ -195,26 +197,25 @@ public class DashboardChartManager {
     }
 
     private void allowChartUpdate() {
-        List<MeasurementStream> streams = (List) currentSessionManager.getMeasurementStreams();
+        List<MeasurementStream> streams = (List) mCurrentSessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
             String streamKey = getKey(Constants.CURRENT_SESSION_FAKE_ID, stream.getSensorName());
             List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
 
-            averages.put(streamKey, Lists.reverse(entries));
+            mAverages.put(streamKey, Lists.reverse(entries));
         }
     }
 
     private boolean shouldStaticChartInitialize() {
-        return !staticChartGeneratedForStream.containsKey(requestedStreamKey);
+        return !mStaticChartGeneratedForStream.containsKey(mRequestedStreamKey);
     }
 
     private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
-            Sensor sensor = getSensor();
-            colors.add(resourceHelper.getColorAbsolute(sensor, entry.getY()));
+            colors.add(mResourceHelper.getColorAbsolute(mSensor, entry.getY()));
         }
 
         return colors;
@@ -225,18 +226,12 @@ public class DashboardChartManager {
     }
 
     private List<Entry> getEntriesForCurrentStream() {
-        return averages.get(requestedStreamKey);
+        return mAverages.get(mRequestedStreamKey);
     }
 
     private MeasurementStream getStream() {
-        MeasurementStream stream = sessionData.getStream(requestedSensorName, requestedSessionId);
+        MeasurementStream stream = mSessionData.getStream(mRequestedSensorName, mRequestedSessionId);
         return stream;
-    }
-
-    private Sensor getSensor() {
-        Sensor sensor = sessionData.getSensor(requestedSensorName, requestedSessionId);
-
-        return sensor;
     }
 
     public class MyValueFormatter implements IValueFormatter {
