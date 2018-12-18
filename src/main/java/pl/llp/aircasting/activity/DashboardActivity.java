@@ -36,7 +36,6 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject VisibleSession visibleSession;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SessionDataFactory sessionData;
 
@@ -100,7 +99,10 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void onPostResume() {
         startUpdatingFixedSessions();
 
-        startSensors(context);
+        if (currentSessionSensorManager.anySensorConnected()) {
+            startSensors(context);
+        }
+
         invalidateOptionsMenu();
 
         super.onPostResume();
@@ -123,7 +125,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putLongArray(VIEWING_SESSIONS_IDS, viewingSessionsManager.getSessionIds());
+        outState.putLongArray(VIEWING_SESSIONS_IDS, viewingSessionsManager.getSessionIdsArray());
     }
 
     @Subscribe
@@ -241,8 +243,8 @@ public class DashboardActivity extends DashboardBaseActivity {
         Session session = sessionData.getSession(sessionId);
         Sensor sensor = sessionData.getSensor(sensorName, sessionId);
 
-        visibleSession.setSession(session);
-        visibleSession.setSensor(sensor);
+        viewingSessionsManager.setVisibleSession(sessionId);
+        viewingSessionsManager.setVisibleSensor(sensor);
 
         if (session.isFixed() && session.isIndoor()) {
             startActivity(new Intent(context, GraphActivity.class));
