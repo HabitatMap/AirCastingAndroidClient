@@ -18,6 +18,7 @@ import pl.llp.aircasting.activity.events.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.activity.events.ToggleSessionReorderEvent;
 import pl.llp.aircasting.activity.fragments.DashboardListFragment;
 import pl.llp.aircasting.helper.SessionDataFactory;
+import pl.llp.aircasting.helper.SessionState;
 import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.activity.events.SensorConnectedEvent;
@@ -38,6 +39,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SessionDataFactory sessionData;
+    @Inject SessionState sessionState;
 
     private Handler handler = new Handler() {};
 
@@ -243,8 +245,13 @@ public class DashboardActivity extends DashboardBaseActivity {
         Session session = sessionData.getSession(sessionId);
         Sensor sensor = sessionData.getSensor(sensorName, sessionId);
 
-        viewingSessionsManager.setVisibleSession(sessionId);
-        viewingSessionsManager.setVisibleSensor(sensor);
+        if (!sessionState.isSessionCurrent(sessionId)) {
+            viewingSessionsManager.setVisibleSession(sessionId);
+            viewingSessionsManager.setVisibleSensor(sensor);
+        } else {
+            currentSessionManager.setVisibleSession(session);
+            currentSessionManager.setVisibleSensor(sensor);
+        }
 
         if (session.isFixed() && session.isIndoor()) {
             startActivity(new Intent(context, GraphActivity.class));

@@ -10,6 +10,7 @@ out
 build/
 tmp
 classes
+release/
 
 # android
 R.java
