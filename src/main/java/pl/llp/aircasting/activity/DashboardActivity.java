@@ -243,8 +243,13 @@ public class DashboardActivity extends DashboardBaseActivity {
         Session session = sessionData.getSession(sessionId);
         Sensor sensor = sessionData.getSensor(sensorName, sessionId);
 
-        viewingSessionsManager.setVisibleSession(sessionId);
-        viewingSessionsManager.setVisibleSensor(sensor);
+        if (!sessionState.isSessionCurrent(sessionId)) {
+            viewingSessionsManager.setVisibleSession(sessionId);
+            viewingSessionsManager.setVisibleSensor(sensor);
+        } else {
+            currentSessionManager.setVisibleSession(session);
+            currentSessionManager.setVisibleSensor(sensor);
+        }
 
         if (session.isFixed() && session.isIndoor()) {
             startActivity(new Intent(context, GraphActivity.class));

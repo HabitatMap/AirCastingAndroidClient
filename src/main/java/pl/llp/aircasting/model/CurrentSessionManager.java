@@ -74,6 +74,7 @@ public class CurrentSessionManager {
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
     @Inject ApplicationState state;
+    @Inject VisibleSession visibleSession;
 
     @NotNull Session currentSession = new Session();
 
@@ -285,6 +286,14 @@ public class CurrentSessionManager {
     public void setTitleTags(long sessionId, String title, String tags) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);
+    }
+
+    public void setVisibleSession(Session session) {
+        visibleSession.setSession(session);
+    }
+
+    public void setVisibleSensor(Sensor sensor) {
+        visibleSession.setSensor(sensor);
     }
 
     public void updateNote(final Note currentNote) {
