@@ -61,9 +61,9 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        if (currentSessionSensorManager.anySensorConnected()) {
-            Intents.stopSensors(context);
-        }
+//        if (currentSessionSensorManager.anySensorConnected()) {
+//            Intents.stopSensors(context);
+//        }
 
         locationHelper.stop();
 

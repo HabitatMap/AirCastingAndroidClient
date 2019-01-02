@@ -117,7 +117,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopSensors(context);
+//        stopSensors(context);
         handler.removeCallbacks(pollServerTask);
     }
 
