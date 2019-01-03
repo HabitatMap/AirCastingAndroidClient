@@ -37,7 +37,6 @@ public class Session implements Serializable {
     @Expose @SerializedName("tag_list") private String tags;
     @Expose @SerializedName("os_version") private String osVersion;
     @Expose @SerializedName("phone_model") private String phoneModel;
-    @Expose @SerializedName("offset_60_db") private int offset60DB;
     @Expose @SerializedName("deleted") private boolean markedForRemoval;
     @Expose @SerializedName("start_time") private Date start = new Date();
     @Expose @SerializedName("end_time") private Date end;
@@ -189,14 +188,6 @@ public class Session implements Serializable {
 
     public void setPhoneModel(String phoneModel) {
         this.phoneModel = phoneModel;
-    }
-
-    public int getOffset60DB() {
-        return offset60DB;
-    }
-
-    public void setOffset60DB(int offset60DB) {
-        this.offset60DB = offset60DB;
     }
 
     public boolean isMarkedForRemoval() {

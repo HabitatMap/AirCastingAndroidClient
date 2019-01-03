@@ -17,7 +17,6 @@ public class UncalibratedMeasurementCalibrator
   @Language("SQL")
   public static final String FETCH_CALIBRATION = "SELECT "
       + SESSION_ID + ", "
-      + SESSION_OFFSET_60_DB + ", "
       + SESSION_CALIBRATION
       + " FROM " + SESSION_TABLE_NAME;
 
@@ -50,10 +49,9 @@ public class UncalibratedMeasurementCalibrator
         while(!calibrations.isAfterLast())
         {
           long sessionId = calibrations.getLong(0);
-          int offset60DB = calibrations.getInt(1);
           int calibration = calibrations.getInt(2);
 
-          calibrateMeasurementsInSession(writableDatabase, sessionId, offset60DB, calibration);
+          calibrateMeasurementsInSession(writableDatabase, sessionId, calibration);
           markSessionAsCalibrated(writableDatabase, sessionId);
 
           calibrations.moveToNext();
@@ -73,7 +71,7 @@ public class UncalibratedMeasurementCalibrator
     db.execSQL(query);
   }
 
-  private void calibrateMeasurementsInSession(SQLiteDatabase db, long sessionId, int offset60DB, int calibration)
+  private void calibrateMeasurementsInSession(SQLiteDatabase db, long sessionId, int calibration)
   {
     @Language("SQL")
     String q = "" +
@@ -109,7 +107,7 @@ public class UncalibratedMeasurementCalibrator
         long id = measurement.getLong(0);
         double value = measurement.getDouble(1);
 
-        double calibrated = calibrations.calibrate(value, calibration, offset60DB);
+        double calibrated = calibrations.calibrate(value, calibration);
 
         st.bindDouble(1, calibrated);
         st.bindLong(2, id);

@@ -47,12 +47,6 @@
                                            android:title="@string/calibration"
                                            android:summary="@string/calibration_summary"
     />
-    <android.preference.EditTextPreference android:defaultValue="0"
-                                           android:numeric="signed"
-                                           android:key="offset_60_db"
-                                           android:title="@string/offset_60_db"
-                                           android:summary="@string/offset_60_db_summary"
-    />
 
     <android.preference.EditTextPreference android:defaultValue="10"
                                            android:numeric="integer"

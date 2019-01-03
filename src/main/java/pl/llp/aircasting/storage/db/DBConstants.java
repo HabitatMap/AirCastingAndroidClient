@@ -44,7 +44,6 @@ public interface DBConstants
   String SESSION_PHONE_MODEL = "PhoneModel";
 
   String SESSION_OS_VERSION = "OSVersion";
-  String SESSION_OFFSET_60_DB = "Offset60DB";
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
   String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
   String SESSION_CALIBRATED = "is_calibrated";

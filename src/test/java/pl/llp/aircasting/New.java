@@ -24,7 +24,6 @@ public class New
 
   public static Session session() {
     Session sess = new Session();
-    sess.setOffset60DB(random.nextInt(100));
     sess.setCalibration(random.nextInt(5));
     sess.setStart(new Date());
     sess.setEnd(new Date());

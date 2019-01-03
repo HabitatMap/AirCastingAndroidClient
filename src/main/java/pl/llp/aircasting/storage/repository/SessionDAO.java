@@ -49,7 +49,6 @@ public class SessionDAO {
         session.setUuid(UUID.fromString(getString(cursor, SESSION_UUID)));
         session.setLocation(getString(cursor, SESSION_LOCATION));
         session.setCalibration(getInt(cursor, SESSION_CALIBRATION));
-        session.setOffset60DB(getInt(cursor, SESSION_OFFSET_60_DB));
         session.setContribute(getBool(cursor, SESSION_CONTRIBUTE));
         session.setOsVersion(getString(cursor, SESSION_OS_VERSION));
         session.setPhoneModel(getString(cursor, SESSION_PHONE_MODEL));
@@ -76,7 +75,6 @@ public class SessionDAO {
         values.put(SESSION_CONTRIBUTE, session.getContribute());
         values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
         values.put(SESSION_OS_VERSION, session.getOSVersion());
-        values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
         values.put(SESSION_MARKED_FOR_REMOVAL, session.isMarkedForRemoval() ? 1 : 0);
         values.put(SESSION_SUBMITTED_FOR_REMOVAL, session.isSubmittedForRemoval() ? 1 : 0);
         values.put(SESSION_CALIBRATED, 1);

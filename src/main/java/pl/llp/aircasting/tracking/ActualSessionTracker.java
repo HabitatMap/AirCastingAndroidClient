@@ -51,7 +51,6 @@ public class ActualSessionTracker implements SessionTracker {
 
         session.setLocationless(this.settingsHelper.areMapsDisabled() || locationLess);
         session.setCalibration(this.settingsHelper.getCalibration());
-        session.setOffset60DB(this.settingsHelper.getOffset60DB());
 
         session.setOsVersion(this.metadataHelper.getOSVersion());
         session.setPhoneModel(this.metadataHelper.getPhoneModel());
@@ -141,7 +140,6 @@ public class ActualSessionTracker implements SessionTracker {
                 values.put(SESSION_CALIBRATION, session.getCalibration());
                 values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
                 values.put(SESSION_OS_VERSION, session.getOSVersion());
-                values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
                 values.put(SESSION_MARKED_FOR_REMOVAL, 0);
                 values.put(SESSION_SUBMITTED_FOR_REMOVAL, 0);
                 values.put(SESSION_CALIBRATED, 1);

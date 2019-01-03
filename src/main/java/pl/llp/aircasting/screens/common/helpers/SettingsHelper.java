@@ -46,7 +46,6 @@ public class SettingsHelper {
     public static final String USER_LOGIN = "user_login";
     public static final String USER_EMAIL = "user_email";
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
-    public static final String OFFSET_60_DB = "offset_60_db";
     public static final String CALIBRATION = "calibration";
     public static final String SATELLITE = "satellite";
     public static final String BACKEND = "backend";
@@ -63,9 +62,6 @@ public class SettingsHelper {
     public static final int DEFAULT_BACKEND_PORT = 80;
     public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
     public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
-    public static final int DEFAULT_OFFSET_60_DB = 0;
-    public static final int MIN_OFFSET_60_DB = -5;
-    public static final int MAX_OFFSET_60_DB = 5;
     public static final String SAMPLE_INTERVAL = "sample_interval";
     public static final String AVERAGING_TIME = "averaging_time";
     private static final int MIN_AVERAGING_TIME = 1;
@@ -197,14 +193,6 @@ public class SettingsHelper {
         return preferences.getBoolean(KEEP_SCREEN_ON, DEFAULT_KEEP_SCREEN_ON);
     }
 
-    public int getOffset60DB() {
-        return getInt(OFFSET_60_DB, DEFAULT_OFFSET_60_DB);
-    }
-
-    public boolean validateOffset60DB(int newValue) {
-        return validateRange(newValue, MIN_OFFSET_60_DB, MAX_OFFSET_60_DB);
-    }
-
     private boolean validateRange(String key, int value, int min, int max) {
         if (value < min) {
             writeString(key, Integer.toString(min));
@@ -216,10 +204,6 @@ public class SettingsHelper {
         }
 
         return true;
-    }
-
-    private boolean validateRange(int value, int max, int min) {
-        return value >= min && value <= max;
     }
 
     public boolean validateAveragingTime() {
@@ -262,7 +246,6 @@ public class SettingsHelper {
 
     private boolean isNumericPreference(String key) {
         return key.equals(CALIBRATION) ||
-                key.equals(OFFSET_60_DB) ||
                 key.equals(HEAT_MAP_DENSITY) ||
                 key.equals(BACKEND_PORT) ||
                 key.equals(SAMPLE_INTERVAL);
