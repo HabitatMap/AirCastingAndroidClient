@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="pl.llp.aircasting" android:versionCode="87" android:versionName="1.5.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="pl.llp.aircasting" android:versionCode="88" android:versionName="1.5.3">
 
   <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
 

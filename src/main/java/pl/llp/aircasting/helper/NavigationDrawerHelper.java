@@ -19,11 +19,10 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.activity.*;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
-import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 
 import static android.Manifest.permission.RECORD_AUDIO;
-import static pl.llp.aircasting.activity.DashboardActivity.MY_PERMISSIONS_REQUEST_RECORD_AUDIO;
+import static pl.llp.aircasting.util.Constants.MY_PERMISSIONS_REQUEST_RECORD_AUDIO;
 
 /**
  * Created by radek on 09/06/17.

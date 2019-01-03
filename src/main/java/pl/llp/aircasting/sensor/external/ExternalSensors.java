@@ -29,7 +29,7 @@ public class ExternalSensors {
     public static final String ZEPHYR_BIOHARNESS = "BH BHT";
     public static final String ZEPHYR_HEART_RATE_MONITOR = "HXM";
     public static final String IOIO_DISPLAY_STRIP = "IOIO";
-    public static final String AIRBEAM = "Airbeam";
+    public static final String AIRBEAM = "airbeam";
 
     final Map<String, AbstractSensor> sensors = newHashMap();
 
@@ -69,7 +69,7 @@ public class ExternalSensors {
         if (Strings.isNullOrEmpty(sensorName)) {
             return new ExternalSensor(descriptor, eventBus, bluetoothAdapter);
         }
-        if (sensorName.startsWith(AIRBEAM)) {
+        if (sensorName.toLowerCase().startsWith(AIRBEAM)) {
             return new AirbeamSensor(descriptor, eventBus, bluetoothAdapter);
         }
         if (sensorName.startsWith(ZEPHYR_BIOHARNESS)) {

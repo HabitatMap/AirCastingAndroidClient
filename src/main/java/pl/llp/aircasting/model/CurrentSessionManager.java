@@ -26,6 +26,7 @@ import pl.llp.aircasting.activity.events.SessionStartedEvent;
 import pl.llp.aircasting.activity.events.SessionStoppedEvent;
 import pl.llp.aircasting.helper.LocationHelper;
 import pl.llp.aircasting.helper.NotificationHelper;
+import pl.llp.aircasting.helper.VisibleSession;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -74,6 +75,7 @@ public class CurrentSessionManager {
     @Inject ExternalSensors externalSensors;
     @Inject ContinuousTracker tracker;
     @Inject ApplicationState state;
+    @Inject VisibleSession visibleSession;
 
     @NotNull Session currentSession = new Session();
 
@@ -285,6 +287,14 @@ public class CurrentSessionManager {
     public void setTitleTags(long sessionId, String title, String tags) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);
+    }
+
+    public void setVisibleSession(Session session) {
+        visibleSession.setSession(session);
+    }
+
+    public void setVisibleSensor(Sensor sensor) {
+        visibleSession.setSensor(sensor);
     }
 
     public void updateNote(final Note currentNote) {

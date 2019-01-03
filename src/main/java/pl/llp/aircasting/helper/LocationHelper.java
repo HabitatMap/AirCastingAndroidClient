@@ -22,10 +22,15 @@ package pl.llp.aircasting.helper;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.util.Constants;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -36,18 +41,21 @@ public class LocationHelper implements LocationListener {
 
     @Inject LocationManager locationManager;
     @Inject EventBus eventBus;
+    @Inject Context context;
 
     private Location lastLocation;
     private int starts;
 
     public synchronized void start() {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
-        updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-        updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+            updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+            updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 
-        starts += 1;
+            starts += 1;
+        }
     }
 
     public synchronized void stop() {

@@ -118,7 +118,6 @@ public class SensorService extends RoboService {
         String channelId = "sensor_service_channel_id";
         String channelName = "AirCasting Sensor Service";
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE);
-        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationManager.createNotificationChannel(channel);
         return channelId;

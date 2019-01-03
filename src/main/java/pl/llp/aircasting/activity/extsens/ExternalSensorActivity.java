@@ -11,6 +11,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 
@@ -94,7 +95,7 @@ public class ExternalSensorActivity extends DialogActivity {
                     }, sleepTime);
 
                     finish();
-                } else if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
+                } else if (configurationRequired && connected.getName().toLowerCase().startsWith(ExternalSensors.AIRBEAM)) {
                     ToastHelper.show(context, R.string.configuring_airbeam, (int) sleepTime);
 
                     handler.postDelayed(new Runnable() {
