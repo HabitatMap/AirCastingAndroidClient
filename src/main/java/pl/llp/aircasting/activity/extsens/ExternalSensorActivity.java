@@ -94,7 +94,7 @@ public class ExternalSensorActivity extends DialogActivity {
                     }, sleepTime);
 
                     finish();
-                } else if (configurationRequired && connected.getName().startsWith(ExternalSensors.AIRBEAM)) {
+                } else if (configurationRequired && connected.getName().toLowerCase().startsWith(ExternalSensors.AIRBEAM)) {
                     ToastHelper.show(context, R.string.configuring_airbeam, (int) sleepTime);
 
                     handler.postDelayed(new Runnable() {

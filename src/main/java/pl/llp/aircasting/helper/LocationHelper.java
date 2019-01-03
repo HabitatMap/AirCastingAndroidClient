@@ -22,10 +22,12 @@ package pl.llp.aircasting.helper;
 import pl.llp.aircasting.event.sensor.LocationEvent;
 import pl.llp.aircasting.util.Constants;
 
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -36,6 +38,7 @@ public class LocationHelper implements LocationListener {
 
     @Inject LocationManager locationManager;
     @Inject EventBus eventBus;
+    @Inject Context context;
 
     private Location lastLocation;
     private int starts;
