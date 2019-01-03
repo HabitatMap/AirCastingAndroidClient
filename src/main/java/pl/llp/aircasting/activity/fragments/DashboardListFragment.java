@@ -16,9 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.activity.ApplicationState;
 import pl.llp.aircasting.activity.DashboardActivity;
-import pl.llp.aircasting.activity.DashboardBaseActivity;
 import pl.llp.aircasting.activity.adapter.StreamAdapter;
 import pl.llp.aircasting.activity.adapter.StreamAdapterFactory;
 import pl.llp.aircasting.activity.extsens.ExternalSensorActivity;
@@ -26,9 +24,9 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToastHelper;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.RECORD_AUDIO;
-import static pl.llp.aircasting.activity.DashboardActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
-import static pl.llp.aircasting.activity.DashboardActivity.MY_PERMISSIONS_REQUEST_RECORD_AUDIO;
+import static pl.llp.aircasting.util.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
 /**
  * Created by radek on 28/06/17.
@@ -127,22 +125,14 @@ public class DashboardListFragment extends ListFragment implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        if (ContextCompat.checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, new String[]{ ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-            return;
+        if (!activity.hasPermissions(activity, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSIONS_ALL);
         }
 
         switch(view.getId()) {
             case R.id.dashboard_microphone:
                 DashboardActivity activity = (DashboardActivity) context;
-
-                if (ContextCompat.checkSelfPermission(activity, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity,
-                            new String[]{ RECORD_AUDIO }, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-                } else {
-                    activity.connectPhoneMicrophone();
-                }
-
+                activity.connectPhoneMicrophone();
                 setListAdapter(adapter);
                 break;
             case R.id.dashboard_sensors:

@@ -1,5 +1,6 @@
 package pl.llp.aircasting.activity;
 
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
@@ -14,11 +15,14 @@ import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 
-import java.util.concurrent.TimeUnit;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
 /**
  * A common superclass for activities that want to display left/right
@@ -41,6 +45,15 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     private boolean initialized = false;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -60,10 +73,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Override
     protected void onPause() {
         super.onPause();
-
-//        if (currentSessionSensorManager.anySensorConnected()) {
-//            Intents.stopSensors(context);
-//        }
 
         locationHelper.stop();
 
@@ -125,6 +134,17 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
             return false;
         }
 
+        return true;
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 }

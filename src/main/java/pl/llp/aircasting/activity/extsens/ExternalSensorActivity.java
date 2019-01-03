@@ -11,6 +11,7 @@ import pl.llp.aircasting.helper.SettingsHelper;
 import pl.llp.aircasting.helper.ToastHelper;
 import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.Airbeam2Configurator;
+import pl.llp.aircasting.sensor.external.ExternalSensor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.Constants;
 

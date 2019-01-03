@@ -1,5 +1,7 @@
 package pl.llp.aircasting.util;
 
+import android.Manifest;
+
 import java.util.concurrent.TimeUnit;
 
 public class Constants
@@ -33,4 +35,14 @@ public class Constants
   {
     return false;
   }
+
+  public static final String[] PERMISSIONS = {
+          Manifest.permission.ACCESS_FINE_LOCATION,
+          Manifest.permission.ACCESS_COARSE_LOCATION,
+          Manifest.permission.RECORD_AUDIO,
+  };
+
+  public static final Integer MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+  public static final Integer MY_PERMISSIONS_REQUEST_FINE_LOCATION = 2;
+  public static final Integer PERMISSIONS_ALL = 3;
 }
