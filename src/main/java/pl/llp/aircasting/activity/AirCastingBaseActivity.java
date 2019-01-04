@@ -78,7 +78,9 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 //            Intents.stopSensors(context);
 //        }
 
-        locationHelper.stop();
+        if (!currentSessionManager.isSessionRecording()) {
+            locationHelper.stop();
+        }
 
         if (registeredReceiver != null) {
             unregisterReceiver(syncBroadcastReceiver);

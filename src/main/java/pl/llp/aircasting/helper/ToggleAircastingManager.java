@@ -59,7 +59,6 @@ public class ToggleAircastingManager {
     }
 
     private void stopMobileAirCasting(Session session) {
-        locationHelper.stop();
         Long sessionId = session.getId();
         if (session.isEmpty()) {
             ToastHelper.show(context, R.string.no_data, Toast.LENGTH_SHORT);

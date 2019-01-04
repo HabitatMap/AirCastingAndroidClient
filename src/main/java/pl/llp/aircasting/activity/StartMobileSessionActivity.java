@@ -59,6 +59,8 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     }
 
     private void startMobileSession() {
+        locationHelper.start();
+
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
 

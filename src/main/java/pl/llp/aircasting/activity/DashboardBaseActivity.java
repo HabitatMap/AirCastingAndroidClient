@@ -50,6 +50,8 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
+        } else {
+            locationHelper.start();
         }
     }
 
@@ -74,7 +76,9 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
-        locationHelper.stop();
+        if (!currentSessionManager.isSessionRecording()) {
+            locationHelper.stop();
+        }
 
         if (registeredReceiver != null) {
             unregisterReceiver(syncBroadcastReceiver);

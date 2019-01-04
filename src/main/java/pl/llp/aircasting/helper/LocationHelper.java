@@ -30,6 +30,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.widget.Toast;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -47,14 +48,14 @@ public class LocationHelper implements LocationListener {
     private int starts;
 
     public synchronized void start() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
             updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
-            updateLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 
             starts += 1;
+        } else {
+            ToastHelper.showText(context, "The app needs a permission to access your location data", Toast.LENGTH_SHORT);
         }
     }
 
