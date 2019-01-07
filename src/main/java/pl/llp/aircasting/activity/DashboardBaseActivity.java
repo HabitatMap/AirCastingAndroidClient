@@ -87,6 +87,15 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         eventBus.unregister(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (!currentSessionManager.isSessionRecording()) {
+            Intents.stopSensors(this);
+        }
+    }
+
     private void initialize() {
         toggleAircastingManager = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
 
