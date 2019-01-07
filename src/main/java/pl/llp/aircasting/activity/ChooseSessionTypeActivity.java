@@ -44,7 +44,6 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
         switch(view.getId()) {
             case R.id.mobile_session_button:
                 airbeam2Configurator.configureBluetooth();
-                Intents.restartSensors(context);
                 Intents.startDashboardActivity(this);
                 break;
             case R.id.fixed_session_button:

@@ -96,6 +96,8 @@ public class ExternalSensorActivity extends DialogActivity {
 
                     finish();
                 } else if (configurationRequired && connected.getName().toLowerCase().startsWith(ExternalSensors.AIRBEAM)) {
+                    Intents.restartSensors(context);
+
                     ToastHelper.show(context, R.string.configuring_airbeam, (int) sleepTime);
 
                     handler.postDelayed(new Runnable() {
