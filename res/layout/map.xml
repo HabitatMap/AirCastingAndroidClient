@@ -25,7 +25,7 @@
             android:id="@+id/mapview"
             android:layout_weight="1"
             android:clickable="true"
-            android:apiKey="@string/com.google.android.geo.API_KEY"
+            android:apiKey="@string/com.google.android.geo.MAPS_KEY"
             />
 
     <pl.llp.aircasting.view.TouchPane style="@style/Fill"
