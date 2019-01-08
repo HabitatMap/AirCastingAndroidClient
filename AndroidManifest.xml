@@ -34,7 +34,7 @@
       </intent-filter>
     </activity>
 
-    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
+    <activity android:label="@string/app_name" android:name=".activity.GraphActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
 
     <activity android:label="@string/app_name" android:name=".activity.SessionsActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
 
@@ -54,7 +54,7 @@
 
     <activity android:label="@string/session_options" android:name=".activity.OpenFixedSessionActivity" android:theme="@style/Dialog"/>
 
-    <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask"/>
+    <activity android:name=".activity.AirCastingMapActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
 
     <activity android:name=".activity.AboutActivity" android:theme="@style/AirCastingTheme"/>
 
