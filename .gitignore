@@ -19,6 +19,7 @@ proguard_logs
 *.keystore
 gen
 gen-external-apklibs/
+release/
 
 res/values/api_keys.xml
 
