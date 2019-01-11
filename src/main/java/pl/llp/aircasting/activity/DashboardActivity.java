@@ -31,6 +31,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SessionDataFactory sessionData;
     @Inject SessionState sessionState;
@@ -95,7 +96,7 @@ public class DashboardActivity extends DashboardBaseActivity {
     public void onPostResume() {
         startUpdatingFixedSessions();
 
-        if (currentSessionSensorManager.anySensorConnected()) {
+        if (viewingSessionsManager.anySessionPresent() || currentSessionSensorManager.anySensorConnected()) {
             startSensors(context);
         }
 

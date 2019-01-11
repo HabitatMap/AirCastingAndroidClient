@@ -32,7 +32,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
@@ -60,10 +59,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         super.onResume();
 
         initialize();
-
-        if (currentSessionSensorManager.anySensorConnected()) {
-            Intents.startSensors(context);
-        }
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
         registeredReceiver = syncBroadcastReceiver;
