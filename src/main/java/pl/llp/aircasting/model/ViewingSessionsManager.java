@@ -212,6 +212,14 @@ public class ViewingSessionsManager {
         return !sessionsForViewing.isEmpty();
     }
 
+    public boolean sessionsEmpty() {
+        return sessionsForViewing.isEmpty();
+    }
+
+    public void setFixedSessionDriver(FixedSessionDriver fixedSessionDriver) {
+        this.fixedSessionDriver = fixedSessionDriver;
+    }
+
     private void notifyNewSession(Session session, boolean newFixedSession) {
         eventBus.post(new SessionLoadedForViewingEvent(session, newFixedSession));
     }

@@ -123,7 +123,7 @@ public final class Intents {
         Intent intent = new Intent(context, SensorService.class);
         intent.putExtra(SESSION_SERVICE_TASK, RESTART_SENSORS);
 
-        context.startService(intent);
+        ContextCompat.startForegroundService(context, intent);
     }
 
     public static void startIOIO(Context context) {

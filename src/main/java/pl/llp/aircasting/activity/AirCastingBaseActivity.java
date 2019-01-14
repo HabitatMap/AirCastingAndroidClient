@@ -7,6 +7,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.helper.*;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
@@ -32,7 +33,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject VisibleSession visibleSession;
+    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject EventBus eventBus;
@@ -70,6 +71,10 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     protected void onPause() {
         super.onPause();
 
+        if (viewingSessionsManager.sessionsEmpty() && !currentSessionManager.isSessionRecording()) {
+            Intents.stopSensors(this);
+        }
+
         if (!currentSessionManager.isSessionRecording()) {
             locationHelper.stop();
         }
@@ -79,15 +84,6 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
             registeredReceiver = null;
         }
         eventBus.unregister(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (!currentSessionManager.isSessionRecording()) {
-            Intents.stopSensors(this);
-        }
     }
 
     @Override

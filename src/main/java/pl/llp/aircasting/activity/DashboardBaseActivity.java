@@ -11,6 +11,7 @@ import pl.llp.aircasting.helper.ToggleAircastingManagerFactory;
 import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.CurrentSessionSensorManager;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.model.ViewingSessionsManager;
 import pl.llp.aircasting.receiver.SyncBroadcastReceiver;
 
 import android.content.Context;
@@ -32,6 +33,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject Context context;
     @Inject EventBus eventBus;
     @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
@@ -71,6 +73,10 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     protected void onPause() {
         super.onPause();
 
+        if (viewingSessionsManager.sessionsEmpty() && !currentSessionManager.isSessionRecording()) {
+            Intents.stopSensors(this);
+        }
+
         if (!currentSessionManager.isSessionRecording()) {
             locationHelper.stop();
         }
@@ -80,15 +86,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
             registeredReceiver = null;
         }
         eventBus.unregister(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (!currentSessionManager.isSessionRecording()) {
-            Intents.stopSensors(this);
-        }
     }
 
     private void initialize() {
