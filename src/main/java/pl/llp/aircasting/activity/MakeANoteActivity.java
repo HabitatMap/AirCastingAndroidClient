@@ -99,19 +99,22 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
         outState.putString(PHOTO_PATH, photoPath);
         outState.putBoolean(PHOTO_ATTACHED, photoAttached);
     }
 
     @Override
     public void onClick(View view) {
-      String text = noteText.getText().toString();
-      if (Strings.isNullOrEmpty(text))
-      {
-        ToastHelper.show(this, R.string.enter_text, Toast.LENGTH_SHORT);
-        return;
-      }
-      switch (view.getId()) {
+        String text = noteText.getText().toString().trim();
+
+        if (Strings.isNullOrEmpty(text)) {
+            ToastHelper.show(this, R.string.enter_text, Toast.LENGTH_SHORT);
+            return;
+        }
+
+        switch (view.getId()) {
             case R.id.save_button:
                 currentSessionManager.makeANote(date, text, photoPath);
                 finish();
