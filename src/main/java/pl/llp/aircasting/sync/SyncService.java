@@ -234,31 +234,46 @@ public class SyncService extends RoboIntentService {
     }
 
     private void downloadSessions(long[] ids) {
-        for (long id : ids) {
-            HttpResult<Session> result = sessionDriver.show(id);
+        for (long id : inverted(ids)) {
+            downloadSingleSession(id);
+        }
+    }
 
-            if (result.getStatus() == Status.SUCCESS) {
-                Session session = result.getContent();
-                if (session == null) {
-                    Logger.w("Session [" + id + "] couldn't ");
-                } else if (!session.isFixed() && session.isIncomplete()) {
-                    Logger.w(String.format("Session [%s] lacks of some measurements.", id));
-                } else {
-                    try {
-                        fixTimesFromUTC(session);
-                        sessionRepository.save(session);
-                    } catch (RepositoryException e) {
-                        Logger.e("Error saving session [" + id + "]", e);
-                    }
+    public void downloadSingleSession(long id) {
+        HttpResult<Session> result = sessionDriver.show(id);
+
+        if (result.getStatus() == Status.SUCCESS) {
+            Session session = result.getContent();
+
+            if (session == null) {
+                Logger.w("Session [" + id + "] couldn't ");
+            } else if (!session.isFixed() && session.isIncomplete()) {
+                Logger.w(String.format("Session [%s] lacks of some measurements.", id));
+            } else {
+                try {
+                    fixTimesFromUTC(session);
+                    sessionRepository.save(session);
+                } catch (RepositoryException e) {
+                    Logger.e("Error saving session [" + id + "]", e);
                 }
             }
-
-            Intents.notifySyncUpdate(context);
         }
+
+        Intents.notifySyncUpdate(context);
     }
 
 
     private void fixTimesFromUTC(Session session) {
         sessionTimes.fromUTCtoLocal(session);
+    }
+
+    long[] inverted(long[] array) {
+        for (int i = 0; i < array.length / 2; i++) {
+            long temp = array[i];
+            array[i] = array[array.length - 1 - i];
+            array[array.length - 1 - i] = temp;
+        }
+
+        return array;
     }
 }
