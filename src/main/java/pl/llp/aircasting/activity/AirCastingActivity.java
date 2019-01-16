@@ -79,7 +79,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
     @Inject GaugeHelper gaugeHelper;
-    @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject SessionDataFactory sessionData;
 
     NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
@@ -139,8 +139,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         int visibleSessionId = savedInstanceState.getInt(VISIBLE_SESSION_ID);
         String visibleSensorName = savedInstanceState.getString(VISIBLE_SENSOR_ID);
 
-        viewingSessionsManager.setVisibleSession(visibleSessionId);
-        viewingSessionsManager.setVisibleSensorFromName(visibleSessionId, visibleSensorName);
+        sessionData.setVisibleSession(visibleSessionId);
+        sessionData.setVisibleSensorFromName(visibleSessionId, visibleSensorName);
     }
 
     private void updateKeepScreenOn() {

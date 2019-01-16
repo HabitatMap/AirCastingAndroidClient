@@ -73,6 +73,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject UncalibratedMeasurementCalibrator calibrator;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     @Inject SyncState syncState;
+    @Inject SyncService syncService;
 
     @InjectView(R.id.sessions_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;

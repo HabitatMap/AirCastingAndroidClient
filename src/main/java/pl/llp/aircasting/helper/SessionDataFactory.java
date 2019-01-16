@@ -23,6 +23,7 @@ public class SessionDataFactory {
     @Inject ViewingSessionsSensorManager viewingSessionsSensorManager;
     @Inject SessionState sessionState;
     @Inject SessionRepository sessionRepository;
+    @Inject VisibleSession visibleSession;
 
     public Session getSession(long sessionId) {
         Session session;
@@ -141,5 +142,30 @@ public class SessionDataFactory {
     public void clearAllViewingSessions() {
         viewingSessionsManager.removeAllSessions();
         viewingSessionsSensorManager.removeAllSessionsSensors();
+    }
+
+    public void setVisibleSession(long sessionId) {
+        if (sessionState.isSessionCurrent(sessionId)) {
+            visibleSession.setSession(currentSessionManager.getCurrentSession());
+        } else {
+            List sessionIds = viewingSessionsManager.getSessionIdsList();
+
+            if (!sessionIds.contains(sessionId)) {
+                viewingSessionsManager.view(sessionId, NoOp.progressListener());
+            }
+
+            visibleSession.setSession(getSession(sessionId));
+        }
+    }
+
+    public void setVisibleSensor(Sensor sensor) {
+        visibleSession.setSensor(sensor);
+    }
+
+    public void setVisibleSensorFromName(long sessionId, String sensorName) {
+        MeasurementStream stream = getStream(sensorName, sessionId);
+        Sensor sensor = new Sensor(stream, sessionId);
+
+        visibleSession.setSensor(sensor);
     }
 }

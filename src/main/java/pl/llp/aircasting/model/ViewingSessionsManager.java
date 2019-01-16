@@ -36,7 +36,6 @@ public class ViewingSessionsManager {
     @Inject ContinuousTracker tracker;
     @Inject FixedSessionDriver fixedSessionDriver;
     @Inject Context context;
-    @Inject VisibleSession visibleSession;
 
     private static Map<Long, Session> sessionsForViewing = newHashMap();
     private static Map<Long, Session> fixedSessions = newHashMap();
@@ -82,26 +81,6 @@ public class ViewingSessionsManager {
         notifyNewSession(session, false);
     }
 
-    public void setVisibleSession(long sessionId) {
-        List sessionIds = getSessionIdsList();
-
-        if (!sessionIds.contains(sessionId)) {
-            view(sessionId, NoOp.progressListener());
-        }
-
-        visibleSession.setSession(getSession(sessionId));
-    }
-
-    public void setVisibleSensor(Sensor sensor) {
-        visibleSession.setSensor(sensor);
-    }
-
-    public void setVisibleSensorFromName(long sessionId, String sensorName) {
-        MeasurementStream stream = getMeasurementStream(sessionId, sensorName);
-        Sensor sensor = new Sensor(stream, sessionId);
-
-        visibleSession.setSensor(sensor);
-    }
 
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);
@@ -192,10 +171,6 @@ public class ViewingSessionsManager {
         return sessionsForViewing.containsKey(sessionId);
     }
 
-    public boolean sessionIsFixed(long sessionId) {
-        return fixedSessions.containsKey(sessionId);
-    }
-
     public boolean isAnySessionFixed() {
         return !fixedSessions.isEmpty();
     }
@@ -214,10 +189,6 @@ public class ViewingSessionsManager {
 
     public boolean sessionsEmpty() {
         return sessionsForViewing.isEmpty();
-    }
-
-    public void setFixedSessionDriver(FixedSessionDriver fixedSessionDriver) {
-        this.fixedSessionDriver = fixedSessionDriver;
     }
 
     private void notifyNewSession(Session session, boolean newFixedSession) {

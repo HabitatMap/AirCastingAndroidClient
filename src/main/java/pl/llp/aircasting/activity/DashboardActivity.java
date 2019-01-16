@@ -28,13 +28,9 @@ public class DashboardActivity extends DashboardBaseActivity {
     private static final String LIST_FRAGMENT_TAG = "list_fragment";
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
-    @Inject Context context;
     @Inject StreamAdapterFactory adapterFactory;
-    @Inject CurrentSessionManager currentSessionManager;
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
-    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SessionDataFactory sessionData;
-    @Inject SessionState sessionState;
 
     private Handler handler = new Handler() {};
 
@@ -215,20 +211,15 @@ public class DashboardActivity extends DashboardBaseActivity {
     }
 
     public void viewChartOptions(View view) {
-        TextView sensorTitle = (TextView) view.findViewById(R.id.sensor_name);
+        TextView sensorTitle = view.findViewById(R.id.sensor_name);
         String sensorName = (String) sensorTitle.getText();
         Long sessionId = (Long) view.getTag(R.id.session_id_tag);
 
         Session session = sessionData.getSession(sessionId);
         Sensor sensor = sessionData.getSensor(sensorName, sessionId);
 
-        if (!sessionState.isSessionCurrent(sessionId)) {
-            viewingSessionsManager.setVisibleSession(sessionId);
-            viewingSessionsManager.setVisibleSensor(sensor);
-        } else {
-            currentSessionManager.setVisibleSession(session);
-            currentSessionManager.setVisibleSensor(sensor);
-        }
+        sessionData.setVisibleSession(sessionId);
+        sessionData.setVisibleSensor(sensor);
 
         if (session.isFixed() && session.isIndoor()) {
             startActivity(new Intent(context, GraphActivity.class));
