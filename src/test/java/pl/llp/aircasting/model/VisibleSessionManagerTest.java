@@ -427,8 +427,7 @@ public class VisibleSessionManagerTest
       {
         Session session = (Session) o;
         return session.getCalibration() == 123
-            && "1.1.1".equals(session.getOSVersion())
-            && "very old".equals(session.getPhoneModel());
+            && "1.1.1".equals(session.getOSVersion());
       }
 
       @Override

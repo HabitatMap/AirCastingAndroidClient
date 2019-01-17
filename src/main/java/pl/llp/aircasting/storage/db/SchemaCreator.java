@@ -110,7 +110,6 @@ public class SchemaCreator
     table.addColumn(new Column(SESSION_LOCATION, Datatype.TEXT));
     table.addColumn(new Column(SESSION_CALIBRATION, Datatype.INTEGER));
     table.addColumn(new Column(SESSION_CONTRIBUTE, Datatype.BOOLEAN));
-    table.addColumn(new Column(SESSION_PHONE_MODEL, Datatype.TEXT));
     table.addColumn(new Column(SESSION_OS_VERSION, Datatype.TEXT));
     table.addColumn(new Column(SESSION_MARKED_FOR_REMOVAL,Datatype.BOOLEAN));
     table.addColumn(new Column(SESSION_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN, 21));

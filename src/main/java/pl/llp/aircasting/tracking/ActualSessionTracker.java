@@ -53,7 +53,6 @@ public class ActualSessionTracker implements SessionTracker {
         session.setCalibration(this.settingsHelper.getCalibration());
 
         session.setOsVersion(this.metadataHelper.getOSVersion());
-        session.setPhoneModel(this.metadataHelper.getPhoneModel());
     }
 
     @Override
@@ -138,7 +137,6 @@ public class ActualSessionTracker implements SessionTracker {
                 values.put(SESSION_START, session.getStart().getTime());
                 values.put(SESSION_UUID, session.getUUID().toString());
                 values.put(SESSION_CALIBRATION, session.getCalibration());
-                values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
                 values.put(SESSION_OS_VERSION, session.getOSVersion());
                 values.put(SESSION_MARKED_FOR_REMOVAL, 0);
                 values.put(SESSION_SUBMITTED_FOR_REMOVAL, 0);

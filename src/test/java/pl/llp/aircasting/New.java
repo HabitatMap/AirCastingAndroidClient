@@ -69,8 +69,6 @@ public class New
   {
     MetadataHelper metadataHelper = mock(MetadataHelper.class);
 
-    when(metadataHelper.getPhoneModel()).thenReturn("byePhone");
-
     return metadataHelper;
   }
 }

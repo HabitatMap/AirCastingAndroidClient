@@ -41,7 +41,6 @@ public interface DBConstants
   String SESSION_LOCATION = "Location";
   String SESSION_CALIBRATION = "Calibration";
   String SESSION_CONTRIBUTE = "Contribute";
-  String SESSION_PHONE_MODEL = "PhoneModel";
 
   String SESSION_OS_VERSION = "OSVersion";
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";

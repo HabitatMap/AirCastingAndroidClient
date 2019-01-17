@@ -30,9 +30,4 @@ public class MetadataHelper
   {
     return "android-" + Build.VERSION.RELEASE;
   }
-
-  public String getPhoneModel()
-  {
-    return Strings.nullToEmpty(Build.MODEL).replace(' ', '-');
-  }
 }
