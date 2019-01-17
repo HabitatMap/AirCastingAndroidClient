@@ -15,8 +15,6 @@ public interface SessionTracker
 
   void setTags(long sessionId, String tags);
 
-  void setDescription(long sessionId, String description);
-
   void setContribute(long sessionId, boolean shouldContribute);
 
   void addStream(MeasurementStream stream);

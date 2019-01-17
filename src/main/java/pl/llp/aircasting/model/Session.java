@@ -43,7 +43,6 @@ public class Session implements Serializable {
     @Expose private UUID uuid = UUID.randomUUID();
 
     @Expose private String title;
-    @Expose private String description;
     @Expose private String location;
     @Expose private String type = "MobileSession";
     @Expose private int calibration;
@@ -79,10 +78,6 @@ public class Session implements Serializable {
         tags = text;
     }
 
-    public void setDescription(String text) {
-        description = text;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -93,10 +88,6 @@ public class Session implements Serializable {
 
     public String getTags() {
         return tags;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public Date getEnd() {

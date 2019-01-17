@@ -102,7 +102,6 @@ public class SchemaCreator
     table.setPrimaryKey(new Column(SESSION_ID, Datatype.INTEGER));
 
     table.addColumn(new Column(SESSION_TITLE, Datatype.TEXT));
-    table.addColumn(new Column(SESSION_DESCRIPTION, Datatype.TEXT));
     table.addColumn(new Column(SESSION_TAGS, Datatype.TEXT));
     table.addColumn(new Column(SESSION_START, Datatype.INTEGER));
     table.addColumn(new Column(SESSION_END, Datatype.INTEGER));

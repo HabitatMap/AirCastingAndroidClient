@@ -42,7 +42,6 @@ public class SessionDAO {
     public void loadDetails(Cursor cursor, Session session) {
         session.setId(getLong(cursor, SESSION_ID));
         session.setTitle(getString(cursor, SESSION_TITLE));
-        session.setDescription(getString(cursor, SESSION_DESCRIPTION));
         session.setTags(getString(cursor, SESSION_TAGS));
         session.setStart(getDate(cursor, SESSION_START));
         session.setEnd(getDate(cursor, SESSION_END));
@@ -63,7 +62,6 @@ public class SessionDAO {
         ContentValues values = new ContentValues();
 
         values.put(SESSION_TITLE, session.getTitle());
-        values.put(SESSION_DESCRIPTION, session.getDescription());
         values.put(SESSION_TAGS, session.getTags());
         values.put(SESSION_LOCATION, session.getLocation());
         values.put(SESSION_START, session.getStart().getTime());

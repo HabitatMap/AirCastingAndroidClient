@@ -76,12 +76,6 @@ public class ActualSessionTracker implements SessionTracker {
     }
 
     @Override
-    public void setDescription(long sessionId, String description) {
-        session.setDescription(description);
-        setter.forSession(sessionId).key(DBConstants.SESSION_DESCRIPTION).value(description).doSet();
-    }
-
-    @Override
     public void setContribute(long sessionId, boolean shouldContribute) {
         session.setContribute(shouldContribute);
         setter.forSession(sessionId).key(DBConstants.SESSION_CONTRIBUTE).value(shouldContribute).doSet();
@@ -142,7 +136,6 @@ public class ActualSessionTracker implements SessionTracker {
                 values.put(SESSION_INCOMPLETE, 1);
                 values.put(SESSION_TYPE, session.getType());
                 values.put(SESSION_TITLE, session.getTitle());
-                values.put(SESSION_DESCRIPTION, session.getDescription());
                 values.put(SESSION_TAGS, session.getTags());
                 values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
                 values.put(SESSION_LATITUDE, session.getLatitude());

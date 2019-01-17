@@ -30,7 +30,6 @@ public interface DBConstants
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
   String SESSION_TITLE = "Title";
-  String SESSION_DESCRIPTION = "Description";
   String SESSION_TAGS = "Tags";
   String SESSION_START = "Start";
   String SESSION_END = "End";

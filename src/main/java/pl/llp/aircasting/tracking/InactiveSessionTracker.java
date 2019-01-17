@@ -55,12 +55,6 @@ public class InactiveSessionTracker implements SessionTracker
   }
 
   @Override
-  public void setDescription(long sessionId, String description)
-  {
-    setter.forSession(sessionId).key(DBConstants.SESSION_DESCRIPTION).value(description).doSet();
-  }
-
-  @Override
   public void setContribute(long sessionId, boolean shouldContribute)
   {
     setter.forSession(sessionId).key(DBConstants.SESSION_CONTRIBUTE).value(shouldContribute).doSet();
