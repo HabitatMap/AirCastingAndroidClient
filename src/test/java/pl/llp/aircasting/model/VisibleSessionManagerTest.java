@@ -426,8 +426,7 @@ public class VisibleSessionManagerTest
       public boolean matches(Object o)
       {
         Session session = (Session) o;
-        return session.getCalibration() == 123
-            && "1.1.1".equals(session.getOSVersion());
+        return session.getCalibration() == 123;
       }
 
       @Override

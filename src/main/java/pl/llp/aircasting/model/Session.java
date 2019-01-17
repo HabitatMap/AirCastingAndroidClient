@@ -35,7 +35,6 @@ import static com.google.common.collect.Maps.newHashMap;
 public class Session implements Serializable {
     @Expose @SerializedName("streams") Map<String, MeasurementStream> streams = newHashMap();
     @Expose @SerializedName("tag_list") private String tags;
-    @Expose @SerializedName("os_version") private String osVersion;
     @Expose @SerializedName("deleted") private boolean markedForRemoval;
     @Expose @SerializedName("start_time") private Date start = new Date();
     @Expose @SerializedName("end_time") private Date end;
@@ -171,14 +170,6 @@ public class Session implements Serializable {
 
     public boolean getContribute() {
         return contribute;
-    }
-
-    public String getOSVersion() {
-        return osVersion;
-    }
-
-    public void setOsVersion(String osVersion) {
-        this.osVersion = osVersion;
     }
 
     public boolean isMarkedForRemoval() {

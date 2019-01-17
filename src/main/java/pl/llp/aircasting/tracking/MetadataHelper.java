@@ -26,8 +26,4 @@ import com.google.inject.Singleton;
 @Singleton
 public class MetadataHelper
 {
-  public String getOSVersion()
-  {
-    return "android-" + Build.VERSION.RELEASE;
-  }
 }
