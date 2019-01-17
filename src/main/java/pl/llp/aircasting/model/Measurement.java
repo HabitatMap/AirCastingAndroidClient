@@ -38,11 +38,6 @@ public class Measurement {
     @SerializedName("measured_value")
     private double measuredValue;
 
-    @Expose
-    @SerializedName("timezone_offset")
-
-    private int timeZoneOffsetMinutes;
-
     private transient Long seconds;
 
     public Measurement(double value) {
@@ -148,14 +143,6 @@ public class Measurement {
 
     public void setTime(Date time) {
         this.time = time;
-    }
-
-    public int getTimeZoneOffsetMinutes() {
-        return timeZoneOffsetMinutes;
-    }
-
-    public void setTimeZoneOffsetMinutes(int timeZoneOffsetMinutes) {
-        this.timeZoneOffsetMinutes = timeZoneOffsetMinutes;
     }
 
     /*

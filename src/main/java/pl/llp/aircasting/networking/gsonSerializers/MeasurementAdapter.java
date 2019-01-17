@@ -25,7 +25,6 @@ public class MeasurementAdapter implements JsonDeserializer<Measurement>, JsonSe
     double longitude = asDouble(object, "longitude");
     double value = asDouble(object, "value");
     int millisecondPart = asInt(object, "milliseconds");
-    int timezoneOffset = asInt(object, "timezone_offset");
     double measuredValue = asDouble(object, "measured_value");
     Date date = dateAdapter.deserialize(object.get("time"), Date.class, context);
 
@@ -34,7 +33,6 @@ public class MeasurementAdapter implements JsonDeserializer<Measurement>, JsonSe
     date = new Date(milliseconds);
 
     Measurement measurement = new Measurement(latitude, longitude, value, measuredValue, date);
-    measurement.setTimeZoneOffsetMinutes(timezoneOffset);
     return measurement;
   }
 
@@ -74,7 +72,6 @@ public class MeasurementAdapter implements JsonDeserializer<Measurement>, JsonSe
     result.addProperty("longitude", src.getLongitude());
     result.addProperty("latitude", src.getLatitude());
     result.addProperty("time", context.serialize(src.getTime()).getAsString());
-    result.addProperty("timezone_offset", src.getTimeZoneOffsetMinutes());
     result.addProperty("milliseconds", src.getMilliseconds());
     result.addProperty("measured_value", src.getMeasuredValue());
     result.addProperty("value", src.getValue());
