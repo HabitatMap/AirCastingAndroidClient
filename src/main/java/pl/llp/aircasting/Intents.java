@@ -43,6 +43,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public final class Intents {
     public static final int UNKNOWN = -1;
 
     public static final String SESSION_ID = "session_id";
-    public static final String PICTURES = "Pictures";
+    public static final String PICTURES = "pictures";
     public static final String AIR_CASTING = "AirCasting";
 
     public static final String ACTION_SYNC_UPDATE = "AIRCASTING_SYNC_UPDATE";
@@ -203,28 +204,29 @@ public final class Intents {
     public static String takePhoto(Activity activity) throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        File target = getPhotoTarget();
-        Uri uri = Uri.fromFile(target);
+        File target = getPhotoTarget(activity);
+        Uri uri = FileProvider.getUriForFile(activity, "pl.llp.aircasting.fileprovider", target);
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         activity.startActivityForResult(intent, TAKE_PICTURE);
 
         return target.toString();
     }
 
-    private static File getPhotoTarget() throws IOException {
-        File root = Environment.getExternalStorageDirectory();
-        File picturesDir = new File(root, PICTURES);
-        File targetDir = new File(picturesDir, AIR_CASTING);
+    private static File getPhotoTarget(Activity activity) throws IOException {
+        File picturesDir = new File(activity.getFilesDir(), PICTURES);
 
-        if (!targetDir.exists()) {
-            boolean success = targetDir.mkdirs();
+        if (!picturesDir.exists()) {
+            boolean success = picturesDir.mkdirs();
             if (!success) {
                 throw new IOException("Could not create AirCasting dir");
             }
         }
 
-        return new File(targetDir, System.currentTimeMillis() + ".jpg");
+        return new File(picturesDir, System.currentTimeMillis() + ".jpg");
     }
 
     public static void viewPhoto(Activity activity, Uri uri) {

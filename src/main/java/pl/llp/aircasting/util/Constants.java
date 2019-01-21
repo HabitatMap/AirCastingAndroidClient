@@ -40,6 +40,8 @@ public class Constants
           Manifest.permission.ACCESS_FINE_LOCATION,
           Manifest.permission.ACCESS_COARSE_LOCATION,
           Manifest.permission.RECORD_AUDIO,
+          Manifest.permission.CAMERA,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE
   };
 
   public static final Integer MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
