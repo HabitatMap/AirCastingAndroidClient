@@ -1,7 +1,7 @@
 package pl.llp.aircasting.sensor.hxm;
 
-import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.sensor.BluetoothSocketReader;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothSocketReader;
 
 import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static pl.llp.aircasting.sensor.BluetoothConnector.sleepFor;
+import static pl.llp.aircasting.sensor.bluetooth.BluetoothConnector.sleepFor;
 
 class HxMDataReader implements BluetoothSocketReader {
     final PacketReader reader = new PacketReader();

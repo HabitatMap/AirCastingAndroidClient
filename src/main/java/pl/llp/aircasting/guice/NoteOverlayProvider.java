@@ -19,12 +19,11 @@
 */
 package pl.llp.aircasting.guice;
 
-import android.app.Application;
 import android.graphics.drawable.Drawable;
-import com.google.inject.Inject;
+
 import com.google.inject.Provider;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
+import pl.llp.aircasting.screens.stream.map.NoteOverlay;
 import roboguice.inject.InjectResource;
 
 /**

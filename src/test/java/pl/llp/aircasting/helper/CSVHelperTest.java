@@ -3,6 +3,8 @@ package pl.llp.aircasting.helper;
 import org.junit.Before;
 import org.junit.Test;
 
+import pl.llp.aircasting.screens.sessions.CSVHelper;
+
 import static junit.framework.Assert.assertEquals;
 
 public class CSVHelperTest

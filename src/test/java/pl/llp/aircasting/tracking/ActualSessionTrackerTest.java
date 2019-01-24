@@ -2,8 +2,7 @@ package pl.llp.aircasting.tracking;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;

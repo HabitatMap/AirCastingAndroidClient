@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.util.Constants;
 
 public class SummaryPacket extends Packet

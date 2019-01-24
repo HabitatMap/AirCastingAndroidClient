@@ -1,7 +1,7 @@
 package pl.llp.aircasting.sensor.ioio;
 
-import pl.llp.aircasting.sensor.AbstractSensor;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.common.AbstractSensor;
+import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;

@@ -41,7 +41,8 @@
                         android:background="@android:color/background_light"
         >
 
-            <pl.llp.aircasting.view.NoisePlot android:layout_width="fill_parent"
+            <pl.llp.aircasting.screens.stream.graph.NoisePlot
+                android:layout_width="fill_parent"
                                               android:layout_height="fill_parent"
                                               android:layout_weight="1"
                                               android:layout_marginTop="32dp"
@@ -85,7 +86,8 @@
                        android:id="@+id/suggest_scroll_right"
             />
 
-            <pl.llp.aircasting.view.TouchPane android:layout_height="fill_parent"
+            <pl.llp.aircasting.screens.stream.TouchPane
+                android:layout_height="fill_parent"
                                               android:layout_width="fill_parent"
                                               android:id="@+id/touch_pane"
             />

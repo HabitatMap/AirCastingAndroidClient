@@ -2,8 +2,10 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
+import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 
 import com.google.common.eventbus.EventBus;
@@ -23,7 +25,8 @@ import static org.mockito.Mockito.mock;
 @RunWith(InjectedTestRunner.class)
 public class VisibleSessionSensorManagerTest
 {
-  @Inject CurrentSessionSensorManager currentSessionSensorManager;
+  @Inject
+  CurrentSessionSensorManager currentSessionSensorManager;
 
   @Mock
   CurrentSessionManager currentSessionManager;

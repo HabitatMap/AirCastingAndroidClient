@@ -20,18 +20,18 @@
 package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.activity.ApplicationState;
-import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
+import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
-import pl.llp.aircasting.helper.SessionState;
-import pl.llp.aircasting.helper.VisibleSession;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.screens.common.sessionState.SessionState;
+import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.model.CurrentSessionManager;
 import pl.llp.aircasting.model.events.MeasurementEvent;
+import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 
 import com.google.inject.Inject;
 import org.junit.Before;
@@ -48,7 +48,8 @@ import static org.mockito.Mockito.*;
 @RunWith(InjectedTestRunner.class)
 public class MeasurementPresenterTest
 {
-  @Inject MeasurementPresenter presenter;
+  @Inject
+  MeasurementPresenter presenter;
   List<Measurement> measurements;
   private Measurement measurement1 = new Measurement(4, 4, 4, new Date(0, 0, 0, 0, 1, 8));
   private Measurement measurement2 = new Measurement(5, 6, 5, new Date(0, 0, 0, 0, 1, 10));

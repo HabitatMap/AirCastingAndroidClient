@@ -27,7 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.model.CurrentSessionManager;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
+import pl.llp.aircasting.sensor.common.SensorService;
 
 import static org.mockito.Mockito.*;
 
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(InjectedTestRunner.class)
 public class SensorServiceTest {
-    @Inject SensorService sensorService;
+    @Inject
+    SensorService sensorService;
     Intent intent;
 
     @Before

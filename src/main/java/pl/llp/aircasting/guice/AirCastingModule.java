@@ -20,8 +20,8 @@
 package pl.llp.aircasting.guice;
 
 import pl.llp.aircasting.storage.db.AirCastingDB;
-import pl.llp.aircasting.util.http.HttpBuilder;
-import pl.llp.aircasting.view.overlay.NoteOverlay;
+import pl.llp.aircasting.networking.httpUtils.HttpBuilder;
+import pl.llp.aircasting.screens.stream.map.NoteOverlay;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;

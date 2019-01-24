@@ -20,7 +20,7 @@
 -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <pl.llp.aircasting.view.AirCastingMapView
+    <pl.llp.aircasting.screens.stream.map.AirCastingMapView
             style="@style/Fill"
             android:id="@+id/mapview"
             android:layout_weight="1"
@@ -28,7 +28,8 @@
             android:apiKey="@string/com.google.android.geo.MAPS_KEY"
             />
 
-    <pl.llp.aircasting.view.TouchPane style="@style/Fill"
+    <pl.llp.aircasting.screens.stream.TouchPane
+        style="@style/Fill"
                                       android:id="@+id/touch_pane"
             />
 </merge>

@@ -1,9 +1,5 @@
 package pl.llp.aircasting.util;
 
-import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.helper.SettingsHelper;
-
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton

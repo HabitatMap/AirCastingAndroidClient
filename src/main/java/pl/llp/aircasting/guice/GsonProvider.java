@@ -19,9 +19,9 @@
  */
 package pl.llp.aircasting.guice;
 
-import pl.llp.aircasting.api.gson.LocalDateAdapter;
-import pl.llp.aircasting.api.gson.MeasurementAdapter;
-import pl.llp.aircasting.api.gson.NoteAdapter;
+import pl.llp.aircasting.networking.gsonSerializers.LocalDateAdapter;
+import pl.llp.aircasting.networking.gsonSerializers.MeasurementAdapter;
+import pl.llp.aircasting.networking.gsonSerializers.NoteAdapter;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 

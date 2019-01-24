@@ -21,9 +21,10 @@ package pl.llp.aircasting.util.bitmap;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import pl.llp.aircasting.util.http.Uploadable;
 
 import java.io.ByteArrayOutputStream;
+
+import pl.llp.aircasting.networking.httpUtils.Uploadable;
 
 import static com.google.common.io.Closeables.closeQuietly;
 

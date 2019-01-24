@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.sensor.BluetoothSocketReader;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothSocketReader;
 
 import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static pl.llp.aircasting.sensor.BluetoothConnector.sleepFor;
+import static pl.llp.aircasting.sensor.bluetooth.BluetoothConnector.sleepFor;
 
 public class BioharnessDataReader implements BluetoothSocketReader {
     private final BluetoothSocket socket;

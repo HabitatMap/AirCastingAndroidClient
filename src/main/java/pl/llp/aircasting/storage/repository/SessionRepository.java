@@ -20,11 +20,13 @@
 package pl.llp.aircasting.storage.repository;
 
 import com.google.common.eventbus.EventBus;
-import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.helper.NoOp;
+
+import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
+import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
+import pl.llp.aircasting.util.Logger;
+import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.model.*;
-import pl.llp.aircasting.model.events.FixedSessionsMeasurementEvent;
-import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.db.AirCastingDB;
 import pl.llp.aircasting.storage.db.DBConstants;
@@ -53,7 +55,8 @@ public class SessionRepository {
 
     @Inject SessionDAO sessionDAO;
     @Inject SessionTrackerDAO trackedSessionsDAO;
-    @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject
+    ViewingSessionsManager viewingSessionsManager;
     @Inject EventBus eventBus;
 
     @API

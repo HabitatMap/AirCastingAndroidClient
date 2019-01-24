@@ -1,6 +1,6 @@
 package pl.llp.aircasting.storage.db;
 
-import pl.llp.aircasting.helper.CalibrationHelper;
+import pl.llp.aircasting.screens.sessions.CalibrationHelper;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 

@@ -11,15 +11,19 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
+import pl.llp.aircasting.screens.stream.TopBarHelper;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(InjectedTestRunner.class)
 public class TopBarHelperTest {
-    @Inject TopBarHelper helper;
+    @Inject
+    TopBarHelper helper;
 
-    @Mock SettingsHelper settingsHelper;
+    @Mock
+    SettingsHelper settingsHelper;
     @Mock Sensor sensor;
     @Mock View parent;
     @Mock TextView veryLow;

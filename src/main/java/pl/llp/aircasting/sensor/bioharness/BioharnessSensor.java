@@ -1,10 +1,10 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.sensor.AbstractSensor;
-import pl.llp.aircasting.sensor.BluetoothConnector;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.sensor.ReaderWorker;
-import pl.llp.aircasting.sensor.WriterWorker;
+import pl.llp.aircasting.sensor.common.AbstractSensor;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothConnector;
+import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.common.ReaderWorker;
+import pl.llp.aircasting.sensor.common.WriterWorker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;

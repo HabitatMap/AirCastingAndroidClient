@@ -25,10 +25,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import pl.llp.aircasting.activity.DashboardActivity;
+import pl.llp.aircasting.screens.dashboard.DashboardActivity;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.service.SensorService;
+import pl.llp.aircasting.sensor.common.SensorService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;

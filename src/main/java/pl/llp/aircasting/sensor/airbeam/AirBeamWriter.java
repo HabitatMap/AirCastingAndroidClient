@@ -2,7 +2,7 @@ package pl.llp.aircasting.sensor.airbeam;
 
 import android.bluetooth.BluetoothSocket;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.sensor.BluetoothSocketWriter;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothSocketWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;

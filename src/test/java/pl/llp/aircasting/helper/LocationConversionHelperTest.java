@@ -27,6 +27,7 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.screens.stream.map.LocationConversionHelper;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;

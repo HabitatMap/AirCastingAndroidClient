@@ -1,7 +1,6 @@
 package pl.llp.aircasting.event.ui;
 
 import android.view.MotionEvent;
-import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +9,7 @@ import pl.llp.aircasting.event.AirCastingEvent;
  * Time: 12:44
  * To change this template use File | Settings | File Templates.
  */
-public class LongClickEvent extends AirCastingEvent {
+public class LongClickEvent {
 
     private MotionEvent event;
 

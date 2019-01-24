@@ -4,7 +4,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <pl.llp.aircasting.view.DashboardListView android:id="@id/android:list"
+    <pl.llp.aircasting.screens.dashboard.DashboardListView
+        android:id="@id/android:list"
                                               android:layout_width="match_parent"
                                               android:layout_height="match_parent"
                                               android:layout_weight="1"

@@ -20,7 +20,6 @@
 package pl.llp.aircasting.event.ui;
 
 import android.view.MotionEvent;
-import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +27,7 @@ import pl.llp.aircasting.event.AirCastingEvent;
  * Date: 11/4/11
  * Time: 2:47 PM
  */
-public class DoubleTapEvent extends AirCastingEvent {
+public class DoubleTapEvent {
     private MotionEvent event;
 
     public DoubleTapEvent(MotionEvent event) {

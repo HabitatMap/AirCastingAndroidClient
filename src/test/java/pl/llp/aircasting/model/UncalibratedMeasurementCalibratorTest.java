@@ -1,7 +1,7 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.helper.NoOp;
+import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.storage.db.AirCastingDB;

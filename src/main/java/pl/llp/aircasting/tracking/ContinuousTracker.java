@@ -1,13 +1,12 @@
 package pl.llp.aircasting.tracking;
 
-import pl.llp.aircasting.activity.events.SessionStoppedEvent;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.event.session.SessionStoppedEvent;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.FixedSessionUploader;
+import pl.llp.aircasting.sessionSync.FixedSessionUploader;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;

@@ -12,7 +12,7 @@ import roboguice.service.RoboService;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static pl.llp.aircasting.sensor.BluetoothConnector.sleepFor;
+import static pl.llp.aircasting.sensor.bluetooth.BluetoothConnector.sleepFor;
 
 /**
  * Created by ags on 03/16/13 at 19:10

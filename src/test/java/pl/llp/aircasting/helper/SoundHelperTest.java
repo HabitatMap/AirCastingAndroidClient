@@ -23,6 +23,7 @@ import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.screens.stream.map.SoundHelper;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import com.google.common.eventbus.EventBus;
@@ -44,7 +45,8 @@ public class SoundHelperTest
 {
   public static final int VALUE_TOO_LOUD = 101;
   public static final int VALUE_TOO_QUIET = -21;
-  @Inject SoundHelper soundHelper;
+  @Inject
+  SoundHelper soundHelper;
   @Inject EventBus bus;
   private final Sensor SENSOR = SimpleAudioReader.getSensor();
 

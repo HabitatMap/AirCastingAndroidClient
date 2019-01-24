@@ -1,7 +1,7 @@
 package pl.llp.aircasting.storage.repository;
 
-import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.helper.NoOp;
+import pl.llp.aircasting.util.Logger;
+import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.storage.db.AirCastingDB;

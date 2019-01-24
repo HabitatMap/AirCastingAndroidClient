@@ -1,6 +1,6 @@
 package pl.llp.aircasting;
 
-import pl.llp.aircasting.helper.MetadataHelper;
+import pl.llp.aircasting.tracking.MetadataHelper;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Note;

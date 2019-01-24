@@ -20,7 +20,8 @@
 package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.helper.LocationHelper;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.when;
 @RunWith(InjectedTestRunner.class)
 public class VisibleSessionManagerMakeANoteTest
 {
-  @Inject CurrentSessionManager currentSessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   private Location location;
   private Date date;
 

@@ -1,7 +1,6 @@
 package pl.llp.aircasting.tracking;
 
 import pl.llp.aircasting.InjectedTestRunner;
-import pl.llp.aircasting.helper.MetadataHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 

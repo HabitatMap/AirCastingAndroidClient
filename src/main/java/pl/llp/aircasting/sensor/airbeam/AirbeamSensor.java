@@ -5,10 +5,10 @@ import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.sensor.AbstractSensor;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
-import pl.llp.aircasting.sensor.ReaderWorker;
-import pl.llp.aircasting.sensor.WriterWorker;
+import pl.llp.aircasting.sensor.common.AbstractSensor;
+import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
+import pl.llp.aircasting.sensor.common.ReaderWorker;
+import pl.llp.aircasting.sensor.common.WriterWorker;
 import pl.llp.aircasting.sensor.external.LineDataReader;
 
 /**

@@ -3,9 +3,9 @@ package pl.llp.aircasting.sensor.airbeam;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.model.ViewingSessionsManager;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
+import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.external.ExternalSensors;
 import pl.llp.aircasting.util.base64.Base64;
 

@@ -1,9 +1,8 @@
 package pl.llp.aircasting.tracking;
 
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
-import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;

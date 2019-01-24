@@ -1,12 +1,12 @@
 package pl.llp.aircasting.tracking;
 
 import com.google.common.eventbus.EventBus;
-import pl.llp.aircasting.helper.MetadataHelper;
-import pl.llp.aircasting.helper.SettingsHelper;
+
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.FixedSessionUploader;
+import pl.llp.aircasting.sessionSync.FixedSessionUploader;
 
 public class FixedSessionTracker extends ActualSessionTracker {
     private final FixedSessionUploader fixedSessionUploader;

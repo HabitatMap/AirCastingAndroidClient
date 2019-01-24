@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.bioharness;
 
-import pl.llp.aircasting.sensor.BluetoothSocketWriter;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothSocketWriter;
 import pl.llp.aircasting.util.Constants;
 
 import android.bluetooth.BluetoothSocket;

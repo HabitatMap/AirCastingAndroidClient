@@ -1,7 +1,6 @@
 package pl.llp.aircasting.sensor.external;
 
-import android.util.Log;
-import pl.llp.aircasting.model.events.SensorEvent;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 
 public class ExternalSensorParser {
     /**

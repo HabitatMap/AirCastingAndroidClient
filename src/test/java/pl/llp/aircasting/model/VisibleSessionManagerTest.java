@@ -21,9 +21,11 @@ package pl.llp.aircasting.model;
 
 import pl.llp.aircasting.InjectedTestRunner;
 import pl.llp.aircasting.New;
-import pl.llp.aircasting.activity.events.VisibleSessionUpdatedEvent;
-import pl.llp.aircasting.helper.LocationHelper;
-import pl.llp.aircasting.helper.VisibleSession;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
+import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.events.MeasurementEvent;
 import pl.llp.aircasting.model.events.SensorEvent;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
@@ -56,7 +58,8 @@ import static org.mockito.Mockito.*;
 @RunWith(InjectedTestRunner.class)
 public class VisibleSessionManagerTest
 {
-  @Inject CurrentSessionManager currentSessionManager;
+  @Inject
+  CurrentSessionManager currentSessionManager;
   @Inject VisibleSession visibleSession;
 
   Location location;

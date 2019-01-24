@@ -2,6 +2,7 @@ package pl.llp.aircasting.view.presenter;
 
 import pl.llp.aircasting.New;
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.screens.stream.MeasurementAggregator;
 
 import com.google.common.collect.Lists;
 import org.junit.Before;

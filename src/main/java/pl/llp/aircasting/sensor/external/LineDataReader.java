@@ -1,8 +1,7 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.android.Logger;
-import pl.llp.aircasting.model.events.SensorEvent;
-import pl.llp.aircasting.sensor.BluetoothSocketReader;
+import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.sensor.bluetooth.BluetoothSocketReader;
 
 import android.bluetooth.BluetoothSocket;
 import com.google.common.eventbus.EventBus;

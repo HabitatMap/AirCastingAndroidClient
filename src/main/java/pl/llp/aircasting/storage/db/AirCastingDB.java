@@ -1,6 +1,6 @@
 package pl.llp.aircasting.storage.db;
 
-import pl.llp.aircasting.android.Logger;
+import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.util.Constants;
 
 import android.content.Context;

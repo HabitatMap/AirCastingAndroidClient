@@ -1,6 +1,6 @@
 package pl.llp.aircasting.storage.repository;
 
-import pl.llp.aircasting.helper.NoOp;
+import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.ProgressListener;

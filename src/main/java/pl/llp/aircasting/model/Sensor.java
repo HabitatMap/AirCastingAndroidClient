@@ -2,9 +2,10 @@ package pl.llp.aircasting.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
 
-import pl.llp.aircasting.model.events.SensorEvent;
 
 import com.google.common.base.Strings;
 
@@ -172,7 +173,7 @@ public class Sensor implements Serializable
     return MeasurementLevel.TOO_LOW;
   }
 
-  void toggle() {
+  public void toggle() {
     enabled = !enabled;
   }
 }

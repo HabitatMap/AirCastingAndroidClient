@@ -1,9 +1,9 @@
 package pl.llp.aircasting.sensor.external;
 
-import pl.llp.aircasting.event.ConnectionUnsuccessfulEvent;
-import pl.llp.aircasting.helper.SettingsHelper;
-import pl.llp.aircasting.sensor.AbstractSensor;
-import pl.llp.aircasting.sensor.ExternalSensorDescriptor;
+import pl.llp.aircasting.event.network.ConnectionUnsuccessfulEvent;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
+import pl.llp.aircasting.sensor.common.AbstractSensor;
+import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
 import pl.llp.aircasting.sensor.airbeam.AirbeamSensor;
 import pl.llp.aircasting.sensor.bioharness.BioharnessSensor;
 import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;

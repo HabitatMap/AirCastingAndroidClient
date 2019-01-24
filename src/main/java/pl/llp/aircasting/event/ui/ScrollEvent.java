@@ -20,7 +20,6 @@
 package pl.llp.aircasting.event.ui;
 
 import android.view.MotionEvent;
-import pl.llp.aircasting.event.AirCastingEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +27,7 @@ import pl.llp.aircasting.event.AirCastingEvent;
  * Date: 11/9/11
  * Time: 5:04 PM
  */
-public class ScrollEvent extends AirCastingEvent {
+public class ScrollEvent {
     private MotionEvent event1, event2;
     private float distanceX, distanceY;
 

@@ -5,6 +5,7 @@ import pl.llp.aircasting.New;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.internal.MeasurementLevel;
+import pl.llp.aircasting.sensor.common.ThresholdsHolder;
 
 import com.google.inject.Inject;
 import org.junit.Before;
@@ -20,7 +21,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class ThresholdsHolderTest
 {
   private static final int NEW_LOW = 39;
-  @Inject ThresholdsHolder holder;
+  @Inject
+  ThresholdsHolder holder;
   Sensor sensor;
 
   @Before
