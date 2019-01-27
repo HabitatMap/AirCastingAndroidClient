@@ -10,6 +10,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
@@ -83,6 +84,7 @@ public class StreamAdapter extends SimpleAdapter {
     ViewingSessionsSensorManager viewingSessionsSensorManager;
     StreamViewHelper streamViewHelper;
     DashboardChartManager dashboardChartManager;
+    ResourceHelper resourceHelper;
 
     DashboardBaseActivity context;
     EventBus eventBus;
@@ -110,6 +112,7 @@ public class StreamAdapter extends SimpleAdapter {
                          List<Map<String, Object>> data,
                          EventBus eventBus,
                          StreamViewHelper streamViewHelper,
+                         ResourceHelper resourceHelper,
                          CurrentSessionSensorManager currentSessionSensorManager,
                          ViewingSessionsSensorManager viewingSessionsSensorManager,
                          DashboardChartManager dashboardChartManager,
@@ -123,6 +126,7 @@ public class StreamAdapter extends SimpleAdapter {
         this.currentSessionSensorManager = currentSessionSensorManager;
         this.viewingSessionsSensorManager = viewingSessionsSensorManager;
         this.streamViewHelper = streamViewHelper;
+        this.resourceHelper = resourceHelper;
         this.dashboardChartManager = dashboardChartManager;
         this.sessionState = sessionState;
         this.sessionData = sessionData;
@@ -457,7 +461,7 @@ public class StreamAdapter extends SimpleAdapter {
                         map.put(SENSOR_NAME, sensor.getSensorName());
                         map.put(SENSOR, sensor);
 
-                         data.add(map);
+                        data.add(map);
                     }
                 });
             }
