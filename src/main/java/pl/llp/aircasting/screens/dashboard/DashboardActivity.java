@@ -4,14 +4,20 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.event.session.ToggleSessionReorderEvent;
@@ -20,15 +26,16 @@ import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 
 import static pl.llp.aircasting.Intents.startSensors;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
-public class DashboardActivity extends DashboardBaseActivity {
+public class DashboardActivity extends DashboardBaseActivity implements View.OnClickListener {
     private static final long POLLING_INTERVAL = 60000;
-    private static final String LIST_FRAGMENT_TAG = "list_fragment";
+//    private static final String LIST_FRAGMENT_TAG = "list_fragment";
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject StreamAdapterFactory adapterFactory;
-    @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject SessionDataFactory sessionData;
 
     private Handler handler = new Handler() {};
@@ -41,6 +48,12 @@ public class DashboardActivity extends DashboardBaseActivity {
             handler.postDelayed(pollServerTask, POLLING_INTERVAL);
         }
     });
+
+    private View mEmptyLayout;
+    private RecyclerView mRecyclerView;
+    private View mMicrophoneButton;
+    private View mSensorsButton;
+    private View mAirbeam2ConfigButton;
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -60,10 +73,20 @@ public class DashboardActivity extends DashboardBaseActivity {
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        if (findViewById(R.id.fragment_container) != null) {
-            DashboardListFragment dashboardListFragment = DashboardListFragment.newInstance(settingsHelper);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment, LIST_FRAGMENT_TAG).commit();
-        }
+        mEmptyLayout = findViewById(R.id.layout_empty);
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mMicrophoneButton = findViewById(R.id.dashboard_microphone);
+        mSensorsButton = findViewById(R.id.dashboard_sensors);
+        mAirbeam2ConfigButton = findViewById(R.id.configure_airbeam2);
+
+        if (mMicrophoneButton != null) { mMicrophoneButton.setOnClickListener(this); }
+        if (mSensorsButton != null) { mSensorsButton.setOnClickListener(this); }
+        if (mAirbeam2ConfigButton != null) { mAirbeam2ConfigButton.setOnClickListener(this); }
+
+//        if (findViewById(R.id.fragment_container) != null) {
+//            DashboardFragment dashboardListFragment = DashboardFragment.newInstance(settingsHelper);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment, LIST_FRAGMENT_TAG).commit();
+//        }
     }
 
     @Override
@@ -185,6 +208,32 @@ public class DashboardActivity extends DashboardBaseActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
+        }
+
+        switch(view.getId()) {
+            case R.id.dashboard_microphone:
+                connectPhoneMicrophone();
+                mEmptyLayout.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+//                mRecyclerView.setAdapter(adapter);
+                break;
+            case R.id.dashboard_sensors:
+                startActivity(new Intent(this, ExternalSensorActivity.class));
+                break;
+            case R.id.configure_airbeam2:
+                if (settingsHelper.hasCredentials()) {
+                    Intents.startAirbeam2Configuration(this);
+                } else {
+                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
+                }
+                break;
+        }
     }
 
     private void toggleSessionReorder(MenuItem menuItem) {
