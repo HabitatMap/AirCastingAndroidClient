@@ -1,6 +1,13 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.location.Location;
+import android.util.Log;
+
+import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.ApplicationState;
@@ -28,6 +35,7 @@ import java.util.Set;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static com.google.inject.internal.Maps.newHashMap;
 
 @Singleton
 public class CurrentSessionSensorManager {
@@ -42,6 +50,7 @@ public class CurrentSessionSensorManager {
 
     private volatile Map<SensorName, Sensor> currentSessionSensors = newConcurrentMap();
     private volatile Set<Sensor> disabled = newHashSet();
+    private Map<String, Double> recentMeasurements = newHashMap();
 
     @Inject
     public void init() {
@@ -50,11 +59,36 @@ public class CurrentSessionSensorManager {
 
     @Subscribe
     public void onEvent(SensorEvent event) {
+        String sensorName = event.getSensorName();
 
-        if (currentSessionSensors.containsKey(SensorName.from(event.getSensorName()))) {
-            return;
+        if (!sensorKnown(sensorName)) {
+            connectNewSensor(event);
         }
 
+        double value = event.getValue();
+        recentMeasurements.put(sensorName, value);
+
+//        Location location = currentSessionManager.getLocation();
+//
+//        if (location != null && sensor != null && sensor.isEnabled()) {
+//            double latitude = location.getLatitude();
+//            double longitude = location.getLongitude();
+//            Measurement measurement = new Measurement(latitude, longitude, value, event.getMeasuredValue(), event.getDate());
+//
+//            if (state.recording().isRecording()) {
+//                MeasurementStream stream = currentSessionManager.prepareStream(event);
+//                tracker.addMeasurement(sensor, stream, measurement);
+//            } else {
+//                eventBus.post(new MeasurementEvent(measurement, sensor));
+//            }
+//        }
+    }
+
+    private boolean sensorKnown(String sensorName) {
+        return currentSessionSensors.containsKey(SensorName.from(sensorName));
+    }
+
+    private void connectNewSensor(SensorEvent event) {
         if (externalSensors.knows(event.getAddress())) {
             Sensor sensor = new Sensor(event, Constants.CURRENT_SESSION_FAKE_ID);
             if (disabled.contains(sensor)) {
@@ -73,6 +107,24 @@ public class CurrentSessionSensorManager {
     @Subscribe
     public void onEvent(SensorStoppedEvent event) {
         disconnectSensors(event.getDescriptor());
+    }
+
+    public synchronized double getNow(Sensor sensor) {
+//        if (state.recording().isRecording()) {
+//            return tracker.getNow(sensor);
+//        } else {
+            if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+                return 0;
+            }
+
+            return recentMeasurements.get(sensor.getSensorName());
+//        }
+    }
+
+    public LiveData<Map<SensorName, Sensor>> getCurrentSensorsData() {
+        final MutableLiveData<Map<SensorName, Sensor>> data = new MutableLiveData<>();
+        data.postValue(currentSessionSensors);
+        return data;
     }
 
     public void startSensors() {
