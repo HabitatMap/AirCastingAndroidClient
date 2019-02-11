@@ -14,6 +14,7 @@ import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.event.network.ConnectionUnsuccessfulEvent;
 import pl.llp.aircasting.model.internal.SensorName;
+import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel;
 import pl.llp.aircasting.sensor.common.ExternalSensorDescriptor;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 import pl.llp.aircasting.event.sensor.SensorStoppedEvent;

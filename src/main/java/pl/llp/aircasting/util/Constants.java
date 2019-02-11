@@ -47,4 +47,7 @@ public class Constants
   public static final Integer MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
   public static final Integer MY_PERMISSIONS_REQUEST_FINE_LOCATION = 2;
   public static final Integer PERMISSIONS_ALL = 3;
+
+  public static final String FIXED_LABEL = "Last Minute";
+  public static final String MOBILE_LABEL = "Last Second";
 }

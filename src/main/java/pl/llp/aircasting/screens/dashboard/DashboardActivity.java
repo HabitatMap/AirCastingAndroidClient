@@ -1,22 +1,33 @@
 package pl.llp.aircasting.screens.dashboard;
 
 import android.app.Dialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
+import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel;
+import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModelFactory;
+import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
+import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvcImpl;
 import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
@@ -29,13 +40,12 @@ import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
-public class DashboardActivity extends DashboardBaseActivity implements View.OnClickListener {
+public class DashboardActivity extends DashboardBaseActivity implements DashboardViewMvc.Listener {
     private static final long POLLING_INTERVAL = 60000;
-//    private static final String LIST_FRAGMENT_TAG = "list_fragment";
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
-    @Inject StreamAdapterFactory adapterFactory;
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject ResourceHelper mResourceHelper;
     @Inject SessionDataFactory sessionData;
 
     private Handler handler = new Handler() {};
@@ -49,11 +59,8 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
         }
     });
 
-    private View mEmptyLayout;
-    private RecyclerView mRecyclerView;
-    private View mMicrophoneButton;
-    private View mSensorsButton;
-    private View mAirbeam2ConfigButton;
+    private DashboardViewMvcImpl mDashboardViewMvc;
+    private DashboardViewModel mDashboardViewModel;
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -69,35 +76,39 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
         }
 
         Intents.startDatabaseWriterService(context);
-        setContentView(R.layout.dashboard);
+
+        mDashboardViewMvc = new DashboardViewMvcImpl(this, null, mResourceHelper);
+        mDashboardViewMvc.registerListener(this);
+        setContentView(mDashboardViewMvc.getRootView());
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        mEmptyLayout = findViewById(R.id.layout_empty);
-        mRecyclerView = findViewById(R.id.recycler_view);
-        mMicrophoneButton = findViewById(R.id.dashboard_microphone);
-        mSensorsButton = findViewById(R.id.dashboard_sensors);
-        mAirbeam2ConfigButton = findViewById(R.id.configure_airbeam2);
+        DashboardViewModelFactory factory = new DashboardViewModelFactory(currentSessionManager, currentSessionSensorManager, state);
+        mDashboardViewModel = ViewModelProviders.of(this, factory).get(DashboardViewModel.class);
+        mDashboardViewModel.init();
+        observeViewModel();
+    }
 
-        if (mMicrophoneButton != null) { mMicrophoneButton.setOnClickListener(this); }
-        if (mSensorsButton != null) { mSensorsButton.setOnClickListener(this); }
-        if (mAirbeam2ConfigButton != null) { mAirbeam2ConfigButton.setOnClickListener(this); }
+    private void observeViewModel() {
+        mDashboardViewModel.getRecentMeasurements().observe(this, new Observer<Map<String, Double>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, Double> stringDoubleMap) {
+            }
+        });
 
-//        if (findViewById(R.id.fragment_container) != null) {
-//            DashboardFragment dashboardListFragment = DashboardFragment.newInstance(settingsHelper);
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, dashboardListFragment, LIST_FRAGMENT_TAG).commit();
-//        }
+        mDashboardViewModel.getCurrentSensors().observe(this, new Observer<Map<SensorName, Sensor>>() {
+            @Override
+            public void onChanged(@Nullable Map<SensorName, Sensor> currentSensors) {
+                Log.w("viewModel observer", "sensors changed");
+                mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
+            }
+        });
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    @NotNull
-    public StreamAdapterFactory getAdapterFactory() {
-        return adapterFactory;
     }
 
     @Override
@@ -144,6 +155,9 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
 
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
+        Log.w("dashboard activity", "sensor connected event");
+
+        mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
     }
 
@@ -152,10 +166,15 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
         startUpdatingFixedSessions();
     }
 
+//    @Subscribe
+//    public void onEvent(SessionSensorsLoadedEvent event) {
+//        mDashboardViewModel.refreshCurrentSensors();
+//    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        MenuInflater inflater = getDelegate().getMenuInflater();
+        MenuInflater inflater = getMenuInflater();
 
         if (viewingSessionsManager.anySessionPresent()) {
             inflater.inflate(R.menu.toolbar_clear_dashboard, menu);
@@ -210,32 +229,6 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
         return true;
     }
 
-    @Override
-    public void onClick(View view) {
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
-        }
-
-        switch(view.getId()) {
-            case R.id.dashboard_microphone:
-                connectPhoneMicrophone();
-                mEmptyLayout.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-//                mRecyclerView.setAdapter(adapter);
-                break;
-            case R.id.dashboard_sensors:
-                startActivity(new Intent(this, ExternalSensorActivity.class));
-                break;
-            case R.id.configure_airbeam2:
-                if (settingsHelper.hasCredentials()) {
-                    Intents.startAirbeam2Configuration(this);
-                } else {
-                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
-                }
-                break;
-        }
-    }
-
     private void toggleSessionReorder(MenuItem menuItem) {
         state.dashboardState().toggleSessionReorder();
         chooseToggleSessionsReorderIcon(menuItem);
@@ -258,7 +251,8 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
         initNavigationDrawer();
     }
 
-    public void viewChartOptions(View view) {
+    @Override
+    public void onStreamClicked(View view) {
         TextView sensorTitle = view.findViewById(R.id.sensor_name);
         String sensorName = (String) sensorTitle.getText();
         Long sessionId = (Long) view.getTag(R.id.session_id_tag);
@@ -273,6 +267,29 @@ public class DashboardActivity extends DashboardBaseActivity implements View.OnC
             startActivity(new Intent(context, GraphActivity.class));
         } else {
             startActivity(new Intent(context, StreamOptionsActivity.class));
+        }
+    }
+
+    @Override
+    public void onDashboardButtonClicked(View view) {
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
+        }
+
+        switch(view.getId()) {
+            case R.id.dashboard_microphone:
+                connectPhoneMicrophone();
+                break;
+            case R.id.dashboard_sensors:
+                startActivity(new Intent(this, ExternalSensorActivity.class));
+                break;
+            case R.id.configure_airbeam2:
+                if (settingsHelper.hasCredentials()) {
+                    Intents.startAirbeam2Configuration(this);
+                } else {
+                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
+                }
+                break;
         }
     }
 }
