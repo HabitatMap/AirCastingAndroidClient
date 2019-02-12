@@ -3,6 +3,7 @@ package pl.llp.aircasting.screens.dashboard.views;
 import android.view.View;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
@@ -22,4 +23,6 @@ public interface StreamItemViewMvc {
     void unregisterListener(Listener listener);
 
     void bindData(Map<String, Object> dataItem, Boolean displayTitle, ResourceHelper resourceHelper);
+
+    void bindNowValue(TreeMap<String, Double> nowValues);
 }

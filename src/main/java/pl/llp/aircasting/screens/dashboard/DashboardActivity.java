@@ -20,6 +20,7 @@ import java.util.Map;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
@@ -92,7 +93,8 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private void observeViewModel() {
         mDashboardViewModel.getRecentMeasurements().observe(this, new Observer<Map<String, Double>>() {
             @Override
-            public void onChanged(@Nullable Map<String, Double> stringDoubleMap) {
+            public void onChanged(@Nullable Map<String, Double> recentMeasurements) {
+                mDashboardViewMvc.bindNowValues(mDashboardViewModel.getRecentMeasurementsData().getValue());
             }
         });
 
@@ -159,6 +161,11 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
         mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
+    }
+
+    @Subscribe
+    public void onEvent(SensorEvent event) {
+        mDashboardViewModel.refreshRecentMeasurements();
     }
 
     @Subscribe

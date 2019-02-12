@@ -43,12 +43,12 @@ public class CurrentSessionSensorManager {
     @Inject ExternalSensors externalSensors;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject EventBus eventBus;
-    @Inject
-    ApplicationState state;
+    @Inject ApplicationState state;
     @Inject SimpleAudioReader audioReader;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
 
+//    private volatile LiveData<Map<SensorName, Sensor>> currentSessionSensorsLiveData = new MutableLiveData<>();
     private volatile Map<SensorName, Sensor> currentSessionSensors = newConcurrentMap();
     private volatile Set<Sensor> disabled = newHashSet();
     private Map<String, Double> recentMeasurements = newHashMap();
@@ -68,21 +68,6 @@ public class CurrentSessionSensorManager {
 
         double value = event.getValue();
         recentMeasurements.put(sensorName, value);
-
-//        Location location = currentSessionManager.getLocation();
-//
-//        if (location != null && sensor != null && sensor.isEnabled()) {
-//            double latitude = location.getLatitude();
-//            double longitude = location.getLongitude();
-//            Measurement measurement = new Measurement(latitude, longitude, value, event.getMeasuredValue(), event.getDate());
-//
-//            if (state.recording().isRecording()) {
-//                MeasurementStream stream = currentSessionManager.prepareStream(event);
-//                tracker.addMeasurement(sensor, stream, measurement);
-//            } else {
-//                eventBus.post(new MeasurementEvent(measurement, sensor));
-//            }
-//        }
     }
 
     private boolean sensorKnown(String sensorName) {
@@ -125,6 +110,12 @@ public class CurrentSessionSensorManager {
     public LiveData<Map<SensorName, Sensor>> getCurrentSensorsData() {
         final MutableLiveData<Map<SensorName, Sensor>> data = new MutableLiveData<>();
         data.postValue(currentSessionSensors);
+        return data;
+    }
+
+    public LiveData<Map<String, Double>> getRecentMeasurements() {
+        final MutableLiveData<Map<String, Double>> data = new MutableLiveData<>();
+        data.postValue(recentMeasurements);
         return data;
     }
 

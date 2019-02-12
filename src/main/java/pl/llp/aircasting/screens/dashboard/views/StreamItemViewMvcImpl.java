@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -117,9 +118,16 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         drawFullView(positionWithTitle);
     }
 
-    public void bindNowValue(double nowValue) {
-        mNowValue = String.valueOf(nowValue);
-        mNowTextView.setText(mNowValue);
+    @Override
+    public void bindNowValue(TreeMap<String, Double> nowValues) {
+//        mNowValue = nowValue.get;
+        Number now = nowValues.get(mSensorNameText);
+//        mNowTextView.setText(now);
+        if (now != null) {
+            mNowTextView.setText(String.valueOf(now.intValue()));
+        } else {
+            mNowTextView.setText("0");
+        }
     }
 
     private void drawFullView(Boolean positionWithTitle) {
