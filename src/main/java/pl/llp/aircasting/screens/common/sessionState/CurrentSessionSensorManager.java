@@ -85,7 +85,6 @@ public class CurrentSessionSensorManager {
             if (!currentSessionSensors.containsKey(name)) {
                 currentSessionSensors.put(name, sensor);
                 eventBus.post(new SensorConnectedEvent());
-                eventBus.post(new SessionSensorsLoadedEvent(Constants.CURRENT_SESSION_FAKE_ID));
             }
         }
     }
@@ -171,7 +170,7 @@ public class CurrentSessionSensorManager {
 
     public void deleteSensorFromCurrentSession(Sensor sensor) {
         String sensorName = sensor.getSensorName();
-        currentSessionSensors.remove(SensorName.from(sensorName));
+        removeCurrentSensor(SensorName.from(sensorName));
     }
 
     @Subscribe
@@ -180,9 +179,7 @@ public class CurrentSessionSensorManager {
     }
 
     public void disconnectPhoneMicrophone() {
-        currentSessionSensors.remove(SensorName.from("Phone Microphone"));
-        eventBus.post(new SessionSensorsLoadedEvent(Constants.CURRENT_SESSION_FAKE_ID));
-        eventBus.post(new SensorConnectedEvent());
+        removeCurrentSensor(SensorName.from("Phone Microphone"));
     }
 
     public void disconnectSensors(ExternalSensorDescriptor descriptor) {
@@ -209,5 +206,11 @@ public class CurrentSessionSensorManager {
         }
 
         currentSessionSensors = newSensors;
+        eventBus.post(new SensorConnectedEvent());
+    }
+
+    private void removeCurrentSensor(SensorName sensorName) {
+        currentSessionSensors.remove(sensorName);
+        eventBus.post(new SensorConnectedEvent());
     }
 }
