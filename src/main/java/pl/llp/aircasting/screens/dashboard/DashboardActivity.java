@@ -131,6 +131,8 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Override
     public void onResume() {
         super.onResume();
+
+        mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
     }
 
     @Override
