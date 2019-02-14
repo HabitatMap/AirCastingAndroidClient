@@ -72,13 +72,11 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/chart_container"
         android:layout_width="match_parent"
         android:layout_height="170dp"
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/actual_chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -122,12 +120,13 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/chart_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/chart"
+                <RelativeLayout
+                    android:id="@+id/chart_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
@@ -138,7 +137,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginTop="7dp"
                     android:orientation="vertical">
-
 
                     <TextView
                         android:id="@+id/now"

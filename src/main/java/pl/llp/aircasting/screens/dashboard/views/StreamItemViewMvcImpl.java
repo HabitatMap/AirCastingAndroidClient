@@ -7,6 +7,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +32,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_CURRENT;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_CHART;
 import static pl.llp.aircasting.util.Constants.FIXED_LABEL;
 import static pl.llp.aircasting.util.Constants.MOBILE_LABEL;
 
@@ -43,10 +46,10 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private final TextView mSessionTitle;
     private final LinearLayout mSessionButtonsContainer;
     private final View mPlaceholderChart;
-    private final View mActualChart;
     private final TextView mSensorName;
     private final TextView mMoveSessionDown;
     private final TextView mMoveSessionUp;
+    private final RelativeLayout mChartLayout;
 
     private List<Listener> mListeners = new ArrayList<>();
 
@@ -60,6 +63,8 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private boolean mHasColorBackground;
     private boolean mNowValuePresent;
     private long mSessionId;
+    private int mPosition;
+    private LineChart mChart;
 
     public StreamItemViewMvcImpl(LayoutInflater inflater, ViewGroup parent) {
         mRootView = inflater.inflate(R.layout.stream_row, parent, false);
@@ -75,7 +80,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mMoveSessionDown = mSessionButtonsContainer.findViewById(R.id.session_down);
 
         mPlaceholderChart = findViewById(R.id.placeholder_chart);
-        mActualChart = findViewById(R.id.actual_chart);
+        mChartLayout = findViewById(R.id.chart_layout);
 
         getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,26 +108,25 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     @Override
-    public void bindData(Map<String, Object> dataItem, Boolean positionWithTitle, ResourceHelper resourceHelper) {
+    public void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper) {
+        mPosition = position;
         mSensor = (Sensor) dataItem.get(SENSOR);
         mSensorNameText = mSensor.getSensorName();
         mSession = (Session) dataItem.get(SESSION);
         mSessionId = (long) dataItem.get(SESSION_ID);
         mSessionCurrent = (Boolean) dataItem.get(SESSION_CURRENT);
-//        mNowValuePresent = (Boolean) dataItem.get(NOW_VALUE_PRESENT);
         mHasColorBackground = (Boolean) dataItem.get(BACKGROUND_COLOR);
         mNowValue = String.valueOf(dataItem.get(NOW_VALUE));
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
+        mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
 
-        drawFullView(positionWithTitle);
+        drawFullView();
     }
 
     @Override
     public void bindNowValue(TreeMap<String, Double> nowValues) {
-//        mNowValue = nowValue.get;
         Number now = nowValues.get(mSensorNameText);
-//        mNowTextView.setText(now);
         if (now != null) {
             mNowTextView.setText(String.valueOf(now.intValue()));
         } else {
@@ -130,13 +134,25 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         }
     }
 
-    private void drawFullView(Boolean positionWithTitle) {
-        if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
-            setTitleView(positionWithTitle);
-            mPlaceholderChart.setVisibility(View.VISIBLE);
-            mActualChart.setVisibility(View.GONE);
-            return;
+    @Override
+    public void bindChart(Map mChartData) {
+        mChart = (LineChart) mChartData.get(mSensorNameText);
+        Log.w("chart to bind", String.valueOf(mChart));
+
+        if (mChart != null) {
+            mChartLayout.removeAllViews();
+            mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
         }
+    }
+
+    private void drawFullView() {
+        Log.w("stream item", "draw full view");
+//        if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
+//            setTitleView();
+//            mPlaceholderChart.setVisibility(View.VISIBLE);
+//            mActualChart.setVisibility(View.GONE);
+//            return;
+//        }
 
         mRootView.setTag(R.id.session_id_tag, mSessionId);
 
@@ -153,11 +169,9 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
             mNowTextView.setBackgroundDrawable(mResourceHelper.streamValueGrey);
         }
 
-//        if (mNowValuePresent) {
-            mNowTextView.setText(mNowValue);
-//        } else {
-//            mNowTextView.setText(R.string.empty);
-//        }
+        mNowTextView.setText(mNowValue);
+        mChartLayout.removeAllViews();
+        mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
 
         if (mSessionReorderInProgress) {
             mMoveSessionDown.setVisibility(View.VISIBLE);

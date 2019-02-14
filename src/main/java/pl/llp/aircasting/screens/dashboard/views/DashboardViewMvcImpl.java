@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
@@ -84,8 +85,13 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
 
     @Override
     public void bindNowValues(TreeMap recentMeasurementsData) {
-        Log.w("bindNowValues", String.valueOf(recentMeasurementsData));
         mRecyclerAdapter.bindNowValues(recentMeasurementsData);
+    }
+
+    @Override
+    public void bindChartData(Map liveCharts) {
+        Log.w("bind chart data", String.valueOf(liveCharts));
+        mRecyclerAdapter.bindChartData(liveCharts);
     }
 
     private <T extends View> T findViewById(int id) {

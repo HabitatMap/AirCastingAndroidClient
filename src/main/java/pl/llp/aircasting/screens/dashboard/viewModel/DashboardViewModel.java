@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.util.Constants;
 
 import static com.google.inject.internal.Maps.newHashMap;
@@ -38,6 +40,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String NOW_VALUE = "now_value";
     public static final String SESSION_CURRENT = "session_current";
     public static final String REORDER_IN_PROGRESS = "reorder_in_progress";
+    public static final String STREAM_CHART = "stream_chart";
 
     private final Comparator<Map<String, Object>> mDashboardDataComparator = new Comparator<Map<String, Object>>() {
         @Override
@@ -58,27 +61,27 @@ public class DashboardViewModel extends ViewModel {
         }
     };
 
-//    private final Comparator<Map<String, Double>> mRecentMeasurementsComparator = new Comparator<Map<String, Double>>() {
-//        @Override
-//        public int compare(@Nullable Map<String, Double> leftMap, @Nullable Map<String, Double> rightMap) {
-//            return ComparisonChain.start().compare(getPosition(leftMap), getPosition(rightMap)).result();
-//        }
-//    }
-
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;
+    private DashboardChartManager mDashboardChartManager;
     private ApplicationState mState;
 
     private MediatorLiveData<Session> mCurrentSession = new MediatorLiveData<>();
     private MediatorLiveData<Map<SensorName, Sensor>> mCurrentSensors = new MediatorLiveData<>();
     private MediatorLiveData<Map<String, Double>> mRecentMeasurements = new MediatorLiveData<>();
+    private MediatorLiveData<Map<String, LineChart>> mLiveCharts = new MediatorLiveData<>();
     private MediatorLiveData<List> mDashboardStreamData = new MediatorLiveData<>();
     private MediatorLiveData<TreeMap> mRecentMeasurementsData = new MediatorLiveData<>();
     private HashMap<String, Integer> mPositions = newHashMap();
 
-    public DashboardViewModel(CurrentSessionManager currentSessionManager, CurrentSessionSensorManager currentSessionSensorManager, ApplicationState applicationState) {
+    public DashboardViewModel(CurrentSessionManager currentSessionManager,
+                              CurrentSessionSensorManager currentSessionSensorManager,
+                              DashboardChartManager dashboardChartManager,
+                              ApplicationState applicationState) {
+
         this.mCurrentSessionManager = currentSessionManager;
         this.mCurrentSessionSensorManager = currentSessionSensorManager;
+        this.mDashboardChartManager = dashboardChartManager;
         this.mState = applicationState;
     }
 
@@ -86,6 +89,7 @@ public class DashboardViewModel extends ViewModel {
         refreshCurrentSession();
         refreshCurrentSensors();
         refreshRecentMeasurements();
+        refreshLiveCharts();
     }
 
     public void refreshCurrentSensors() {
@@ -102,6 +106,15 @@ public class DashboardViewModel extends ViewModel {
             @Override
             public void onChanged(@Nullable Map<String, Double> recentMeasurements) {
                 mRecentMeasurements.postValue(recentMeasurements);
+            }
+        });
+    }
+
+    public void refreshLiveCharts() {
+        mLiveCharts.addSource(mDashboardChartManager.getCurrentCharts(), new Observer<Map<String, LineChart>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, LineChart> liveCharts) {
+                mLiveCharts.postValue(liveCharts);
             }
         });
     }
@@ -128,6 +141,10 @@ public class DashboardViewModel extends ViewModel {
         return mRecentMeasurements;
     }
 
+    public MutableLiveData<Map<String, LineChart>> getLiveCharts() {
+        return mLiveCharts;
+    }
+
     public LiveData<List> getCurrentDashboardData() {
         mDashboardStreamData.setValue(new ArrayList());
 
@@ -147,6 +164,7 @@ public class DashboardViewModel extends ViewModel {
                     map.put(NOW_VALUE, 20);
                     map.put(SESSION_CURRENT, true);
                     map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
+                    map.put(STREAM_CHART, mDashboardChartManager.getLiveChart(sensor));
 
                     mDashboardStreamData.getValue().add(map);
                 }

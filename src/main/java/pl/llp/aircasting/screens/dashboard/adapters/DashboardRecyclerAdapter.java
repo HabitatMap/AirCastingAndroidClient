@@ -16,12 +16,14 @@ import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvcImpl;
 
 public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.StreamViewHolder> implements StreamItemViewMvc.Listener {
     private static final String PAYLOAD_NOW_VALUES = "payload_now_values";
+    private static final String PAYLOAD_CHARTS = "payload_charts";
 
     private final LayoutInflater mInflater;
     private final Listener mListener;
     private final ResourceHelper mResourceHelper;
     private List<Map> mData = new ArrayList();
     private TreeMap<String, Double> mNowData = new TreeMap();
+    private Map mChartData;
 
     public interface Listener {
         void onStreamClicked(View view);
@@ -43,6 +45,11 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         notifyItemRangeChanged(0, recentMeasurementsData.size(), PAYLOAD_NOW_VALUES);
     }
 
+    public void bindChartData(Map liveCharts) {
+        mChartData = liveCharts;
+        notifyItemRangeChanged(0, liveCharts.size(), PAYLOAD_CHARTS);
+    }
+
     @Override
     public StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         StreamItemViewMvcImpl viewMvc = new StreamItemViewMvcImpl(mInflater, parent);
@@ -52,16 +59,20 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
 
     @Override
     public void onBindViewHolder(StreamViewHolder holder, int position) {
-        holder.mViewMvc.bindData(mData.get(position), false, mResourceHelper);
+        holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
     }
 
     @Override
     public void onBindViewHolder(StreamViewHolder holder, int position, List payloads) {
         if (payloads.isEmpty()) {
-            holder.mViewMvc.bindData(mData.get(position), false, mResourceHelper);
+            holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
         } else if (payloads.get(0) == PAYLOAD_NOW_VALUES) {
             if (mData.size() == mNowData.size()) {
                 holder.mViewMvc.bindNowValue(mNowData);
+            }
+        } else if (payloads.get(0) == PAYLOAD_CHARTS) {
+            if (mData.size() == mChartData.size()) {
+                holder.mViewMvc.bindChart(mChartData);
             }
         }
     }

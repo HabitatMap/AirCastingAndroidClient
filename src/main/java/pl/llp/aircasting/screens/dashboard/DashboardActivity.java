@@ -13,6 +13,7 @@ import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -25,6 +26,7 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.dashboard.events.NewChartAveragesEvent;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModelFactory;
 import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
@@ -46,6 +48,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject DashboardChartManager mDashboardChartManager;
     @Inject ResourceHelper mResourceHelper;
     @Inject SessionDataFactory sessionData;
 
@@ -84,7 +87,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        DashboardViewModelFactory factory = new DashboardViewModelFactory(currentSessionManager, currentSessionSensorManager, state);
+        DashboardViewModelFactory factory = new DashboardViewModelFactory(currentSessionManager, currentSessionSensorManager, mDashboardChartManager, state);
         mDashboardViewModel = ViewModelProviders.of(this, factory).get(DashboardViewModel.class);
         mDashboardViewModel.init();
         observeViewModel();
@@ -103,6 +106,13 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             public void onChanged(@Nullable Map<SensorName, Sensor> currentSensors) {
                 Log.w("viewModel observer", "sensors changed");
                 mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
+            }
+        });
+
+        mDashboardViewModel.getLiveCharts().observe(this, new Observer<Map<String, LineChart>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, LineChart> liveCharts) {
+                mDashboardViewMvc.bindChartData(mDashboardViewModel.getLiveCharts().getValue());
             }
         });
     }
@@ -166,6 +176,11 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Subscribe
     public void onEvent(SensorEvent event) {
         mDashboardViewModel.refreshRecentMeasurements();
+    }
+
+    @Subscribe
+    public void onEvent(NewChartAveragesEvent event) {
+        mDashboardViewModel.refreshLiveCharts();
     }
 
     @Subscribe

@@ -1,8 +1,10 @@
 package pl.llp.aircasting.screens.dashboard;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.os.Handler;
-import android.view.View;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -14,6 +16,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
@@ -21,6 +24,7 @@ import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
 import pl.llp.aircasting.model.*;
+import pl.llp.aircasting.screens.dashboard.events.NewChartAveragesEvent;
 import pl.llp.aircasting.util.Constants;
 
 import java.text.DecimalFormat;
@@ -33,18 +37,18 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class DashboardChartManager {
-    @Inject
-    CurrentSessionManager mCurrentSessionManager;
-    @Inject
-    ResourceHelper mResourceHelper;
+    @Inject CurrentSessionManager mCurrentSessionManager;
+    @Inject ResourceHelper mResourceHelper;
+    @Inject EventBus eventBus;
     @Inject Context mContext;
-    @Inject
-    SessionDataFactory mSessionData;
+    @Inject SessionDataFactory mSessionData;
 
     private final static int INTERVAL_IN_SECONDS = 60;
     private final static int MOBILE_INTERVAL = 1000 * INTERVAL_IN_SECONDS; // 1 minute
     private final static String FIXED_LABEL = "1 hr avg";
     private final static String MOBILE_LABEL = "1 min avg";
+
+    private static Map<String, LineChart> mLiveCharts = newHashMap();
     private static Map<String, Boolean> mStaticChartGeneratedForStream = newHashMap();
     private static Map<String, List> mAverages = newHashMap();
     private Sensor mSensor;
@@ -88,29 +92,57 @@ public class DashboardChartManager {
         }
     }
 
-    public void drawChart(View view, final Sensor sensor, long sessionId) {
+    public LineChart getLiveChart(final Sensor sensor) {
+        LineChart chart;
+
         mSensor = sensor;
         mRequestedSensorName = sensor.getSensorName();
-        mRequestedSessionId = sessionId;
-        MeasurementStream stream = getStream();
-        mIsSessionCurrent = mRequestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
-        mIsSessionFixed = mSessionData.getSession(sessionId).isFixed();
+        mRequestedSessionId = Constants.CURRENT_SESSION_FAKE_ID;
         mRequestedStreamKey = getKey(mRequestedSessionId, mRequestedSensorName);
-        LineChart chart = (LineChart) view.findViewById(R.id.chart);
 
-        chart.clear();
-        draw(chart);
-
-        if (stream == null) {
-            return;
+        if (!mLiveCharts.containsKey(mRequestedStreamKey)) {
+            chart = new LineChart(mContext);
+            draw(chart);
+        } else {
+            chart = mLiveCharts.get(mRequestedStreamKey);
         }
 
-        if (shouldStaticChartInitialize()) {
-            initStaticChart(stream);
-        }
+        updateChartData(mRequestedSensorName, chart, sensor.getSymbol());
 
-        updateChartData(chart, sensor.getSymbol());
+        mLiveCharts.put(mRequestedSensorName, chart);
+
+        return chart;
     }
+
+    public LiveData<Map<String, LineChart>> getCurrentCharts() {
+        final MutableLiveData<Map<String, LineChart>> data = new MutableLiveData<>();
+        data.postValue(mLiveCharts);
+        return data;
+    }
+
+//    public void drawChart(final Sensor sensor, long sessionId) {
+//        LineChart chart = new LineChart(mContext);
+//        mSensor = sensor;
+//        mRequestedSensorName = sensor.getSensorName();
+//        mRequestedSessionId = sessionId;
+//        MeasurementStream stream = getStream();
+//        mIsSessionCurrent = mRequestedSessionId == Constants.CURRENT_SESSION_FAKE_ID;
+//        mIsSessionFixed = mSessionData.getSession(sessionId).isFixed();
+//        mRequestedStreamKey = getKey(mRequestedSessionId, mRequestedSensorName);
+//
+//        chart.clear();
+//        draw(chart);
+//
+//        if (stream == null) {
+//            return;
+//        }
+//
+//        if (shouldStaticChartInitialize()) {
+//            initStaticChart(stream);
+//        }
+//
+//        updateChartData(chart, sensor.getSymbol());
+//    }
 
     private void initStaticChart(MeasurementStream stream) {
         if (!mIsSessionCurrent) {
@@ -126,14 +158,14 @@ public class DashboardChartManager {
         }
     }
 
-    private void updateChartData(LineChart chart, String unitSymbol) {
-        List<Entry> entries = getEntriesForCurrentStream();
+    private void updateChartData(String sensorName, LineChart chart, String unitSymbol) {
+        List<Entry> entries = getEntriesForStream(sensorName);
         if (entries == null || entries.isEmpty()) {
             return;
         }
 
         LineData lineData = new LineData();
-        LineDataSet dataSet = prepareDataSet(unitSymbol);
+        LineDataSet dataSet = prepareDataSet(sensorName, unitSymbol);
 
         lineData.removeDataSet(0);
         lineData.addDataSet(dataSet);
@@ -175,8 +207,8 @@ public class DashboardChartManager {
         chart.setDoubleTapToZoomEnabled(false);
     }
 
-    private LineDataSet prepareDataSet(String unitSymbol) {
-        List<Entry> entries = getEntriesForCurrentStream();
+    private LineDataSet prepareDataSet(String sensorName, String unitSymbol) {
+        List<Entry> entries = getEntriesForStream(sensorName);
         LineDataSet dataSet = new LineDataSet(entries, getDatasetLabel(unitSymbol));
         ArrayList<Integer> colors = prepareDataSetColors(entries);
 
@@ -205,11 +237,18 @@ public class DashboardChartManager {
         List<MeasurementStream> streams = (List) mCurrentSessionManager.getMeasurementStreams();
 
         for (MeasurementStream stream : streams) {
-            String streamKey = getKey(Constants.CURRENT_SESSION_FAKE_ID, stream.getSensorName());
+            String sensorName = stream.getSensorName();
+            mRequestedStreamKey = getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName);
             List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
 
-            mAverages.put(streamKey, Lists.reverse(entries));
+            mAverages.put(mRequestedStreamKey, Lists.reverse(entries));
+            LineChart chart = mLiveCharts.get(sensorName);
+            updateChartData(sensorName, chart, stream.getSymbol());
+
+            mLiveCharts.put(sensorName, chart);
         }
+
+        eventBus.post(new NewChartAveragesEvent());
     }
 
     private boolean shouldStaticChartInitialize() {
@@ -230,8 +269,8 @@ public class DashboardChartManager {
         return String.valueOf(sessionId) + "_" + sensorName;
     }
 
-    private List<Entry> getEntriesForCurrentStream() {
-        return mAverages.get(mRequestedStreamKey);
+    private List<Entry> getEntriesForStream(String sensorName) {
+        return mAverages.get(getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName));
     }
 
     private MeasurementStream getStream() {

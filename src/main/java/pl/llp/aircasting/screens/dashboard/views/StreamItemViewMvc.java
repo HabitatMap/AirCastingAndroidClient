@@ -5,11 +5,7 @@ import android.view.View;
 import java.util.Map;
 import java.util.TreeMap;
 
-import pl.llp.aircasting.model.MeasurementStream;
-import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
-import pl.llp.aircasting.screens.common.sessionState.SessionState;
 
 public interface StreamItemViewMvc {
     public interface Listener {
@@ -22,7 +18,9 @@ public interface StreamItemViewMvc {
 
     void unregisterListener(Listener listener);
 
-    void bindData(Map<String, Object> dataItem, Boolean displayTitle, ResourceHelper resourceHelper);
+    void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper);
 
     void bindNowValue(TreeMap<String, Double> nowValues);
+
+    void bindChart(Map mChartData);
 }
