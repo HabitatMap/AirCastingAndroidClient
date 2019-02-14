@@ -41,6 +41,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String SESSION_CURRENT = "session_current";
     public static final String REORDER_IN_PROGRESS = "reorder_in_progress";
     public static final String STREAM_CHART = "stream_chart";
+    public static final String SESSION_RECORDING = "session_recording";
 
     private final Comparator<Map<String, Object>> mDashboardDataComparator = new Comparator<Map<String, Object>>() {
         @Override
@@ -162,7 +163,8 @@ public class DashboardViewModel extends ViewModel {
                     map.put(BACKGROUND_COLOR, mState.recording().isRecording());
 //                map.put(NOW_VALUE, getRecentMeasurements().getValue().get(sensor.getSensorName()));
                     map.put(NOW_VALUE, 0);
-                    map.put(SESSION_CURRENT, true);
+//                    map.put(SESSION_CURRENT, true);
+                    map.put(SESSION_RECORDING, mState.recording().isRecording());
                     map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                     map.put(STREAM_CHART, mDashboardChartManager.getLiveChart(sensor));
 

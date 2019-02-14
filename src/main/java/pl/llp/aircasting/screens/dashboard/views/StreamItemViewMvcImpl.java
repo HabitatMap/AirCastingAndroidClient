@@ -32,6 +32,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_CURRENT;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_RECORDING;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_CHART;
 import static pl.llp.aircasting.util.Constants.FIXED_LABEL;
 import static pl.llp.aircasting.util.Constants.MOBILE_LABEL;
@@ -59,9 +60,8 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private ResourceHelper mResourceHelper;
     private Boolean mSessionReorderInProgress = false;
     private String mSensorNameText;
-    private Boolean mSessionCurrent;
+    private Boolean mSessionRecording;
     private boolean mHasColorBackground;
-    private boolean mNowValuePresent;
     private long mSessionId;
     private int mPosition;
     private LineChart mChart;
@@ -114,7 +114,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mSensorNameText = mSensor.getSensorName();
         mSession = (Session) dataItem.get(SESSION);
         mSessionId = (long) dataItem.get(SESSION_ID);
-        mSessionCurrent = (Boolean) dataItem.get(SESSION_CURRENT);
+        mSessionRecording = (Boolean) dataItem.get(SESSION_RECORDING);
         mHasColorBackground = (Boolean) dataItem.get(BACKGROUND_COLOR);
         mNowValue = String.valueOf(dataItem.get(NOW_VALUE));
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
@@ -127,12 +127,15 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     @Override
     public void bindNowValue(TreeMap<String, Double> nowValues) {
         Number now = nowValues.get(mSensorNameText);
+
         if (now != null) {
             mNowTextView.setText(String.valueOf(now.intValue()));
-            mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, now.doubleValue()));
+
+            if (mSessionRecording) {
+                mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, now.doubleValue()));
+            }
         } else {
             mNowTextView.setText("0");
-            mNowTextView.setBackground(mResourceHelper.streamValueGreen);
         }
     }
 
@@ -218,37 +221,37 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private String getLastMeasurementLabel() {
-        if (mSession.isFixed()) {
-            return FIXED_LABEL;
-        } else {
+//        if (mSession.isFixed()) {
+//            return FIXED_LABEL;
+//        } else {
             return MOBILE_LABEL;
-        }
+//        }
     }
 
     private void showAndSetTimestamp() {
-        if (mSessionCurrent) {
+//        if (mSessionCurrent) {
             mTimestamp.setVisibility(View.GONE);
-        } else {
-            mTimestamp.setVisibility(View.VISIBLE);
-            mTimestamp.setText(getTimestamp());
-        }
+//        } else {
+//            mTimestamp.setVisibility(View.VISIBLE);
+//            mTimestamp.setText(getTimestamp());
+//        }
     }
 
-    private String getTimestamp() {
-        double time;
-        MeasurementStream stream = mSession.getStream(mSensor.getSensorName());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm MM/dd/yy");
-
-        if (mSessionCurrent) {
-            Date lastMeasurement = stream.getLastMeasurementTime();
-            time = lastMeasurement.getTime();
-        } else {
-            Calendar calendar = Calendar.getInstance();
-            time = calendar.getTime().getTime();
-        }
-
-        return dateFormat.format(time);
-    }
+//    private String getTimestamp() {
+//        double time;
+//        MeasurementStream stream = mSession.getStream(mSensor.getSensorName());
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm MM/dd/yy");
+//
+//        if (mSessionCurrent) {
+//            Date lastMeasurement = stream.getLastMeasurementTime();
+//            time = lastMeasurement.getTime();
+//        } else {
+//            Calendar calendar = Calendar.getInstance();
+//            time = calendar.getTime().getTime();
+//        }
+//
+//        return dateFormat.format(time);
+//    }
 
     private void setBackground() {
         mNowTextView.setBackgroundDrawable(mResourceHelper.getStreamValueBackground(mSensor, Double.parseDouble(mNowValue)));
