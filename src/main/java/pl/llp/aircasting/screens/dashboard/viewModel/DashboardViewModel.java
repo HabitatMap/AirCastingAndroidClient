@@ -183,11 +183,9 @@ public class DashboardViewModel extends ViewModel {
 
         TreeMap recentMeasurements = new TreeMap();
         for (Map.Entry entry : getRecentMeasurements().getValue().entrySet()) {
-//            Map map = new TreeMap();
             recentMeasurements.put(entry.getKey(), entry.getValue());
         }
 
-//        sort(recentMeasurements, mRecentMeasurementsComparator);
         mRecentMeasurementsData.setValue(recentMeasurements);
 
         return mRecentMeasurementsData;
@@ -204,8 +202,4 @@ public class DashboardViewModel extends ViewModel {
             currentPosition++;
         }
     }
-
-//    private int getPosition(Map<String, Double> sensorItem) {
-//        return mPositions.get(;
-//    }
 }

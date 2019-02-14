@@ -22,7 +22,6 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
-import pl.llp.aircasting.screens.common.sessionState.SessionState;
 
 import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.BACKGROUND_COLOR;
@@ -46,7 +45,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private final TextView mTimestamp;
     private final TextView mSessionTitle;
     private final LinearLayout mSessionButtonsContainer;
-    private final View mPlaceholderChart;
     private final TextView mSensorName;
     private final TextView mMoveSessionDown;
     private final TextView mMoveSessionUp;
@@ -79,7 +77,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mMoveSessionUp = mSessionButtonsContainer.findViewById(R.id.session_up);
         mMoveSessionDown = mSessionButtonsContainer.findViewById(R.id.session_down);
 
-        mPlaceholderChart = findViewById(R.id.placeholder_chart);
         mChartLayout = findViewById(R.id.chart_layout);
 
         getRootView().setOnClickListener(new View.OnClickListener() {
@@ -142,7 +139,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     @Override
     public void bindChart(Map mChartData) {
         mChart = (LineChart) mChartData.get(mSensorNameText);
-        Log.w("chart to bind", String.valueOf(mChart));
 
         if (mChart != null) {
             mChartLayout.removeAllViews();
@@ -151,14 +147,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private void drawFullView() {
-        Log.w("stream item", "draw full view");
-//        if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
-//            setTitleView();
-//            mPlaceholderChart.setVisibility(View.VISIBLE);
-//            mActualChart.setVisibility(View.GONE);
-//            return;
-//        }
-
         mRootView.setTag(R.id.session_id_tag, mSessionId);
 
         mLastMeasurementLabel.setText(getLastMeasurementLabel());

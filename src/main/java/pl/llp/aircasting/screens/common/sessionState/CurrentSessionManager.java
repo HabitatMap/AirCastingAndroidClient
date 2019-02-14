@@ -221,18 +221,6 @@ public class CurrentSessionManager {
         discardSession(sessionId);
     }
 
-//    public synchronized double getNow(Sensor sensor) {
-//        if (state.recording().isRecording()) {
-//            return tracker.getNow(sensor);
-//        } else {
-//            if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-//                return 0;
-//            }
-//
-//            return recentMeasurements.get(sensor.getSensorName());
-//        }
-//    }
-
     public void startMobileSession(String title, String tags, boolean locationLess) {
         Session newSession = new Session(false);
         newSession.setTitle(title);
