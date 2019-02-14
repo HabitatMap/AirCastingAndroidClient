@@ -143,7 +143,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mLastMeasurementLabel.setText(getLastMeasurementLabel());
         showAndSetTimestamp();
 
-        setTitleView(positionWithTitle);
+        setTitleView();
 
         mSensorName.setText(mSensorNameText);
 
@@ -176,8 +176,8 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         return getRootView().findViewById(id);
     }
 
-    private void setTitleView(Boolean positionWithTitle) {
-        if (positionWithTitle) {
+    private void setTitleView() {
+        if (positionWithTitle()) {
             mSessionTitleContainer.setVisibility(View.VISIBLE);
             mSessionTitle.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
 
@@ -195,6 +195,10 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         } else {
             mSessionTitleContainer.setVisibility(View.GONE);
         }
+    }
+
+    private boolean positionWithTitle() {
+        return mPosition == 0;
     }
 
     private String getLastMeasurementLabel() {
