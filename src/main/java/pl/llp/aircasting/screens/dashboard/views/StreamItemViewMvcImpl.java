@@ -129,8 +129,10 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         Number now = nowValues.get(mSensorNameText);
         if (now != null) {
             mNowTextView.setText(String.valueOf(now.intValue()));
+            mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, now.doubleValue()));
         } else {
             mNowTextView.setText("0");
+            mNowTextView.setBackground(mResourceHelper.streamValueGreen);
         }
     }
 
