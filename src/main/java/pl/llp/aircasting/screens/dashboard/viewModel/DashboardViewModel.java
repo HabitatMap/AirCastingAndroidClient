@@ -162,7 +162,7 @@ public class DashboardViewModel extends ViewModel {
                     map.put(SESSION, mCurrentSessionManager.getCurrentSession());
                     map.put(BACKGROUND_COLOR, mState.recording().isRecording());
 //                map.put(NOW_VALUE, getRecentMeasurements().getValue().get(sensor.getSensorName()));
-                    map.put(NOW_VALUE, 0);
+//                    map.put(NOW_VALUE, 0);
 //                    map.put(SESSION_CURRENT, true);
                     map.put(SESSION_RECORDING, mState.recording().isRecording());
                     map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());

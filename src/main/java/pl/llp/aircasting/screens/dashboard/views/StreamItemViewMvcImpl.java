@@ -54,7 +54,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
 
     private Sensor mSensor;
     private Session mSession;
-    private String mNowValue = "";
+    private String mNowValue = "0";
     private ResourceHelper mResourceHelper;
     private Boolean mSessionReorderInProgress = false;
     private String mSensorNameText;
@@ -113,7 +113,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mSessionId = (long) dataItem.get(SESSION_ID);
         mSessionRecording = (Boolean) dataItem.get(SESSION_RECORDING);
         mHasColorBackground = (Boolean) dataItem.get(BACKGROUND_COLOR);
-        mNowValue = String.valueOf(dataItem.get(NOW_VALUE));
+//        mNowValue = String.valueOf(dataItem.get(NOW_VALUE));
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
@@ -126,13 +126,14 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         Number now = nowValues.get(mSensorNameText);
 
         if (now != null) {
-            mNowTextView.setText(String.valueOf(now.intValue()));
+            mNowValue = String.valueOf(now.intValue());
+            mNowTextView.setText(mNowValue);
 
             if (mSessionRecording) {
                 mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, now.doubleValue()));
             }
         } else {
-            mNowTextView.setText("0");
+            mNowTextView.setText(mNowValue);
         }
     }
 
