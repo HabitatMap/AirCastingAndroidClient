@@ -164,6 +164,9 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         }
 
         mNowTextView.setText(mNowValue);
+        if (mChart.getParent() != null) {
+            ((ViewGroup) mChart.getParent()).removeView(mChart);
+        }
         mChartLayout.removeAllViews();
         mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
 
