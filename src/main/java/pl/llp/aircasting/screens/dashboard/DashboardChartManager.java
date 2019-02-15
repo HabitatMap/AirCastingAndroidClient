@@ -51,7 +51,7 @@ public class DashboardChartManager {
     private static Map<String, LineChart> mLiveCharts = newHashMap();
     private static Map<String, Boolean> mStaticChartGeneratedForStream = newHashMap();
     private static Map<String, List> mAverages = newHashMap();
-    private Sensor mSensor;
+    private Map<String, Sensor> mSensors = newHashMap();
     private static String mRequestedSensorName;
     private static String mRequestedStreamKey;
     private static long mRequestedSessionId;
@@ -78,6 +78,7 @@ public class DashboardChartManager {
     }
 
     private void resetState() {
+        mSensors.clear();
         mAverages.clear();
         resetAllStaticCharts();
     }
@@ -95,7 +96,9 @@ public class DashboardChartManager {
     public LineChart getLiveChart(final Sensor sensor) {
         LineChart chart;
 
-        mSensor = sensor;
+        if (!mSensors.containsKey(sensor.getSensorName())) {
+            mSensors.put(sensor.getSensorName(), sensor);
+        }
         mRequestedSensorName = sensor.getSensorName();
         mRequestedSessionId = Constants.CURRENT_SESSION_FAKE_ID;
         mRequestedStreamKey = getKey(mRequestedSessionId, mRequestedSensorName);
@@ -210,7 +213,7 @@ public class DashboardChartManager {
     private LineDataSet prepareDataSet(String sensorName, String unitSymbol) {
         List<Entry> entries = getEntriesForStream(sensorName);
         LineDataSet dataSet = new LineDataSet(entries, getDatasetLabel(unitSymbol));
-        ArrayList<Integer> colors = prepareDataSetColors(entries);
+        ArrayList<Integer> colors = prepareDataSetColors(sensorName ,entries);
 
         dataSet.setDrawCircleHole(false);
         dataSet.setCircleRadius(7);
@@ -255,11 +258,11 @@ public class DashboardChartManager {
         return !mStaticChartGeneratedForStream.containsKey(mRequestedStreamKey);
     }
 
-    private ArrayList<Integer> prepareDataSetColors(List<Entry> entries) {
+    private ArrayList<Integer> prepareDataSetColors(String sensorName, List<Entry> entries) {
         ArrayList colors = new ArrayList<Integer>();
 
         for (Entry entry : entries) {
-            colors.add(mResourceHelper.getColorAbsolute(mSensor, entry.getY()));
+            colors.add(mResourceHelper.getColorAbsolute(mSensors.get(sensorName), entry.getY()));
         }
 
         return colors;
