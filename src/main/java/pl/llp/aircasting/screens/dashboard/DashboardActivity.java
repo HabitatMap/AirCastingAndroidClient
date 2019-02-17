@@ -22,6 +22,7 @@ import java.util.Map;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.session.SessionStoppedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
@@ -183,6 +184,11 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Subscribe
     public void onEvent(NewChartAveragesEvent event) {
         mDashboardViewModel.refreshLiveCharts();
+    }
+
+    @Subscribe
+    public void onEvent(SessionStoppedEvent event) {
+        mDashboardViewModel.refreshCurrentSensors();
     }
 
     @Subscribe
