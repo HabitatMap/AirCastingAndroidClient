@@ -133,6 +133,9 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     public void onResume() {
         super.onResume();
 
+        // added
+        mDashboardViewModel.refreshCurrentSensors();
+
         mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
     }
 
