@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,34 +10,26 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 
-import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.BACKGROUND_COLOR;
-import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.NOW_VALUE;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.REORDER_IN_PROGRESS;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION;
-import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_CURRENT;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_RECORDING;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_CHART;
-import static pl.llp.aircasting.util.Constants.FIXED_LABEL;
 import static pl.llp.aircasting.util.Constants.MOBILE_LABEL;
 
-public class StreamItemViewMvcImpl implements StreamItemViewMvc {
+public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final View mRootView;
 
     private final RelativeLayout mSessionTitleContainer;
@@ -64,7 +57,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private int mPosition;
     private LineChart mChart;
 
-    public StreamItemViewMvcImpl(LayoutInflater inflater, ViewGroup parent) {
+    public CurrentStreamItemViewMvcImpl(LayoutInflater inflater, ViewGroup parent) {
         mRootView = inflater.inflate(R.layout.stream_row, parent, false);
         mSessionTitleContainer = findViewById(R.id.title_container);
 
@@ -106,6 +99,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper) {
+        Log.w("stream item", "bind all data");
         mPosition = position;
         mSensor = (Sensor) dataItem.get(SENSOR);
         mSensorNameText = mSensor.getSensorName();
@@ -113,7 +107,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
         mSessionId = (long) dataItem.get(SESSION_ID);
         mSessionRecording = (Boolean) dataItem.get(SESSION_RECORDING);
         mHasColorBackground = (Boolean) dataItem.get(BACKGROUND_COLOR);
-//        mNowValue = String.valueOf(dataItem.get(NOW_VALUE));
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
@@ -123,6 +116,7 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindNowValue(TreeMap<String, Double> nowValues) {
+        Log.w("stream item", "bind now");
         Number now = nowValues.get(mSensorNameText);
 
         if (now != null) {
@@ -150,8 +144,8 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
 
-        mLastMeasurementLabel.setText(getLastMeasurementLabel());
-        showAndSetTimestamp();
+        mLastMeasurementLabel.setText(MOBILE_LABEL);
+        mTimestamp.setVisibility(View.GONE);
 
         setTitleView();
 
@@ -211,39 +205,6 @@ public class StreamItemViewMvcImpl implements StreamItemViewMvc {
     private boolean positionWithTitle() {
         return mPosition == 0;
     }
-
-    private String getLastMeasurementLabel() {
-//        if (mSession.isFixed()) {
-//            return FIXED_LABEL;
-//        } else {
-            return MOBILE_LABEL;
-//        }
-    }
-
-    private void showAndSetTimestamp() {
-//        if (mSessionCurrent) {
-            mTimestamp.setVisibility(View.GONE);
-//        } else {
-//            mTimestamp.setVisibility(View.VISIBLE);
-//            mTimestamp.setText(getTimestamp());
-//        }
-    }
-
-//    private String getTimestamp() {
-//        double time;
-//        MeasurementStream stream = mSession.getStream(mSensor.getSensorName());
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm MM/dd/yy");
-//
-//        if (mSessionCurrent) {
-//            Date lastMeasurement = stream.getLastMeasurementTime();
-//            time = lastMeasurement.getTime();
-//        } else {
-//            Calendar calendar = Calendar.getInstance();
-//            time = calendar.getTime().getTime();
-//        }
-//
-//        return dateFormat.format(time);
-//    }
 
     private void setBackground() {
         mNowTextView.setBackgroundDrawable(mResourceHelper.getStreamValueBackground(mSensor, Double.parseDouble(mNowValue)));

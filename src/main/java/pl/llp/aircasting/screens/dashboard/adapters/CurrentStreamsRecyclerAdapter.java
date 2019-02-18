@@ -12,9 +12,9 @@ import java.util.TreeMap;
 
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
-import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvcImpl;
+import pl.llp.aircasting.screens.dashboard.views.CurrentStreamItemViewMvcImpl;
 
-public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.StreamViewHolder> implements StreamItemViewMvc.Listener {
+public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentStreamsRecyclerAdapter.StreamViewHolder> implements StreamItemViewMvc.Listener {
     private static final String PAYLOAD_NOW_VALUES = "payload_now_values";
     private static final String PAYLOAD_CHARTS = "payload_charts";
 
@@ -29,7 +29,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         void onStreamClicked(View view);
     }
 
-    public DashboardRecyclerAdapter(LayoutInflater inflater, Listener listener, ResourceHelper resourceHelper) {
+    public CurrentStreamsRecyclerAdapter(LayoutInflater inflater, Listener listener, ResourceHelper resourceHelper) {
         mInflater = inflater;
         mListener = listener;
         mResourceHelper = resourceHelper;
@@ -52,7 +52,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
 
     @Override
     public StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        StreamItemViewMvcImpl viewMvc = new StreamItemViewMvcImpl(mInflater, parent);
+        CurrentStreamItemViewMvcImpl viewMvc = new CurrentStreamItemViewMvcImpl(mInflater, parent);
         viewMvc.registerListener(this);
         return new StreamViewHolder(viewMvc);
     }

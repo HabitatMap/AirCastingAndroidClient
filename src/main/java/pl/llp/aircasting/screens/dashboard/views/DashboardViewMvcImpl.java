@@ -1,6 +1,5 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +13,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
-import pl.llp.aircasting.screens.dashboard.adapters.DashboardRecyclerAdapter;
+import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter;
 
-public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, DashboardRecyclerAdapter.Listener {
+public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, CurrentStreamsRecyclerAdapter.Listener {
     private final View mRootView;
     private final LayoutInflater mInflater;
     private final View mEmptyLayout;
@@ -26,7 +24,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     private final View mMicrophoneButton;
     private final View mSensorsButton;
     private final View mAirbeam2ConfigButton;
-    private final DashboardRecyclerAdapter mRecyclerAdapter;
+    private final CurrentStreamsRecyclerAdapter mRecyclerAdapter;
     private final AppCompatActivity mContext;
     private Listener mListener;
 
@@ -36,7 +34,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         mRootView = mInflater.inflate(R.layout.dashboard, parent, false);
 
         mEmptyLayout = findViewById(R.id.layout_empty);
-        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView = findViewById(R.id.current_streams_recycler_view);
         mMicrophoneButton = findViewById(R.id.dashboard_microphone);
         mSensorsButton = findViewById(R.id.dashboard_sensors);
         mAirbeam2ConfigButton = findViewById(R.id.configure_airbeam2);
@@ -45,7 +43,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         if (mSensorsButton != null) { mSensorsButton.setOnClickListener(this); }
         if (mAirbeam2ConfigButton != null) { mAirbeam2ConfigButton.setOnClickListener(this); }
 
-        mRecyclerAdapter = new DashboardRecyclerAdapter(mInflater, this, resourceHelper);
+        mRecyclerAdapter = new CurrentStreamsRecyclerAdapter(mInflater, this, resourceHelper);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRecyclerAdapter);
