@@ -8,6 +8,9 @@ import java.util.TreeMap;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 
 public interface StreamItemViewMvc {
+    void bindSessionTitle(int position);
+
+
     public interface Listener {
         void onStreamClicked(View view);
     }

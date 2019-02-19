@@ -141,6 +141,12 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         }
     }
 
+    @Override
+    public void bindSessionTitle(int position) {
+        mPosition = position;
+        setTitleView();
+    }
+
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
 

@@ -3,6 +3,7 @@ package pl.llp.aircasting.screens.dashboard.views;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.TreeMap;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter;
+import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperCallback;
 
 public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, CurrentStreamsRecyclerAdapter.Listener {
     private final View mRootView;
@@ -47,6 +49,10 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRecyclerAdapter);
+
+        ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback(mRecyclerAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
