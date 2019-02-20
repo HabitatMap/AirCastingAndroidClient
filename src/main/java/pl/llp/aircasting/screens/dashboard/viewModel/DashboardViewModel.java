@@ -43,24 +43,6 @@ public class DashboardViewModel extends ViewModel {
     public static final String STREAM_CHART = "stream_chart";
     public static final String SESSION_RECORDING = "session_recording";
 
-    private final Comparator<Map<String, Object>> mDashboardDataComparator = new Comparator<Map<String, Object>>() {
-        @Override
-        public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
-            Sensor leftSensor = (Sensor) left.get(SENSOR);
-            Sensor rightSensor = (Sensor) right.get(SENSOR);
-
-//            ComparisonChain chain = ComparisonChain.start()
-//                    .compare(getSessionPosition(leftSessionId), getSessionPosition(rightSessionId));
-
-//            if (stateRestored || streamsReordered.get(leftSessionId) == true) {
-//                result = chain.compare(getPosition(left), getPosition(right)).result();
-//            } else {
-                return ComparisonChain.start().compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
-//            }
-
-//            return result;
-        }
-    };
 
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;
@@ -73,7 +55,6 @@ public class DashboardViewModel extends ViewModel {
     private MediatorLiveData<Map<String, LineChart>> mLiveCharts = new MediatorLiveData<>();
     private MediatorLiveData<List> mDashboardStreamData = new MediatorLiveData<>();
     private MediatorLiveData<TreeMap> mRecentMeasurementsData = new MediatorLiveData<>();
-    private HashMap<String, Integer> mPositions = newHashMap();
 
     public DashboardViewModel(CurrentSessionManager currentSessionManager,
                               CurrentSessionSensorManager currentSessionSensorManager,
@@ -170,8 +151,6 @@ public class DashboardViewModel extends ViewModel {
 
                     mDashboardStreamData.getValue().add(map);
                 }
-                prepareStreamPositions(mDashboardStreamData.getValue());
-                sort(mDashboardStreamData.getValue(), mDashboardDataComparator);
             }
         }
 
@@ -189,17 +168,5 @@ public class DashboardViewModel extends ViewModel {
         mRecentMeasurementsData.setValue(recentMeasurements);
 
         return mRecentMeasurementsData;
-    }
-
-    private void prepareStreamPositions(List<TreeMap<String, Object>> data) {
-        mPositions.clear();
-        int currentPosition = 0;
-
-        for (Map<String, Object> map : data) {
-            Sensor sensor = (Sensor) map.get(SENSOR);
-            String positionKey = sensor.toString();
-            mPositions.put(positionKey, Integer.valueOf(currentPosition));
-            currentPosition++;
-        }
     }
 }

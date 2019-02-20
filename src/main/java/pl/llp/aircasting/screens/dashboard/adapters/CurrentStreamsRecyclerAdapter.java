@@ -1,21 +1,32 @@
 package pl.llp.aircasting.screens.dashboard.adapters;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.gson.annotations.Since;
+import com.google.inject.Singleton;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.CurrentStreamItemViewMvcImpl;
+
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 
 public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentStreamsRecyclerAdapter.StreamViewHolder>
         implements StreamItemViewMvc.Listener, StreamItemTouchHelperAdapter {
@@ -23,12 +34,38 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     private static final String PAYLOAD_CHARTS = "payload_charts";
     private static final String PAYLOAD_TITLE = "payload_title";
 
+    private static boolean mStreamsReordered = false;
+
     private final LayoutInflater mInflater;
     private final Listener mListener;
     private final ResourceHelper mResourceHelper;
-    private List<Map> mData = new ArrayList();
+    private List<Map<String, Object>> mData = new ArrayList();
     private TreeMap<String, Double> mNowData = new TreeMap();
     private Map mChartData;
+    private Map<String, Integer> mStreamPositions = new TreeMap();
+
+    private final Comparator<Map<String, Object>> mStreamComparator = new Comparator<Map<String, Object>>() {
+        @Override
+        public int compare(@Nullable Map<String, Object> left, @Nullable Map<String, Object> right) {
+            int result;
+            ComparisonChain chain = ComparisonChain.start();
+
+            Sensor leftSensor = (Sensor) left.get(SENSOR);
+            Sensor rightSensor = (Sensor) right.get(SENSOR);
+
+            result = chain.compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
+
+            if (mStreamsReordered && mData.size() == mStreamPositions.size()) {
+                result = chain.compare(getPosition(leftSensor.getSensorName()), getPosition(rightSensor.getSensorName())).result();
+            }
+
+            return result;
+        }
+    };
+
+    private int getPosition(String sensorName) {
+        return mStreamPositions.get(sensorName);
+    }
 
     public interface Listener {
         void onStreamClicked(View view);
@@ -41,7 +78,20 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     }
 
     public void bindData(List data) {
+        int position = 0;
+
         mData = data;
+        Collections.sort(mData, mStreamComparator);
+        mStreamPositions.clear();
+
+        for (Map<String, Object> dataItem : mData) {
+            Sensor sensor = (Sensor) dataItem.get(SENSOR);
+
+            mStreamPositions.put(sensor.getSensorName(), position);
+
+            position++;
+        }
+
         notifyDataSetChanged();
     }
 
@@ -107,23 +157,26 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
 
     @Override
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
+        mStreamsReordered = true;
+
         target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
 
-        if (fromPosition > toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(mData, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(mData, i, i - 1);
-            }
-        }
+        swapPositions(fromPosition, toPosition);
+        Collections.sort(mData, mStreamComparator);
         notifyItemMoved(fromPosition, toPosition);
 
         // make sure the first element is rebound to show the session title
         notifyItemChanged(0, PAYLOAD_TITLE);
 
         return true;
+    }
+
+    private void swapPositions(int fromPosition, int toPosition) {
+        String fromSensor = ((Sensor) mData.get(fromPosition).get(SENSOR)).getSensorName();
+        String toSensor = ((Sensor) mData.get(toPosition).get(SENSOR)).getSensorName();
+
+        mStreamPositions.put(fromSensor, toPosition);
+        mStreamPositions.put(toSensor, fromPosition);
     }
 
     @Override
