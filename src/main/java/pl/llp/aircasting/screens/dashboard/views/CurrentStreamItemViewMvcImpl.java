@@ -52,7 +52,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     private Boolean mSessionReorderInProgress = false;
     private String mSensorNameText;
     private Boolean mSessionRecording;
-    private boolean mHasColorBackground;
     private long mSessionId;
     private int mPosition;
     private LineChart mChart;
@@ -99,14 +98,12 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper) {
-        Log.w("stream item", "bind all data");
         mPosition = position;
         mSensor = (Sensor) dataItem.get(SENSOR);
         mSensorNameText = mSensor.getSensorName();
         mSession = (Session) dataItem.get(SESSION);
         mSessionId = (long) dataItem.get(SESSION_ID);
         mSessionRecording = (Boolean) dataItem.get(SESSION_RECORDING);
-        mHasColorBackground = (Boolean) dataItem.get(BACKGROUND_COLOR);
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
@@ -116,16 +113,13 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindNowValue(TreeMap<String, Double> nowValues) {
-        Log.w("stream item", "bind now");
         Number now = nowValues.get(mSensorNameText);
 
         if (now != null) {
             mNowValue = String.valueOf(now.intValue());
             mNowTextView.setText(mNowValue);
 
-            if (mSessionRecording) {
-                mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, now.doubleValue()));
-            }
+            setBackground();
         } else {
             mNowTextView.setText(mNowValue);
         }
@@ -157,11 +151,7 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
         mSensorName.setText(mSensorNameText);
 
-        if (mHasColorBackground) {
-            setBackground();
-        } else {
-            mNowTextView.setBackgroundDrawable(mResourceHelper.streamValueGrey);
-        }
+        setBackground();
 
         mNowTextView.setText(mNowValue);
         if (mChart.getParent() != null) {
@@ -213,6 +203,10 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private void setBackground() {
-        mNowTextView.setBackgroundDrawable(mResourceHelper.getStreamValueBackground(mSensor, Double.parseDouble(mNowValue)));
+        if (mSessionRecording) {
+            mNowTextView.setBackground(mResourceHelper.getStreamValueBackground(mSensor, Double.parseDouble(mNowValue)));
+        } else {
+            mNowTextView.setBackgroundDrawable(mResourceHelper.streamValueGrey);
+        }
     }
 }

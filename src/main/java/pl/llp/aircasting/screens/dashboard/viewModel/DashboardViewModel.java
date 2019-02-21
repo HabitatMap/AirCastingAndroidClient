@@ -34,11 +34,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String SENSOR = "sensor";
     public static final String SESSION = "session";
     public static final String SESSION_ID = "session_id";
-    public static final String STREAMS_REORDERED = "streams_reordered";
     public static final String BACKGROUND_COLOR = "background_color";
-    public static final String NOW_VALUE_PRESENT = "now_value_present";
-    public static final String NOW_VALUE = "now_value";
-    public static final String SESSION_CURRENT = "session_current";
     public static final String REORDER_IN_PROGRESS = "reorder_in_progress";
     public static final String STREAM_CHART = "stream_chart";
     public static final String SESSION_RECORDING = "session_recording";
@@ -68,7 +64,6 @@ public class DashboardViewModel extends ViewModel {
     }
 
     public void init() {
-        refreshCurrentSession();
         refreshCurrentSensors();
         refreshRecentMeasurements();
         refreshLiveCharts();
@@ -101,19 +96,6 @@ public class DashboardViewModel extends ViewModel {
         });
     }
 
-    public void refreshCurrentSession() {
-        mCurrentSession.addSource(mCurrentSessionManager.getCurrentSessionData(), new Observer<Session>() {
-            @Override
-            public void onChanged(@Nullable Session session) {
-                mCurrentSession.postValue(session);
-            }
-        });
-    }
-
-    public LiveData<Session> getCurrentSession() {
-        return mCurrentSession;
-    }
-
     public LiveData<Map<SensorName, Sensor>> getCurrentSensors() {
         Log.w("Dashboard viewModel", "getCurrentSensors");
         return mCurrentSensors;
@@ -139,12 +121,7 @@ public class DashboardViewModel extends ViewModel {
 
                     map.put(SESSION_ID, Constants.CURRENT_SESSION_FAKE_ID);
                     map.put(SENSOR, sensor);
-//                map.put(SESSION, getCurrentSession().getValue());
                     map.put(SESSION, mCurrentSessionManager.getCurrentSession());
-                    map.put(BACKGROUND_COLOR, mState.recording().isRecording());
-//                map.put(NOW_VALUE, getRecentMeasurements().getValue().get(sensor.getSensorName()));
-//                    map.put(NOW_VALUE, 0);
-//                    map.put(SESSION_CURRENT, true);
                     map.put(SESSION_RECORDING, mState.recording().isRecording());
                     map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                     map.put(STREAM_CHART, mDashboardChartManager.getLiveChart(sensor));
