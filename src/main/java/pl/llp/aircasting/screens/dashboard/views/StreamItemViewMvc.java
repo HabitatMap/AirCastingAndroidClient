@@ -10,7 +10,6 @@ import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 public interface StreamItemViewMvc {
     void bindSessionTitle(int position);
 
-
     public interface Listener {
         void onStreamClicked(View view);
     }
@@ -23,7 +22,7 @@ public interface StreamItemViewMvc {
 
     void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper);
 
-    void bindNowValue(TreeMap<String, Double> nowValues);
+    void bindNowValue(Map<String, Double> nowValues);
 
     void bindChart(Map mChartData);
 }

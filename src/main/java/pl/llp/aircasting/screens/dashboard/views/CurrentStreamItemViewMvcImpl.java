@@ -39,8 +39,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final TextView mSessionTitle;
     private final LinearLayout mSessionButtonsContainer;
     private final TextView mSensorName;
-    private final TextView mMoveSessionDown;
-    private final TextView mMoveSessionUp;
     private final RelativeLayout mChartLayout;
 
     private List<Listener> mListeners = new ArrayList<>();
@@ -66,8 +64,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         mTimestamp = findViewById(R.id.timestamp);
         mSessionTitle = mSessionTitleContainer.findViewById(R.id.session_title);
         mSessionButtonsContainer = mSessionTitleContainer.findViewById(R.id.session_reorder_buttons);
-        mMoveSessionUp = mSessionButtonsContainer.findViewById(R.id.session_up);
-        mMoveSessionDown = mSessionButtonsContainer.findViewById(R.id.session_down);
 
         mChartLayout = findViewById(R.id.chart_layout);
 
@@ -112,7 +108,7 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     @Override
-    public void bindNowValue(TreeMap<String, Double> nowValues) {
+    public void bindNowValue(Map<String, Double> nowValues) {
         Number now = nowValues.get(mSensorNameText);
 
         if (now != null) {
@@ -159,18 +155,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         }
         mChartLayout.removeAllViews();
         mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
-
-        if (mSessionReorderInProgress) {
-            mMoveSessionDown.setVisibility(View.VISIBLE);
-            mMoveSessionUp.setVisibility(View.VISIBLE);
-
-            mMoveSessionDown.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-        }
     }
 
     private <T extends View> T findViewById(int id) {
@@ -179,6 +163,7 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     private void setTitleView() {
         if (positionWithTitle()) {
+
             mSessionTitleContainer.setVisibility(View.VISIBLE);
             mSessionTitle.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
 
