@@ -24,6 +24,8 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager;
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.util.Constants;
 
@@ -38,27 +40,39 @@ public class DashboardViewModel extends ViewModel {
     public static final String REORDER_IN_PROGRESS = "reorder_in_progress";
     public static final String STREAM_CHART = "stream_chart";
     public static final String SESSION_RECORDING = "session_recording";
-
+    public static final String STREAM_IDENTIFIER = "stream_identifier";
+    public static final String STREAM_TIMESTAMP = "stream_timestamp";
 
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;
+    private ViewingSessionsManager mViewingSessionsManager;
+    private ViewingSessionsSensorManager mViewingSessionsSensorManager;
     private DashboardChartManager mDashboardChartManager;
     private ApplicationState mState;
 
-    private MediatorLiveData<Session> mCurrentSession = new MediatorLiveData<>();
+    // current session data
     private MediatorLiveData<Map<SensorName, Sensor>> mCurrentSensors = new MediatorLiveData<>();
     private MediatorLiveData<Map<String, Double>> mRecentMeasurements = new MediatorLiveData<>();
     private MediatorLiveData<Map<String, LineChart>> mLiveCharts = new MediatorLiveData<>();
     private MediatorLiveData<List> mDashboardStreamData = new MediatorLiveData<>();
     private MediatorLiveData<TreeMap> mRecentMeasurementsData = new MediatorLiveData<>();
 
+    // viewing sessions data
+    private MediatorLiveData<Map <Long, Map<SensorName, Sensor>>> mViewingSensors = new MediatorLiveData<>();
+    private MediatorLiveData<List> mViewingDashboardData = new MediatorLiveData<>();
+    private MediatorLiveData<Map<String, LineChart>> mStaticCharts = new MediatorLiveData<>();
+
     public DashboardViewModel(CurrentSessionManager currentSessionManager,
                               CurrentSessionSensorManager currentSessionSensorManager,
+                              ViewingSessionsManager viewingSessionsManager,
+                              ViewingSessionsSensorManager viewingSessionsSensorManager,
                               DashboardChartManager dashboardChartManager,
                               ApplicationState applicationState) {
 
         this.mCurrentSessionManager = currentSessionManager;
         this.mCurrentSessionSensorManager = currentSessionSensorManager;
+        this.mViewingSessionsManager = viewingSessionsManager;
+        this.mViewingSessionsSensorManager = viewingSessionsSensorManager;
         this.mDashboardChartManager = dashboardChartManager;
         this.mState = applicationState;
     }
@@ -67,6 +81,8 @@ public class DashboardViewModel extends ViewModel {
         refreshCurrentSensors();
         refreshRecentMeasurements();
         refreshLiveCharts();
+        refreshViewingSensors();
+        refreshStaticCharts();
     }
 
     public void refreshCurrentSensors() {
@@ -96,8 +112,25 @@ public class DashboardViewModel extends ViewModel {
         });
     }
 
+    public void refreshStaticCharts() {
+        mStaticCharts.addSource(mDashboardChartManager.getStaticCharts(), new Observer<Map<String, LineChart>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, LineChart> staticCharts) {
+                mStaticCharts.postValue(staticCharts);
+            }
+        });
+    }
+
+    public void refreshViewingSensors() {
+        mViewingSensors.addSource(mViewingSessionsSensorManager.getViewingSensorsData(), new Observer<Map<Long, Map<SensorName, Sensor>>>() {
+            @Override
+            public void onChanged(@Nullable Map<Long, Map<SensorName, Sensor>> viewingSensors) {
+                mViewingSensors.postValue(viewingSensors);
+            }
+        });
+    }
+
     public LiveData<Map<SensorName, Sensor>> getCurrentSensors() {
-        Log.w("Dashboard viewModel", "getCurrentSensors");
         return mCurrentSensors;
     }
 
@@ -109,13 +142,16 @@ public class DashboardViewModel extends ViewModel {
         return mLiveCharts;
     }
 
+    public LiveData<Map<Long, Map<SensorName, Sensor>>> getViewingSensors() {
+        return mViewingSensors;
+    }
+
     public LiveData<List> getCurrentDashboardData() {
         mDashboardStreamData.setValue(new ArrayList());
 
         if (getCurrentSensors().getValue() != null) {
             if (getCurrentSensors().getValue().size() != mDashboardStreamData.getValue().size()) {
-
-                for (Map.Entry entry : getCurrentSensors().getValue().entrySet()) {
+               for (Map.Entry entry : getCurrentSensors().getValue().entrySet()) {
                     HashMap map = new HashMap();
                     Sensor sensor = (Sensor) entry.getValue();
 
@@ -127,7 +163,7 @@ public class DashboardViewModel extends ViewModel {
                     map.put(STREAM_CHART, mDashboardChartManager.getLiveChart(sensor));
 
                     mDashboardStreamData.getValue().add(map);
-                }
+               }
             }
         }
 
@@ -145,5 +181,39 @@ public class DashboardViewModel extends ViewModel {
         mRecentMeasurementsData.setValue(recentMeasurements);
 
         return mRecentMeasurementsData;
+    }
+
+    public LiveData<List> getViewingDashboardData() {
+        mViewingDashboardData.setValue(new ArrayList());
+
+        if (getViewingSensors().getValue() != null) {
+            if (getViewingSensors().getValue().size() != mViewingDashboardData.getValue().size()) {
+                for (Map.Entry<Long, Map<SensorName, Sensor>> entry : mViewingSensors.getValue().entrySet()) {
+                    final Long sessionId = entry.getKey();
+                    Map<SensorName, Sensor> sensors = entry.getValue();
+
+                    for (final Sensor sensor : sensors.values()) {
+                        HashMap map = new HashMap();
+
+                        map.put(SESSION_ID, sessionId);
+                        map.put(SENSOR, sensor);
+                        map.put(SESSION, mViewingSessionsManager.getSession(sessionId));
+                        map.put(SESSION_RECORDING, false);
+                        map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
+                        map.put(STREAM_CHART, mDashboardChartManager.getStaticChart(sensor, sessionId));
+                        map.put(STREAM_IDENTIFIER, getStreamIdentifier(sensor, sessionId));
+                        map.put(STREAM_TIMESTAMP, mViewingSessionsManager.getSession(sessionId).getStream(sensor.getSensorName()).getLastMeasurementTime());
+
+                        mViewingDashboardData.getValue().add(map);
+                    }
+                }
+            }
+        }
+
+        return mViewingDashboardData;
+    }
+
+    private String getStreamIdentifier(Sensor sensor, long sessionId) {
+        return String.valueOf(sessionId) + "_" + sensor.getSensorName();
     }
 }

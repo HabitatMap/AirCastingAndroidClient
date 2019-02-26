@@ -1,5 +1,8 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -73,6 +76,12 @@ public class ViewingSessionsSensorManager {
         viewingSessionsSensors.put(session.getId(), sessionSensors);
 
         eventBus.post(new SessionSensorsLoadedEvent(sessionId));
+    }
+
+    public LiveData<Map<Long, Map<SensorName, Sensor>>> getViewingSensorsData() {
+        final MutableLiveData<Map<Long, Map<SensorName, Sensor>>> data = new MutableLiveData<>();
+        data.postValue(viewingSessionsSensors);
+        return data;
     }
 
     @Subscribe

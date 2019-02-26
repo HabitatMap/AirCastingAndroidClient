@@ -16,17 +16,20 @@ import java.util.TreeMap;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter;
+import pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperCallback;
 
-public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, CurrentStreamsRecyclerAdapter.Listener {
+public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, StreamItemViewMvc.Listener {
     private final View mRootView;
     private final LayoutInflater mInflater;
     private final View mEmptyLayout;
-    private final RecyclerView mRecyclerView;
+    private final RecyclerView mCurrentStreamsRecyclerView;
+    private final RecyclerView mViewingStreamsRecyclerView;
     private final View mMicrophoneButton;
     private final View mSensorsButton;
     private final View mAirbeam2ConfigButton;
-    private final CurrentStreamsRecyclerAdapter mRecyclerAdapter;
+    private final CurrentStreamsRecyclerAdapter mCurrentRecyclerAdapter;
+    private final ViewingStreamsRecyclerAdapter mViewingRecyclerAdapter;
     private final AppCompatActivity mContext;
     private Listener mListener;
 
@@ -36,7 +39,8 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         mRootView = mInflater.inflate(R.layout.dashboard, parent, false);
 
         mEmptyLayout = findViewById(R.id.layout_empty);
-        mRecyclerView = findViewById(R.id.current_streams_recycler_view);
+        mCurrentStreamsRecyclerView = findViewById(R.id.current_streams_recycler_view);
+        mViewingStreamsRecyclerView = findViewById(R.id.viewing_streams_recycler_view);
         mMicrophoneButton = findViewById(R.id.dashboard_microphone);
         mSensorsButton = findViewById(R.id.dashboard_sensors);
         mAirbeam2ConfigButton = findViewById(R.id.configure_airbeam2);
@@ -45,14 +49,23 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         if (mSensorsButton != null) { mSensorsButton.setOnClickListener(this); }
         if (mAirbeam2ConfigButton != null) { mAirbeam2ConfigButton.setOnClickListener(this); }
 
-        mRecyclerAdapter = new CurrentStreamsRecyclerAdapter(mInflater, this, resourceHelper);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mCurrentRecyclerAdapter = new CurrentStreamsRecyclerAdapter(mInflater, this, resourceHelper);
+        RecyclerView.LayoutManager currentLayoutManager = new LinearLayoutManager(mContext);
+        mCurrentStreamsRecyclerView.setLayoutManager(currentLayoutManager);
+        mCurrentStreamsRecyclerView.setAdapter(mCurrentRecyclerAdapter);
 
-        ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback(mRecyclerAdapter);
+        mViewingRecyclerAdapter = new ViewingStreamsRecyclerAdapter(mInflater, this, resourceHelper);
+        RecyclerView.LayoutManager viewingLayoutManager = new LinearLayoutManager(mContext);
+        mViewingStreamsRecyclerView.setLayoutManager(viewingLayoutManager);
+        mViewingStreamsRecyclerView.setAdapter(mViewingRecyclerAdapter);
+
+        ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback(mCurrentRecyclerAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(mCurrentStreamsRecyclerView);
+
+        ItemTouchHelper.Callback callback1 = new StreamItemTouchHelperCallback(mViewingRecyclerAdapter);
+        ItemTouchHelper itemTouchHelper1 = new ItemTouchHelper(callback1);
+        itemTouchHelper1.attachToRecyclerView(mViewingStreamsRecyclerView);
     }
 
     @Override
@@ -78,24 +91,32 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
 
         if (!data.isEmpty()) {
             mEmptyLayout.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        } else {
+        } else if (mViewingRecyclerAdapter.getItemCount() == 0){
             mEmptyLayout.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
         }
 
-        mRecyclerAdapter.bindData(data);
+        mCurrentRecyclerAdapter.bindData(data);
     }
 
     @Override
     public void bindNowValues(TreeMap recentMeasurementsData) {
-        mRecyclerAdapter.bindNowValues(recentMeasurementsData);
+        mCurrentRecyclerAdapter.bindNowValues(recentMeasurementsData);
     }
 
     @Override
     public void bindChartData(Map liveCharts) {
-        Log.w("bind chart data", String.valueOf(liveCharts));
-        mRecyclerAdapter.bindChartData(liveCharts);
+        mCurrentRecyclerAdapter.bindChartData(liveCharts);
+    }
+
+    @Override
+    public void bindViewingSensorsData(List data) {
+        if (!data.isEmpty()) {
+            mEmptyLayout.setVisibility(View.GONE);
+        } else if (mCurrentRecyclerAdapter.getItemCount() == 0) {
+            mEmptyLayout.setVisibility(View.VISIBLE);
+        }
+
+        mViewingRecyclerAdapter.bindData(data);
     }
 
     private <T extends View> T findViewById(int id) {

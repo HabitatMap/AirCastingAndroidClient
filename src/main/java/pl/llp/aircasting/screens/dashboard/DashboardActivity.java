@@ -22,6 +22,7 @@ import java.util.Map;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
@@ -41,6 +42,8 @@ import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 
 import static pl.llp.aircasting.Intents.startSensors;
+import static pl.llp.aircasting.screens.dashboard.DashboardChartManager.CURRENT_CHART;
+import static pl.llp.aircasting.screens.dashboard.DashboardChartManager.STATIC_CHART;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
@@ -49,9 +52,9 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
-    @Inject DashboardChartManager mDashboardChartManager;
     @Inject ResourceHelper mResourceHelper;
     @Inject SessionDataFactory sessionData;
+    @Inject DashboardViewModelFactory mDashboardViewModelFactory;
 
     private Handler handler = new Handler() {};
 
@@ -88,8 +91,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         initToolbar("Dashboard");
         initNavigationDrawer();
 
-        DashboardViewModelFactory factory = new DashboardViewModelFactory(currentSessionManager, currentSessionSensorManager, mDashboardChartManager, state);
-        mDashboardViewModel = ViewModelProviders.of(this, factory).get(DashboardViewModel.class);
+        mDashboardViewModel = ViewModelProviders.of(this, mDashboardViewModelFactory).get(DashboardViewModel.class);
         mDashboardViewModel.init();
         observeViewModel();
     }
@@ -105,7 +107,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.getCurrentSensors().observe(this, new Observer<Map<SensorName, Sensor>>() {
             @Override
             public void onChanged(@Nullable Map<SensorName, Sensor> currentSensors) {
-                Log.w("viewModel observer", "sensors changed");
                 mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
             }
         });
@@ -114,6 +115,13 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             @Override
             public void onChanged(@Nullable Map<String, LineChart> liveCharts) {
                 mDashboardViewMvc.bindChartData(mDashboardViewModel.getLiveCharts().getValue());
+            }
+        });
+
+        mDashboardViewModel.getViewingSensors().observe(this, new Observer<Map<Long, Map<SensorName, Sensor>>>() {
+            @Override
+            public void onChanged(@Nullable Map<Long, Map<SensorName, Sensor>> viewingSensors) {
+                mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
             }
         });
     }
@@ -135,8 +143,10 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
         // added
         mDashboardViewModel.refreshCurrentSensors();
-
         mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
+
+        mDashboardViewModel.refreshViewingSensors();
+        mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
     }
 
     @Override
@@ -173,8 +183,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
-        Log.w("dashboard activity", "sensor connected event");
-
         mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
     }
@@ -186,7 +194,12 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(NewChartAveragesEvent event) {
-        mDashboardViewModel.refreshLiveCharts();
+        switch (event.getChartType()) {
+            case CURRENT_CHART:
+                mDashboardViewModel.refreshLiveCharts();
+            case STATIC_CHART:
+                mDashboardViewModel.refreshStaticCharts();
+        }
     }
 
     @Subscribe
@@ -195,14 +208,16 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     }
 
     @Subscribe
+    public void onEvent(SessionSensorsLoadedEvent event) {
+        Log.w("dashboard", "session sensors loaded");
+
+        mDashboardViewModel.refreshViewingSensors();
+    }
+
+    @Subscribe
     public void onEvent(SessionLoadedForViewingEvent event) {
         startUpdatingFixedSessions();
     }
-
-//    @Subscribe
-//    public void onEvent(SessionSensorsLoadedEvent event) {
-//        mDashboardViewModel.refreshCurrentSensors();
-//    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
