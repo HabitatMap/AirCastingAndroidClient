@@ -26,6 +26,20 @@
                 android:layout_weight="1"
                 android:divider="@null"
                 android:dividerHeight="0dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:drawSelectorOnTop="false" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/viewing_streams_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:layout_below="@id/current_streams_recycler_view"
                 android:drawSelectorOnTop="false" />
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
