@@ -376,7 +376,7 @@ public class StreamAdapter extends SimpleAdapter {
         sortedSessionPositions.put(pos2, session1Id);
         sortedSessionPositions.put(pos1, session2Id);
 
-        resetAllStaticCharts();
+//        resetAllStaticCharts();
         update(false);
     }
 
