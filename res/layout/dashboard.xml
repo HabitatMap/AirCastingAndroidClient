@@ -14,108 +14,107 @@
 
         <include layout="@layout/toolbar" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:paddingTop="@dimen/abc_action_bar_default_height_material">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/current_streams_recycler_view"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:divider="@null"
-                android:dividerHeight="0dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:drawSelectorOnTop="false" />
+                android:orientation="vertical"
+                android:paddingTop="@dimen/abc_action_bar_default_height_material">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/viewing_streams_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:divider="@null"
-                android:dividerHeight="0dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_below="@id/current_streams_recycler_view"
-                android:drawSelectorOnTop="false" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/current_streams_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:drawSelectorOnTop="false" />
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/layout_empty"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="50dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/viewing_streams_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:drawSelectorOnTop="false" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/layout_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/configure_airbeam2"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/dashboard_button"
+                android:drawableTop="@drawable/dashboard_ab2_icon"
+                android:elevation="6dp"
+                android:paddingBottom="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="17dp"
+                android:text="@string/configure_airbeam2"
+                android:textAlignment="gravity"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="340dp"
+                android:layout_height="155dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/configure_airbeam2"
+                    android:id="@+id/dashboard_microphone"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="40dp"
                     android:background="@drawable/dashboard_button"
-                    android:drawableTop="@drawable/dashboard_ab2_icon"
+                    android:drawableTop="@drawable/dashboard_microphone_icon"
                     android:elevation="6dp"
-                    android:paddingBottom="20dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
+                    android:paddingBottom="18dp"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
                     android:paddingTop="17dp"
-                    android:text="@string/configure_airbeam2"
+                    android:text="@string/connect_phone_mic"
                     android:textAlignment="gravity"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
 
-                <LinearLayout
-                    android:layout_width="340dp"
-                    android:layout_height="155dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="40dp"
-                    android:orientation="horizontal">
+                <Button
+                    android:id="@+id/dashboard_sensors"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="40dp"
+                    android:background="@drawable/dashboard_button"
+                    android:drawableTop="@drawable/dashboard_sensors_icon"
+                    android:elevation="6dp"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="20dp"
+                    android:text="@string/connect_external_device"
+                    android:textAlignment="gravity"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
-                    <Button
-                        android:id="@+id/dashboard_microphone"
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/dashboard_button"
-                        android:drawableTop="@drawable/dashboard_microphone_icon"
-                        android:elevation="6dp"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="30dp"
-                        android:paddingRight="30dp"
-                        android:paddingTop="17dp"
-                        android:text="@string/connect_phone_mic"
-                        android:textAlignment="gravity"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp" />
-
-                    <Button
-                        android:id="@+id/dashboard_sensors"
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginLeft="40dp"
-                        android:background="@drawable/dashboard_button"
-                        android:drawableTop="@drawable/dashboard_sensors_icon"
-                        android:elevation="6dp"
-                        android:paddingBottom="20dp"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
-                        android:paddingTop="20dp"
-                        android:text="@string/connect_external_device"
-                        android:textAlignment="gravity"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 

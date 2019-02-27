@@ -53,11 +53,13 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         RecyclerView.LayoutManager currentLayoutManager = new LinearLayoutManager(mContext);
         mCurrentStreamsRecyclerView.setLayoutManager(currentLayoutManager);
         mCurrentStreamsRecyclerView.setAdapter(mCurrentRecyclerAdapter);
+        mCurrentStreamsRecyclerView.setNestedScrollingEnabled(false);
 
         mViewingRecyclerAdapter = new ViewingStreamsRecyclerAdapter(mInflater, this, resourceHelper);
         RecyclerView.LayoutManager viewingLayoutManager = new LinearLayoutManager(mContext);
         mViewingStreamsRecyclerView.setLayoutManager(viewingLayoutManager);
         mViewingStreamsRecyclerView.setAdapter(mViewingRecyclerAdapter);
+        mViewingStreamsRecyclerView.setNestedScrollingEnabled(false);
 
         ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback(mCurrentRecyclerAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
