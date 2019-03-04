@@ -17,7 +17,7 @@ import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.networking.drivers.FixedSessionDriver;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import pl.llp.aircasting.sync.SyncService;
+import pl.llp.aircasting.sessionSync.SyncService;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import java.util.*;
