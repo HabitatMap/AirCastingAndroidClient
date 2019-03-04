@@ -78,20 +78,30 @@ public class SessionRepository {
             }
         });
 
-        dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Object>() {
+        return session;
+    }
+
+    @API
+    public void saveSessionMeasurements(final Session session) {
+        dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>() {
             @Override
-            public Object execute(SQLiteDatabase readOnlyDatabase) {
-                Cursor c;
-                c = readOnlyDatabase.rawQuery("select count(*) from " + MEASUREMENT_TABLE_NAME + " WHERE " + MEASUREMENT_SESSION_ID + "=" + session.getId(), null);
-                c.moveToFirst();
-                long aLong = c.getLong(0);
-                Logger.d("Actually written " + aLong);
-                c.close();
+            public Object execute(SQLiteDatabase writableDatabase) {
+                Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
+                Session existingSession = loadShallow(session.getUUID());
+
+                if (existingSession != null) {
+                    for (final MeasurementStream stream : streamsToSave) {
+                        MeasurementStream existingStream = existingSession.getStream(stream.getSensorName());
+
+                        if (existingStream.getMeasurements().size()  == 0) {
+                            streams.saveNewMeasurements(stream, existingStream.getId(), existingSession.getId(), writableDatabase);
+                        }
+                    }
+                }
+
                 return null;
             }
         });
-
-        return session;
     }
 
     @API
@@ -553,7 +563,7 @@ public class SessionRepository {
         WritableDatabaseTask<Void> writableDatabaseTask = new WritableDatabaseTask<Void>() {
             @Override
             public Void execute(SQLiteDatabase writableDatabase) {
-                ContentValues values = StreamRepository.values(stream);
+                ContentValues values = StreamRepository.values(stream, session.getId());
                 values.put(STREAM_SESSION_ID, session.getId());
                 long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
                 stream.setId(streamId);

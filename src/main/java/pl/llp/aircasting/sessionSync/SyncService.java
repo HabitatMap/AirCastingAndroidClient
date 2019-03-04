@@ -247,8 +247,8 @@ public class SyncService extends RoboIntentService {
 
             if (session == null) {
                 Logger.w("Session [" + id + "] couldn't ");
-            } else if (!session.isFixed() && session.isIncomplete()) {
-                Logger.w(String.format("Session [%s] lacks of some measurements.", id));
+//            } else if (!session.isFixed() && session.isIncomplete()) {
+//                Logger.w(String.format("Session [%s] lacks of some measurements.", id));
             } else {
                 try {
                     fixTimesFromUTC(session);
@@ -262,6 +262,22 @@ public class SyncService extends RoboIntentService {
         Intents.notifySyncUpdate(context);
     }
 
+    public void downloadSessionMeasurements(long sessionId, String sessionUUID) {
+        HttpResult<Session> result = sessionDriver.show(sessionId, sessionUUID);
+
+        if (result.getStatus() == Status.SUCCESS) {
+            Session session = result.getContent();
+
+            if (session == null) {
+            } else {
+                try {
+//                    fixTimesFromUTC(session);
+                    sessionRepository.saveSessionMeasurements(session);
+                } catch (RepositoryException e) {
+                }
+            }
+        }
+    }
 
     private void fixTimesFromUTC(Session session) {
         sessionTimes.fromUTCtoLocal(session);

@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.util.Log;
 import com.google.inject.Inject;
 import org.intellij.lang.annotations.Language;
@@ -49,6 +50,7 @@ public class StreamRepository {
                         " WHERE " + STREAM_SESSION_ID + " = " + sessionId + "", null);
 
                 c.moveToFirst();
+
                 while (!c.isAfterLast()) {
                     String sensor = getString(c, STREAM_SENSOR_NAME);
                     String packageName = getString(c, STREAM_SENSOR_PACKAGE_NAME);
@@ -95,9 +97,8 @@ public class StreamRepository {
 
     @Internal
     private MeasurementStream saveOne(MeasurementStream stream, long sessionId, SQLiteDatabase writableDatabase) {
-        ContentValues values = values(stream);
+        ContentValues values = values(stream, sessionId);
 
-        values.put(STREAM_SESSION_ID, sessionId);
         long streamId = writableDatabase.insertOrThrow(STREAM_TABLE_NAME, null, values);
         stream.setId(streamId);
 
@@ -111,8 +112,9 @@ public class StreamRepository {
         Logger.w("saved " + measurementsToSave.size() + " for session " + sessionId);
     }
 
-    static ContentValues values(MeasurementStream stream) {
+    static ContentValues values(MeasurementStream stream, long sessionId) {
         ContentValues values = new ContentValues();
+        values.put(STREAM_SESSION_ID, sessionId);
         values.put(STREAM_SENSOR_PACKAGE_NAME, stream.getPackageName());
         values.put(STREAM_SENSOR_NAME, stream.getSensorName());
         values.put(STREAM_MEASUREMENT_SYMBOL, stream.getSymbol());
@@ -134,13 +136,13 @@ public class StreamRepository {
     @Internal
     void saveAll(Collection<MeasurementStream> streamsToSave, long sessionId, SQLiteDatabase writableDatabase) {
         for (MeasurementStream oneToSave : streamsToSave) {
-            saveNewStreamAndMeasurements(oneToSave, sessionId, writableDatabase);
+            saveOne(oneToSave, sessionId, writableDatabase);
         }
     }
 
-    public void saveNewStreamAndMeasurements(MeasurementStream toSave, long sessionId, SQLiteDatabase writableDatabase) {
+    public void saveNewStreamAndMeasurements(final MeasurementStream toSave, final long sessionId, final SQLiteDatabase writableDatabase) {
         toSave.setSessionId(sessionId);
-        MeasurementStream stream = saveOne(toSave, sessionId, writableDatabase);
+        final MeasurementStream stream = saveOne(toSave, sessionId, writableDatabase);
         saveMeasurements(stream, stream.getId(), sessionId, writableDatabase);
     }
 
@@ -162,7 +164,7 @@ public class StreamRepository {
 
     @API
     public void update(final MeasurementStream stream) {
-        final ContentValues values = values(stream);
+        final ContentValues values = values(stream, stream.getSessionId());
         values.put(STREAM_SESSION_ID, stream.getSessionId());
 
         airCastingDB.executeWritableTask(new WritableDatabaseTask<Void>() {

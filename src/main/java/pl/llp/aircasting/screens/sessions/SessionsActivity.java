@@ -49,6 +49,8 @@ import android.view.View;
 import android.widget.ListView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+
+import pl.llp.aircasting.sync.SyncService;
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectView;
 
@@ -68,6 +70,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject UncalibratedMeasurementCalibrator calibrator;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     @Inject SyncState syncState;
+    @Inject SyncService syncService;
 
     @InjectView(R.id.sessions_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -83,6 +86,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
     private SessionAdapter sessionAdapter;
     private long sessionId;
+    private String sessionUUID;
     private boolean calibrationAttempted;
 
     @Override
@@ -169,6 +173,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     protected void onListItemClick(ListView listView, View view, int position, long id) {
         Session s = sessionAdapter.getSession(position);
         sessionId = s.getId();
+        sessionUUID = s.getUUID().toString();
         Intent intent;
 
         if (s.isFixed())
@@ -188,7 +193,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case R.id.view:
-                viewSession(sessionId);
+                viewSession(sessionId, sessionUUID);
                 break;
             case R.id.delete_session:
                 deleteSession(sessionId);
@@ -263,12 +268,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         dialog.show();
     }
 
-    private void viewSession(long id) {
+    private void viewSession(final long id, final String sessionUUID) {
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... longs) {
+                syncService.downloadSessionMeasurements(sessionId, sessionUUID);
                 viewingSessionsManager.view(longs[0], this);
-
                 return null;
             }
 

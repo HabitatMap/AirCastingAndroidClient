@@ -99,7 +99,16 @@ public class SessionDriver {
         return http()
                 .get()
                 .from(USER_SESSION_PATH + id + ".json")
+                .with(STREAM_MEASUREMENTS, "false")
+                .into(Session.class);
+    }
+
+    public HttpResult<Session> show(long id, String uuid) {
+        return http()
+                .get()
+                .from(USER_SESSION_PATH + uuid + ".json")
                 .with(STREAM_MEASUREMENTS, "true")
+                .with("uuid", uuid)
                 .into(Session.class);
     }
 
