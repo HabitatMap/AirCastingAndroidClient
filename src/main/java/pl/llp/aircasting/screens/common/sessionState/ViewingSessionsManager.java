@@ -54,6 +54,15 @@ public class ViewingSessionsManager {
         Preconditions.checkNotNull(progressListener);
         Session session = sessionRepository.loadShallow(sessionId);
         sessionsForViewing.put(sessionId, session);
+        setStreamingSession(session);
+        addFixedSession(session);
+        notifyNewSession(session, true);
+    }
+
+    public void continueStreaming(long sessionId, String sessionUUID) {
+        Session session = sessionRepository.loadFully(sessionUUID);
+        sessionsForViewing.put(sessionId, session);
+        setStreamingSession(session);
         addFixedSession(session);
         notifyNewSession(session, true);
     }

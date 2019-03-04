@@ -211,7 +211,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
                 break;
             case R.id.continue_streaming:
-                continueAircastingSession(sessionId);
+                continueAircastingSession();
                 finish();
                 break;
         }
@@ -238,12 +238,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         refreshList();
     }
 
-    private void continueAircastingSession(long sessionId) {
-        Session session = sessionRepository.loadShallow(sessionId);
-        viewingSessionsManager.setStreamingSession(session);
-        viewingSessionsManager.view(sessionId, NoOp.progressListener());
+    private void continueAircastingSession() {
 
-        Intents.continueSessionStreaming(this, session.getUUID());
+        viewSession();
+        viewingSessionsManager.continueStreaming(sessionId, sessionUUID);
+        Intents.continueSessionStreaming(this, sessionUUID);
     }
 
     private void editSession(long id) {
