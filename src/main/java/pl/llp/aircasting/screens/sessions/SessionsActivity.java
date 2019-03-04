@@ -50,7 +50,6 @@ import android.widget.ListView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-import pl.llp.aircasting.sync.SyncService;
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectView;
 
@@ -70,7 +69,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject UncalibratedMeasurementCalibrator calibrator;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     @Inject SyncState syncState;
-    @Inject SyncService syncService;
 
     @InjectView(R.id.sessions_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -193,7 +191,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case R.id.view:
-                viewSession(sessionId, sessionUUID);
+                viewSession();
                 break;
             case R.id.delete_session:
                 deleteSession(sessionId);
@@ -268,11 +266,10 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         dialog.show();
     }
 
-    private void viewSession(final long id, final String sessionUUID) {
+    private void viewSession() {
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... longs) {
-                syncService.downloadSessionMeasurements(sessionId, sessionUUID);
                 viewingSessionsManager.view(longs[0], this);
                 return null;
             }
@@ -283,7 +280,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
                 chartManager.resetAllStaticCharts();
             }
-        }.execute(id);
+        }.execute(sessionId);
     }
 
     @Override

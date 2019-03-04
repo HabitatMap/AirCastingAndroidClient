@@ -87,7 +87,7 @@ public class SessionRepository {
             @Override
             public Object execute(SQLiteDatabase writableDatabase) {
                 Collection<MeasurementStream> streamsToSave = session.getMeasurementStreams();
-                Session existingSession = loadShallow(session.getUUID());
+                Session existingSession = loadShallow(String.valueOf(session.getUUID()));
 
                 if (existingSession != null) {
                     for (final MeasurementStream stream : streamsToSave) {
@@ -246,13 +246,13 @@ public class SessionRepository {
     }
 
     @Internal
-    private Session loadShallow(final UUID uuid) {
+    private Session loadShallow(final String uuid) {
         return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
             @Override
             public Session execute(SQLiteDatabase readOnlyDatabase) {
                 Cursor cursor = readOnlyDatabase
                         .rawQuery("SELECT * FROM " + SESSION_TABLE_NAME + " WHERE " + SESSION_UUID + " = ?",
-                                new String[]{uuid.toString()});
+                                new String[]{uuid});
 
                 try {
                     if (cursor.getCount() == 0) return null;
@@ -381,7 +381,7 @@ public class SessionRepository {
     }
 
     @API
-    public Session loadFully(UUID uuid) {
+    public Session loadFully(String uuid) {
         Session session = loadShallow(uuid);
         if (session != null) {
             fill(session, NoOp.progressListener());

@@ -17,6 +17,7 @@ import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.networking.drivers.FixedSessionDriver;
 import pl.llp.aircasting.storage.ProgressListener;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.sync.SyncService;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import java.util.*;
@@ -35,6 +36,7 @@ public class ViewingSessionsManager {
     @Inject ContinuousTracker tracker;
     @Inject FixedSessionDriver fixedSessionDriver;
     @Inject Context context;
+    @Inject SyncService syncService;
 
     private static Map<Long, Session> sessionsForViewing = newHashMap();
     private static Map<Long, Session> fixedSessions = newHashMap();
@@ -59,23 +61,32 @@ public class ViewingSessionsManager {
     public void view(Long sessionId, @NotNull final ProgressListener progressListener) {
         Preconditions.checkNotNull(progressListener);
 
-        final Session session = sessionRepository.loadFully(sessionId, progressListener);
+        Session session = sessionRepository.loadFully(sessionId, progressListener);
+        String sessionUUID = String.valueOf(session.getUUID());
+
+        if (session.isIncomplete()) {
+            syncService.downloadSessionMeasurements(sessionId, sessionUUID);
+            session = sessionRepository.loadFully(sessionId, progressListener);
+        }
+
         if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
             MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
             session.removeStream(stream);
         }
 
         if (session.isFixed()) {
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    fixedSessionDriver.downloadNewData(session, progressListener);
-                    return null;
-                }
-            };
+//            new AsyncTask<Void, Void, Void>() {
+//                @Override
+//                protected Void doInBackground(Void... voids) {
+//                    fixedSessionDriver.downloadNewData(session, progressListener);
+//                    return null;
+//                }
+//            };
 
+            syncService.downloadSessionMeasurements(sessionId, sessionUUID);
             addFixedSession(session);
         }
+
         sessionsForViewing.put(sessionId, session);
         notifyNewSession(session, false);
     }

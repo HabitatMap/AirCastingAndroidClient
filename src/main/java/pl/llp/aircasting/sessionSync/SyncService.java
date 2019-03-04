@@ -195,7 +195,7 @@ public class SyncService extends RoboIntentService {
 
     private void uploadSessions(UUID[] onServer) {
         for (UUID uuid : onServer) {
-            Session session = sessionRepository.loadFully(uuid);
+            Session session = sessionRepository.loadFully(uuid.toString());
             if (session != null && skipUpload(session)) {
                 continue;
             } else {
