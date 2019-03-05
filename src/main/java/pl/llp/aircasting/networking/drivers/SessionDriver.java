@@ -43,6 +43,7 @@ public class SessionDriver {
     private static final String DELETE_SESSION_PATH = "/api/user/sessions/delete_session";
     private static final String DELETE_SESSION_STREAMS_PATH = "/api/user/sessions/delete_session_streams";
     private static final String USER_SESSION_PATH = "/api/user/sessions/";
+    private static final String EMPTY_ID = "empty";
     public static final String COMPRESSION = "compression";
     public static final String STREAM_MEASUREMENTS = "stream_measurements";
 
@@ -106,7 +107,7 @@ public class SessionDriver {
     public HttpResult<Session> show(long id, String uuid) {
         return http()
                 .get()
-                .from(USER_SESSION_PATH + uuid + ".json")
+                .from(USER_SESSION_PATH + EMPTY_ID + ".json")
                 .with(STREAM_MEASUREMENTS, "true")
                 .with("uuid", uuid)
                 .into(Session.class);
