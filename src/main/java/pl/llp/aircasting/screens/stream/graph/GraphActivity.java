@@ -85,7 +85,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.graph);
-        measurementPresenter.setSensor(visibleSession.getSensor());
 
         initToolbar("Graph");
         initNavigationDrawer();

@@ -79,14 +79,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
     private List<Listener> listeners = newArrayList();
 
+    private Sensor currentViewSensor;
+
     @Inject
     private ApplicationState state;
 
-    public void setSensor(Sensor sensor) {
-        this.sensor = sensor;
-    }
 
-    private Sensor sensor = SimpleAudioReader.getSensor();
 
     @Inject
     public void init() {
@@ -102,7 +100,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private void onMeasurement(MeasurementEvent event) {
         if (!visibleSession.isCurrentSessionVisible()) return;
         if (!state.recording().isRecording()) return;
-        if (!event.getSensor().equals(this.sensor)) return;
+        if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
         Measurement measurement = event.getMeasurement();
 
@@ -165,14 +163,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     @Subscribe
     public void onEvent(VisibleSessionUpdatedEvent event) {
-        this.sensor = visibleSession.getSensor();
         reset();
         fixAnchor();
     }
 
     @Subscribe
     public synchronized void onEvent(VisibleStreamUpdatedEvent event) {
-        this.sensor = event.getSensor();
         reset();
     }
 
@@ -186,9 +182,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private CopyOnWriteArrayList<Measurement> prepareFullView() {
-        if (fullView != null) return fullView;
+        if (currentViewSensor == null) {
+            currentViewSensor = visibleSession.getSensor();
+        }
 
-        String sensorName = sensor.getSensorName();
+        if (currentViewSensor == visibleSession.getSensor() && fullView != null) return fullView;
+
+        currentViewSensor = visibleSession.getSensor();
+        String sensorName = currentViewSensor.getSensorName();
         MeasurementStream stream = sessionData.getStream(sensorName, visibleSession.getVisibleSessionId());
         Iterable<Measurement> measurements;
         if (stream == null) {

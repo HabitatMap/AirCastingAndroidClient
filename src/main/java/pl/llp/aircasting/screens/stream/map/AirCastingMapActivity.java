@@ -203,6 +203,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         measurementPresenter.registerListener(this);
         initializeRouteOverlay();
         traceOverlay.startDrawing();
+        traceOverlay.refresh(mapView);
 
         checkConnection();
 
