@@ -187,10 +187,10 @@ public final class Intents {
         context.startActivity(intent);
     }
 
-    public static void continueSessionStreaming(Activity context, UUID uuid) {
+    public static void continueSessionStreaming(Activity context, String uuid) {
         Intent intent = new Intent(context, ExternalSensorActivity.class);
         intent.putExtra(CONTINUE_STREAMING, true);
-        intent.putExtra(UUID_KEY, uuid.toString());
+        intent.putExtra(UUID_KEY, uuid);
 
         context.startActivity(intent);
     }

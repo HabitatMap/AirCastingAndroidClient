@@ -49,6 +49,7 @@ import android.view.View;
 import android.widget.ListView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+
 import pl.llp.aircasting.util.SyncState;
 import roboguice.inject.InjectView;
 
@@ -83,6 +84,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
     private SessionAdapter sessionAdapter;
     private long sessionId;
+    private String sessionUUID;
     private boolean calibrationAttempted;
 
     @Override
@@ -169,6 +171,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     protected void onListItemClick(ListView listView, View view, int position, long id) {
         Session s = sessionAdapter.getSession(position);
         sessionId = s.getId();
+        sessionUUID = s.getUUID().toString();
         Intent intent;
 
         if (s.isFixed())
@@ -188,7 +191,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case R.id.view:
-                viewSession(sessionId);
+                viewSession();
                 break;
             case R.id.delete_session:
                 deleteSession(sessionId);
@@ -208,7 +211,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
                 break;
             case R.id.continue_streaming:
-                continueAircastingSession(sessionId);
+                continueAircastingSession();
                 finish();
                 break;
         }
@@ -235,12 +238,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         refreshList();
     }
 
-    private void continueAircastingSession(long sessionId) {
-        Session session = sessionRepository.loadShallow(sessionId);
-        viewingSessionsManager.setStreamingSession(session);
-        viewingSessionsManager.view(sessionId, NoOp.progressListener());
+    private void continueAircastingSession() {
 
-        Intents.continueSessionStreaming(this, session.getUUID());
+        viewSession();
+        viewingSessionsManager.continueStreaming(sessionId, sessionUUID);
+        Intents.continueSessionStreaming(this, sessionUUID);
     }
 
     private void editSession(long id) {
@@ -263,12 +265,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         dialog.show();
     }
 
-    private void viewSession(long id) {
+    private void viewSession() {
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... longs) {
                 viewingSessionsManager.view(longs[0], this);
-
                 return null;
             }
 
@@ -278,7 +279,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
                 chartManager.resetAllStaticCharts();
             }
-        }.execute(id);
+        }.execute(sessionId);
     }
 
     @Override

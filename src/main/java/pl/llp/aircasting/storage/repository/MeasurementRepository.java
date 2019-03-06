@@ -106,7 +106,7 @@ public class MeasurementRepository {
 
     @Internal
     void save(List<Measurement> measurementsToSave, long sessionId, long streamId, SQLiteDatabase writableDatabase) {
-        ContentValues values = new ContentValues(6);
+        ContentValues values = new ContentValues();
         values.put(MEASUREMENT_SESSION_ID, sessionId);
         values.put(MEASUREMENT_STREAM_ID, streamId);
 
