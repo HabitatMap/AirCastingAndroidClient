@@ -216,4 +216,12 @@ public class DashboardViewModel extends ViewModel {
     private String getStreamIdentifier(Sensor sensor, long sessionId) {
         return String.valueOf(sessionId) + "_" + sensor.getSensorName();
     }
+
+    public void clearAllViewingSensors() {
+        mViewingSessionsManager.removeAllSessions();
+        mViewingSessionsSensorManager.removeAllSessionsSensors();
+        mDashboardChartManager.resetState();
+
+        mViewingSensors.postValue(new HashMap<Long, Map<SensorName, Sensor>>());
+    }
 }

@@ -78,9 +78,11 @@ public class DashboardChartManager {
         mHandler.removeCallbacks(updateEntriesTask);
     }
 
-    private void resetState() {
+    public void resetState() {
         mSensors.clear();
         mAverages.clear();
+        mCurrentCharts.clear();
+        mStaticCharts.clear();
     }
 
     public LiveData<Map<String, LineChart>> getCurrentCharts() {

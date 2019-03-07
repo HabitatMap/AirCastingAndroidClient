@@ -75,7 +75,11 @@ public class ViewingSessionsSensorManager {
 
         viewingSessionsSensors.put(session.getId(), sessionSensors);
 
-        eventBus.post(new SessionSensorsLoadedEvent(sessionId));
+        notifySensorsChanged();
+    }
+
+    private void notifySensorsChanged() {
+        eventBus.post(new SessionSensorsLoadedEvent());
     }
 
     public LiveData<Map<Long, Map<SensorName, Sensor>>> getViewingSensorsData() {
@@ -93,6 +97,7 @@ public class ViewingSessionsSensorManager {
         if (viewingSessionsSensors.containsKey(sessionId)) {
             viewingSessionsSensors.get(sessionId).remove(SensorName.from(PLACEHOLDER_SENSOR_NAME));
         }
+        notifySensorsChanged();
     }
 
     public List<Sensor> getSensorsList(long sessionId) {
@@ -104,14 +109,17 @@ public class ViewingSessionsSensorManager {
     public void deleteSensorFromSession(Sensor sensor, long sessionId) {
         String sensorName = sensor.getSensorName();
         viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
+        notifySensorsChanged();
     }
 
     public void removeSessionSensors(long sessionId) {
         viewingSessionsSensors.remove(sessionId);
+        notifySensorsChanged();
     }
 
     public void removeAllSessionsSensors() {
         viewingSessionsSensors.clear();
+        notifySensorsChanged();
     }
 
     private void addPlaceholderStream(Session session) {

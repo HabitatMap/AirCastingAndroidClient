@@ -209,9 +209,9 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
-        Log.w("dashboard", "session sensors loaded");
 
         mDashboardViewModel.refreshViewingSensors();
+        invalidateOptionsMenu();
     }
 
     @Subscribe
@@ -267,8 +267,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 Intents.makeANote(this);
                 break;
             case R.id.clear_dashboard_button:
-                sessionData.clearAllViewingSessions();
-                eventBus.post(new ToggleSessionReorderEvent(true));
+                mDashboardViewModel.clearAllViewingSensors();
                 break;
             case R.id.session_rearrange_toggle:
                 toggleSessionReorder(menuItem);
