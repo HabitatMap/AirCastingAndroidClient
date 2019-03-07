@@ -1,6 +1,7 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 
+import static pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter.STREAM_CHART_HEIGHT;
+import static pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter.STREAM_CHART_WIDTH;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.REORDER_IN_PROGRESS;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION;
@@ -116,35 +119,33 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         mChart = (LineChart) mChartData.get(mStreamIdentifier);
 
         if (mChart != null) {
-            mChartLayout.removeAllViews();
+            if (mChart.getParent() != null) {
+                ((ViewGroup) mChart.getParent()).removeView(mChart);
+            }
+
             mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
         }
     }
 
     private void drawFullView() {
         Log.w("stream view", "full draw");
-        mRootView.setTag(R.id.session_id_tag, mSessionId);
-
-        showAndSetTimestamp();
-
-        setTitleView();
-
-        mSensorNameTv.setText(mSensorNameText);
-
-        setBackground();
-
-        Log.w("mChart", String.valueOf(mChart));
-
-        // added
-        LineData data = mChart.getLineData();
-        mChart.clear();
-        mChart.setData(data);
-
-        mNowTv.setText(mNowValue);
         if (mChart.getParent() != null) {
             ((ViewGroup) mChart.getParent()).removeView(mChart);
         }
-        mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
+
+        mRootView.setTag(R.id.session_id_tag, mSessionId);
+        showAndSetTimestamp();
+        setTitleView();
+        mSensorNameTv.setText(mSensorNameText);
+        setBackground();
+        mNowTv.setText(mNowValue);
+
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, STREAM_CHART_WIDTH, getRootView().getContext().getResources().getDisplayMetrics());
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, STREAM_CHART_HEIGHT, getRootView().getContext().getResources().getDisplayMetrics());
+
+        ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+        mChart.setLayoutParams(params);
+        mChartLayout.addView(mChart);
     }
 
     private void setTitleView() {

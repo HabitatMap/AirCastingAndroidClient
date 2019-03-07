@@ -277,7 +277,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
             protected void onPostExecute(Session session) {
                 super.onPostExecute(session);
 
-                chartManager.resetAllStaticCharts();
+//                chartManager.resetAllStaticCharts();
             }
         }.execute(sessionId);
     }

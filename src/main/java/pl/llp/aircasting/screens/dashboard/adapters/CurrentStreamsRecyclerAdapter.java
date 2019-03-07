@@ -28,8 +28,8 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentStreamsRecyclerAdapter.StreamViewHolder>
         implements StreamRecyclerAdapter, StreamItemViewMvc.Listener, StreamItemTouchHelperAdapter {
     private static final String PAYLOAD_NOW_VALUES_UPDATE = "payload_now_values";
-    private static final String PAYLOAD_CHARTS_REFRESHED = "payload_charts";
-    private static final String PAYLOAD_TITLE_POSITION_CHANGED = "payload_title";
+    public static final String PAYLOAD_CHARTS_REFRESHED = "payload_charts";
+    public static final String PAYLOAD_TITLE_POSITION_CHANGED = "payload_title";
 
     private static boolean mStreamsReordered = false;
 

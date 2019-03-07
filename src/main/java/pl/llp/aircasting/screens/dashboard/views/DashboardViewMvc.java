@@ -28,5 +28,7 @@ public interface DashboardViewMvc {
 
     void bindChartData(Map liveCharts);
 
+    void bindStaticChartData(Map staticCharts);
+
     void bindViewingSensorsData(List data);
 }

@@ -28,6 +28,7 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.screens.dashboard.events.NewChartAveragesEvent;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModelFactory;
@@ -52,6 +53,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject ViewingSessionsManager mViewingSessionManager;
     @Inject ResourceHelper mResourceHelper;
     @Inject SessionDataFactory sessionData;
     @Inject DashboardViewModelFactory mDashboardViewModelFactory;
@@ -124,6 +126,13 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
             }
         });
+
+        mDashboardViewModel.getStaticCharts().observe(this, new Observer<Map<String, LineChart>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, LineChart> stringLineChartMap) {
+                mDashboardViewMvc.bindStaticChartData(mDashboardViewModel.getStaticCharts().getValue());
+            }
+        });
     }
 
     @Override
@@ -141,12 +150,9 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     public void onResume() {
         super.onResume();
 
-        // added
         mDashboardViewModel.refreshCurrentSensors();
-        mDashboardViewMvc.bindSensorData(mDashboardViewModel.getCurrentDashboardData().getValue());
-
         mDashboardViewModel.refreshViewingSensors();
-        mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
+        mDashboardViewModel.refreshStaticCharts();
     }
 
     @Override

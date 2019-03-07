@@ -146,6 +146,10 @@ public class DashboardViewModel extends ViewModel {
         return mViewingSensors;
     }
 
+    public LiveData<Map<String, LineChart>> getStaticCharts() {
+        return mStaticCharts;
+    }
+
     public LiveData<List> getCurrentDashboardData() {
         mDashboardStreamData.setValue(new ArrayList());
 

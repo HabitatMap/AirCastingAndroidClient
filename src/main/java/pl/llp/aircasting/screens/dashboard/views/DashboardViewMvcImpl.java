@@ -31,6 +31,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     private final CurrentStreamsRecyclerAdapter mCurrentRecyclerAdapter;
     private final ViewingStreamsRecyclerAdapter mViewingRecyclerAdapter;
     private final AppCompatActivity mContext;
+
     private Listener mListener;
 
     public DashboardViewMvcImpl(AppCompatActivity context, ViewGroup parent, ResourceHelper resourceHelper) {
@@ -119,6 +120,11 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         }
 
         mViewingRecyclerAdapter.bindData(data);
+    }
+
+    @Override
+    public void bindStaticChartData(Map staticCharts) {
+        mViewingRecyclerAdapter.bindChartData(staticCharts);
     }
 
     private <T extends View> T findViewById(int id) {

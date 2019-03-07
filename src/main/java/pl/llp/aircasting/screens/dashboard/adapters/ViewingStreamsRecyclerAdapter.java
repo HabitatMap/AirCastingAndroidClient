@@ -16,15 +16,20 @@ import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 
+import static pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter.PAYLOAD_CHARTS_REFRESHED;
+
 public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingStreamsRecyclerAdapter.StreamViewHolder>
         implements StreamRecyclerAdapter, StreamItemViewMvc.Listener, StreamItemTouchHelperAdapter {
+    public static final int STREAM_CHART_WIDTH = 800;
+    public static final int STREAM_CHART_HEIGHT = 125;
+
     private final LayoutInflater mInflater;
     private final StreamItemViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
 
     private List<Map<String, Object>> mData = new ArrayList();
     private Map<String, Double> mNowData = new HashMap<>();
-    private Map mChartData;
+    private Map mChartData = new HashMap();
 
 
     public class StreamViewHolder extends RecyclerView.ViewHolder {
@@ -44,11 +49,14 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public void bindData(List data) {
+        int startPosition = mData.size();
+
+        mData.clear();
         mData = data;
 //        Collections.sort(mData, mStreamComparator);
 //        prepareStreamPositions();
 
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, mData.size());
     }
 
     @Override
@@ -59,8 +67,11 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public void bindChartData(Map charts) {
+        if (charts == null || charts.isEmpty()) {
+            return;
+        }
         mChartData = charts;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, mChartData.size(), PAYLOAD_CHARTS_REFRESHED);
     }
 
     @Override
@@ -73,6 +84,15 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     @Override
     public void onBindViewHolder(ViewingStreamsRecyclerAdapter.StreamViewHolder holder, int position) {
         holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewingStreamsRecyclerAdapter.StreamViewHolder holder, int position, List payloads) {
+        if (payloads.isEmpty()) {
+            holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
+        } else if (payloads.get(0) == PAYLOAD_CHARTS_REFRESHED) {
+            holder.mViewMvc.bindChart(mChartData);
+        }
     }
 
     @Override
