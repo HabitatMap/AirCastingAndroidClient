@@ -14,7 +14,7 @@
 
         <include layout="@layout/toolbar" />
 
-        <ScrollView
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -40,7 +40,7 @@
                     android:dividerHeight="0dp"
                     android:drawSelectorOnTop="false" />
             </LinearLayout>
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/layout_empty"
