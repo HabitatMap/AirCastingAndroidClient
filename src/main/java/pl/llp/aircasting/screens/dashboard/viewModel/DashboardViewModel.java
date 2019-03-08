@@ -42,6 +42,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String SESSION_RECORDING = "session_recording";
     public static final String STREAM_IDENTIFIER = "stream_identifier";
     public static final String STREAM_TIMESTAMP = "stream_timestamp";
+    public static final String TITLE_DISPLAY = "title_display";
 
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;

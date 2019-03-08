@@ -1,6 +1,5 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.LineData;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,6 +30,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_CHART;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_IDENTIFIER;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_TIMESTAMP;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
 
 public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final View mRootView;
@@ -57,6 +56,7 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     private LineChart mChart;
     private String mStreamIdentifier;
     private Date mStreamTimestamp;
+    private Boolean mShouldDisplayTitle;
 
     public ViewingStreamItemViewMvcImpl(LayoutInflater inflater, ViewGroup parent) {
         mRootView = inflater.inflate(R.layout.stream_row, parent, false);
@@ -91,13 +91,8 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mStreamIdentifier = (String) dataItem.get(STREAM_IDENTIFIER);
         mStreamTimestamp = (Date) dataItem.get(STREAM_TIMESTAMP);
+        mShouldDisplayTitle = (Boolean) dataItem.get(TITLE_DISPLAY);
         mResourceHelper = resourceHelper;
-
-        Log.w("bindData", "------------------");
-        Log.w(String.valueOf(mSessionId), mSensorNameText);
-        Log.w("chart", String.valueOf(mChart));
-        Log.w("chart", String.valueOf(mChart.getData()));
-        Log.w("bindData", "------------------");
 
         drawFullView();
     }
@@ -115,7 +110,6 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindChart(Map mChartData) {
-        Log.w("stream view", "bind chart");
         mChart = (LineChart) mChartData.get(mStreamIdentifier);
 
         if (mChart != null) {
@@ -128,7 +122,6 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private void drawFullView() {
-        Log.w("stream view", "full draw");
         if (mChart.getParent() != null) {
             ((ViewGroup) mChart.getParent()).removeView(mChart);
         }
@@ -149,8 +142,7 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private void setTitleView() {
-        if (positionWithTitle()) {
-
+        if (mShouldDisplayTitle) {
             mSessionTitleContainer.setVisibility(View.VISIBLE);
             mSessionTitleTv.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
 
@@ -168,10 +160,6 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         } else {
             mSessionTitleContainer.setVisibility(View.GONE);
         }
-    }
-
-    private boolean positionWithTitle() {
-        return mPosition == 0;
     }
 
     private void setBackground() {
