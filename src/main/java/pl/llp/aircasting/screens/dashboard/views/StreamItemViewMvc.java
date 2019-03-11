@@ -12,6 +12,10 @@ public interface StreamItemViewMvc {
 
     public interface Listener {
         void onStreamClicked(View view);
+
+        void onSessionUpClicked(View view, long sessionId);
+
+        void onSessionDownClicked(View view, long sessionId);
     }
 
     View getRootView();

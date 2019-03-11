@@ -37,7 +37,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final TextView mLastMeasurementLabel;
     private final TextView mTimestamp;
     private final TextView mSessionTitle;
-    private final LinearLayout mSessionButtonsContainer;
     private final TextView mSensorName;
     private final RelativeLayout mChartLayout;
 
@@ -47,7 +46,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     private Session mSession;
     private String mNowValue = "0";
     private ResourceHelper mResourceHelper;
-    private Boolean mSessionReorderInProgress = false;
     private String mSensorNameText;
     private Boolean mSessionRecording;
     private long mSessionId;
@@ -63,7 +61,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         mLastMeasurementLabel = findViewById(R.id.last_measurement_label);
         mTimestamp = findViewById(R.id.timestamp);
         mSessionTitle = mSessionTitleContainer.findViewById(R.id.session_title);
-        mSessionButtonsContainer = mSessionTitleContainer.findViewById(R.id.session_reorder_buttons);
 
         mChartLayout = findViewById(R.id.chart_layout);
 
@@ -166,12 +163,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
             mSessionTitleContainer.setVisibility(View.VISIBLE);
             mSessionTitle.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
-
-            if (mSessionReorderInProgress) {
-                mSessionButtonsContainer.setVisibility(View.VISIBLE);
-            } else {
-                mSessionButtonsContainer.setVisibility(View.GONE);
-            }
 
             if (!mSession.hasTitle()) {
                 mSessionTitle.setText(R.string.unnamed);

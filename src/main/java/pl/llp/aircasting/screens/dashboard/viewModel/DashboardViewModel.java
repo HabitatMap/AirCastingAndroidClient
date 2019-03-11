@@ -164,7 +164,6 @@ public class DashboardViewModel extends ViewModel {
                     map.put(SENSOR, sensor);
                     map.put(SESSION, mCurrentSessionManager.getCurrentSession());
                     map.put(SESSION_RECORDING, mState.recording().isRecording());
-                    map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                     map.put(STREAM_CHART, mDashboardChartManager.getLiveChart(sensor));
 
                     mDashboardStreamData.getValue().add(map);

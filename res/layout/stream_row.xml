@@ -31,7 +31,8 @@
             android:layout_width="110dp"
             android:layout_height="35dp"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:visibility="invisible">
 
             <Button
                 android:id="@+id/session_down"

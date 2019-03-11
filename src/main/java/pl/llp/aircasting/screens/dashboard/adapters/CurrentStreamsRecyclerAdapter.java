@@ -155,6 +155,12 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     }
 
     @Override
+    public void onSessionUpClicked(View view, long sessionId) {}
+
+    @Override
+    public void onSessionDownClicked(View view, long sessionId) {}
+
+    @Override
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
         mStreamsReordered = true;
 

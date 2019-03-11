@@ -285,7 +285,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private void toggleSessionReorder(MenuItem menuItem) {
         state.dashboardState().toggleSessionReorder();
         chooseToggleSessionsReorderIcon(menuItem);
-        eventBus.post(new ToggleSessionReorderEvent(false));
+        mDashboardViewModel.refreshViewingSensors();
     }
 
     @Override

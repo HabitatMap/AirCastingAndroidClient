@@ -41,6 +41,8 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final TextView mSessionTitleTv;
     private final LinearLayout mSessionButtonsLayout;
     private final RelativeLayout mChartLayout;
+    private final View mMoveSessionUp;
+    private final View mMoveSessionDown;
 
     private List<Listener> mListeners = new ArrayList<>();
 
@@ -50,9 +52,7 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     private ResourceHelper mResourceHelper;
     private Boolean mSessionReorderInProgress = false;
     private String mSensorNameText;
-    private Boolean mSessionRecording;
     private long mSessionId;
-    private int mPosition;
     private LineChart mChart;
     private String mStreamIdentifier;
     private Date mStreamTimestamp;
@@ -68,6 +68,9 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         mSessionTitleTv = mSessionTitleContainer.findViewById(R.id.session_title);
         mSessionButtonsLayout = mSessionTitleContainer.findViewById(R.id.session_reorder_buttons);
 
+        mMoveSessionUp = mSessionTitleContainer.findViewById(R.id.session_up);
+        mMoveSessionDown = mSessionTitleContainer.findViewById(R.id.session_down);
+
         mChartLayout = findViewById(R.id.chart_layout);
 
         getRootView().setOnClickListener(new View.OnClickListener() {
@@ -82,7 +85,6 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper) {
-        mPosition = position;
         mSensor = (Sensor) dataItem.get(SENSOR);
         mSensorNameText = mSensor.getSensorName();
         mSession = (Session) dataItem.get(SESSION);
@@ -99,7 +101,6 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindSessionTitle(int position) {
-        mPosition = position;
         setTitleView();
     }
 
@@ -148,8 +149,26 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
             if (mSessionReorderInProgress) {
                 mSessionButtonsLayout.setVisibility(View.VISIBLE);
+
+                mMoveSessionUp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (Listener listener : mListeners) {
+                            listener.onSessionUpClicked(v, mSessionId);
+                        }
+                    }
+                });
+
+                mMoveSessionDown.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (Listener listener : mListeners) {
+                            listener.onSessionDownClicked(v, mSessionId);
+                        }
+                    }
+                });
             } else {
-                mSessionButtonsLayout.setVisibility(View.GONE);
+                mSessionButtonsLayout.setVisibility(View.INVISIBLE);
             }
 
             if (!mSession.hasTitle()) {

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
@@ -38,7 +39,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private List<Map<String, Object>> mData = new ArrayList();
     private Map<String, Double> mNowData = new HashMap<>();
     private Map mChartData = new HashMap();
-    private Map<Long, Integer> mSessionPositions = new HashMap();
+    private ArrayList<Long> mSessionPositions = new ArrayList();
     private Map<String, Integer> mStreamPositions = new HashMap();
 
     private boolean mStreamsReordered = false;
@@ -93,15 +94,11 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     private void prepareSessionPositions() {
-        int sessionPosition = 0;
-        mSessionPositions.clear();
-
         for (Map<String, Object> dataItem : mData) {
             long sessionId = (long) dataItem.get(SESSION_ID);
 
-            if (!mSessionPositions.keySet().contains(sessionId)) {
-                mSessionPositions.put(sessionId, sessionPosition);
-                sessionPosition++;
+            if (!mSessionPositions.contains(sessionId)) {
+                mSessionPositions.add(mSessionPositions.size(), sessionId);
             }
         }
     }
@@ -133,7 +130,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     private int getSessionPosition(long sessionId) {
-        return mSessionPositions.get(sessionId);
+        return mSessionPositions.indexOf(sessionId);
     }
 
     @Override
@@ -195,6 +192,36 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     @Override
     public void onStreamClicked(View view) {
         mListener.onStreamClicked(view);
+    }
+
+    @Override
+    public void onSessionUpClicked(View view, long sessionId) {
+        int startingPosition = getSessionPosition(sessionId);
+        int switchPosition = startingPosition - 1;
+
+        if (startingPosition > 0) {
+            long switchSessionId = mSessionPositions.get(switchPosition);
+            mSessionPositions.set(startingPosition, switchSessionId);
+            mSessionPositions.set(switchPosition, sessionId);
+
+            Collections.sort(mData, mStreamComparator);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onSessionDownClicked(View view, long sessionId) {
+        int startingPosition = getSessionPosition(sessionId);
+        int switchPosition = startingPosition + 1;
+
+        if (startingPosition < mSessionPositions.size() - 1) {
+            long switchSessionId = mSessionPositions.get(switchPosition);
+            mSessionPositions.set(startingPosition, switchSessionId);
+            mSessionPositions.set(switchPosition, sessionId);
+
+            Collections.sort(mData, mStreamComparator);
+            notifyDataSetChanged();
+        }
     }
 
     private boolean positionsPrepared() {

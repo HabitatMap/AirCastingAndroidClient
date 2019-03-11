@@ -140,4 +140,10 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     public void onStreamClicked(View view) {
         mListener.onStreamClicked(view);
     }
+
+    @Override
+    public void onSessionUpClicked(View view, long sessionId) {}
+
+    @Override
+    public void onSessionDownClicked(View view, long sessionId) {}
 }
