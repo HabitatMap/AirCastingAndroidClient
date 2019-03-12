@@ -88,10 +88,6 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
 
     @Override
     public void bindSensorData(List data) {
-        Log.w("dashboard view", "binding data to adapter");
-        Log.w("data size", String.valueOf(data.size()));
-        Log.w("data ", String.valueOf(data));
-
         if (!data.isEmpty()) {
             mEmptyLayout.setVisibility(View.GONE);
         } else if (mViewingRecyclerAdapter.getItemCount() == 0){

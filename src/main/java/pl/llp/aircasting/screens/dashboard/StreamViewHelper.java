@@ -55,7 +55,6 @@ public class StreamViewHelper {
         if (sensor.getSensorName().startsWith(PLACEHOLDER_SENSOR_NAME)) {
             setTitleView(sessionId, sessionTitleContainer);
             view.findViewById(R.id.placeholder_chart).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.actual_chart).setVisibility(View.GONE);
             return;
         }
 

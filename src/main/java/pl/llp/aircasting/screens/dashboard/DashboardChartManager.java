@@ -147,17 +147,6 @@ public class DashboardChartManager {
             chart = mStaticCharts.get(streamKey);
         }
 
-//        mStaticCharts.put(streamKey, chart);
-
-
-//        setChartDataset(sensorName, sessionId, chart, sensor.getSymbol(), datasetLabel, STATIC_CHART);
-//        mStaticCharts.put(streamKey, chart);
-//
-        Log.w("getStaticChart", "+++++++++++++++++++");
-        Log.w(streamKey, String.valueOf(mStaticCharts.get(streamKey)));
-        Log.w(streamKey, String.valueOf(mStaticCharts.get(streamKey).getLineData()));
-        Log.w("getStaticChart", "+++++++++++++++++++");
-
         return chart;
     }
 
@@ -180,8 +169,6 @@ public class DashboardChartManager {
     }
 
     private void prepareStaticEntries(Long sessionId, String sensorName) {
-        Log.w("prepare entries", String.valueOf(sessionId));
-
         List<Entry> entries;
         MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensorName);
         String streamKey = getKey(sessionId, sensorName);
@@ -209,11 +196,6 @@ public class DashboardChartManager {
         if (entries == null || entries.isEmpty()) {
             return;
         }
-
-        Log.w("setting entries", "==================");
-        Log.w(String.valueOf(sessionId), sensorName);
-        Log.w("entries", String.valueOf(entries));
-        Log.w("setting entries", "==================");
 
         LineData lineData = new LineData();
         LineDataSet dataSet = prepareDataSet(entries, sensorName, datasetLabel);

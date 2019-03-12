@@ -52,7 +52,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
 
             result = chain.compare(leftSensor.getSensorName(), rightSensor.getSensorName()).result();
 
-            if (mStreamsReordered && mData.size() == mStreamPositions.size()) {
+            if (mStreamsReordered && positionsPrepared()) {
                 result = chain.compare(getPosition(leftSensor.getSensorName()), getPosition(rightSensor.getSensorName())).result();
             }
 
@@ -191,4 +191,8 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
 
     @Override
     public void onItemSwipe(int position) {}
+
+    private boolean positionsPrepared() {
+        return mData.size() == mStreamPositions.size();
+    }
 }

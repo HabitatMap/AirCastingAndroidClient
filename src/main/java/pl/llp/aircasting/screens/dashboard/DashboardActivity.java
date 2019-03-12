@@ -53,7 +53,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
-    @Inject ViewingSessionsManager mViewingSessionManager;
     @Inject ResourceHelper mResourceHelper;
     @Inject SessionDataFactory sessionData;
     @Inject DashboardViewModelFactory mDashboardViewModelFactory;
@@ -215,7 +214,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(SessionSensorsLoadedEvent event) {
-
         mDashboardViewModel.refreshViewingSensors();
         invalidateOptionsMenu();
     }

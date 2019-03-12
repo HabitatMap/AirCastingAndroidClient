@@ -93,7 +93,7 @@ public class SessionRepository {
                     for (final MeasurementStream stream : streamsToSave) {
                         MeasurementStream existingStream = existingSession.getStream(stream.getSensorName());
 
-                        if (existingStream.getMeasurements().size()  == 0) {
+                        if (existingStream.getMeasurements().size() == 0) {
                             streams.saveNewMeasurements(stream, existingStream.getId(), existingSession.getId(), writableDatabase);
                         }
                     }

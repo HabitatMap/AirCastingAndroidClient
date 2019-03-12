@@ -56,7 +56,6 @@ public class DashboardViewModel extends ViewModel {
     private MediatorLiveData<Map<String, Double>> mRecentMeasurements = new MediatorLiveData<>();
     private MediatorLiveData<Map<String, LineChart>> mLiveCharts = new MediatorLiveData<>();
     private MediatorLiveData<List> mDashboardStreamData = new MediatorLiveData<>();
-    private MediatorLiveData<TreeMap> mRecentMeasurementsData = new MediatorLiveData<>();
 
     // viewing sessions data
     private MediatorLiveData<Map <Long, Map<SensorName, Sensor>>> mViewingSensors = new MediatorLiveData<>();
