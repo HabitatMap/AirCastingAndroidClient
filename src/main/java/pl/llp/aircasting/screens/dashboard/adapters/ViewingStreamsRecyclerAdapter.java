@@ -23,6 +23,7 @@ import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 
 import static pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter.PAYLOAD_CHARTS_REFRESHED;
+import static pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter.PAYLOAD_TITLE_POSITION_CHANGED;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
@@ -32,6 +33,8 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     public static final int STREAM_CHART_WIDTH = 800;
     public static final int STREAM_CHART_HEIGHT = 125;
 
+    private static boolean mStreamsReordered = false;
+
     private final LayoutInflater mInflater;
     private final StreamItemViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
@@ -40,9 +43,8 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private Map<String, Double> mNowData = new HashMap<>();
     private Map mChartData = new HashMap();
     private ArrayList<Long> mSessionPositions = new ArrayList();
-    private Map<String, Integer> mStreamPositions = new HashMap();
+    private ArrayList<String> mStreamPositions = new ArrayList<>();
 
-    private boolean mStreamsReordered = false;
 
     private final Comparator<Map<String, Object>> mStreamComparator = new Comparator<Map<String, Object>>() {
         @Override
@@ -105,14 +107,15 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     private void prepareStreamPositionsAndTitles() {
         long currentSessionId = -1;
-        int streamPosition = 0;
-        mStreamPositions.clear();
 
         for (Map<String, Object> dataItem : mData) {
             Sensor sensor = (Sensor) dataItem.get(SENSOR);
+            String sensorString = sensor.toString();
             long sessionId = (long) dataItem.get(SESSION_ID);
-            mStreamPositions.put(sensor.toString(), streamPosition);
-            streamPosition++;
+
+            if (!mStreamPositions.contains(sensorString)) {
+                mStreamPositions.add(mStreamPositions.size(), sensorString);
+            }
 
             dataItem.put(TITLE_DISPLAY, firstSessionStream(sessionId, currentSessionId));
             currentSessionId = sessionId;
@@ -126,7 +129,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     private int getStreamPosition(String sensorString) {
-        return mStreamPositions.get(sensorString);
+        return mStreamPositions.indexOf(sensorString);
     }
 
     private int getSessionPosition(long sessionId) {
@@ -176,12 +179,31 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
-        return false;
+        mStreamsReordered = true;
+
+        target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
+
+        swapPositions(fromPosition, toPosition);
+        Collections.sort(mData, mStreamComparator);
+        notifyItemMoved(fromPosition, toPosition);
+
+        // make sure the first element is rebound to show the session title
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
+
+        return true;
+    }
+
+    private void swapPositions(int fromPosition, int toPosition) {
+        String fromSensorString = ((Sensor) mData.get(fromPosition).get(SENSOR)).toString();
+        String toSensorString = ((Sensor) mData.get(toPosition).get(SENSOR)).toString();
+
+        mStreamPositions.set(toPosition, fromSensorString);
+        mStreamPositions.set(fromPosition, toSensorString);
     }
 
     @Override
     public void finishDrag(RecyclerView.ViewHolder viewHolder) {
-
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
     }
 
     @Override

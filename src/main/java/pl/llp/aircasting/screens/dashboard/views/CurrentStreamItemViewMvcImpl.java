@@ -97,7 +97,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         mSession = (Session) dataItem.get(SESSION);
         mSessionId = (long) dataItem.get(SESSION_ID);
         mSessionRecording = (Boolean) dataItem.get(SESSION_RECORDING);
-        mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
 

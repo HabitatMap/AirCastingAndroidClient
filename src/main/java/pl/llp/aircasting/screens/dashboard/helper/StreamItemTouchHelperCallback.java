@@ -33,9 +33,16 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        mAdapter.onItemMove(viewHolder, target, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        long fromSensorSessionId = (long) viewHolder.itemView.getTag(R.id.session_id_tag);
+        long toSensorSessionId = (long) target.itemView.getTag(R.id.session_id_tag);
 
-        return true;
+        if (fromSensorSessionId == toSensorSessionId) {
+            mAdapter.onItemMove(viewHolder, target, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        } else {
+            clearView(recyclerView, viewHolder);
+            return false;
+        }
     }
 
     @Override
