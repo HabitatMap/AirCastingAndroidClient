@@ -21,6 +21,7 @@ package pl.llp.aircasting.storage.repository;
 
 import com.google.common.eventbus.EventBus;
 
+import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
@@ -158,7 +159,8 @@ public class SessionRepository {
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
                             measurementsAdded = true;
-                            MeasurementEvent event = new MeasurementEvent(measurements.get(measurements.size() -1 ), new Sensor(stream.getSensorName()));
+                            // emit an event to update MeasurementPresenter data and map/graph gauges
+                            MeasurementEvent event = new FixedMeasurementEvent(measurements.get(measurements.size() -1 ), new Sensor(stream, oldSession.getId()));
                             event.setSessionId(oldSession.getId());
                             eventBus.post(event);
                         }
@@ -166,6 +168,7 @@ public class SessionRepository {
                 }
 
                 if (measurementsAdded) {
+//                     notify dashboard it should refresh its data
                     notifyOfNewData(oldSession.getId());
                 }
 

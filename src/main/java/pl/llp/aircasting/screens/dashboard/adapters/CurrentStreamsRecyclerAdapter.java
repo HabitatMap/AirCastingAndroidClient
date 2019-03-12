@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
@@ -27,9 +28,6 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 
 public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentStreamsRecyclerAdapter.StreamViewHolder>
         implements StreamRecyclerAdapter, StreamItemViewMvc.Listener, StreamItemTouchHelperAdapter {
-    private static final String PAYLOAD_NOW_VALUES_UPDATE = "payload_now_values";
-    public static final String PAYLOAD_CHARTS_REFRESHED = "payload_charts";
-    public static final String PAYLOAD_TITLE_POSITION_CHANGED = "payload_title";
 
     private static boolean mStreamsReordered = false;
 
@@ -104,9 +102,12 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     }
 
     @Override
+    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {}
+
+    @Override
     public void bindChartData(Map liveCharts) {
         mChartData = liveCharts;
-        notifyItemRangeChanged(0, liveCharts.size(), PAYLOAD_CHARTS_REFRESHED);
+        notifyItemRangeChanged(0, liveCharts.size(), PAYLOAD_CHARTS_UPDATE);
     }
 
     @Override
@@ -129,11 +130,11 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
             if (mData.size() == mNowData.size()) {
                 holder.mViewMvc.bindNowValue(mNowData);
             }
-        } else if (payloads.get(0) == PAYLOAD_CHARTS_REFRESHED) {
+        } else if (payloads.get(0) == PAYLOAD_CHARTS_UPDATE) {
             if (mData.size() == mChartData.size()) {
                 holder.mViewMvc.bindChart(mChartData);
             }
-        } else if (payloads.get(0) == PAYLOAD_TITLE_POSITION_CHANGED) {
+        } else if (payloads.get(0) == PAYLOAD_TITLE_POSITION_UPDATE) {
             if (mData.size() == mChartData.size()) {
                 holder.mViewMvc.bindSessionTitle(position);
             }
@@ -171,7 +172,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         notifyItemMoved(fromPosition, toPosition);
 
         // make sure the first element is rebound to show the session title
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
 
         return true;
     }
@@ -186,7 +187,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
 
     @Override
     public void finishDrag(RecyclerView.ViewHolder viewHolder) {
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
     }
 
     @Override

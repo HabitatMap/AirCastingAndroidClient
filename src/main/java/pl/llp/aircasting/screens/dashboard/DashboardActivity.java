@@ -21,6 +21,7 @@ import java.util.Map;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
@@ -101,7 +102,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.getRecentMeasurements().observe(this, new Observer<Map<String, Double>>() {
             @Override
             public void onChanged(@Nullable Map<String, Double> recentMeasurements) {
-                mDashboardViewMvc.bindNowValues(mDashboardViewModel.getRecentMeasurements().getValue());
+                mDashboardViewMvc.bindRecentMeasurements(mDashboardViewModel.getRecentMeasurements().getValue());
             }
         });
 
@@ -128,8 +129,15 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
         mDashboardViewModel.getStaticCharts().observe(this, new Observer<Map<String, LineChart>>() {
             @Override
-            public void onChanged(@Nullable Map<String, LineChart> stringLineChartMap) {
+            public void onChanged(@Nullable Map<String, LineChart> staticChartsMap) {
                 mDashboardViewMvc.bindStaticChartData(mDashboardViewModel.getStaticCharts().getValue());
+            }
+        });
+
+        mDashboardViewModel.getRecentFixedMeasurements().observe(this, new Observer<Map<String, Measurement>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, Measurement> recentFixedMeasurements) {
+                mDashboardViewMvc.bindRecentFixedMeasurements(mDashboardViewModel.getRecentFixedMeasurements().getValue());
             }
         });
     }
@@ -152,6 +160,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.refreshCurrentSensors();
         mDashboardViewModel.refreshViewingSensors();
         mDashboardViewModel.refreshStaticCharts();
+        mDashboardViewModel.refreshRecentFixedMeasurements();
     }
 
     @Override
@@ -195,6 +204,11 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Subscribe
     public void onEvent(SensorEvent event) {
         mDashboardViewModel.refreshRecentMeasurements();
+    }
+
+    @Subscribe
+    public void onEvent(FixedSensorEvent event) {
+        mDashboardViewModel.refreshRecentFixedMeasurements();
     }
 
     @Subscribe

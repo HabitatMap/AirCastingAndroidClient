@@ -8,7 +8,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
+import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.sensor.FixedSensorEvent;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
@@ -32,6 +36,7 @@ public class ViewingSessionsSensorManager {
     @Inject EventBus eventBus;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
+    private Map<String, Measurement> mRecentFixedMeasurements = newConcurrentMap();
     public static final String PLACEHOLDER_SENSOR_NAME = "Sensor Placeholder";
 
     @Inject
@@ -71,6 +76,10 @@ public class ViewingSessionsSensorManager {
 
             Sensor sensor = new Sensor(stream, sessionId);
             sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
+
+            if (session.isFixed()) {
+                mRecentFixedMeasurements.put(sensor.toString(), stream.getLastMeasurements(1).get(0));
+            }
         }
 
         viewingSessionsSensors.put(session.getId(), sessionSensors);
@@ -88,16 +97,27 @@ public class ViewingSessionsSensorManager {
         return data;
     }
 
+    public LiveData<Map<String, Measurement>> getRecentFixedMeasurements() {
+        final MutableLiveData<Map<String, Measurement>> data = new MutableLiveData<>();
+        data.postValue(mRecentFixedMeasurements);
+        return data;
+    }
+
     @Subscribe
-    public void onEvent(FixedSessionsMeasurementEvent event) {
+    public void onEvent(FixedMeasurementEvent event) {
         deletePlaceholderSensor(event.getSessionId());
+        mRecentFixedMeasurements.put(event.getSensor().toString(), event.getMeasurement());
+        eventBus.post(new FixedSensorEvent());
     }
 
     private void deletePlaceholderSensor(long sessionId) {
         if (viewingSessionsSensors.containsKey(sessionId)) {
-            viewingSessionsSensors.get(sessionId).remove(SensorName.from(PLACEHOLDER_SENSOR_NAME));
+            Sensor placeholder = viewingSessionsSensors.get(sessionId).remove(SensorName.from(PLACEHOLDER_SENSOR_NAME));
+
+            if (placeholder != null) {
+                notifySensorsChanged();
+            }
         }
-        notifySensorsChanged();
     }
 
     public List<Sensor> getSensorsList(long sessionId) {

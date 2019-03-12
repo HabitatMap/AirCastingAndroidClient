@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 
-import static pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter.PAYLOAD_CHARTS_REFRESHED;
-import static pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter.PAYLOAD_TITLE_POSITION_CHANGED;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
@@ -40,7 +39,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private final ResourceHelper mResourceHelper;
 
     private List<Map<String, Object>> mData = new ArrayList();
-    private Map<String, Double> mNowData = new HashMap<>();
+    private Map<String, Measurement> mRecentFixedMeasurementsData = new HashMap<>();
     private Map mChartData = new HashMap();
     private ArrayList<Long> mSessionPositions = new ArrayList();
     private ArrayList<String> mStreamPositions = new ArrayList<>();
@@ -137,9 +136,12 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     @Override
-    public void bindNowValues(Map nowValues) {
-        mNowData = nowValues;
-        notifyDataSetChanged();
+    public void bindNowValues(Map recentFixedMeasurements) {}
+
+    @Override
+    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {
+        mRecentFixedMeasurementsData = recentFixedMeasurements;
+        notifyItemRangeChanged(0, mRecentFixedMeasurementsData.size(), PAYLOAD_NOW_VALUES_UPDATE);
     }
 
     @Override
@@ -148,7 +150,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
             return;
         }
         mChartData = charts;
-        notifyItemRangeChanged(0, mChartData.size(), PAYLOAD_CHARTS_REFRESHED);
+        notifyItemRangeChanged(0, mChartData.size(), PAYLOAD_CHARTS_UPDATE);
     }
 
     @Override
@@ -167,8 +169,10 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     public void onBindViewHolder(ViewingStreamsRecyclerAdapter.StreamViewHolder holder, int position, List payloads) {
         if (payloads.isEmpty()) {
             holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
-        } else if (payloads.get(0) == PAYLOAD_CHARTS_REFRESHED) {
+        } else if (payloads.get(0) == PAYLOAD_CHARTS_UPDATE) {
             holder.mViewMvc.bindChart(mChartData);
+        } else if (payloads.get(0) == PAYLOAD_NOW_VALUES_UPDATE) {
+            holder.mViewMvc.bindRecentFixedMeasurement(mRecentFixedMeasurementsData);
         }
     }
 
@@ -188,7 +192,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         notifyItemMoved(fromPosition, toPosition);
 
         // make sure the first element is rebound to show the session title
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
 
         return true;
     }
@@ -203,7 +207,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public void finishDrag(RecyclerView.ViewHolder viewHolder) {
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_CHANGED);
+        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
     }
 
     @Override

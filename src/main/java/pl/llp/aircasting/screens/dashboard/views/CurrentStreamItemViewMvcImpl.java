@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
@@ -116,6 +117,9 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
             mNowTextView.setText(mNowValue);
         }
     }
+
+    @Override
+    public void bindRecentFixedMeasurement(Map<String, Measurement> recentFixedMeasurements) {}
 
     @Override
     public void bindChart(Map mChartData) {

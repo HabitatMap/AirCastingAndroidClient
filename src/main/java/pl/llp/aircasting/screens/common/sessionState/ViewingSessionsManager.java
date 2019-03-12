@@ -5,11 +5,13 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
@@ -100,6 +102,10 @@ public class ViewingSessionsManager {
         notifyNewSession(session, false);
     }
 
+   @Subscribe
+    public void onEvent(FixedMeasurementEvent event) {
+        getMeasurementStream(event.getSessionId(), event.getSensor().getSensorName()).add(event.getMeasurement());
+    }
 
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter;
 import pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter;
@@ -98,8 +99,14 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     }
 
     @Override
-    public void bindNowValues(Map<String, Double> recentMeasurementsData) {
+    public void bindRecentMeasurements(Map<String, Double> recentMeasurementsData) {
         mCurrentRecyclerAdapter.bindNowValues(recentMeasurementsData);
+    }
+
+    @Override
+    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {
+        Log.w("dashb view bind", String.valueOf(recentFixedMeasurements));
+        mViewingRecyclerAdapter.bindRecentFixedMeasurements(recentFixedMeasurements);
     }
 
     @Override

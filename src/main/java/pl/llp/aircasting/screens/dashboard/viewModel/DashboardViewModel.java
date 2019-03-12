@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.internal.SensorName;
@@ -43,6 +44,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String STREAM_IDENTIFIER = "stream_identifier";
     public static final String STREAM_TIMESTAMP = "stream_timestamp";
     public static final String TITLE_DISPLAY = "title_display";
+    public static final String STREAM_RECENT_MEASUREMENT = "stream_recent_measurement";
 
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;
@@ -61,6 +63,7 @@ public class DashboardViewModel extends ViewModel {
     private MediatorLiveData<Map <Long, Map<SensorName, Sensor>>> mViewingSensors = new MediatorLiveData<>();
     private MediatorLiveData<List> mViewingDashboardData = new MediatorLiveData<>();
     private MediatorLiveData<Map<String, LineChart>> mStaticCharts = new MediatorLiveData<>();
+    private MediatorLiveData<Map<String, Measurement>> mRecentFixedMeasurements = new MediatorLiveData<>();
 
     public DashboardViewModel(CurrentSessionManager currentSessionManager,
                               CurrentSessionSensorManager currentSessionSensorManager,
@@ -130,6 +133,15 @@ public class DashboardViewModel extends ViewModel {
         });
     }
 
+    public void refreshRecentFixedMeasurements() {
+        mRecentFixedMeasurements.addSource(mViewingSessionsSensorManager.getRecentFixedMeasurements(), new Observer<Map<String, Measurement>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, Measurement> recentFixedMeasurements) {
+                mRecentFixedMeasurements.postValue(recentFixedMeasurements);
+            }
+        });
+    }
+
     public LiveData<Map<SensorName, Sensor>> getCurrentSensors() {
         return mCurrentSensors;
     }
@@ -148,6 +160,10 @@ public class DashboardViewModel extends ViewModel {
 
     public LiveData<Map<String, LineChart>> getStaticCharts() {
         return mStaticCharts;
+    }
+
+    public LiveData<Map<String, Measurement>> getRecentFixedMeasurements() {
+        return mRecentFixedMeasurements;
     }
 
     public LiveData<List> getCurrentDashboardData() {
@@ -189,6 +205,7 @@ public class DashboardViewModel extends ViewModel {
                         map.put(SENSOR, sensor);
                         map.put(SESSION, mViewingSessionsManager.getSession(sessionId));
                         map.put(SESSION_RECORDING, false);
+                        map.put(STREAM_RECENT_MEASUREMENT, getStreamRecentMeasurementValue(sensor, sessionId));
                         map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                         map.put(STREAM_CHART, mDashboardChartManager.getStaticChart(sensor, sessionId));
                         map.put(STREAM_IDENTIFIER, getStreamIdentifier(sensor, sessionId));
@@ -201,6 +218,14 @@ public class DashboardViewModel extends ViewModel {
         }
 
         return mViewingDashboardData;
+    }
+
+    private Double getStreamRecentMeasurementValue(Sensor sensor, Long sessionId) {
+        if (mViewingSessionsManager.isSessionFixed(sessionId)) {
+            return mViewingSessionsManager.getMeasurementStream(sessionId, sensor.getSensorName()).getLatestMeasurementValue();
+        } else {
+            return Double.valueOf(0);
+        }
     }
 
     private String getStreamIdentifier(Sensor sensor, long sessionId) {

@@ -5,6 +5,7 @@ import android.view.View;
 import java.util.Map;
 import java.util.TreeMap;
 
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 
 public interface StreamItemViewMvc {
@@ -27,6 +28,8 @@ public interface StreamItemViewMvc {
     void bindData(Map<String, Object> dataItem, int position, ResourceHelper resourceHelper);
 
     void bindNowValue(Map<String, Double> nowValues);
+
+    void bindRecentFixedMeasurement(Map<String, Measurement> recentFixedMeasurements);
 
     void bindChart(Map mChartData);
 }

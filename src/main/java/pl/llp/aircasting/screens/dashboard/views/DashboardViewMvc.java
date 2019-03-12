@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import pl.llp.aircasting.model.Measurement;
+
 public interface DashboardViewMvc {
     public interface Listener {
         void onDashboardButtonClicked(View view);
@@ -24,7 +26,9 @@ public interface DashboardViewMvc {
 
     void bindSensorData(List data);
 
-    void bindNowValues(Map<String, Double> recentMeasurementsData);
+    void bindRecentMeasurements(Map<String, Double> recentMeasurements);
+
+    void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements);
 
     void bindChartData(Map liveCharts);
 
