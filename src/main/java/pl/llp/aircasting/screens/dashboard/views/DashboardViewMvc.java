@@ -24,7 +24,7 @@ public interface DashboardViewMvc {
 
     void bindSensorData(List data);
 
-    void bindNowValues(TreeMap recentMeasurementsData);
+    void bindNowValues(Map<String, Double> recentMeasurementsData);
 
     void bindChartData(Map liveCharts);
 

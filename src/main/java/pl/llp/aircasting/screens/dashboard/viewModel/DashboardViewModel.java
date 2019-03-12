@@ -174,19 +174,6 @@ public class DashboardViewModel extends ViewModel {
         return mDashboardStreamData;
     }
 
-    public LiveData<TreeMap> getRecentMeasurementsData() {
-        mRecentMeasurementsData.setValue(new TreeMap<>());
-
-        TreeMap recentMeasurements = new TreeMap();
-        for (Map.Entry entry : getRecentMeasurements().getValue().entrySet()) {
-            recentMeasurements.put(entry.getKey(), entry.getValue());
-        }
-
-        mRecentMeasurementsData.setValue(recentMeasurements);
-
-        return mRecentMeasurementsData;
-    }
-
     public LiveData<List> getViewingDashboardData() {
         mViewingDashboardData.setValue(new ArrayList());
 

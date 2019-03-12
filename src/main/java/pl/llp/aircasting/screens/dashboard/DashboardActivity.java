@@ -102,7 +102,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.getRecentMeasurements().observe(this, new Observer<Map<String, Double>>() {
             @Override
             public void onChanged(@Nullable Map<String, Double> recentMeasurements) {
-                mDashboardViewMvc.bindNowValues(mDashboardViewModel.getRecentMeasurementsData().getValue());
+                mDashboardViewMvc.bindNowValues(mDashboardViewModel.getRecentMeasurements().getValue());
             }
         });
 

@@ -102,7 +102,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     }
 
     @Override
-    public void bindNowValues(TreeMap recentMeasurementsData) {
+    public void bindNowValues(Map<String, Double> recentMeasurementsData) {
         mCurrentRecyclerAdapter.bindNowValues(recentMeasurementsData);
     }
 
