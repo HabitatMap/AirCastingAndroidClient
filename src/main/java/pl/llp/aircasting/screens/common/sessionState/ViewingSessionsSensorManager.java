@@ -9,8 +9,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
-import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
-import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -19,6 +17,7 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
+import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,7 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 @Singleton
 public class ViewingSessionsSensorManager {
+    @Inject DashboardChartManager mDashboardChartManager;
     @Inject EventBus eventBus;
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
@@ -107,6 +107,7 @@ public class ViewingSessionsSensorManager {
     public void onEvent(FixedMeasurementEvent event) {
         deletePlaceholderSensor(event.getSessionId());
         mRecentFixedMeasurements.put(event.getSensor().toString(), event.getMeasurement());
+        mDashboardChartManager.updateFixedAverageWithMeasurement(event.getSensor(), event.getSessionId(), event.getMeasurement());
         eventBus.post(new FixedSensorEvent());
     }
 

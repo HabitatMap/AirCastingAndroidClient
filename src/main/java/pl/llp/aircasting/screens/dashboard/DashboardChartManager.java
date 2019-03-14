@@ -150,6 +150,23 @@ public class DashboardChartManager {
         return chart;
     }
 
+    public void updateFixedAverage(Sensor sensor, long sessionId) {
+        LineChart chart = mStaticCharts.get(getKey(sessionId, sensor.getSensorName()));
+        if (chart == null) {
+            chart = new LineChart(mContext);
+            draw(chart);
+        }
+        prepareStaticEntries(chart, sessionId, sensor);
+        eventBus.post(new NewChartAveragesEvent(STATIC_CHART));
+    }
+
+    public void updateFixedAverageWithMeasurement(Sensor sensor, long sessionId, Measurement measurement) {
+        if (measurement.getTime().getMinutes() == 0) {
+            prepareStaticEntries(mStaticCharts.get(getKey(sessionId, sensor.getSensorName())), sessionId, sensor);
+            eventBus.post(new NewChartAveragesEvent(STATIC_CHART));
+        }
+    }
+
     private void prepareCurrentEntries() {
         List<MeasurementStream> streams = (List) mCurrentSessionManager.getMeasurementStreams();
 

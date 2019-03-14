@@ -239,4 +239,16 @@ public class DashboardViewModel extends ViewModel {
 
         mViewingSensors.postValue(new HashMap<Long, Map<SensorName, Sensor>>());
     }
+
+    public void refreshChartAverages() {
+        if (!mViewingSensors.getValue().isEmpty()) {
+            for (Map.Entry<Long, Map<SensorName, Sensor>> entry : mViewingSensors.getValue().entrySet()) {
+                if (mViewingSessionsManager.isSessionFixed(entry.getKey())) {
+                    for (final Sensor sensor : entry.getValue().values()) {
+                        mDashboardChartManager.updateFixedAverage(sensor, entry.getKey());
+                    }
+                }
+            }
+        }
+    }
 }

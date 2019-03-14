@@ -29,7 +29,6 @@ import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
-import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.screens.dashboard.events.NewChartAveragesEvent;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel;
 import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModelFactory;
@@ -38,7 +37,6 @@ import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvcImpl;
 import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
-import pl.llp.aircasting.event.session.ToggleSessionReorderEvent;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
@@ -123,6 +121,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.getViewingSensors().observe(this, new Observer<Map<Long, Map<SensorName, Sensor>>>() {
             @Override
             public void onChanged(@Nullable Map<Long, Map<SensorName, Sensor>> viewingSensors) {
+                mDashboardViewModel.refreshChartAverages();
                 mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
             }
         });
@@ -178,6 +177,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     private void startUpdatingFixedSessions() {
         if (viewingSessionsManager.isAnySessionFixed()) {
+            handler.removeCallbacks(pollServerTask);
             handler.post(pollServerTask);
         }
     }
@@ -218,6 +218,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 mDashboardViewModel.refreshLiveCharts();
             case STATIC_CHART:
                 mDashboardViewModel.refreshStaticCharts();
+                mDashboardViewModel.refreshRecentFixedMeasurements();
         }
     }
 

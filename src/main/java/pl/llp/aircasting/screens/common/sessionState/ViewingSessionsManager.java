@@ -86,15 +86,7 @@ public class ViewingSessionsManager {
         }
 
         if (session.isFixed()) {
-//            new AsyncTask<Void, Void, Void>() {
-//                @Override
-//                protected Void doInBackground(Void... voids) {
-//                    fixedSessionDriver.downloadNewData(session, progressListener);
-//                    return null;
-//                }
-//            };
-
-            syncService.downloadSessionMeasurements(sessionId, sessionUUID);
+            fixedSessionDriver.downloadNewData(session, progressListener);
             addFixedSession(session);
         }
 

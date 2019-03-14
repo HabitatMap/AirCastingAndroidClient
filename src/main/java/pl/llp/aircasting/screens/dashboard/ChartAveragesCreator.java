@@ -101,6 +101,7 @@ public class ChartAveragesCreator {
                 periodData.add(measurementsInHour);
                 hour = measurementHour;
                 measurementsInHour = new ArrayList<Measurement>();
+                measurementsInHour.add(measurement);
             }
         }
 
