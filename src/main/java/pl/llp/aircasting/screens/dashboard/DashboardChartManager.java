@@ -20,12 +20,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
-import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager;
 import pl.llp.aircasting.screens.dashboard.events.NewChartAveragesEvent;
 import pl.llp.aircasting.util.Constants;
 
@@ -41,7 +39,6 @@ import static com.google.common.collect.Maps.newHashMap;
 public class DashboardChartManager {
     @Inject CurrentSessionManager mCurrentSessionManager;
     @Inject ViewingSessionsManager mViewingSessionsManager;
-    @Inject ViewingSessionsSensorManager mViewingSessionsSensorManager;
     @Inject ResourceHelper mResourceHelper;
     @Inject EventBus eventBus;
     @Inject Context mContext;
@@ -113,7 +110,7 @@ public class DashboardChartManager {
             chart = mCurrentCharts.get(streamKey);
         }
 
-        setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, sensor.getSymbol(), MOBILE_LABEL, CURRENT_CHART);
+        setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, sensor.getSymbol(), CURRENT_CHART);
 
         mCurrentCharts.put(sensorName, chart);
 
@@ -122,7 +119,6 @@ public class DashboardChartManager {
 
     public Object getStaticChart(Sensor sensor, Long sessionId) {
         LineChart chart;
-        String datasetLabel;
         String sensorName = sensor.getSensorName();
 
         if (!mSensors.containsKey(sensorName)) {
@@ -131,21 +127,14 @@ public class DashboardChartManager {
 
         String streamKey = getKey(sessionId, sensorName);
 
-        if (mViewingSessionsManager.isSessionFixed(sessionId)) {
-            datasetLabel = FIXED_LABEL;
-        } else {
-            datasetLabel = MOBILE_LABEL;
-        }
-
         if (!mStaticCharts.containsKey(streamKey)) {
             chart = new LineChart(mContext);
             draw(chart);
-            prepareStaticEntries(sessionId, sensorName);
-            setChartDataset(sensorName, sessionId, chart, sensor.getSymbol(), datasetLabel, STATIC_CHART);
-            mStaticCharts.put(streamKey, chart);
         } else {
             chart = mStaticCharts.get(streamKey);
         }
+
+        prepareStaticEntries(chart, sessionId, sensor);
 
         return chart;
     }
@@ -177,7 +166,7 @@ public class DashboardChartManager {
 
             mAverages.put(streamKey, Lists.reverse(entries));
             LineChart chart = mCurrentCharts.get(sensorName);
-            setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, stream.getSymbol(), MOBILE_LABEL, CURRENT_CHART);
+            setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, stream.getSymbol(), CURRENT_CHART);
 
             mCurrentCharts.put(sensorName, chart);
         }
@@ -185,8 +174,9 @@ public class DashboardChartManager {
         eventBus.post(new NewChartAveragesEvent(CURRENT_CHART));
     }
 
-    private void prepareStaticEntries(Long sessionId, String sensorName) {
+    private void prepareStaticEntries(LineChart chart, Long sessionId, Sensor sensor) {
         List<Entry> entries;
+        String sensorName = sensor.getSensorName();
         MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensorName);
         String streamKey = getKey(sessionId, sensorName);
 
@@ -198,11 +188,15 @@ public class DashboardChartManager {
 
         mAverages.put(streamKey, Lists.reverse(entries));
 
+        setChartDataset(sensorName, sessionId, chart, stream.getSymbol(), STATIC_CHART);
+        mStaticCharts.put(streamKey, chart);
+
         Log.w(sensorName, String.valueOf(mAverages.get(streamKey)));
     }
 
-    private void setChartDataset(String sensorName, Long sessionId, LineChart chart, String unitSymbol, String datasetLabel, String chartType) {
+    private void setChartDataset(String sensorName, Long sessionId, LineChart chart, String unitSymbol, String chartType) {
         List<Entry> entries;
+        String datasetLabel;
 
         if (chartType.equals(STATIC_CHART)) {
             entries = getStaticEntriesForStream(sensorName, sessionId);
@@ -212,6 +206,12 @@ public class DashboardChartManager {
 
         if (entries == null || entries.isEmpty()) {
             return;
+        }
+
+        if (mViewingSessionsManager.isSessionFixed(sessionId)) {
+            datasetLabel = FIXED_LABEL;
+        } else {
+            datasetLabel = MOBILE_LABEL;
         }
 
         LineData lineData = new LineData();
