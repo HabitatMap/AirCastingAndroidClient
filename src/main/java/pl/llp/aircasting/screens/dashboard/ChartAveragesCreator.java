@@ -76,7 +76,7 @@ public class ChartAveragesCreator {
         List entries = new CopyOnWriteArrayList();
         List<List<Measurement>> periodData = new ArrayList();
 
-        int maxMeasurementsAmount = 540;
+        int maxMeasurementsAmount = 600;
 
         measurements = stream.getLastMeasurements(maxMeasurementsAmount);
 
@@ -107,6 +107,9 @@ public class ChartAveragesCreator {
 
         if (periodData.size() > 0) {
             for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
+                if (xValue < 0) {
+                    return entries;
+                }
                 synchronized (dataChunk) {
                     double yValue = getAverage(dataChunk);
                     entries.add(new Entry((float) xValue, (float) yValue));

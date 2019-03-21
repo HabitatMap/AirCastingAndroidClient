@@ -97,8 +97,10 @@ public class FixedSessionDriver {
 
     public void downloadNewData(Session session, ProgressListener progressListener) {
         String uuid = session.getUUID().toString();
-        Date lastMeasurementSyncTime = session.getEnd();
-        HttpResult<Session> result = syncMeasurements(uuid, lastMeasurementSyncTime);
+        Date sessionEnd = session.getEnd();
+        long sessionEndInMillis = sessionEnd.getTime();
+        Date lastMeasurementSyncTime = new Date(sessionEndInMillis - 5 * 60000);
+        HttpResult<Session> result = syncMeasurements(uuid, sessionEnd);
 
         if (result.getStatus() == Status.SUCCESS) {
             Session downloadedSession = result.getContent();
