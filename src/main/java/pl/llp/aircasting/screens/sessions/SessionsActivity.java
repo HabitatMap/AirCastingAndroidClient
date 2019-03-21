@@ -61,7 +61,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject SessionRepository sessionRepository;
-    @Inject DashboardChartManager chartManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Application context;

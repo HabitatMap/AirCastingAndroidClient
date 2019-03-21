@@ -96,8 +96,6 @@ public class ChartAveragesCreator {
             if (hour == measurementHour) {
                 measurementsInHour.add(measurement);
             } else {
-                Log.w("measuremennts in hour", String.valueOf(measurementsInHour.size()));
-
                 periodData.add(measurementsInHour);
                 hour = measurementHour;
                 measurementsInHour = new ArrayList<Measurement>();

@@ -101,6 +101,11 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
 
+        Log.w("current stream", "==================");
+        Log.w("current streams", mSensorNameText);
+        Log.w("current streams", "bind data");
+        Log.w("current stream", "==================");
+
         drawFullView();
     }
 
@@ -123,6 +128,10 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindChart(Map mChartData) {
+        Log.w("current stream", "++++++++++++++++++++++++++");
+        Log.w("current streams", mSensorNameText);
+        Log.w("current streams", "bind chart");
+        Log.w("current stream", "+++++++++++++++++++++++++++++");
         mChart = (LineChart) mChartData.get(mSensorNameText);
 
         if (mChart != null) {

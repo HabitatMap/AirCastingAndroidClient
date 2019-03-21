@@ -118,8 +118,10 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     public void bindViewingSensorsData(List data) {
         if (!data.isEmpty()) {
             mEmptyLayout.setVisibility(View.GONE);
+            mViewingStreamsRecyclerView.setVisibility(View.VISIBLE);
         } else if (mCurrentRecyclerAdapter.getItemCount() == 0) {
             mEmptyLayout.setVisibility(View.VISIBLE);
+            mViewingStreamsRecyclerView.setVisibility(View.GONE);
         }
 
         mViewingRecyclerAdapter.bindData(data);

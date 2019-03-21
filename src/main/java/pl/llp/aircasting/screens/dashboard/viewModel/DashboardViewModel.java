@@ -238,6 +238,9 @@ public class DashboardViewModel extends ViewModel {
         mDashboardChartManager.resetState();
 
         mViewingSensors.postValue(new HashMap<Long, Map<SensorName, Sensor>>());
+
+    public void hideStream(Map dataItem) {
+        mViewingSessionsSensorManager.hideSessionStream(dataItem);
     }
 
     public void refreshChartAverages() {

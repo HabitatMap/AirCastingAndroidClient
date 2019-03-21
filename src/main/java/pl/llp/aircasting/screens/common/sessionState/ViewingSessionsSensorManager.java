@@ -2,6 +2,7 @@ package pl.llp.aircasting.screens.common.sessionState;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -26,6 +27,8 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newConcurrentMap;
 import static com.google.common.collect.Maps.newHashMap;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 
 /**
  * Created by radek on 10/10/17.
@@ -107,6 +110,8 @@ public class ViewingSessionsSensorManager {
     public void onEvent(FixedMeasurementEvent event) {
         deletePlaceholderSensor(event.getSessionId());
         mRecentFixedMeasurements.put(event.getSensor().toString(), event.getMeasurement());
+        Log.w("recentFixedMeas", String.valueOf(mRecentFixedMeasurements));
+        Log.w("recentFixedMeas", String.valueOf(event.getMeasurement()));
         mDashboardChartManager.updateFixedAverageWithMeasurement(event.getSensor(), event.getSessionId(), event.getMeasurement());
         eventBus.post(new FixedSensorEvent());
     }
@@ -125,6 +130,12 @@ public class ViewingSessionsSensorManager {
         ArrayList<Sensor> result = newArrayList();
         result.addAll(viewingSessionsSensors.get(sessionId).values());
         return result;
+    }
+
+    public void hideSessionStream(Map dataItem) {
+        String sensorName = ((Sensor) dataItem.get(SENSOR)).getSensorName();
+        long sessionId = (long) dataItem.get(SESSION_ID);
+        viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
     }
 
     public void deleteSensorFromSession(Sensor sensor, long sessionId) {

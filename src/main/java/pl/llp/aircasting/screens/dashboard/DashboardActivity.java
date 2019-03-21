@@ -158,6 +158,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
         mDashboardViewModel.refreshCurrentSensors();
         mDashboardViewModel.refreshViewingSensors();
+        mDashboardViewModel.refreshLiveCharts();
         mDashboardViewModel.refreshStaticCharts();
         mDashboardViewModel.refreshRecentFixedMeasurements();
     }
@@ -191,8 +192,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putLongArray(VIEWING_SESSIONS_IDS, viewingSessionsManager.getSessionIdsArray());
     }
 
     @Subscribe

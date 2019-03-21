@@ -160,7 +160,7 @@ public class SessionRepository {
                             updateSessionEndDate(oldSession);
                             measurementsAdded = true;
                             // emit an event to update MeasurementPresenter data and map/graph gauges
-                            MeasurementEvent event = new FixedMeasurementEvent(measurements.get(measurements.size() -1 ), new Sensor(stream, oldSession.getId()));
+                            MeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, oldSession.getId()));
                             event.setSessionId(oldSession.getId());
                             eventBus.post(event);
                         }
@@ -589,4 +589,3 @@ public class SessionRepository {
         trackedSessionsDAO.completeFixedSession(sessionId);
     }
 }
-

@@ -78,11 +78,12 @@ public class StreamViewHelper {
             setBackground(sensor, nowTextView, now);
         }
 
-        if (sessionState.sessionHasNowValue(sessionId)) {
-            nowTextView.setText(String.valueOf(now));
-        } else {
-            nowTextView.setText(R.string.empty);
-        }
+//        if (sessionState.sessionHasNowValue(sessionId)) {
+//
+//            nowTextView.setText(String.valueOf(now));
+//        } else {
+//            nowTextView.setText(R.string.empty);
+//        }
     }
 
     private void setTitleView(long sessionId, RelativeLayout sessionTitleView) {
