@@ -198,11 +198,14 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     private void swapPositions(int fromPosition, int toPosition) {
-        String fromSensorString = ((Sensor) mData.get(fromPosition).get(SENSOR)).toString();
-        String toSensorString = ((Sensor) mData.get(toPosition).get(SENSOR)).toString();
+        Map fromStream = mData.get(fromPosition);
+        Map toStream = mData.get(toPosition);
 
-        mStreamPositions.set(toPosition, fromSensorString);
-        mStreamPositions.set(fromPosition, toSensorString);
+        mData.set(toPosition, fromStream);
+        mData.set(fromPosition, toStream);
+
+        mStreamPositions.clear();
+        prepareStreamPositionsAndTitles();
     }
 
     @Override
