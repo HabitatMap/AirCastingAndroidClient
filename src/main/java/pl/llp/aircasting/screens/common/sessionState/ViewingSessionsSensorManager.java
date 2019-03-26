@@ -136,6 +136,7 @@ public class ViewingSessionsSensorManager {
         String sensorName = ((Sensor) dataItem.get(SENSOR)).getSensorName();
         long sessionId = (long) dataItem.get(SESSION_ID);
         viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
+        notifySensorsChanged();
     }
 
     public void deleteSensorFromSession(Sensor sensor, long sessionId) {

@@ -336,6 +336,15 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     }
 
     @Override
+    public void onItemSwipe(Map dataItem, int listSize) {
+        if (listSize == 0) {
+            mDashboardViewModel.clearAllViewingSensors();
+        } else {
+            mDashboardViewModel.hideStream(dataItem);
+        }
+    }
+
+    @Override
     public void onDashboardButtonClicked(View view) {
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);

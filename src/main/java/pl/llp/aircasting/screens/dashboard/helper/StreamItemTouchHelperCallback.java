@@ -40,16 +40,8 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
             mAdapter.onItemMove(viewHolder, target, viewHolder.getAdapterPosition(), target.getAdapterPosition());
             return true;
         } else {
-            clearView(recyclerView, viewHolder);
             return false;
         }
-    }
-
-    @Override
-    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        super.clearView(recyclerView, viewHolder);
-
-        mAdapter.finishDrag(viewHolder);
     }
 
     @Override

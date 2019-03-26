@@ -126,22 +126,22 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindChart(Map mChartData) {
+        Log.w("item bind chart", String.valueOf(mChartData));
         mChart = (LineChart) mChartData.get(mStreamIdentifier);
+
+        Log.w("item bind chart", String.valueOf(mChart));
 
         if (mChart != null) {
             if (mChart.getParent() != null) {
                 ((ViewGroup) mChart.getParent()).removeView(mChart);
             }
 
+            mChartLayout.removeAllViews();
             mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
         }
     }
 
     private void drawFullView() {
-        if (mChart.getParent() != null) {
-            ((ViewGroup) mChart.getParent()).removeView(mChart);
-        }
-
         mRootView.setTag(R.id.session_id_tag, mSessionId);
         showAndSetTimestamp();
         setTitleView();
@@ -152,8 +152,12 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, STREAM_CHART_WIDTH, getRootView().getContext().getResources().getDisplayMetrics());
         int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, STREAM_CHART_HEIGHT, getRootView().getContext().getResources().getDisplayMetrics());
 
+        if (mChart.getParent() != null) {
+            ((ViewGroup) mChart.getParent()).removeView(mChart);
+        }
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
         mChart.setLayoutParams(params);
+        mChartLayout.removeAllViews();
         mChartLayout.addView(mChart);
     }
 

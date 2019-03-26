@@ -216,6 +216,13 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public void onItemSwipe(int position) {
+        mStreamsReordered = true;
+        Map dataItem = mData.remove(position);
+        mListener.onItemSwipe(dataItem, mData.size());
+        mStreamPositions.clear();
+        prepareStreamPositionsAndTitles();
+        notifyItemRemoved(position);
+    }
 
     @Override
     public boolean isItemSwipeEnabled() {
