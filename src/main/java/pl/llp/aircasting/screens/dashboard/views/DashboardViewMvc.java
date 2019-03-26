@@ -1,21 +1,19 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
-import android.arch.lifecycle.LiveData;
 import android.view.View;
-
-import com.github.mikephil.charting.charts.LineChart;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import pl.llp.aircasting.model.Measurement;
 
 public interface DashboardViewMvc {
-    public interface Listener {
+    interface Listener {
         void onDashboardButtonClicked(View view);
 
         void onStreamClicked(View view);
+
+        void onItemSwipe(Map dataItem, int listSize);
     }
 
     View getRootView();

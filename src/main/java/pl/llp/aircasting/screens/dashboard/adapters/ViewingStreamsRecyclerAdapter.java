@@ -20,6 +20,7 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
+import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 
@@ -35,7 +36,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private static boolean mStreamsReordered = false;
 
     private final LayoutInflater mInflater;
-    private final StreamItemViewMvc.Listener mListener;
+    private final DashboardViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
 
     private List<Map<String, Object>> mData = new ArrayList();
@@ -77,7 +78,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         }
     }
 
-    public ViewingStreamsRecyclerAdapter(LayoutInflater inflater, StreamItemViewMvc.Listener listener, ResourceHelper resourceHelper) {
+    public ViewingStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper) {
         mInflater = inflater;
         mListener = listener;
         mResourceHelper = resourceHelper;
@@ -216,6 +217,9 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     @Override
     public void onItemSwipe(int position) {
 
+    @Override
+    public boolean isItemSwipeEnabled() {
+        return true;
     }
 
     @Override
@@ -224,7 +228,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     @Override
-    public void onSessionUpClicked(View view, long sessionId) {
+    public void onSessionUpClicked(long sessionId) {
         int startingPosition = getSessionPosition(sessionId);
         int switchPosition = startingPosition - 1;
 
@@ -239,7 +243,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     @Override
-    public void onSessionDownClicked(View view, long sessionId) {
+    public void onSessionDownClicked(long sessionId) {
         int startingPosition = getSessionPosition(sessionId);
         int switchPosition = startingPosition + 1;
 

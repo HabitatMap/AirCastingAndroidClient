@@ -169,7 +169,7 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
                     @Override
                     public void onClick(View v) {
                         for (Listener listener : mListeners) {
-                            listener.onSessionUpClicked(v, mSessionId);
+                            listener.onSessionUpClicked(mSessionId);
                         }
                     }
                 });
@@ -178,7 +178,7 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
                     @Override
                     public void onClick(View v) {
                         for (Listener listener : mListeners) {
-                            listener.onSessionDownClicked(v, mSessionId);
+                            listener.onSessionDownClicked(mSessionId);
                         }
                     }
                 });

@@ -8,4 +8,6 @@ public interface StreamItemTouchHelperAdapter {
     void finishDrag(RecyclerView.ViewHolder viewHolder);
 
     void onItemSwipe(int position);
+
+    boolean isItemSwipeEnabled();
 }

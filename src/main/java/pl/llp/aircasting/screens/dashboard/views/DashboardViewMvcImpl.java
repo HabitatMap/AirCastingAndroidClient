@@ -4,14 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Measurement;
@@ -20,7 +18,7 @@ import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapte
 import pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperCallback;
 
-public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, StreamItemViewMvc.Listener {
+public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, DashboardViewMvc.Listener {
     private final View mRootView;
     private final LayoutInflater mInflater;
     private final View mEmptyLayout;
@@ -138,7 +136,12 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        mListener.onDashboardButtonClicked(v);
+        onDashboardButtonClicked(v);
+    }
+
+    @Override
+    public void onDashboardButtonClicked(View view) {
+        mListener.onDashboardButtonClicked(view);
     }
 
     @Override
@@ -147,8 +150,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     }
 
     @Override
-    public void onSessionUpClicked(View view, long sessionId) {}
-
-    @Override
-    public void onSessionDownClicked(View view, long sessionId) {}
+    public void onItemSwipe(Map dataItem, int listSize) {
+        mListener.onItemSwipe(dataItem, listSize);
+    }
 }

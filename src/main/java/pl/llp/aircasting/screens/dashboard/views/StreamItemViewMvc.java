@@ -11,12 +11,12 @@ import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 public interface StreamItemViewMvc {
     void bindSessionTitle(int position);
 
-    public interface Listener {
+    interface Listener {
         void onStreamClicked(View view);
 
-        void onSessionUpClicked(View view, long sessionId);
+        void onSessionUpClicked(long sessionId);
 
-        void onSessionDownClicked(View view, long sessionId);
+        void onSessionDownClicked(long sessionId);
     }
 
     View getRootView();

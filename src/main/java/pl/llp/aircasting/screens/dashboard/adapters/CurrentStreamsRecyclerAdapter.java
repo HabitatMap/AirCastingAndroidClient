@@ -21,6 +21,7 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
+import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.CurrentStreamItemViewMvcImpl;
 
@@ -32,7 +33,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     private static boolean mStreamsReordered = false;
 
     private final LayoutInflater mInflater;
-    private final StreamItemViewMvc.Listener mListener;
+    private final DashboardViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
     private List<Map<String, Object>> mData = new ArrayList();
     private Map<String, Double> mNowData = new HashMap<>();
@@ -67,7 +68,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         }
     }
 
-    public CurrentStreamsRecyclerAdapter(LayoutInflater inflater, StreamItemViewMvc.Listener listener, ResourceHelper resourceHelper) {
+    public CurrentStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper) {
         mInflater = inflater;
         mListener = listener;
         mResourceHelper = resourceHelper;
@@ -156,10 +157,13 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     }
 
     @Override
-    public void onSessionUpClicked(View view, long sessionId) {}
+    public void onSessionUpClicked(long sessionId) {}
 
     @Override
-    public void onSessionDownClicked(View view, long sessionId) {}
+    public void onSessionDownClicked(long sessionId) {}
+
+    @Override
+    public void onItemSwipe(int position) {}
 
     @Override
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
@@ -190,8 +194,10 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
     }
 
-    @Override
-    public void onItemSwipe(int position) {}
+   @Override
+    public boolean isItemSwipeEnabled() {
+        return false;
+    }
 
     private boolean positionsPrepared() {
         return mData.size() == mStreamPositions.size();
