@@ -22,7 +22,7 @@
 
   <uses-feature android:name="android.hardware.camera" />
 
-  <application android:icon="@drawable/icon" android:allowBackup="true" android:label="@string/app_name" android:name=".guice.AirCastingApplication" android:largeHeap="true">
+  <application android:icon="@mipmap/ic_launcher" android:allowBackup="false" android:label="@string/app_name" android:name=".guice.AirCastingApplication" android:largeHeap="true">
     <!-- Libraries -->
     <uses-library android:name="com.google.android.maps"/>
 
