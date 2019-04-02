@@ -59,8 +59,7 @@
             android:id="@+id/layout_empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="100dp"
-            android:gravity="center_horizontal"
+            android:gravity="center_horizontal|center_vertical"
             android:orientation="vertical">
 
             <Button
