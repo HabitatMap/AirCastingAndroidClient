@@ -128,13 +128,13 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     @Override
     public void bindChart(Map mChartData) {
-        Log.w("current stream", "++++++++++++++++++++++++++");
-        Log.w("current streams", mSensorNameText);
-        Log.w("current streams", "bind chart");
-        Log.w("current stream", "+++++++++++++++++++++++++++++");
         mChart = (LineChart) mChartData.get(mSensorNameText);
 
         if (mChart != null) {
+            if (mChart.getParent() != null) {
+                ((ViewGroup) mChart.getParent()).removeView(mChart);
+            }
+
             mChartLayout.removeAllViews();
             mChartLayout.addView(mChart, mChartLayout.getWidth(), mChartLayout.getHeight());
         }

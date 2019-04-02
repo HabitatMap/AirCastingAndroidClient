@@ -272,4 +272,6 @@
   <string name="wifi_ssid">WiFi Network Name</string>
   <string name="wifi_password">WiFi Password</string>
   <string name="submit">Submit</string>
+  <string name="bluetooth">Bluetooth</string>
+  <string name="other">Other</string>
 </resources>

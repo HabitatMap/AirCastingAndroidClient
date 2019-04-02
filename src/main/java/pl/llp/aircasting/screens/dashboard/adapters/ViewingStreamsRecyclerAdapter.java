@@ -1,12 +1,14 @@
 package pl.llp.aircasting.screens.dashboard.adapters;
 
 import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.common.collect.ComparisonChain;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +30,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
 
+@Singleton
 public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingStreamsRecyclerAdapter.StreamViewHolder>
         implements StreamRecyclerAdapter, StreamItemViewMvc.Listener, StreamItemTouchHelperAdapter {
     public static final int STREAM_CHART_WIDTH = 800;
@@ -86,13 +89,12 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     @Override
     public void bindData(List data) {
-        mData.clear();
         mData = data;
         prepareSessionPositions();
         Collections.sort(mData, mStreamComparator);
         prepareStreamPositionsAndTitles();
 
-        notifyItemRangeChanged(0, mData.size());
+        notifyDataSetChanged();
     }
 
     private void prepareSessionPositions() {

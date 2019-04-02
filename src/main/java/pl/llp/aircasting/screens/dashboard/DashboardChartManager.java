@@ -113,7 +113,7 @@ public class DashboardChartManager {
 
         setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, sensor.getSymbol(), CURRENT_CHART);
 
-        mCurrentCharts.put(sensorName, chart);
+        mCurrentCharts.put(streamKey, chart);
 
         return chart;
     }
@@ -166,10 +166,10 @@ public class DashboardChartManager {
             List<Entry> entries = ChartAveragesCreator.getMobileEntries(stream);
 
             mAverages.put(streamKey, Lists.reverse(entries));
-            LineChart chart = mCurrentCharts.get(sensorName);
+            LineChart chart = mCurrentCharts.get(streamKey);
             setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, stream.getSymbol(), CURRENT_CHART);
 
-            mCurrentCharts.put(sensorName, chart);
+            mCurrentCharts.put(streamKey, chart);
         }
 
         eventBus.post(new NewChartAveragesEvent(CURRENT_CHART));
