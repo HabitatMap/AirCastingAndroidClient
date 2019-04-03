@@ -7,7 +7,9 @@ public interface StreamItemTouchHelperAdapter {
 
     void finishDrag(RecyclerView.ViewHolder viewHolder);
 
-    void onItemSwipe(int position);
+    void onItemSwipe(int position, int direction);
 
     boolean isItemSwipeEnabled();
+
+    boolean isLongPressDragEnabled();
 }

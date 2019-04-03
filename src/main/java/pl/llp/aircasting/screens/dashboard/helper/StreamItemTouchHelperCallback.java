@@ -16,7 +16,7 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return true;
+        return mAdapter.isLongPressDragEnabled();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mAdapter.onItemSwipe(viewHolder.getAdapterPosition());
+        mAdapter.onItemSwipe(viewHolder.getAdapterPosition(), direction);
     }
 
     @Override

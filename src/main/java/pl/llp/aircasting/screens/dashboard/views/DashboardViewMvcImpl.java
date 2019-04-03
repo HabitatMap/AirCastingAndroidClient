@@ -178,7 +178,15 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     }
 
     @Override
-    public void onItemSwipe(Map dataItem, int listSize) {
-        mListener.onItemSwipe(dataItem, listSize);
+    public void onItemSwipe(int position, Map dataItem, boolean noStreamsLeft, int direction, int itemType) {
+        mListener.onItemSwipe(position, dataItem, noStreamsLeft, direction, itemType);
+    }
+
+    public void itemRemoved(int position) {
+        mViewingRecyclerAdapter.removeItem(position);
+    }
+
+    public void cancelSwipe(int position) {
+        mViewingRecyclerAdapter.notifyItemChanged(position);
     }
 }

@@ -1,13 +1,16 @@
 package pl.llp.aircasting.screens.dashboard;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
@@ -44,6 +47,10 @@ import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.screens.dashboard.DashboardChartManager.CURRENT_CHART;
 import static pl.llp.aircasting.screens.dashboard.DashboardChartManager.STATIC_CHART;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
+import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.CURRENT_ITEM;
+import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.VIEWING_ITEM;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
@@ -336,15 +343,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     }
 
     @Override
-    public void onItemSwipe(Map dataItem, int listSize) {
-        if (listSize == 0) {
-            mDashboardViewModel.clearAllViewingSensors();
-        } else {
-            mDashboardViewModel.hideStream(dataItem);
-        }
-    }
-
-    @Override
     public void onDashboardButtonClicked(View view) {
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
@@ -365,5 +363,96 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onItemSwipe(int position, Map dataItem, boolean noStreamsLeft, int direction, int itemType) {
+        if (direction == ItemTouchHelper.START) {
+            deleteStreamIfPossible(position, dataItem, itemType, noStreamsLeft);
+        } else if (direction == ItemTouchHelper.END) {
+            hideStreamIfPossible(position, dataItem, itemType, noStreamsLeft);
+        }
+    }
+
+    private void deleteStreamIfPossible(int position, Map dataItem, int itemType, boolean noStreamsLeft) {
+        if (itemType == CURRENT_ITEM) {
+            unableToDeleteStreamMessage();
+        } else if (itemType == VIEWING_ITEM) {
+            long sessionId = (long) dataItem.get(SESSION_ID);
+
+            if (sessionData.getSession(sessionId).getStreamsSize() > 1) {
+                confirmStreamDelete(position, dataItem, noStreamsLeft);
+            } else {
+                confirmSessionDelete(position, dataItem, noStreamsLeft);
+            }
+        }
+    }
+
+    private void hideStreamIfPossible(int position, Map dataItem, int itemType, boolean noStreamsLeft) {
+        if (itemType == CURRENT_ITEM) {
+            unableToDeleteStreamMessage();
+        } else if (itemType == VIEWING_ITEM) {
+            mDashboardViewModel.hideStream(dataItem);
+            removeOneOrAll(position, noStreamsLeft);
+        }
+    }
+
+    private void removeOneOrAll(int position, boolean noStreamsLeft) {
+        if (noStreamsLeft) {
+            mDashboardViewModel.clearAllViewingSensors();
+        } else {
+            mDashboardViewMvc.itemRemoved(position);
+        }
+    }
+
+    private void confirmStreamDelete(final int position, final Map dataItem, final boolean noStreamsLeft) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setMessage("Delete stream?").
+                setCancelable(true).
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Sensor sensor = (Sensor) dataItem.get(SENSOR);
+                        long sessionId = (long) dataItem.get(SESSION_ID);
+                        sessionData.deleteSensorStream(sensor, sessionId);
+                        Intents.triggerSync(context);
+                        removeOneOrAll(position, noStreamsLeft);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDashboardViewMvc.cancelSwipe(position);
+                    }
+                });
+        AlertDialog dialog = b.create();
+        dialog.show();
+    }
+
+    private void confirmSessionDelete(final int position, final Map dataItem, final boolean noStreamsLeft) {
+        AlertDialog.Builder b = new AlertDialog.Builder(context);
+        b.setMessage("This is the only stream, delete session?").
+                setCancelable(true).
+                setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Sensor sensor = (Sensor) dataItem.get(SENSOR);
+                        long sessionId = (long) dataItem.get(SESSION_ID);
+                        sessionData.deleteSensorStream(sensor, sessionId);
+                        sessionData.deleteSession(sessionId);
+                        Intents.triggerSync(context);
+                        removeOneOrAll(position, noStreamsLeft);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDashboardViewMvc.cancelSwipe(position);
+                    }
+                });
+        AlertDialog dialog = b.create();
+        dialog.show();
+    }
+
+    private void unableToDeleteStreamMessage() {
+        ToastHelper.show(this, R.string.wrong_session_type, Toast.LENGTH_SHORT);
     }
 }

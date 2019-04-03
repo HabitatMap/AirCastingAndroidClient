@@ -29,6 +29,7 @@ import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
+import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.VIEWING_ITEM;
 
 @Singleton
 public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingStreamsRecyclerAdapter.StreamViewHolder>
@@ -217,10 +218,15 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     }
 
     @Override
-    public void onItemSwipe(int position) {
+    public void onItemSwipe(int position, int direction) {
+        Map dataItem = mData.get(position);
+        Boolean noStreamsLeft = mData.size() - 1 == 0;
+        mListener.onItemSwipe(position, dataItem, noStreamsLeft, direction, VIEWING_ITEM);
+    }
+
+    public void removeItem(int position) {
         mStreamsReordered = true;
-        Map dataItem = mData.remove(position);
-        mListener.onItemSwipe(dataItem, mData.size());
+        mData.remove(position);
         mStreamPositions.clear();
         prepareStreamPositionsAndTitles();
         notifyItemRemoved(position);
@@ -229,6 +235,11 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     @Override
     public boolean isItemSwipeEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return mData.size() > 1;
     }
 
     @Override

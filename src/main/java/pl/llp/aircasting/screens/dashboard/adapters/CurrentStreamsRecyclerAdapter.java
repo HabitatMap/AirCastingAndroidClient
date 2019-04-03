@@ -27,6 +27,7 @@ import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.CurrentStreamItemViewMvcImpl;
 
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
+import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.CURRENT_ITEM;
 
 @Singleton
 public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentStreamsRecyclerAdapter.StreamViewHolder>
@@ -165,7 +166,10 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     public void onSessionDownClicked(long sessionId) {}
 
     @Override
-    public void onItemSwipe(int position) {}
+    public void onItemSwipe(int position, int direction) {
+        notifyItemChanged(position);
+        mListener.onItemSwipe(position, mData.get(position), false, direction, CURRENT_ITEM);
+    }
 
     @Override
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
@@ -198,7 +202,12 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
 
    @Override
     public boolean isItemSwipeEnabled() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return mData.size() > 1;
     }
 
     private boolean positionsPrepared() {
