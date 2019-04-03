@@ -27,7 +27,7 @@
                 style="@style/Widget.MyApp.Toolbar.Solid"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/white"
+                android:background="@color/dashboard_white"
                 android:theme="@style/ThemeOverlay.MyApp.ActionBar"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="@color/bar_blue"

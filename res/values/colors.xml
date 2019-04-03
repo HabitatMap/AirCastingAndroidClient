@@ -23,7 +23,7 @@
     <color name="aircasting_light">#FF9783B3</color>
     <color name="gauge_transparent">#CFFF</color>
 
-    <color name="white">#FFFFFF</color>
+    <color name="dashboard_white">#FBF9FC</color>
     <color name="green">#FF00A33D</color>
     <color name="yellow">#FFFFD800</color>
     <color name="orange">#FFFF7F00</color>
