@@ -110,8 +110,6 @@ public class ViewingSessionsSensorManager {
     public void onEvent(FixedMeasurementEvent event) {
         deletePlaceholderSensor(event.getSessionId());
         mRecentFixedMeasurements.put(event.getSensor().toString(), event.getMeasurement());
-        Log.w("recentFixedMeas", String.valueOf(mRecentFixedMeasurements));
-        Log.w("recentFixedMeas", String.valueOf(event.getMeasurement()));
         mDashboardChartManager.updateFixedAverageWithMeasurement(event.getSensor(), event.getSessionId(), event.getMeasurement());
         eventBus.post(new FixedSensorEvent());
     }
@@ -151,6 +149,7 @@ public class ViewingSessionsSensorManager {
     }
 
     public void removeAllSessionsSensors() {
+        mRecentFixedMeasurements.clear();
         viewingSessionsSensors.clear();
         notifySensorsChanged();
     }

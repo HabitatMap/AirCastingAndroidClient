@@ -143,7 +143,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.getRecentFixedMeasurements().observe(this, new Observer<Map<String, Measurement>>() {
             @Override
             public void onChanged(@Nullable Map<String, Measurement> recentFixedMeasurements) {
-                mDashboardViewMvc.bindRecentFixedMeasurements(mDashboardViewModel.getRecentFixedMeasurements().getValue());
+                mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
             }
         });
     }
@@ -292,6 +292,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 Intents.makeANote(this);
                 break;
             case R.id.clear_dashboard_button:
+                handler.removeCallbacks(pollServerTask);
                 mDashboardViewModel.clearAllViewingSensors();
                 break;
             case R.id.session_rearrange_toggle:

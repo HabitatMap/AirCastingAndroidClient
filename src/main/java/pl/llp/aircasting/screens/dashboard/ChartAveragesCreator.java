@@ -87,8 +87,6 @@ public class ChartAveragesCreator {
         int hour = measurements.get(0).getTime().getHours();
         List<Measurement> measurementsInHour = new ArrayList<Measurement>();
 
-        Log.w("first hour", String.valueOf(hour));
-
         for (int i = 0; i < measurements.size(); i++) {
             Measurement measurement = measurements.get(i);
             int measurementHour = measurement.getTime().getHours();

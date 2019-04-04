@@ -123,11 +123,6 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     }
 
     @Override
-    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {
-        mViewingRecyclerAdapter.bindRecentFixedMeasurements(recentFixedMeasurements);
-    }
-
-    @Override
     public void bindChartData(Map liveCharts) {
         mCurrentRecyclerAdapter.bindChartData(liveCharts);
     }

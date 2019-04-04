@@ -27,6 +27,7 @@ import java.util.*;
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
 import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
+import static pl.llp.aircasting.util.Constants.CURRENT_SESSION_FAKE_ID;
 
 /**
  * Created by radek on 10/10/17.
@@ -189,7 +190,8 @@ public class ViewingSessionsManager {
     }
 
     public boolean isSessionFixed(long sessionId) {
-        return fixedSessions.keySet().contains(sessionId);
+        if (sessionId == CURRENT_SESSION_FAKE_ID) { return false; }
+        return sessionsForViewing.get(sessionId).isFixed();
     }
 
     public boolean isAnySessionFixed() {

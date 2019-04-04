@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.helper.StreamItemTouchHelperAdapter;
@@ -44,7 +43,6 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private final ResourceHelper mResourceHelper;
 
     private List<Map<String, Object>> mData = new ArrayList();
-    private Map<String, Measurement> mRecentFixedMeasurementsData = new HashMap<>();
     private Map mChartData = new HashMap();
     private ArrayList<Long> mSessionPositions = new ArrayList();
     private ArrayList<String> mStreamPositions = new ArrayList<>();
@@ -143,12 +141,6 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     public void bindNowValues(Map recentFixedMeasurements) {}
 
     @Override
-    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {
-        mRecentFixedMeasurementsData = recentFixedMeasurements;
-        notifyItemRangeChanged(0, mRecentFixedMeasurementsData.size(), PAYLOAD_NOW_VALUES_UPDATE);
-    }
-
-    @Override
     public void bindChartData(Map charts) {
         if (charts == null || charts.isEmpty()) {
             return;
@@ -175,8 +167,6 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
             holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
         } else if (payloads.get(0) == PAYLOAD_CHARTS_UPDATE) {
             holder.mViewMvc.bindChart(mChartData);
-        } else if (payloads.get(0) == PAYLOAD_NOW_VALUES_UPDATE) {
-            holder.mViewMvc.bindRecentFixedMeasurement(mRecentFixedMeasurementsData);
         }
     }
 

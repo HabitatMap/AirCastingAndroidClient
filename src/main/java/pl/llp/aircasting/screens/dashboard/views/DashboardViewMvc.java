@@ -29,8 +29,6 @@ public interface DashboardViewMvc {
 
     void bindRecentMeasurements(Map<String, Double> recentMeasurements);
 
-    void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements);
-
     void bindChartData(Map liveCharts);
 
     void bindStaticChartData(Map staticCharts);

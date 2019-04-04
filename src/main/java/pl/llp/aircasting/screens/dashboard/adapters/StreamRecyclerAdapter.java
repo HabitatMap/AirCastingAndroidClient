@@ -14,7 +14,5 @@ public interface StreamRecyclerAdapter {
 
     void bindNowValues(Map nowValue);
 
-    void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements);
-
     void bindChartData(Map charts);
 }

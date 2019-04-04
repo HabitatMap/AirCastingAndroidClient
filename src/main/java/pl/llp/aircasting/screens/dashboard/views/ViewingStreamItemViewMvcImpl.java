@@ -111,25 +111,8 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     @Override
-    public void bindRecentFixedMeasurement(Map<String, Measurement> recentFixedMeasurements) {
-        Measurement measurement = recentFixedMeasurements.get(mSensor.toString());
-        Number now = measurement.getValue();
-
-        if (now != null) {
-            mNowValue = String.format("%.0f", now);
-            mStreamTimestamp = measurement.getTime();
-        }
-        setBackground();
-        showAndSetTimestamp();
-        mNowTv.setText(mNowValue);
-    }
-
-    @Override
     public void bindChart(Map mChartData) {
-        Log.w("item bind chart", String.valueOf(mChartData));
         mChart = (LineChart) mChartData.get(mStreamIdentifier);
-
-        Log.w("item bind chart", String.valueOf(mChart));
 
         if (mChart != null) {
             if (mChart.getParent() != null) {

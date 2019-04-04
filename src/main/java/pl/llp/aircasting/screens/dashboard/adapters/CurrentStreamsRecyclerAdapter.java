@@ -106,9 +106,6 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     }
 
     @Override
-    public void bindRecentFixedMeasurements(Map<String, Measurement> recentFixedMeasurements) {}
-
-    @Override
     public void bindChartData(Map liveCharts) {
         mChartData = liveCharts;
         notifyItemRangeChanged(0, liveCharts.size(), PAYLOAD_CHARTS_UPDATE);

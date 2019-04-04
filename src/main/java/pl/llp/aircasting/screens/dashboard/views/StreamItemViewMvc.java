@@ -29,7 +29,5 @@ public interface StreamItemViewMvc {
 
     void bindNowValue(Map<String, Double> nowValues);
 
-    void bindRecentFixedMeasurement(Map<String, Measurement> recentFixedMeasurements);
-
     void bindChart(Map mChartData);
 }

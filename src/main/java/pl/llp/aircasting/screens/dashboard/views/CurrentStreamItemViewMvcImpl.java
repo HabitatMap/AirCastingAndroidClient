@@ -124,9 +124,6 @@ public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     @Override
-    public void bindRecentFixedMeasurement(Map<String, Measurement> recentFixedMeasurements) {}
-
-    @Override
     public void bindChart(Map mChartData) {
         mChart = (LineChart) mChartData.get(mSensorNameText);
 
