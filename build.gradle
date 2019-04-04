@@ -1,12 +1,11 @@
 buildscript {
     repositories {
         google()
-        mavenCentral()
         jcenter()
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -18,6 +17,7 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
+     jcenter()
      mavenLocal()
      maven { url "http://acra.googlecode.com/svn/repository/releases/" }
      maven { url "https://maven.google.com" }
@@ -32,8 +32,8 @@ android {
         applicationId 'pl.llp.aircasting'
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 89
-        versionName "1.5.4"
+        versionCode 90
+        versionName "1.5.5"
     }
 
     buildTypes {
