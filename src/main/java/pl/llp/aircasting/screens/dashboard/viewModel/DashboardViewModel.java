@@ -241,7 +241,13 @@ public class DashboardViewModel extends ViewModel {
     }
 
     public void hideStream(Map dataItem) {
+        long sessionId = (long) dataItem.get(SESSION_ID);
         mViewingSessionsSensorManager.hideSessionStream(dataItem);
+
+        if (mViewingSessionsSensorManager.getSensorsList(sessionId).isEmpty()) {
+            mViewingSessionsSensorManager.removeSessionSensors(sessionId);
+            mViewingSessionsManager.removeSession(sessionId);
+        }
     }
 
     public void refreshChartAverages() {
