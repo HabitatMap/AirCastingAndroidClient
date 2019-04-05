@@ -210,9 +210,9 @@ public class DashboardChartManager {
         }
 
         if (mViewingSessionsManager.isSessionFixed(sessionId)) {
-            datasetLabel = FIXED_LABEL;
+            datasetLabel = FIXED_LABEL + " - " + unitSymbol;
         } else {
-            datasetLabel = MOBILE_LABEL;
+            datasetLabel = MOBILE_LABEL + " - " + unitSymbol;
         }
 
         LineData lineData = new LineData();
