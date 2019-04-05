@@ -105,8 +105,7 @@ public class DashboardChartManager {
         String streamKey = getKey(Constants.CURRENT_SESSION_FAKE_ID, sensorName);
 
         if (!mCurrentCharts.containsKey(streamKey)) {
-            chart = new LineChart(mContext);
-            draw(chart);
+            chart = getChart();
         } else {
             chart = mCurrentCharts.get(streamKey);
         }
@@ -129,8 +128,8 @@ public class DashboardChartManager {
         String streamKey = getKey(sessionId, sensorName);
 
         if (!mStaticCharts.containsKey(streamKey)) {
-            chart = new LineChart(mContext);
-            draw(chart);
+            chart = getChart();
+            mStaticCharts.put(streamKey, chart);
         } else {
             chart = mStaticCharts.get(streamKey);
         }
@@ -141,10 +140,11 @@ public class DashboardChartManager {
     }
 
     public void updateFixedAverage(Sensor sensor, long sessionId) {
-        LineChart chart = mStaticCharts.get(getKey(sessionId, sensor.getSensorName()));
+        String streamKey = getKey(sessionId, sensor.getSensorName());
+        LineChart chart = mStaticCharts.get(streamKey);
         if (chart == null) {
-            chart = new LineChart(mContext);
-            draw(chart);
+            chart = getChart();
+            mStaticCharts.put(streamKey, chart);
         }
         prepareStaticEntries(chart, sessionId, sensor);
         eventBus.post(new NewChartAveragesEvent(STATIC_CHART));
@@ -167,6 +167,10 @@ public class DashboardChartManager {
 
             mAverages.put(streamKey, Lists.reverse(entries));
             LineChart chart = mCurrentCharts.get(streamKey);
+            if (chart == null) {
+                chart = getChart();
+                mCurrentCharts.put(streamKey, chart);
+            }
             setChartDataset(sensorName, Constants.CURRENT_SESSION_FAKE_ID, chart, stream.getSymbol(), CURRENT_CHART);
 
             mCurrentCharts.put(streamKey, chart);
@@ -229,7 +233,8 @@ public class DashboardChartManager {
         chart.invalidate();
     }
 
-    private void draw(LineChart chart) {
+    private LineChart getChart() {
+        LineChart chart = new LineChart(mContext);
         YAxis leftAxis = chart.getAxisLeft();
         YAxis rightAxis = chart.getAxisRight();
         XAxis xAxis = chart.getXAxis();
@@ -260,6 +265,8 @@ public class DashboardChartManager {
         chart.setTouchEnabled(false);
         chart.setDragEnabled(false);
         chart.setDoubleTapToZoomEnabled(false);
+
+        return chart;
     }
 
     private LineDataSet prepareDataSet(List<Entry> entries, String sensorName, String datasetLabel) {
