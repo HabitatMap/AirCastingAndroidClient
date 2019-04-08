@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.dashboard.adapters;
 
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     private final LayoutInflater mInflater;
     private final DashboardViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
+    private final Vibrator mVibrator;
     private List<Map<String, Object>> mData = new ArrayList();
     private Map<String, Double> mNowData = new HashMap<>();
     private Map mChartData;
@@ -71,10 +73,11 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         }
     }
 
-    public CurrentStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper) {
+    public CurrentStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper, Vibrator vibrator) {
         mInflater = inflater;
         mListener = listener;
         mResourceHelper = resourceHelper;
+        mVibrator = vibrator;
     }
 
     @Override
@@ -140,6 +143,14 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
                 holder.mViewMvc.bindSessionTitle(position);
             }
         }
+
+        holder.mViewMvc.getRootView().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mVibrator.vibrate(50);
+                return false;
+            }
+        });
     }
 
     @Override

@@ -1,5 +1,7 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
+import android.content.Context;
+import android.os.Vibrator;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -55,8 +57,9 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         if (mSensorsButton != null) { mSensorsButton.setOnClickListener(this); }
         if (mAirbeam2ConfigButton != null) { mAirbeam2ConfigButton.setOnClickListener(this); }
 
-        mCurrentRecyclerAdapter = new CurrentStreamsRecyclerAdapter(mInflater, this, resourceHelper);
-        mViewingRecyclerAdapter = new ViewingStreamsRecyclerAdapter(mInflater, this, resourceHelper);
+        Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+        mCurrentRecyclerAdapter = new CurrentStreamsRecyclerAdapter(mInflater, this, resourceHelper, vibrator);
+        mViewingRecyclerAdapter = new ViewingStreamsRecyclerAdapter(mInflater, this, resourceHelper, vibrator);
         mPagerAdapter = new DashboardPagerAdapter(mContext, mCurrentRecyclerAdapter, mViewingRecyclerAdapter);
         mViewPager.setAdapter(mPagerAdapter);
 

@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.dashboard.adapters;
 
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +42,7 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private final LayoutInflater mInflater;
     private final DashboardViewMvc.Listener mListener;
     private final ResourceHelper mResourceHelper;
+    private final Vibrator mVibrator;
 
     private List<Map<String, Object>> mData = new ArrayList();
     private Map mChartData = new HashMap();
@@ -80,10 +82,11 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         }
     }
 
-    public ViewingStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper) {
+    public ViewingStreamsRecyclerAdapter(LayoutInflater inflater, DashboardViewMvc.Listener listener, ResourceHelper resourceHelper, Vibrator vibrator) {
         mInflater = inflater;
         mListener = listener;
         mResourceHelper = resourceHelper;
+        mVibrator = vibrator;
     }
 
     @Override
@@ -168,6 +171,14 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         } else if (payloads.get(0) == PAYLOAD_CHARTS_UPDATE) {
             holder.mViewMvc.bindChart(mChartData);
         }
+
+        holder.mViewMvc.getRootView().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mVibrator.vibrate(50);
+                return false;
+            }
+        });
     }
 
     @Override
