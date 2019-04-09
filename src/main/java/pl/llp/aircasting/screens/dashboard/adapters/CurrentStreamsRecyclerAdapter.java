@@ -183,8 +183,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
         mStreamsReordered = true;
 
-        target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
-
+        swapTitleContainer(viewHolder, target, fromPosition, toPosition);
         swapPositions(fromPosition, toPosition);
         Collections.sort(mData, mStreamComparator);
         notifyItemMoved(fromPosition, toPosition);
@@ -195,17 +194,22 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         return true;
     }
 
+    private void swapTitleContainer(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
+        if (fromPosition == 0) {
+            target.itemView.findViewById(R.id.title_container).setVisibility(View.VISIBLE);
+            viewHolder.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
+        } else if (toPosition == 0) {
+            viewHolder.itemView.findViewById(R.id.title_container).setVisibility(View.VISIBLE);
+            target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
+        }
+    }
+
     private void swapPositions(int fromPosition, int toPosition) {
         String fromSensor = ((Sensor) mData.get(fromPosition).get(SENSOR)).getSensorName();
         String toSensor = ((Sensor) mData.get(toPosition).get(SENSOR)).getSensorName();
 
         mStreamPositions.put(fromSensor, toPosition);
         mStreamPositions.put(toSensor, fromPosition);
-    }
-
-    @Override
-    public void finishDrag(RecyclerView.ViewHolder viewHolder) {
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
     }
 
    @Override

@@ -145,39 +145,40 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     }
 
     private void setTitleView() {
+        mSessionTitleTv.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
+
+        if (mSessionReorderInProgress) {
+            mSessionButtonsLayout.setVisibility(View.VISIBLE);
+
+            mMoveSessionUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (Listener listener : mListeners) {
+                        listener.onSessionUpClicked(mSessionId);
+                    }
+                }
+            });
+
+            mMoveSessionDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (Listener listener : mListeners) {
+                        listener.onSessionDownClicked(mSessionId);
+                    }
+                }
+            });
+        } else {
+            mSessionButtonsLayout.setVisibility(View.INVISIBLE);
+        }
+
+        if (!mSession.hasTitle()) {
+            mSessionTitleTv.setText(R.string.unnamed);
+        } else {
+            mSessionTitleTv.setText(mSession.getTitle());
+        }
+
         if (mShouldDisplayTitle) {
             mSessionTitleContainer.setVisibility(View.VISIBLE);
-            mSessionTitleTv.setCompoundDrawablesWithIntrinsicBounds(mSession.getDrawable(), 0, 0, 0);
-
-            if (mSessionReorderInProgress) {
-                mSessionButtonsLayout.setVisibility(View.VISIBLE);
-
-                mMoveSessionUp.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        for (Listener listener : mListeners) {
-                            listener.onSessionUpClicked(mSessionId);
-                        }
-                    }
-                });
-
-                mMoveSessionDown.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        for (Listener listener : mListeners) {
-                            listener.onSessionDownClicked(mSessionId);
-                        }
-                    }
-                });
-            } else {
-                mSessionButtonsLayout.setVisibility(View.INVISIBLE);
-            }
-
-            if (!mSession.hasTitle()) {
-                mSessionTitleTv.setText(R.string.unnamed);
-            } else {
-                mSessionTitleTv.setText(mSession.getTitle());
-            }
         } else {
             mSessionTitleContainer.setVisibility(View.GONE);
         }

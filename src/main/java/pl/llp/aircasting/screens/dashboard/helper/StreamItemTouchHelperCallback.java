@@ -48,13 +48,4 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         mAdapter.onItemSwipe(viewHolder.getAdapterPosition(), direction);
     }
-
-    @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-
-        if (isCurrentlyActive) {
-            viewHolder.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
-        }
-    }
 }

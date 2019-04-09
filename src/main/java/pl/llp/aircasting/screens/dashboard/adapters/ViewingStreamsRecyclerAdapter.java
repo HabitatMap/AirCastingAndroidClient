@@ -190,16 +190,31 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     public boolean onItemMove(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
         mStreamsReordered = true;
 
-        target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
-
+        swapTitleContainer(viewHolder, target, fromPosition, toPosition);
         swapPositions(fromPosition, toPosition);
         Collections.sort(mData, mStreamComparator);
         notifyItemMoved(fromPosition, toPosition);
 
-        // make sure the first element is rebound to show the session title
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
-
         return true;
+    }
+
+    private void swapTitleContainer(RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target, int fromPosition, int toPosition) {
+        if (positionWithTitle(fromPosition)) {
+            target.itemView.findViewById(R.id.title_container).setVisibility(View.VISIBLE);
+            viewHolder.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
+        } else if (positionWithTitle(toPosition)) {
+            viewHolder.itemView.findViewById(R.id.title_container).setVisibility(View.VISIBLE);
+            target.itemView.findViewById(R.id.title_container).setVisibility(View.GONE);
+        }
+    }
+
+    private boolean positionWithTitle(int position) {
+        if (position == 0) {
+            return true;
+        }
+
+        Boolean itemhasTitle = (Boolean) mData.get(position).get(TITLE_DISPLAY);
+        return Boolean.valueOf(itemhasTitle);
     }
 
     private void swapPositions(int fromPosition, int toPosition) {
@@ -211,11 +226,6 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
         mStreamPositions.clear();
         prepareStreamPositionsAndTitles();
-    }
-
-    @Override
-    public void finishDrag(RecyclerView.ViewHolder viewHolder) {
-        notifyItemChanged(0, PAYLOAD_TITLE_POSITION_UPDATE);
     }
 
     @Override
