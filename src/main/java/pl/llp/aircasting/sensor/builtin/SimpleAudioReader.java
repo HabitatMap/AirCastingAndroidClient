@@ -81,16 +81,16 @@ public class SimpleAudioReader extends AudioReader.Listener {
       double calibrated = calibrationHelper.calibrate(power);
       SensorEvent event = new SensorEvent(SENSOR_PACKAGE_NAME, SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
                                           VERY_LOW, LOW, MID, HIGH, VERY_HIGH, calibrated);
-      if(Constants.isDevMode()) {
-        Log.d(Constants.SENSORS_TAG, event.toString());
-      }
+//      if(Constants.isDevMode()) {
+//        Log.d(Constants.SENSORS_TAG, event.toString());
+//      }
       eventBus.post(event);
 
-      if(Constants.isDevMode()) {
-        SensorEvent event2 = new SensorEvent("2"+SENSOR_PACKAGE_NAME, "2"+SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
-                                             VERY_LOW, LOW, MID, HIGH, VERY_HIGH, 25);
-        eventBus.post(event2);
-      }
+//      if(Constants.isDevMode()) {
+//        SensorEvent event2 = new SensorEvent("2"+SENSOR_PACKAGE_NAME, "2"+SENSOR_NAME, MEASUREMENT_TYPE, SHORT_TYPE, UNIT, SYMBOL,
+//                                             VERY_LOW, LOW, MID, HIGH, VERY_HIGH, 25);
+//        eventBus.post(event2);
+//      }
     }
   }
 

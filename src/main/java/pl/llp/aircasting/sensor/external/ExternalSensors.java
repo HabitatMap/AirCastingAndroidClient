@@ -94,7 +94,11 @@ public class ExternalSensors {
 
     public void disconnect(String address) {
         if (sensors.containsKey(address)) {
-            sensors.remove(address).stop();
+            for (AbstractSensor sensor : sensors.values()) {
+                sensor.stop();
+            }
+//            sensors.remove(address).stop();
+            sensors.remove(address);
             settings.knownSensorsWithout(address);
         }
     }

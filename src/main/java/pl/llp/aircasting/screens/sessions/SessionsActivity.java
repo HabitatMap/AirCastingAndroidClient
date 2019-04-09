@@ -61,7 +61,6 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject SessionAdapterFactory sessionAdapterFactory;
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject SessionRepository sessionRepository;
-    @Inject DashboardChartManager chartManager;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject SettingsHelper settingsHelper;
     @Inject Application context;
@@ -277,7 +276,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
             protected void onPostExecute(Session session) {
                 super.onPostExecute(session);
 
-                chartManager.resetAllStaticCharts();
+                sessionAdapter.notifyDataSetChanged();
             }
         }.execute(sessionId);
     }

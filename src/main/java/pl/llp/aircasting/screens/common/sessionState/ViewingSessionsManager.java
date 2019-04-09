@@ -5,11 +5,13 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.internal.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
@@ -25,6 +27,7 @@ import java.util.*;
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
 import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
+import static pl.llp.aircasting.util.Constants.CURRENT_SESSION_FAKE_ID;
 
 /**
  * Created by radek on 10/10/17.
@@ -84,15 +87,7 @@ public class ViewingSessionsManager {
         }
 
         if (session.isFixed()) {
-//            new AsyncTask<Void, Void, Void>() {
-//                @Override
-//                protected Void doInBackground(Void... voids) {
-//                    fixedSessionDriver.downloadNewData(session, progressListener);
-//                    return null;
-//                }
-//            };
-
-            syncService.downloadSessionMeasurements(sessionId, sessionUUID);
+            fixedSessionDriver.downloadNewData(session, progressListener);
             addFixedSession(session);
         }
 
@@ -100,6 +95,10 @@ public class ViewingSessionsManager {
         notifyNewSession(session, false);
     }
 
+   @Subscribe
+    public void onEvent(FixedMeasurementEvent event) {
+        getMeasurementStream(event.getSessionId(), event.getSensor().getSensorName()).add(event.getMeasurement());
+    }
 
     public void addFixedSession(Session session) {
         fixedSessions.put(session.getId(), session);
@@ -188,6 +187,11 @@ public class ViewingSessionsManager {
 
     public boolean isSessionBeingViewed(long sessionId) {
         return sessionsForViewing.containsKey(sessionId);
+    }
+
+    public boolean isSessionFixed(long sessionId) {
+        if (sessionId == CURRENT_SESSION_FAKE_ID) { return false; }
+        return sessionsForViewing.get(sessionId).isFixed();
     }
 
     public boolean isAnySessionFixed() {

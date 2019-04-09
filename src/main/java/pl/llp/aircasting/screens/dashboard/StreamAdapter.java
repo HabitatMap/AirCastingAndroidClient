@@ -10,6 +10,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
@@ -83,6 +84,7 @@ public class StreamAdapter extends SimpleAdapter {
     ViewingSessionsSensorManager viewingSessionsSensorManager;
     StreamViewHelper streamViewHelper;
     DashboardChartManager dashboardChartManager;
+    ResourceHelper resourceHelper;
 
     DashboardBaseActivity context;
     EventBus eventBus;
@@ -110,6 +112,7 @@ public class StreamAdapter extends SimpleAdapter {
                          List<Map<String, Object>> data,
                          EventBus eventBus,
                          StreamViewHelper streamViewHelper,
+                         ResourceHelper resourceHelper,
                          CurrentSessionSensorManager currentSessionSensorManager,
                          ViewingSessionsSensorManager viewingSessionsSensorManager,
                          DashboardChartManager dashboardChartManager,
@@ -123,6 +126,7 @@ public class StreamAdapter extends SimpleAdapter {
         this.currentSessionSensorManager = currentSessionSensorManager;
         this.viewingSessionsSensorManager = viewingSessionsSensorManager;
         this.streamViewHelper = streamViewHelper;
+        this.resourceHelper = resourceHelper;
         this.dashboardChartManager = dashboardChartManager;
         this.sessionState = sessionState;
         this.sessionData = sessionData;
@@ -161,17 +165,17 @@ public class StreamAdapter extends SimpleAdapter {
         update(false);
     }
 
-    public void resetAllStaticCharts() {
-        dashboardChartManager.resetAllStaticCharts();
-    }
+//    public void resetAllStaticCharts() {
+//        dashboardChartManager.resetAllStaticCharts();
+//    }
 
-    private void resetSwappedCharts(Long sessionId, String sensor1, String sensor2) {
-        String[] sensorNames = new String[2];
-        sensorNames[0] = sensor1;
-        sensorNames[1] = sensor2;
-
-        dashboardChartManager.resetSpecificStaticCharts(sessionId, sensorNames);
-    }
+//    private void resetSwappedCharts(Long sessionId, String sensor1, String sensor2) {
+//        String[] sensorNames = new String[2];
+//        sensorNames[0] = sensor1;
+//        sensorNames[1] = sensor2;
+//
+//        dashboardChartManager.resetSpecificStaticCharts(sessionId, sensorNames);
+//    }
 
     public void startReorder() {
         reorderInProgress = true;
@@ -181,17 +185,17 @@ public class StreamAdapter extends SimpleAdapter {
         reorderInProgress = false;
     }
 
-    @Subscribe
-    public void onEvent(final FixedSessionsMeasurementEvent event) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!reorderInProgress) {
-                    update(false);
-                }
-            }
-        });
-    }
+//    @Subscribe
+//    public void onEvent(final FixedSessionsMeasurementEvent event) {
+//        context.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (!reorderInProgress) {
+//                    update(false);
+//                }
+//            }
+//        });
+//    }
 
     @Subscribe
     public void onEvent(final SensorEvent event) {
@@ -211,30 +215,30 @@ public class StreamAdapter extends SimpleAdapter {
         currentSessionSensors.clear();
     }
 
-    @Subscribe
-    public void onEvent(SessionSensorsLoadedEvent event) {
-        long sessionId = event.getSessionId();
-        int sensorsCount = sessionData.getSessionSensorsCount(sessionId);
-
-        clearedStreams.remove(sessionId);
-        updateSessionPosition(sessionId);
-
-        if (sensorsCount > 0) {
-            sessionStreamCount.put(sessionId, sessionData.getSessionSensorsCount(sessionId));
-        } else {
-            sessionStreamCount.remove(sessionId);
-        }
-
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                context.startActivity(new Intent(context, FakeActivity.class));
-                update(false);
-            }
-        });
-
-        setStartFakeActivity();
-    }
+//    @Subscribe
+//    public void onEvent(SessionSensorsLoadedEvent event) {
+//        long sessionId = event.getSessionId();
+//        int sensorsCount = sessionData.getSessionSensorsCount(sessionId);
+//
+//        clearedStreams.remove(sessionId);
+//        updateSessionPosition(sessionId);
+//
+//        if (sensorsCount > 0) {
+//            sessionStreamCount.put(sessionId, sessionData.getSessionSensorsCount(sessionId));
+//        } else {
+//            sessionStreamCount.remove(sessionId);
+//        }
+//
+//        context.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                context.startActivity(new Intent(context, FakeActivity.class));
+//                update(false);
+//            }
+//        });
+//
+//        setStartFakeActivity();
+//    }
 
     public void setStartFakeActivity() {
         shouldRunFakeActivity = true;
@@ -286,7 +290,7 @@ public class StreamAdapter extends SimpleAdapter {
         positions.put(positionKey1, pos2);
         positions.put(positionKey2, pos1);
 
-        resetSwappedCharts(sessionId, s1.getSensorName(), s2.getSensorName());
+//        resetSwappedCharts(sessionId, s1.getSensorName(), s2.getSensorName());
 
         streamsReordered.put(sessionId, true);
         update(false);
@@ -322,12 +326,12 @@ public class StreamAdapter extends SimpleAdapter {
                 @Override
                 public void onClick(View v) {
                     DashboardActivity activity = (DashboardActivity) context;
-                    activity.viewChartOptions(v);
+//                    activity.viewChartOptions(v);
                 }
             });
         }
 
-        dashboardChartManager.drawChart(view, sensor, sessionId);
+//        dashboardChartManager.drawChart(sensor, sessionId);
         streamViewHelper.updateMeasurements(sessionId, sensor, view, position);
 
         context.invalidateOptionsMenu();
@@ -372,7 +376,7 @@ public class StreamAdapter extends SimpleAdapter {
         sortedSessionPositions.put(pos2, session1Id);
         sortedSessionPositions.put(pos1, session2Id);
 
-        resetAllStaticCharts();
+//        resetAllStaticCharts();
         update(false);
     }
 
@@ -457,7 +461,7 @@ public class StreamAdapter extends SimpleAdapter {
                         map.put(SENSOR_NAME, sensor.getSensorName());
                         map.put(SENSOR, sensor);
 
-                         data.add(map);
+                        data.add(map);
                     }
                 });
             }

@@ -76,7 +76,7 @@ public class ChartAveragesCreator {
         List entries = new CopyOnWriteArrayList();
         List<List<Measurement>> periodData = new ArrayList();
 
-        int maxMeasurementsAmount = 540;
+        int maxMeasurementsAmount = 600;
 
         measurements = stream.getLastMeasurements(maxMeasurementsAmount);
 
@@ -87,8 +87,6 @@ public class ChartAveragesCreator {
         int hour = measurements.get(0).getTime().getHours();
         List<Measurement> measurementsInHour = new ArrayList<Measurement>();
 
-        Log.w("first hour", String.valueOf(hour));
-
         for (int i = 0; i < measurements.size(); i++) {
             Measurement measurement = measurements.get(i);
             int measurementHour = measurement.getTime().getHours();
@@ -96,16 +94,18 @@ public class ChartAveragesCreator {
             if (hour == measurementHour) {
                 measurementsInHour.add(measurement);
             } else {
-                Log.w("measuremennts in hour", String.valueOf(measurementsInHour.size()));
-
                 periodData.add(measurementsInHour);
                 hour = measurementHour;
                 measurementsInHour = new ArrayList<Measurement>();
+                measurementsInHour.add(measurement);
             }
         }
 
         if (periodData.size() > 0) {
             for (List<Measurement> dataChunk : Lists.reverse(periodData)) {
+                if (xValue < 0) {
+                    return entries;
+                }
                 synchronized (dataChunk) {
                     double yValue = getAverage(dataChunk);
                     entries.add(new Entry((float) xValue, (float) yValue));

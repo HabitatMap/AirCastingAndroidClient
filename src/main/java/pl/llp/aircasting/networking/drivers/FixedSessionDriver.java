@@ -19,6 +19,8 @@
  */
 package pl.llp.aircasting.networking.drivers;
 
+import android.util.Log;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.util.Logger;
@@ -97,8 +99,11 @@ public class FixedSessionDriver {
 
     public void downloadNewData(Session session, ProgressListener progressListener) {
         String uuid = session.getUUID().toString();
-        Date lastMeasurementSyncTime = session.getLastMeasurementSyncTime();
-        HttpResult<Session> result = syncMeasurements(uuid, lastMeasurementSyncTime);
+        Date sessionEnd = session.getEnd();
+        long sessionEndInMillis = sessionEnd.getTime();
+        Date lastMeasurementSyncTime = new Date(sessionEndInMillis - 5 * 60000);
+        Log.w("lastSyncTime", String.valueOf(sessionEnd));
+        HttpResult<Session> result = syncMeasurements(uuid, sessionEnd);
 
         if (result.getStatus() == Status.SUCCESS) {
             Session downloadedSession = result.getContent();

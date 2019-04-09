@@ -21,6 +21,7 @@ package pl.llp.aircasting.screens.stream.map;
 
 import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
@@ -40,7 +41,7 @@ import static pl.llp.aircasting.util.DrawableTransformer.centerAt;
 public class LocationOverlay extends Overlay {
     @Inject ResourceHelper resourceHelper;
     @Inject LocationHelper locationHelper;
-    @Inject CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject VisibleSession visibleSession;
 
     @Override
@@ -51,7 +52,7 @@ public class LocationOverlay extends Overlay {
 
         Location location = locationHelper.getLastLocation();
         Sensor sensor = visibleSession.getSensor();
-        double value = currentSessionManager.getNow(sensor);
+        double value = currentSessionSensorManager.getNow(sensor);
 
         if (location != null) {
             Drawable bullet = resourceHelper.getLocationBullet(sensor, value);

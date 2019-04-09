@@ -1,144 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/stream_row"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/stream_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hapticFeedbackEnabled="true"
+    android:orientation="vertical">
 
     <!--android:descendantFocusability="blocksDescendants"-->
 
     <tag android:id="@+id/session_id_tag" />
 
-    <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/title_container">
+    <RelativeLayout
+        android:id="@+id/title_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <TextView android:id="@+id/session_title"
-                  android:background="@color/list_viewing_session_even"
-                  android:textColor="@color/dashboard_text_gray"
-                  android:drawablePadding="4dp"
-                  android:textSize="15dp"
-                  android:textStyle="bold"
-                  android:padding="10dp"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/session_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/list_viewing_session_even"
+            android:drawablePadding="4dp"
+            android:padding="10dp"
+            android:textColor="@color/dashboard_text_gray"
+            android:textSize="15dp"
+            android:textStyle="bold" />
 
-        <LinearLayout android:layout_width="110dp"
-                      android:layout_height="35dp"
-                      android:id="@+id/session_reorder_buttons"
-                      android:layout_alignParentRight="true"
-                      android:layout_centerVertical="true">
+        <LinearLayout
+            android:id="@+id/session_reorder_buttons"
+            android:layout_width="110dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible">
 
-            <Button android:layout_width="50dp"
-                    android:layout_height="22dp"
-                    android:id="@+id/session_down"
-                    android:layout_marginRight="5dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/sessions_down_arrow"/>
+            <Button
+                android:id="@+id/session_down"
+                android:layout_width="50dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/sessions_down_arrow" />
 
-            <Button android:layout_width="50dp"
-                    android:layout_height="22dp"
-                    android:id="@+id/session_up"
-                    android:background="@drawable/sessions_up_arrow"
-                    android:layout_gravity="center"
-                    android:layout_toLeftOf="@id/session_up"
-                    android:layout_marginRight="3dp"/>
+            <Button
+                android:id="@+id/session_up"
+                android:layout_width="50dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="3dp"
+                android:layout_toLeftOf="@id/session_up"
+                android:background="@drawable/sessions_up_arrow" />
 
         </LinearLayout>
 
     </RelativeLayout>
 
-    <LinearLayout android:id="@+id/placeholder_chart"
-                  android:layout_width="match_parent"
-                  android:layout_height="170dp"
-                  android:visibility="gone"
-                  android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/placeholder_chart"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-        <TextView android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:gravity="center"
-                  android:textStyle="bold"
-                  android:layout_marginTop="-70dp"
-                  android:text="@string/retrieving_streams"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-70dp"
+            android:gravity="center"
+            android:text="@string/retrieving_streams"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="170dp"
-                  android:id="@+id/chart_container"
-                  android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
-        <LinearLayout android:id="@+id/actual_chart"
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent"
-                      android:orientation="vertical"
-                      android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-                <TextView android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:textSize="15dp"
-                          android:id="@+id/sensor_name"
-                          android:textStyle="bold"
-                          android:padding="3dp"
-                          android:textColor="@android:color/white"
-                          android:background="@color/gray"/>
+                <TextView
+                    android:id="@+id/sensor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray"
+                    android:padding="3dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
 
-                <TextView android:layout_width="match_parent"
-                          android:layout_height="2dp"
-                          android:layout_gravity="top"
-                          android:id="@+id/stream_row_divider"
-                          android:layout_weight="10"
-                          android:background="@color/gray"/>
+                <TextView
+                    android:id="@+id/stream_row_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_gravity="top"
+                    android:layout_weight="10"
+                    android:background="@color/gray" />
 
-                    <TextView android:id="@+id/last_measurement_label"
-                              android:layout_width="80dp"
-                              android:layout_height="wrap_content"
-                              android:paddingLeft="6dp"
-                              android:paddingRight="6dp"
-                              android:gravity="center"
-                              android:layout_alignParentRight="true"
-                              android:layout_marginTop="10dp"
-                              android:layout_marginRight="3dp"
-                              android:text="Last Second"
-                              android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/last_measurement_label"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:text="Last Second"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:layout_height="match_parent"
-                          android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/chart_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
-                <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/chart"
-                        android:layout_width="match_parent"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"/>
+                <RelativeLayout
+                    android:id="@+id/chart_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
 
-                <LinearLayout android:layout_width="80dp"
-                              android:layout_height="match_parent"
-                              android:orientation="vertical"
-                              android:layout_marginRight="3dp"
-                              android:layout_marginTop="7dp">
+                <LinearLayout
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginTop="7dp"
+                    android:orientation="vertical">
 
+                    <TextView
+                        android:id="@+id/now"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@android:color/white"
+                        android:textSize="25sp" />
 
-                    <TextView android:id="@+id/now"
-                              android:layout_height="80dp"
-                              android:layout_width="80dp"
-                              android:textColor="@android:color/white"
-                              android:textSize="25sp"
-                              android:layout_gravity="center"
-                              android:gravity="center_vertical|center_horizontal"/>
-
-                    <TextView android:id="@+id/timestamp"
-                              android:layout_width="80dp"
-                              android:layout_height="wrap_content"
-                              android:textSize="10dp"
-                              android:paddingRight="7dp"
-                              android:paddingLeft="7dp"
-                              android:textStyle="bold"
-                              android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/timestamp"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="7dp"
+                        android:paddingRight="7dp"
+                        android:textSize="10dp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
             </LinearLayout>

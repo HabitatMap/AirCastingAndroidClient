@@ -19,10 +19,6 @@ public class SessionState {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID;
     }
 
-    public boolean sessionHasNowValue(@NotNull long sessionId) {
-        return isSessionCurrent(sessionId) || isSessionBeingViewed(sessionId);
-    }
-
     public boolean isCurrentSessionIdle() {
         return currentSessionManager.isSessionIdle();
     }

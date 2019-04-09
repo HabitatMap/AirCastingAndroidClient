@@ -56,7 +56,7 @@ public class ResourceHelper
   @InjectResource(R.drawable.round_bottom_grey_big) Drawable bigGreyGauge;
 
   @InjectResource(R.drawable.stream_value_grey) public Drawable streamValueGrey;
-  @InjectResource(R.drawable.stream_value_green) Drawable streamValueGreen;
+  @InjectResource(R.drawable.stream_value_green) public Drawable streamValueGreen;
   @InjectResource(R.drawable.stream_value_yellow) Drawable streamValueYellow;
   @InjectResource(R.drawable.stream_value_orange) Drawable streamValueOrange;
   @InjectResource(R.drawable.stream_value_red) Drawable streamValueRed;

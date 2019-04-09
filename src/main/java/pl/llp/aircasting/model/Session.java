@@ -352,8 +352,4 @@ public class Session implements Serializable {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
-
-    public Date getLastMeasurementSyncTime() {
-        return getEnd();
-    }
 }

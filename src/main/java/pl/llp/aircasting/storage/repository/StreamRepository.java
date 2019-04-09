@@ -110,6 +110,7 @@ public class StreamRepository {
         List<Measurement> measurementsToSave = stream.getMeasurements();
         measurements.save(measurementsToSave, sessionId, streamId, writableDatabase);
         Logger.w("saved " + measurementsToSave.size() + " for session " + sessionId);
+        Logger.w("saved " + String.valueOf(measurementsToSave) + " for sensor " + stream.getSensorName());
     }
 
     static ContentValues values(MeasurementStream stream, long sessionId) {

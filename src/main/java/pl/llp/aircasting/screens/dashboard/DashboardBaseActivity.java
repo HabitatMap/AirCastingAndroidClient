@@ -38,8 +38,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
     @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject UnfinishedSessionChecker checker;
-    @Inject
-    ApplicationState state;
+    @Inject ApplicationState state;
     @Inject ToggleAircastingManagerFactory aircastingHelperFactory;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     SyncBroadcastReceiver registeredReceiver;

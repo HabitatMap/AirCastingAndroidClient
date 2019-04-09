@@ -84,7 +84,6 @@ public class CurrentSessionManager {
     @NotNull
     Session currentSession = new Session();
 
-    private Map<String, Double> recentMeasurements = newHashMap();
     private boolean paused;
 
     @Inject
@@ -157,7 +156,6 @@ public class CurrentSessionManager {
         double value = event.getValue();
         String sensorName = event.getSensorName();
         Sensor sensor = currentSessionSensorManager.getSensorByName(sensorName);
-        recentMeasurements.put(sensorName, value);
 
         Location location = getLocation();
         if (location != null && sensor != null && sensor.isEnabled()) {
@@ -174,7 +172,7 @@ public class CurrentSessionManager {
         }
     }
 
-    private Location getLocation() {
+    public Location getLocation() {
         Location location = locationHelper.getLastLocation();
 
         if (currentSession.isFixed()) {
@@ -221,18 +219,6 @@ public class CurrentSessionManager {
     void discardSession() {
         Long sessionId = getCurrentSession().getId();
         discardSession(sessionId);
-    }
-
-    public synchronized double getNow(Sensor sensor) {
-        if (state.recording().isRecording()) {
-            return tracker.getNow(sensor);
-        } else {
-            if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-                return 0;
-            }
-
-            return recentMeasurements.get(sensor.getSensorName());
-        }
     }
 
     public void startMobileSession(String title, String tags, boolean locationLess) {

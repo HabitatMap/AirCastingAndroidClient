@@ -1,12 +1,11 @@
 buildscript {
     repositories {
         google()
-        mavenCentral()
         jcenter()
         mavenLocal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -18,6 +17,7 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
+     jcenter()
      mavenLocal()
      maven { url "http://acra.googlecode.com/svn/repository/releases/" }
      maven { url "https://maven.google.com" }
@@ -32,8 +32,8 @@ android {
         applicationId 'pl.llp.aircasting'
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 89
-        versionName "1.5.4"
+        versionCode 90
+        versionName "1.5.5"
     }
 
     buildTypes {
@@ -53,11 +53,12 @@ android {
 }
 
 dependencies {
+    def supportVersion = "26.1.0"
+
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
     implementation 'com.android.support:appcompat-v7:26.1.0'
 
     implementation group: 'com.google.code.gson', name: 'gson', version:'2.2.3'
-    implementation group: 'com.android.support', name: 'design', version:'26.1.0'
     implementation group: 'com.google.inject', name: 'guice', version:'2.0-no_aop'
     implementation group: 'net.sourceforge.javacsv', name: 'javacsv', version:'2.0'
     implementation group: 'org.roboguice', name: 'roboguice', version:'1.1.3'
@@ -66,6 +67,10 @@ dependencies {
     implementation group: 'cz.msebera.android' , name: 'httpclient' , version: '4.4.1.2'
     implementation group: 'com.intellij', name: 'annotations', version:'9.0.4'
     implementation group: 'com.google.android.gms', name: 'play-services-location', version:'8.3.0'
+    implementation "com.android.support:cardview-v7:$supportVersion"
+    implementation "com.android.support:recyclerview-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
+    implementation "android.arch.lifecycle:extensions:1.1.1"
     testCompile group: 'junit', name: 'junit', version:'4.10'
     testCompile group: 'com.pivotallabs', name: 'robolectric', version:'1.0'
     testCompile group: 'org.mockito', name: 'mockito-all', version:'1.9.5'

@@ -98,7 +98,7 @@ public class SessionDataFactory {
                 now = getStream(sensor.getSensorName(), sessionId).getLatestMeasurementValue();
             }
             if (sessionState.isSessionCurrent(sessionId)) {
-                now = currentSessionManager.getNow(sensor);
+                now = currentSessionSensorManager.getNow(sensor);
             }
         }
 
