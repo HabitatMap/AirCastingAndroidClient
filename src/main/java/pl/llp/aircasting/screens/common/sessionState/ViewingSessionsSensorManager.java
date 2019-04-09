@@ -20,6 +20,7 @@ import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class ViewingSessionsSensorManager {
 
     private volatile Map<Long, Map<SensorName, Sensor>> viewingSessionsSensors = newConcurrentMap();
     private Map<String, Measurement> mRecentFixedMeasurements = newConcurrentMap();
+    private ArrayList<String> mHiddenStreams = new ArrayList<>();
     public static final String PLACEHOLDER_SENSOR_NAME = "Sensor Placeholder";
 
     @Inject
@@ -78,7 +80,12 @@ public class ViewingSessionsSensorManager {
             }
 
             Sensor sensor = new Sensor(stream, sessionId);
-            sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
+
+            if (mHiddenStreams.contains(sensor.toString())) {
+                continue;
+            } else{
+                sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
+            }
 
             if (session.isFixed()) {
                 mRecentFixedMeasurements.put(sensor.toString(), stream.getLastMeasurements(1).get(0));
@@ -131,9 +138,11 @@ public class ViewingSessionsSensorManager {
     }
 
     public void hideSessionStream(Map dataItem) {
-        String sensorName = ((Sensor) dataItem.get(SENSOR)).getSensorName();
+        Sensor sensor = (Sensor) dataItem.get(SENSOR);
+        String sensorName = sensor.getSensorName();
         long sessionId = (long) dataItem.get(SESSION_ID);
         viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
+        mHiddenStreams.add(sensor.toString());
         notifySensorsChanged();
     }
 
@@ -145,12 +154,20 @@ public class ViewingSessionsSensorManager {
 
     public void removeSessionSensors(long sessionId) {
         viewingSessionsSensors.remove(sessionId);
+        List toDelete = new ArrayList();
+        for (String sensorString : mHiddenStreams) {
+            if (sensorString.startsWith(String.valueOf(sessionId))) {
+                toDelete.add(sensorString);
+            }
+        }
+        mHiddenStreams.removeAll(toDelete);
         notifySensorsChanged();
     }
 
     public void removeAllSessionsSensors() {
         mRecentFixedMeasurements.clear();
         viewingSessionsSensors.clear();
+        mHiddenStreams.clear();
         notifySensorsChanged();
     }
 
@@ -161,5 +178,13 @@ public class ViewingSessionsSensorManager {
 
             session.add(placeholderStream);
         }
+    }
+
+    public Serializable getHiddenStreamsList() {
+        return mHiddenStreams;
+    }
+
+    public void restoreHiddenStreams(ArrayList<String> hiddenSensors) {
+        mHiddenStreams = hiddenSensors;
     }
 }

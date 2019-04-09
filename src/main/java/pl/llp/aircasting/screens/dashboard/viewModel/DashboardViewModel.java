@@ -11,6 +11,7 @@ import android.util.Log;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.collect.ComparisonChain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -260,5 +261,18 @@ public class DashboardViewModel extends ViewModel {
                 }
             }
         }
+    }
+
+    public long[] getViewingSessionIds() {
+        return mViewingSessionsManager.getSessionIdsArray();
+    }
+
+    public void restoreViewingSensors(ArrayList<String> hiddenSensors, long[] sessionIds) {
+        mViewingSessionsSensorManager.restoreHiddenStreams(hiddenSensors);
+        mViewingSessionsManager.restoreSessions(sessionIds);
+    }
+
+    public Serializable getHiddenStreams() {
+        return mViewingSessionsSensorManager.getHiddenStreamsList();
     }
 }

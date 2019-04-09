@@ -20,6 +20,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import pl.llp.aircasting.Intents;
@@ -57,6 +58,8 @@ import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 public class DashboardActivity extends DashboardBaseActivity implements DashboardViewMvc.Listener {
     private static final long POLLING_INTERVAL = 60000;
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
+    private static final String DASHBOARD_BUNDLE = "dashboard_bundle";
+    private static final String HIDDEN_STREAMS = "hidden_streams";
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject ResourceHelper mResourceHelper;
@@ -86,10 +89,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            viewingSessionsManager.restoreSessions(savedInstanceState.getLongArray(VIEWING_SESSIONS_IDS));
-        }
-
         Intents.startDatabaseWriterService(context);
 
         mDashboardViewMvc = new DashboardViewMvcImpl(this, null, mResourceHelper);
@@ -101,6 +100,12 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel = ViewModelProviders.of(this, mDashboardViewModelFactory).get(DashboardViewModel.class);
         mDashboardViewModel.init();
         observeViewModel();
+
+        if (savedInstanceState != null) {
+            Bundle bundle = savedInstanceState.getBundle(DASHBOARD_BUNDLE);
+            mDashboardViewMvc.restoreAdapterState(bundle);
+            mDashboardViewModel.restoreViewingSensors((ArrayList<String>) bundle.getSerializable(HIDDEN_STREAMS), bundle.getLongArray(VIEWING_SESSIONS_IDS));
+        }
     }
 
     private void observeViewModel() {
@@ -199,6 +204,12 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        Bundle bundle = new Bundle();
+        bundle = mDashboardViewMvc.saveAdapterState(bundle);
+        bundle.putLongArray(VIEWING_SESSIONS_IDS, mDashboardViewModel.getViewingSessionIds());
+        bundle.putSerializable(HIDDEN_STREAMS, mDashboardViewModel.getHiddenStreams());
+        outState.putBundle(DASHBOARD_BUNDLE, bundle);
     }
 
     @Subscribe
@@ -294,6 +305,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             case R.id.clear_dashboard_button:
                 handler.removeCallbacks(pollServerTask);
                 mDashboardViewModel.clearAllViewingSensors();
+                mDashboardViewMvc.resetAdapterState();
                 break;
             case R.id.session_rearrange_toggle:
                 toggleSessionReorder(menuItem);

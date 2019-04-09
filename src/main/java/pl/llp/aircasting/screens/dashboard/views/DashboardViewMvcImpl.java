@@ -1,6 +1,7 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -187,4 +188,17 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     public void cancelSwipe(int position) {
         mViewingRecyclerAdapter.notifyItemChanged(position);
     }
-}
+
+    public Bundle saveAdapterState(Bundle bundle) {
+        Bundle stateBundle = mViewingRecyclerAdapter.saveState(bundle);
+        return stateBundle;
+    }
+
+    public void restoreAdapterState(Bundle bundle) {
+        mViewingRecyclerAdapter.restoreState(bundle);
+    }
+
+    public void resetAdapterState() {
+        mViewingRecyclerAdapter.resetState();
+    }
+ }

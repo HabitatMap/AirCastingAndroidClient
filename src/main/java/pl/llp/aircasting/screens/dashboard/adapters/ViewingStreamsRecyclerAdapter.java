@@ -1,8 +1,8 @@
 package pl.llp.aircasting.screens.dashboard.adapters;
 
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +37,9 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     public static final int STREAM_CHART_WIDTH = 800;
     public static final int STREAM_CHART_HEIGHT = 125;
 
+    private static final String STREAM_POSITION = "stream_positions";
+    private static final String SESSION_POSITIONS = "session_positions";
+
     private static boolean mStreamsReordered = false;
 
     private final LayoutInflater mInflater;
@@ -48,7 +51,6 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private Map mChartData = new HashMap();
     private ArrayList<Long> mSessionPositions = new ArrayList();
     private ArrayList<String> mStreamPositions = new ArrayList<>();
-
 
     private final Comparator<Map<String, Object>> mStreamComparator = new Comparator<Map<String, Object>>() {
         @Override
@@ -72,6 +74,18 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
             return result;
         }
     };
+
+    public Bundle saveState(Bundle bundle) {
+        bundle.putSerializable(SESSION_POSITIONS, mSessionPositions);
+        bundle.putSerializable(STREAM_POSITION, mStreamPositions);
+
+        return bundle;
+    }
+
+    public void restoreState(Bundle bundle) {
+        mStreamPositions = (ArrayList<String>) bundle.getSerializable(STREAM_POSITION);
+        mSessionPositions = (ArrayList<Long>) bundle.getSerializable(SESSION_POSITIONS);
+    }
 
     public class StreamViewHolder extends RecyclerView.ViewHolder {
         private final StreamItemViewMvc mViewMvc;
@@ -181,6 +195,12 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         });
     }
 
+    public void resetState() {
+        mChartData.clear();
+        mSessionPositions.clear();
+        mStreamPositions.clear();
+    }
+
     @Override
     public int getItemCount() {
         return mData.size();
@@ -237,7 +257,8 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
 
     public void removeItem(int position) {
         mStreamsReordered = true;
-        mData.remove(position);
+        Map dataItem = mData.get(position);
+        mData.remove(dataItem);
         mStreamPositions.clear();
         prepareStreamPositionsAndTitles();
         notifyItemRemoved(position);
