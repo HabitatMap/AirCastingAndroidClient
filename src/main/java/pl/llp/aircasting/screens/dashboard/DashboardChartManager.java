@@ -134,9 +134,7 @@ public class DashboardChartManager {
             chart = mStaticCharts.get(streamKey);
         }
 
-        prepareStaticEntries(chart, sessionId, sensor);
-
-        return chart;
+        return prepareStaticEntries(chart, sessionId, sensor);
     }
 
     public void updateFixedAverage(Sensor sensor, long sessionId) {
@@ -179,7 +177,7 @@ public class DashboardChartManager {
         eventBus.post(new NewChartAveragesEvent(CURRENT_CHART));
     }
 
-    private void prepareStaticEntries(LineChart chart, Long sessionId, Sensor sensor) {
+    private LineChart prepareStaticEntries(LineChart chart, Long sessionId, Sensor sensor) {
         List<Entry> entries;
         String sensorName = sensor.getSensorName();
         MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensorName);
@@ -196,7 +194,7 @@ public class DashboardChartManager {
         setChartDataset(sensorName, sessionId, chart, stream.getSymbol(), STATIC_CHART);
         mStaticCharts.put(streamKey, chart);
 
-        Log.w(sensorName, String.valueOf(mAverages.get(streamKey)));
+        return chart;
     }
 
     private void setChartDataset(String sensorName, Long sessionId, LineChart chart, String unitSymbol, String chartType) {
