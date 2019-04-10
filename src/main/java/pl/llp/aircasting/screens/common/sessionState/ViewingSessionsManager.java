@@ -81,6 +81,8 @@ public class ViewingSessionsManager {
             session = sessionRepository.loadFully(sessionId, progressListener);
         }
 
+        sessionsForViewing.put(sessionId, session);
+
         if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
             MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
             session.removeStream(stream);
@@ -91,7 +93,6 @@ public class ViewingSessionsManager {
             addFixedSession(session);
         }
 
-        sessionsForViewing.put(sessionId, session);
         notifyNewSession(session, false);
     }
 

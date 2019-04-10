@@ -98,14 +98,14 @@ public class MeasurementStream implements Serializable {
     }
 
     public List<Measurement> getLastMeasurements(int amount) {
-        List result;
-        int size = measurements.size();
+        // copy the backing list to avoid ConcurrentModificationException
+        List allMeasurements = new ArrayList(measurements);
+        int size = allMeasurements.size();
 
         if (size > amount) {
-            result = new ArrayList(measurements.subList(size - amount, size));
-            return result;
+            return allMeasurements.subList(size - amount, size);
         } else {
-            return new ArrayList(measurements);
+            return allMeasurements;
         }
     }
 
