@@ -27,6 +27,10 @@ public class SessionState {
         return viewingSessionsManager.isSessionBeingViewed(sessionId);
     }
 
+    public boolean isSessionLoading(@NotNull long sessionId) {
+        return viewingSessionsManager.isSessionLoading(sessionId);
+    }
+
     private boolean isSessionRecording(@NotNull long sessionId) {
         return sessionId == Constants.CURRENT_SESSION_FAKE_ID && state.recording().isRecording();
     }

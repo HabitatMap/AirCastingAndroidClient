@@ -135,6 +135,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             public void onChanged(@Nullable Map<Long, Map<SensorName, Sensor>> viewingSensors) {
                 mDashboardViewModel.refreshChartAverages();
                 mDashboardViewMvc.bindViewingSensorsData(mDashboardViewModel.getViewingDashboardData().getValue());
+                toggleProgress();
             }
         });
 
@@ -173,6 +174,19 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         mDashboardViewModel.refreshLiveCharts();
         mDashboardViewModel.refreshStaticCharts();
         mDashboardViewModel.refreshRecentFixedMeasurements();
+
+        if (viewingSessionsManager.anySessionsLoading()) {
+            ToastHelper.show(this, R.string.session_is_loading, Toast.LENGTH_SHORT);
+        }
+        toggleProgress();
+    }
+
+    private void toggleProgress() {
+        if (viewingSessionsManager.anySessionsLoading()) {
+            mDashboardViewMvc.showProgress();
+        } else {
+            mDashboardViewMvc.hideProgress();
+        }
     }
 
     @Override

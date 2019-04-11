@@ -24,6 +24,7 @@ import pl.llp.aircasting.tracking.ContinuousTracker;
 
 import java.util.*;
 
+import static com.google.inject.internal.Lists.newArrayList;
 import static com.google.inject.internal.Maps.newHashMap;
 import static pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager.TOTALLY_FAKE_COORDINATE;
 import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
@@ -43,6 +44,7 @@ public class ViewingSessionsManager {
 
     private static Map<Long, Session> sessionsForViewing = newHashMap();
     private static Map<Long, Session> fixedSessions = newHashMap();
+    private List<Long> mLoadingSessions = newArrayList();
     private static Session newFixedSession;
 
     @Inject
@@ -93,6 +95,7 @@ public class ViewingSessionsManager {
             addFixedSession(session);
         }
 
+        mLoadingSessions.remove(sessionId);
         notifyNewSession(session, false);
     }
 
@@ -190,6 +193,10 @@ public class ViewingSessionsManager {
         return sessionsForViewing.containsKey(sessionId);
     }
 
+    public boolean isSessionLoading(long sessionId) {
+        return mLoadingSessions.contains(sessionId);
+    }
+
     public boolean isSessionFixed(long sessionId) {
         if (sessionId == CURRENT_SESSION_FAKE_ID) { return false; }
         return sessionsForViewing.get(sessionId).isFixed();
@@ -221,6 +228,15 @@ public class ViewingSessionsManager {
 
     public void removeAllSessions() {
         sessionsForViewing.clear();
+        mLoadingSessions.clear();
         fixedSessions.clear();
+    }
+
+    public boolean anySessionsLoading() {
+        return !mLoadingSessions.isEmpty();
+    }
+
+    public void addLoadingSession(long sessionId) {
+        mLoadingSessions.add(sessionId);
     }
 }

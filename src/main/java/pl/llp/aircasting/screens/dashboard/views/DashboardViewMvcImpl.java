@@ -1,6 +1,8 @@
 package pl.llp.aircasting.screens.dashboard.views;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.TabLayout;
@@ -9,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,7 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
     private final CurrentStreamsRecyclerAdapter mCurrentRecyclerAdapter;
     private final ViewingStreamsRecyclerAdapter mViewingRecyclerAdapter;
     private final AppCompatActivity mContext;
+    private final ProgressBar mProgressBar;
 
     private Listener mListener;
 
@@ -49,6 +53,8 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
         mTabsLayout = findViewById(R.id.dashboard_tabs_layout);
         mTabsLayout.setVisibility(View.GONE);
         mEmptyLayout = findViewById(R.id.layout_empty);
+        mProgressBar = findViewById(R.id.progress_bar);
+        mProgressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#0bb0f2"), PorterDuff.Mode.MULTIPLY);
 
         mMicrophoneButton = findViewById(R.id.dashboard_microphone);
         mSensorsButton = findViewById(R.id.dashboard_sensors);
@@ -200,5 +206,13 @@ public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListe
 
     public void resetAdapterState() {
         mViewingRecyclerAdapter.resetState();
+    }
+
+    public void showProgress() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgress() {
+        mProgressBar.setVisibility(View.GONE);
     }
  }

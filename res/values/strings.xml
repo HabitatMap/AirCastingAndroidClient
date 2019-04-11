@@ -233,6 +233,7 @@
   <string name="retrieving_streams">Retrieving streams, please wait</string>
   <string name="enter_text">Please enter text</string>
   <string name="session_retrieved">AirCasting crashed, but your session was saved</string>
+  <string name="session_is_loading">Please wait while session data is downloading...</string>
 
   <string name="center_map">Center Map</string>
   <string name="record_session">Start Recording</string>

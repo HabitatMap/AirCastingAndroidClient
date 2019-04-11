@@ -75,7 +75,7 @@ public class SessionAdapter extends ArrayAdapter {
     private Drawable getBackground(int position, Long sessionId) {
         int id;
 
-        if (sessionState.isSessionBeingViewed(sessionId)) {
+        if (sessionState.isSessionBeingViewed(sessionId) || sessionState.isSessionLoading(sessionId)) {
             id = R.drawable.session_list_marked_even;
         } else {
             id = regular_backgrounds[position % regular_backgrounds.length];

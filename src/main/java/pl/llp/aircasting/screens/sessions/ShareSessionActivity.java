@@ -24,6 +24,7 @@ import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
+import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.common.ToastHelper;
@@ -160,7 +161,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         new OpenSessionTask(this) {
             @Override
             protected Session doInBackground(Long... ids) {
-                session = sessionRepository.loadFully(ids[0], this);
+                session = sessionRepository.loadFully(ids[0], NoOp.progressListener());
                 return session;
             }
 

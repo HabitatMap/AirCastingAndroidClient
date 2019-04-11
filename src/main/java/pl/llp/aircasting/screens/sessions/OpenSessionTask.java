@@ -19,6 +19,7 @@
 */
 package pl.llp.aircasting.screens.sessions;
 
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.base.ActivityWithProgress;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
@@ -29,21 +30,21 @@ import android.app.ProgressDialog;
 public abstract class OpenSessionTask extends SimpleProgressTask<Long, Void, Session> implements ProgressListener
 {
     public OpenSessionTask(ActivityWithProgress context) {
-        super(context, ProgressDialog.STYLE_HORIZONTAL);
+        super(context, ProgressDialog.STYLE_SPINNER);
     }
 
     @Override
     protected void onPostExecute(Session session) {
-        dialog.dismiss();
+//        dialog.dismiss();
     }
 
     @Override
     public void onSizeCalculated(int workSize) {
-        dialog.setMax(workSize);
+//        dialog.setMax(workSize);
     }
 
     @Override
     public void onProgress(int progress) {
-        dialog.setProgress(progress);
+//        dialog.setProgress(progress);
     }
 }

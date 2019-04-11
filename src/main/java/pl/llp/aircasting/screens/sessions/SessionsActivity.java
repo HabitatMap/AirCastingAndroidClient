@@ -30,12 +30,12 @@ import android.support.v7.view.ActionMode;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.base.RoboListActivityWithProgress;
 import pl.llp.aircasting.event.network.SyncStateChangedEvent;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
-import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
@@ -47,6 +47,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
@@ -267,8 +269,14 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     private void viewSession() {
         new OpenSessionTask(this) {
             @Override
+            protected void onPreExecute() {
+                viewingSessionsManager.addLoadingSession(sessionId);
+                sessionAdapter.notifyDataSetChanged();
+            }
+
+            @Override
             protected Session doInBackground(Long... longs) {
-                viewingSessionsManager.view(longs[0], this);
+                viewingSessionsManager.view(longs[0], NoOp.progressListener());
                 return null;
             }
 
