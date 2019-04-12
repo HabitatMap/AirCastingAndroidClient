@@ -22,6 +22,7 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 
+import static pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager.PLACEHOLDER_SENSOR_NAME;
 import static pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter.STREAM_CHART_HEIGHT;
 import static pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapter.STREAM_CHART_WIDTH;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.REORDER_IN_PROGRESS;
@@ -45,6 +46,8 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
     private final RelativeLayout mChartLayout;
     private final View mMoveSessionUp;
     private final View mMoveSessionDown;
+    private final View mPlaceholderChart;
+    private final View mSensorDataContainer;
 
     private List<Listener> mListeners = new ArrayList<>();
 
@@ -73,7 +76,9 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         mMoveSessionUp = mSessionTitleContainer.findViewById(R.id.session_up);
         mMoveSessionDown = mSessionTitleContainer.findViewById(R.id.session_down);
 
+        mSensorDataContainer = findViewById(R.id.sensor_data_container);
         mChartLayout = findViewById(R.id.chart_layout);
+        mPlaceholderChart = findViewById(R.id.placeholder_chart);
 
         getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,6 +131,23 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
 
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
+
+        if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
+            setupPlaceholder();
+            return;
+        } else {
+            mPlaceholderChart.setVisibility(View.GONE);
+            mSensorDataContainer.setVisibility(View.VISIBLE);
+            getRootView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (Listener listener : mListeners) {
+                        listener.onStreamClicked(v);
+                    }
+                }
+            });
+        }
+
         showAndSetTimestamp();
         setTitleView();
         mSensorNameTv.setText(mSensorNameText);
@@ -142,6 +164,15 @@ public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
         mChart.setLayoutParams(params);
         mChartLayout.removeAllViews();
         mChartLayout.addView(mChart);
+    }
+
+    private void setupPlaceholder() {
+        mSensorNameTv.setText(mSensorNameText);
+        setTitleView();
+        mPlaceholderChart.setVisibility(View.VISIBLE);
+        mSensorDataContainer.setVisibility(View.GONE);
+
+        getRootView().setOnClickListener(null);
     }
 
     private void setTitleView() {

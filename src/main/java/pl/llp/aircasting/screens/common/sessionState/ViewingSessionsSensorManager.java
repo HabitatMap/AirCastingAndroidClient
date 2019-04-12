@@ -83,12 +83,14 @@ public class ViewingSessionsSensorManager {
 
             if (mHiddenStreams.contains(sensor.toString())) {
                 continue;
-            } else{
+            } else {
                 sessionSensors.put(SensorName.from(stream.getSensorName()), sensor);
             }
 
             if (session.isFixed()) {
-                mRecentFixedMeasurements.put(sensor.toString(), stream.getLastMeasurements(1).get(0));
+                if (!stream.getSensorName().equals(PLACEHOLDER_SENSOR_NAME)) {
+                    mRecentFixedMeasurements.put(sensor.toString(), stream.getLastMeasurements(1).get(0));
+                }
             }
         }
 

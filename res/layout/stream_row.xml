@@ -74,6 +74,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/sensor_data_container"
         android:layout_width="match_parent"
         android:layout_height="170dp"
         android:orientation="horizontal"
