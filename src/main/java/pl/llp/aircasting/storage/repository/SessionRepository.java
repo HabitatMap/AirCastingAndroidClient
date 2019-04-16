@@ -478,6 +478,27 @@ public class SessionRepository {
         logSessionDeletion(whereClause);
     }
 
+    public void updateSessionData(final Session sessionData, final long sessionId) {
+        final ContentValues values = new ContentValues();
+        prepareHeader(sessionData, values);
+
+        final String whereClause = SESSION_ID + " = " + sessionId;
+
+        dbAccessor.executeWritableTask(new WritableDatabaseTask() {
+            @Override
+            public Object execute(SQLiteDatabase writableDatabase) {
+                try {
+                    notes.save(sessionData.getNotes(), sessionId, writableDatabase);
+
+                    writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
+                } catch (SQLException e) {
+                    Logger.e("Error updating session [ " + sessionId + " ]", e);
+                }
+                return null;
+            }
+        });
+    }
+
     private void logSessionDeletion(final String whereClause) {
         dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Object>() {
             @Override

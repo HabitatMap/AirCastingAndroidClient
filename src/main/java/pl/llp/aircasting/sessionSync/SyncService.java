@@ -193,6 +193,12 @@ public class SyncService extends RoboIntentService {
                 && settingsHelper.hasCredentials();
     }
 
+    public boolean canDownloadSession() {
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return networkInfo != null && networkInfo.isConnected() && settingsHelper.hasCredentials();
+    }
+
     private void uploadSessions(UUID[] onServer) {
         for (UUID uuid : onServer) {
             Session session = sessionRepository.loadFully(uuid.toString());
@@ -262,8 +268,23 @@ public class SyncService extends RoboIntentService {
         Intents.notifySyncUpdate(context);
     }
 
+    public void syncSingleSessionData(long sessionId, String sessionUUID) {
+        HttpResult<Session> result = sessionDriver.show(sessionId, sessionUUID, false);
+
+        if (result.getStatus() == Status.SUCCESS) {
+            Session session = result.getContent();
+
+            if (session == null) {
+                Logger.w("Session data couldn't be saved");
+            } else {
+                fixTimesFromUTC(session);
+                sessionRepository.updateSessionData(session, sessionId);
+            }
+        }
+    }
+
     public void downloadSessionMeasurements(long sessionId, String sessionUUID) {
-        HttpResult<Session> result = sessionDriver.show(sessionId, sessionUUID);
+        HttpResult<Session> result = sessionDriver.show(sessionId, sessionUUID, true);
 
         if (result.getStatus() == Status.SUCCESS) {
             Session session = result.getContent();

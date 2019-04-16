@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.screens.sessions;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
@@ -39,6 +40,7 @@ import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
+import pl.llp.aircasting.sessionSync.SyncService;
 import pl.llp.aircasting.storage.db.UncalibratedMeasurementCalibrator;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 
@@ -64,12 +66,12 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject SessionRepository sessionRepository;
     @Inject ViewingSessionsManager viewingSessionsManager;
-    @Inject SettingsHelper settingsHelper;
     @Inject Application context;
     @Inject EventBus eventBus;
     @Inject UncalibratedMeasurementCalibrator calibrator;
     @Inject SyncBroadcastReceiver syncBroadcastReceiver;
     @Inject SyncState syncState;
+    @Inject SyncService mSyncService;
 
     @InjectView(R.id.sessions_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -198,7 +200,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
                 deleteSession(sessionId);
                 break;
             case R.id.edit:
-                editSession(sessionId);
+                editSession(sessionId, this);
                 break;
             case R.id.save_button:
                 updateSession(data);
@@ -240,15 +242,39 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     }
 
     private void continueAircastingSession() {
-
         viewSession();
         viewingSessionsManager.continueStreaming(sessionId, sessionUUID);
         Intents.continueSessionStreaming(this, sessionUUID);
     }
 
-    private void editSession(long id) {
-        Session session = sessionRepository.loadShallow(id);
-        Intents.editSession(this, session);
+    private void editSession(final long id, final Activity activity) {
+        new OpenSessionTask(this) {
+            @Override
+            protected void onPreExecute() {
+                if (!mSyncService.canDownloadSession()) {
+                    cancel(true);
+                }
+            }
+
+            @Override
+            protected Session doInBackground(Long... longs) {
+                if (!isCancelled()) {
+                    mSyncService.syncSingleSessionData(sessionId, sessionUUID);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Session session) {
+                session = sessionRepository.loadShallow(id);
+                Intents.editSession(activity, session);
+            }
+
+            @Override
+            protected void onCancelled() {
+                ToastHelper.show(activity, R.string.network_required, Toast.LENGTH_SHORT);
+            }
+        }.execute();
     }
 
     private void deleteSession(final long id) {

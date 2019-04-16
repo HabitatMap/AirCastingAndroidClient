@@ -104,11 +104,11 @@ public class SessionDriver {
                 .into(Session.class);
     }
 
-    public HttpResult<Session> show(long id, String uuid) {
+    public HttpResult<Session> show(long id, String uuid, Boolean streamMeasurements) {
         return http()
                 .get()
                 .from(USER_SESSION_PATH + EMPTY_ID + ".json")
-                .with(STREAM_MEASUREMENTS, "true")
+                .with(STREAM_MEASUREMENTS, String.valueOf(streamMeasurements))
                 .with("uuid", uuid)
                 .into(Session.class);
     }
