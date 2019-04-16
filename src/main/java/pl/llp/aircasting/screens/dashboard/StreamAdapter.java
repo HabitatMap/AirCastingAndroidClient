@@ -573,7 +573,7 @@ public class StreamAdapter extends SimpleAdapter {
         if (!sessionState.isSessionCurrent(sessionId)) {
             return true;
         } else if (sessionState.isCurrentSessionIdle()) {
-            streamDeleteMessage = R.string.cannot_delete_stream;
+//            streamDeleteMessage = R.string.cannot_delete_stream;
             return false;
         } else {
             if (sessionData.getSession(sessionId).isFixed()) {
