@@ -60,12 +60,6 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
         registerReceiver(mWifiScanReceiver, intentFilter);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        unregisterReceiver(mWifiScanReceiver);
-    }
-
     private void startScan() {
         mGetWifiCredentialsView.showProgress();
         mWifiManager.startScan();
