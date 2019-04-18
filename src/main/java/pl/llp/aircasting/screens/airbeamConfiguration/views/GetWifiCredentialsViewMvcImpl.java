@@ -67,10 +67,8 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
 
     public void bindData(List<String> data) {
         if (!data.isEmpty()) {
-            // hide empty layout
             mWifiList.setVisibility(View.VISIBLE);
         } else {
-            // show empty layout instead
             mWifiList.setVisibility(View.GONE);
         }
 

@@ -31,6 +31,7 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
     private String mWifiSsid;
     private GetWifiCredentialsViewMvcImpl mGetWifiCredentialsView;
     private WifiManager mWifiManager;
+    private BroadcastReceiver mWifiScanReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,20 +49,21 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
     }
 
     private void registerWifiScanReceiver() {
-        BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+        mWifiScanReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context c, Intent intent) {
-                boolean success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
-                if (success) {
-                    scanSuccess();
-                } else {
-                    scanFailure();
-                }
+                onScanResult();
             }
         };
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        registerReceiver(wifiScanReceiver, intentFilter);
+        registerReceiver(mWifiScanReceiver, intentFilter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        unregisterReceiver(mWifiScanReceiver);
     }
 
     private void startScan() {
@@ -69,9 +71,15 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
         mWifiManager.startScan();
     }
 
-    private void scanSuccess() {
+    private void onScanResult() {
+        List<String> wifiSSIDs = prepareScanResults(mWifiManager.getScanResults());
+
+        mGetWifiCredentialsView.hideProgress();
+        mGetWifiCredentialsView.bindData(wifiSSIDs);
+    }
+
+    private List<String> prepareScanResults(List<ScanResult> scanResults) {
         List<String> wifiSSIDs = new ArrayList<>();
-        List<ScanResult> scanResults = mWifiManager.getScanResults();
 
         for (ScanResult result : scanResults) {
             String ssid = result.SSID;
@@ -80,8 +88,7 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
             }
         }
 
-        mGetWifiCredentialsView.hideProgress();
-        mGetWifiCredentialsView.bindData(wifiSSIDs);
+        return wifiSSIDs;
     }
 
     @Override
