@@ -110,14 +110,13 @@ public class MeasurementStream implements Serializable {
     }
 
     private List<Measurement> getFirstMeasurements(int amount) {
-        List result;
-        int size = measurements.size();
+        List allMeasurements = new ArrayList(measurements);
+        int size = allMeasurements.size();
 
         if (size > amount) {
-            result = new ArrayList(measurements.subList(0, amount - 1));
-            return result;
+            return allMeasurements.subList(0, amount - 1);
         } else {
-            return new ArrayList<>(measurements);
+            return allMeasurements;
         }
     }
 
