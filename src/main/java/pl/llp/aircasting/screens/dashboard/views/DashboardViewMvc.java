@@ -19,8 +19,6 @@ public interface DashboardViewMvc {
         void onItemSwipe(int position, Map dataItem, boolean noStreamsLeft, int direction, int itemType);
     }
 
-    View getRootView();
-
     void registerListener(Listener listener);
 
     void unregisterListener();

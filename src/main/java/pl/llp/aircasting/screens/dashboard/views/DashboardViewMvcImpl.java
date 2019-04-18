@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.common.BaseViewMvc;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.dashboard.adapters.CurrentStreamsRecyclerAdapter;
@@ -26,7 +27,7 @@ import pl.llp.aircasting.screens.dashboard.adapters.ViewingStreamsRecyclerAdapte
 import static pl.llp.aircasting.screens.dashboard.adapters.DashboardPagerAdapter.BLUETOOTH_TAB;
 import static pl.llp.aircasting.screens.dashboard.adapters.DashboardPagerAdapter.OTHER_TAB;
 
-public class DashboardViewMvcImpl implements DashboardViewMvc, View.OnClickListener, DashboardViewMvc.Listener {
+public class DashboardViewMvcImpl implements BaseViewMvc, DashboardViewMvc, View.OnClickListener, DashboardViewMvc.Listener {
     private final View mRootView;
     private final LayoutInflater mInflater;
     private final View mEmptyLayout;
