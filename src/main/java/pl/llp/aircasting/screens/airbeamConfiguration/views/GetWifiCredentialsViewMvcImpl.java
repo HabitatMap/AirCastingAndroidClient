@@ -47,10 +47,10 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
         mScanProgress.getIndeterminateDrawable().setColorFilter(Color.parseColor("#0bb0f2"), PorterDuff.Mode.MULTIPLY);
 
         mWifiListRecyclerAdapter = new WifiListRecyclerAdapter(mInflater);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         mWifiList.setLayoutManager(layoutManager);
-        mWifiList.setAdapter(mWifiListRecyclerAdapter);
         mWifiListRecyclerAdapter.registerListener(this);
+        mWifiList.setAdapter(mWifiListRecyclerAdapter);
 
         mSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +98,12 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
     public void onWifiItemClick(TextView view) {
         swapToPasswordLayout();
         mOnItemClickListener.onWifiItemClick(view);
+    }
+
+    public void returnToWifiList() {
+        mWifiList.setVisibility(View.VISIBLE);
+        mWifiPassword.setVisibility(View.GONE);
+        mSubmit.setVisibility(View.GONE);
     }
 
     private void swapToPasswordLayout() {

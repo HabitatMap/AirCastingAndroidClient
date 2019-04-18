@@ -7,9 +7,9 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -84,13 +84,24 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
         mGetWifiCredentialsView.bindData(wifiSSIDs);
     }
 
-    private void scanFailure() {
-        mGetWifiCredentialsView.hideProgress();
-//        List<ScanResult> scanResults = mWifiManager.getScanResults();
-//
-//        if (!scanResults.isEmpty()) {
-//            mGetWifiCredentialsView.bindData(scanResults);
-//        }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.toolbar_refresh_wifi_list, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        super.onOptionsItemSelected(menuItem);
+
+        mGetWifiCredentialsView.returnToWifiList();
+        startScan();
+
+        return true;
     }
 
     @Override
