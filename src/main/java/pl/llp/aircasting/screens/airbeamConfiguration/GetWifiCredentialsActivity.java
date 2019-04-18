@@ -1,54 +1,115 @@
 package pl.llp.aircasting.screens.airbeamConfiguration;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.airbeamConfiguration.views.GetWifiCredentialsViewMvcImpl;
+import pl.llp.aircasting.screens.airbeamConfiguration.views.WifiListItemViewMvcImpl;
 import pl.llp.aircasting.screens.sessionRecord.StartFixedSessionActivity;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
-import roboguice.inject.InjectView;
 
 import static pl.llp.aircasting.Intents.CONTINUE_STREAMING;
 
 /**
  * Created by radek on 12/12/17.
  */
-public class GetWifiCredentialsActivity extends DialogActivity implements View.OnClickListener {
-    @InjectView(R.id.wifi_ssid) EditText wifi_ssid;
-    @InjectView(R.id.wifi_password) EditText wifi_password;
-    @InjectView(R.id.wifi_submit) Button wifi_submit;
-
-    private boolean continueStreaming;
+public class GetWifiCredentialsActivity extends DialogActivity implements GetWifiCredentialsViewMvcImpl.Listener, WifiListItemViewMvcImpl.Listener {
+    private boolean mContinueStreaming;
+    private String mWifiSsid;
+    private GetWifiCredentialsViewMvcImpl mGetWifiCredentialsView;
+    private WifiManager mWifiManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
-        setContentView(R.layout.get_wifi_network);
-        initDialogToolbar("WiFi Name & Password");
+        mContinueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
+        mGetWifiCredentialsView= new GetWifiCredentialsViewMvcImpl(this, null);
+        mGetWifiCredentialsView.registerListeners(this, this);
+        mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        wifi_submit.setOnClickListener(this);
+        registerWifiScanReceiver();
+        startScan();
+
+        setContentView(mGetWifiCredentialsView.getRootView());
+        initDialogToolbar("WiFi Name & Password");
+    }
+
+    private void registerWifiScanReceiver() {
+        BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context c, Intent intent) {
+                boolean success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
+                if (success) {
+                    scanSuccess();
+                } else {
+                    scanFailure();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        registerReceiver(wifiScanReceiver, intentFilter);
+    }
+
+    private void startScan() {
+        mGetWifiCredentialsView.showProgress();
+        mWifiManager.startScan();
+    }
+
+    private void scanSuccess() {
+        List<String> wifiSSIDs = new ArrayList<>();
+        List<ScanResult> scanResults = mWifiManager.getScanResults();
+
+        for (ScanResult result : scanResults) {
+            String ssid = result.SSID;
+            if (!wifiSSIDs.contains(ssid) && !ssid.isEmpty()) {
+                wifiSSIDs.add(ssid);
+            }
+        }
+
+        mGetWifiCredentialsView.hideProgress();
+        mGetWifiCredentialsView.bindData(wifiSSIDs);
+    }
+
+    private void scanFailure() {
+        mGetWifiCredentialsView.hideProgress();
+//        List<ScanResult> scanResults = mWifiManager.getScanResults();
+//
+//        if (!scanResults.isEmpty()) {
+//            mGetWifiCredentialsView.bindData(scanResults);
+//        }
     }
 
     @Override
-    public void onClick(View view) {
-        switch(view.getId()) {
-            case R.id.wifi_submit:
-                String ssid = wifi_ssid.getText().toString();
-                String password = wifi_password.getText().toString();
+    public void onSubmitClick(TextView wifiPasswordTv) {
+        String password = wifiPasswordTv.getText().toString();
 
-                airbeam2Configurator.setWifi(ssid, password);
+        airbeam2Configurator.setWifi(mWifiSsid, password);
 
-                if (continueStreaming) {
-                    airbeam2Configurator.sendFinalAb2Config();
-                } else {
-                    startActivity(new Intent(this, StartFixedSessionActivity.class));
-                }
-
-                break;
+        if (mContinueStreaming) {
+            airbeam2Configurator.sendFinalAb2Config();
+        } else {
+            startActivity(new Intent(this, StartFixedSessionActivity.class));
         }
+
         finish();
+    }
+
+    @Override
+    public void onWifiItemClick(TextView view) {
+        mWifiSsid = String.valueOf(view.getText());
     }
 }
