@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.common.BaseViewMvc;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
@@ -30,7 +31,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_CHART;
 import static pl.llp.aircasting.util.Constants.MOBILE_LABEL;
 
-public class CurrentStreamItemViewMvcImpl implements StreamItemViewMvc {
+public class CurrentStreamItemViewMvcImpl implements BaseViewMvc, StreamItemViewMvc {
     private final View mRootView;
 
     private final RelativeLayout mSessionTitleContainer;

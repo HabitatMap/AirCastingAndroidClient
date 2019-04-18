@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.common.BaseViewMvc;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
@@ -35,7 +36,7 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_TIMESTAMP;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
 
-public class ViewingStreamItemViewMvcImpl implements StreamItemViewMvc {
+public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemViewMvc {
     private final View mRootView;
     private final RelativeLayout mSessionTitleContainer;
     private final TextView mSensorNameTv;
