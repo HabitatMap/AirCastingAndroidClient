@@ -96,9 +96,13 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
 
     @Override
     public void onWifiItemClick(TextView view) {
+        swapToPasswordLayout();
+        mOnItemClickListener.onWifiItemClick(view);
+    }
+
+    private void swapToPasswordLayout() {
         mWifiList.setVisibility(View.GONE);
         mWifiPassword.setVisibility(View.VISIBLE);
         mSubmit.setVisibility(View.VISIBLE);
-        mOnItemClickListener.onWifiItemClick(view);
     }
 }
