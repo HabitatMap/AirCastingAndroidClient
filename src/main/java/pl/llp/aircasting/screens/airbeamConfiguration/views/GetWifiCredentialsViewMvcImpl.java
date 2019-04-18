@@ -1,6 +1,7 @@
 package pl.llp.aircasting.screens.airbeamConfiguration.views;
 
-import android.net.wifi.ScanResult;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
     private final Button mSubmit;
     private final WifiListRecyclerAdapter mWifiListRecyclerAdapter;
     private final AppCompatActivity mContext;
+    private final ProgressBar mScanProgress;
 
     private Listener mOnClickListener;
     private WifiListItemViewMvcImpl.Listener mOnItemClickListener;
@@ -40,6 +43,8 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
         mWifiList = findViewById(R.id.wifi_list);
         mWifiPassword = findViewById(R.id.wifi_password);
         mSubmit = findViewById(R.id.wifi_submit);
+        mScanProgress = findViewById(R.id.scan_progress_bar);
+        mScanProgress.getIndeterminateDrawable().setColorFilter(Color.parseColor("#0bb0f2"), PorterDuff.Mode.MULTIPLY);
 
         mWifiListRecyclerAdapter = new WifiListRecyclerAdapter(mInflater);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -70,6 +75,14 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
         }
 
         mWifiListRecyclerAdapter.bindData(data);
+    }
+
+    public void showProgress() {
+        mScanProgress.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgress() {
+        mScanProgress.setVisibility(View.GONE);
     }
 
     @Override
