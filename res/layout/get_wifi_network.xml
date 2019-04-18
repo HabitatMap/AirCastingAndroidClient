@@ -5,29 +5,26 @@
 
     <include layout="@layout/dialog_toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/wifi_ssid"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/wifi_list"
+        android:divider="@color/lighter_gray"
+        android:dividerHeight="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/wifi_ssid"/>
-
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/wifi_password"/>
-
-    <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:singleLine="false"
-              android:gravity="top"
-              android:inputType="textPassword"
-              android:id="@+id/wifi_password"/>
+        android:theme="@style/AirCastingEditText"
+        android:layout_height="52dp"
+        android:singleLine="false"
+        android:gravity="top"
+        android:visibility="gone"
+        android:hint="Wifi Password"
+        android:inputType="textPassword"
+        android:id="@+id/wifi_password"/>
 
     <Button style="@style/DialogButton"
-            android:text="@string/submit"
-            android:id="@+id/wifi_submit"/>
+        android:text="@string/submit"
+        android:visibility="gone"
+        android:id="@+id/wifi_submit"/>
 
 </LinearLayout>
