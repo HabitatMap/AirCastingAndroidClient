@@ -20,39 +20,35 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/DialogMain"
-        >
+    style="@style/DialogMain">
+
     <include layout="@layout/toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/title_label"
-            />
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/session_title"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:singleLine="false"
+        android:gravity="top"
+        android:hint="@string/title_label"
+        android:layout_height="@dimen/editTextHeight"
+        android:id="@+id/session_title"
+        />
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/tags_label"
-            />
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:lines="2"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/session_tags"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:lines="2"
+        android:singleLine="false"
+        android:gravity="top"
+        android:hint="@string/tags_label"
+        android:layout_height="@dimen/editTextHeight"
+        android:id="@+id/session_tags"
+        />
 
     <Button style="@style/DialogButton"
-            android:text="@string/save_session"
-            android:id="@+id/save_button"
-            />
+        android:text="@string/save_session"
+        android:id="@+id/save_button"
+        />
     <Button style="@style/DialogButton"
-            android:text="@string/discard_session"
-            android:id="@+id/discard_button"
-            />
+        android:text="@string/discard_session"
+        android:id="@+id/discard_button"
+        />
 </LinearLayout>

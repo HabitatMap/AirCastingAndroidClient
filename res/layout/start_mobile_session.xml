@@ -20,37 +20,33 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/DialogMain">
+    style="@style/DialogMain">
 
     <include layout="@layout/dialog_toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/title_label"/>
+    <EditText style="@style/AirCastingEditText"
+        android:theme="@style/AirCastingEditText"
+        android:singleLine="false"
+        android:gravity="top"
+        android:hint="@string/title_label"
+        android:layout_height="@dimen/editTextHeight"
+        android:id="@+id/session_title"/>
 
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/session_title"/>
-
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/tags_label"/>
-
-    <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:lines="2"
-              android:singleLine="false"
-              android:gravity="top"
-              android:id="@+id/session_tags"/>
+        android:theme="@style/AirCastingEditText"
+        android:lines="2"
+        android:singleLine="false"
+        android:gravity="top"
+        android:hint="@string/tags_label"
+        android:layout_height="@dimen/editTextHeight"
+        android:id="@+id/session_tags"/>
 
     <Button style="@style/DialogButton"
-            android:text="@string/start_session"
-            android:id="@+id/start_session"/>
+        android:text="@string/start_session"
+        android:id="@+id/start_session"/>
 
     <Button style="@style/DialogButton"
-            android:text="@string/start_session_and_share"
-            android:id="@+id/start_session_and_share"/>
+        android:text="@string/start_session_and_share"
+        android:id="@+id/start_session_and_share"/>
 
 </LinearLayout>

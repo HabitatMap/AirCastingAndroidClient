@@ -20,34 +20,29 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/DialogMain"
-        >
+    style="@style/DialogMain">
 
     <include layout="@layout/dialog_toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/username_or_email"
-            />
     <EditText android:theme="@style/AirCastingEditText"
-              style="@style/AirCastingEditText"
-              android:id="@+id/login"
-              android:inputType="textEmailAddress"
-            />
+        style="@style/AirCastingEditText"
+        android:id="@+id/login"
+        android:hint="@string/username_or_email"
+        android:layout_height="@dimen/editTextHeight"
+        android:inputType="textEmailAddress"
+        />
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/password"
-            />
     <EditText android:theme="@style/AirCastingEditText"
-              style="@style/AirCastingEditText"
-              android:id="@+id/password"
-              android:inputType="textPassword"
-            />
+        style="@style/AirCastingEditText"
+        android:id="@+id/password"
+        android:hint="@string/password"
+        android:layout_height="@dimen/editTextHeight"
+        android:inputType="textPassword"
+        />
 
     <Button style="@style/DialogButton"
-            android:text="@string/submit"
-            android:id="@+id/ok"
-            />
+        android:text="@string/submit"
+        android:id="@+id/ok"
+        />
 
 </LinearLayout>

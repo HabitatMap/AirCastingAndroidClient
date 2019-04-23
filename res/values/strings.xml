@@ -42,7 +42,7 @@
   <string name="session">Session</string>
   <string name="title">Title</string>
   <string name="avg">Avg</string>
-  <string name="password">Password:</string>
+  <string name="password">Password</string>
   <string name="peak">Peak</string>
   <string name="calibration">Microphone maximum</string>
   <string name="view">View</string>
@@ -53,11 +53,11 @@
   <string name="continue_streaming">Continue Streaming</string>
   <string name="cancel">Cancel</string>
   <string name="upload">Upload</string>
-  <string name="username">Profile Name:</string>
+  <string name="username">Profile Name</string>
   <string name="low">Low</string>
   <string name="high">High</string>
   <string name="ok">OK</string>
-  <string name="email">Email:</string>
+  <string name="email">Email</string>
   <string name="graph">Graph</string>
   <string name="map">Map</string>
   <string name="empty"></string>
@@ -110,8 +110,8 @@
   <string name="profile_template" formatted="false">Signed in as %s
   </string>
 
-  <string name="title_label">Title:</string>
-  <string name="tags_label">Tags:</string>
+  <string name="title_label">Title</string>
+  <string name="tags_label">Tags</string>
   <string name="description_label">Description:</string>
 
   <string name="db_avg">Avg dB</string>
@@ -141,7 +141,7 @@
   <string name="create_profile">Create Profile</string>
   <string name="sign_in">Log In</string>
   <string name="reset_password">Reset Password</string>
-  <string name="username_or_email">Profile Name or Email:</string>
+  <string name="username_or_email">Profile Name or Email</string>
   <string name="gps_off_warning">Please enable your GPS receiver.</string>
   <string name="send_emails">Send me emails from AirCasting</string>
   <string name="no_gps_fix_warning">Location fix could not be confirmed. Please make sure the location displayed is
@@ -217,8 +217,8 @@
   <string name="wifi">WiFi</string>
   <string name="cellular">Cellular</string>
 
-  <string name="backend_address">Backend Address:</string>
-  <string name="backend_port">Backend Port:</string>
+  <string name="backend_address">Backend Address</string>
+  <string name="backend_port">Backend Port</string>
   <string name="backend_settings">Backend settings</string>
   <string name="backend_settings_summary">Set backend address and port</string>
   <string name="show_graph_metadata">Show graph metadata</string>

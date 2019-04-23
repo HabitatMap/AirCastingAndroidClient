@@ -21,27 +21,28 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
-        >
+    >
 
     <include layout="@layout/dialog_toolbar"/>
 
     <TextView style="@style/DialogText"
-              android:id="@+id/date"
-            />
+        android:id="@+id/date"
+        />
 
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:id="@+id/note_text"
-              android:lines="4"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:id="@+id/note_text"
+        android:hint="Note text"
+        android:lines="4"
+        />
 
     <Button style="@style/DialogButton"
-            android:text="@string/attach_photo"
-            android:id="@+id/attach_photo"
-            />
+        android:text="@string/attach_photo"
+        android:id="@+id/attach_photo"
+        />
     <Button style="@style/DialogButton"
-            android:text="@string/save"
-            android:id="@+id/save_button"
-            />
+        android:text="@string/save"
+        android:id="@+id/save_button"
+        />
 
 </LinearLayout>

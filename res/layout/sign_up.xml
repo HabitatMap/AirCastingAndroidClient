@@ -20,49 +20,42 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/DialogMain"
-        >
+    style="@style/DialogMain">
 
     <include layout="@layout/dialog_toolbar"/>
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/email"
-            />
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:id="@+id/email"
-              android:inputType="textEmailAddress"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:id="@+id/email"
+        android:hint="@string/email"
+        android:layout_height="@dimen/editTextHeight"
+        android:inputType="textEmailAddress"
+        />
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/username"
-            />
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:id="@+id/username"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:id="@+id/username"
+        android:hint="@string/username"
+        android:layout_height="@dimen/editTextHeight"
+        />
 
-    <TextView style="@style/DialogText"
-              android:textStyle="bold"
-              android:text="@string/password"
-            />
     <EditText style="@style/AirCastingEditText"
-              android:theme="@style/AirCastingEditText"
-              android:id="@+id/password"
-              android:inputType="textPassword"
-            />
+        android:theme="@style/AirCastingEditText"
+        android:id="@+id/password"
+        android:hint="@string/password"
+        android:layout_height="@dimen/editTextHeight"
+        android:inputType="textPassword"
+        />
 
     <CheckBox style="@style/DialogText"
-              android:text="@string/send_emails"
-              android:checked="true"
-              android:buttonTint="@color/toolbar_blue"
-              android:id="@+id/send_emails"
-            />
+        android:text="@string/send_emails"
+        android:checked="true"
+        android:buttonTint="@color/toolbar_blue"
+        android:id="@+id/send_emails"
+        />
 
     <Button style="@style/DialogButton"
-            android:text="@string/submit"
-            android:id="@+id/ok"
-            />
+        android:text="@string/submit"
+        android:id="@+id/ok"
+        />
 </LinearLayout>

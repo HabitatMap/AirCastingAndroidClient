@@ -19,7 +19,7 @@
 
     <TextView style="@style/AirCastingEditText"
         android:theme="@style/AirCastingEditText"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/editTextHeight"
         android:singleLine="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -29,7 +29,7 @@
 
     <EditText style="@style/AirCastingEditText"
         android:theme="@style/AirCastingEditText"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/editTextHeight"
         android:singleLine="false"
         android:gravity="top"
         android:visibility="gone"
