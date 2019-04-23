@@ -35,6 +35,8 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_RECENT_MEASUREMENT;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.STREAM_TIMESTAMP;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
+import static pl.llp.aircasting.util.Constants.FIXED_LABEL;
+import static pl.llp.aircasting.util.Constants.MOBILE_LABEL;
 
 public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemViewMvc {
     private final View mRootView;
@@ -43,6 +45,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
     private final TextView mNowTv;
     private final TextView mTimestampTv;
     private final TextView mSessionTitleTv;
+    private final TextView mLastMeasurementLabel;
     private final LinearLayout mSessionButtonsLayout;
     private final RelativeLayout mChartLayout;
     private final View mMoveSessionUp;
@@ -73,6 +76,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
         mTimestampTv = findViewById(R.id.timestamp);
         mSessionTitleTv = mSessionTitleContainer.findViewById(R.id.session_title);
         mSessionButtonsLayout = mSessionTitleContainer.findViewById(R.id.session_reorder_buttons);
+        mLastMeasurementLabel = findViewById(R.id.last_measurement_label);
 
         mMoveSessionUp = mSessionTitleContainer.findViewById(R.id.session_up);
         mMoveSessionDown = mSessionTitleContainer.findViewById(R.id.session_down);
@@ -133,6 +137,9 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
 
+        setLastMeasurementLabel();
+        mLastMeasurementLabel.setText(FIXED_LABEL);
+
         if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
             setupPlaceholder();
             return;
@@ -165,6 +172,17 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
         mChart.setLayoutParams(params);
         mChartLayout.removeAllViews();
         mChartLayout.addView(mChart);
+    }
+
+    private void setLastMeasurementLabel() {
+        String label;
+
+        if (mSession.isFixed()) {
+            label = FIXED_LABEL;
+        } else {
+            label = MOBILE_LABEL;
+        }
+        mLastMeasurementLabel.setText(label);
     }
 
     private void setupPlaceholder() {

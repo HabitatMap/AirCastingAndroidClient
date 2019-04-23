@@ -146,16 +146,11 @@ public class CurrentStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
 
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
-
         mLastMeasurementLabel.setText(MOBILE_LABEL);
         mTimestamp.setVisibility(View.GONE);
-
         setTitleView();
-
         mSensorName.setText(mSensorNameText);
-
         setBackground();
-
         mNowTextView.setText(mNowValue);
         if (mChart.getParent() != null) {
             ((ViewGroup) mChart.getParent()).removeView(mChart);
