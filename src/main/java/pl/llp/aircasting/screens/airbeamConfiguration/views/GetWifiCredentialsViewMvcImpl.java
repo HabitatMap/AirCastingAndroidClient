@@ -23,6 +23,7 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
     private final View mRootView;
     private final LayoutInflater mInflater;
     private final RecyclerView mWifiList;
+    private final TextView mWifiSSID;
     private final EditText mWifiPassword;
     private final Button mSubmit;
     private final WifiListRecyclerAdapter mWifiListRecyclerAdapter;
@@ -41,6 +42,7 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
         mInflater = context.getLayoutInflater();
         mRootView = mInflater.inflate(R.layout.get_wifi_network, parent, false);
         mWifiList = findViewById(R.id.wifi_list);
+        mWifiSSID = findViewById(R.id.wifi_ssid);
         mWifiPassword = findViewById(R.id.wifi_password);
         mSubmit = findViewById(R.id.wifi_submit);
         mScanProgress = findViewById(R.id.scan_progress_bar);
@@ -77,10 +79,12 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
 
     public void showProgress() {
         mScanProgress.setVisibility(View.VISIBLE);
+        mWifiList.setVisibility(View.GONE);
     }
 
     public void hideProgress() {
         mScanProgress.setVisibility(View.GONE);
+        mWifiList.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -94,17 +98,20 @@ public class GetWifiCredentialsViewMvcImpl implements BaseViewMvc, WifiListItemV
 
     @Override
     public void onWifiItemClick(TextView view) {
-        swapToPasswordLayout();
+        swapToPasswordLayout(view);
         mOnItemClickListener.onWifiItemClick(view);
     }
 
     public void returnToWifiList() {
         mWifiList.setVisibility(View.VISIBLE);
+        mWifiSSID.setVisibility(View.GONE);
         mWifiPassword.setVisibility(View.GONE);
         mSubmit.setVisibility(View.GONE);
     }
 
-    private void swapToPasswordLayout() {
+    private void swapToPasswordLayout(TextView wifiItem) {
+        mWifiSSID.setText(wifiItem.getText());
+        mWifiSSID.setVisibility(View.VISIBLE);
         mWifiList.setVisibility(View.GONE);
         mWifiPassword.setVisibility(View.VISIBLE);
         mSubmit.setVisibility(View.VISIBLE);

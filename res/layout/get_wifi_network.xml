@@ -17,6 +17,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView style="@style/AirCastingEditText"
+        android:theme="@style/AirCastingEditText"
+        android:layout_height="52dp"
+        android:singleLine="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="top"
+        android:visibility="gone"
+        android:id="@+id/wifi_ssid"/>
+
     <EditText style="@style/AirCastingEditText"
         android:theme="@style/AirCastingEditText"
         android:layout_height="52dp"

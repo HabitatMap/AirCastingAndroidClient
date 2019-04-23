@@ -1,15 +1,23 @@
 package pl.llp.aircasting.screens.airbeamConfiguration;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,11 +49,63 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
         mGetWifiCredentialsView.registerListeners(this, this);
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        registerWifiScanReceiver();
-        startScan();
+        checkForLocationServices();
 
         setContentView(mGetWifiCredentialsView.getRootView());
         initDialogToolbar("WiFi Name & Password");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        registerWifiScanReceiver();
+        startScan();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        unregisterReceiver(mWifiScanReceiver);
+    }
+
+    private void checkForLocationServices() {
+        if (Build.VERSION.SDK_INT >= 28) {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Dialog dialog = new AlertDialog.Builder(this)
+                        .setMessage(R.string.location_required)
+                        .setPositiveButton(R.string.yes, null)
+                        .setNegativeButton(R.string.no, null)
+                        .create();
+
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button yes = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                        yes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                dialog.dismiss();
+                            }
+                        });
+
+                        Button no = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                        no.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                finish();
+                            }
+                        });
+                    }
+                });
+
+                dialog.show();
+            }
+        }
     }
 
     private void registerWifiScanReceiver() {
@@ -61,6 +121,7 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
     }
 
     private void startScan() {
+        checkForLocationServices();
         mGetWifiCredentialsView.showProgress();
         mWifiManager.startScan();
     }
