@@ -136,9 +136,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
 
     private void drawFullView() {
         mRootView.setTag(R.id.session_id_tag, mSessionId);
-
         setLastMeasurementLabel();
-        mLastMeasurementLabel.setText(FIXED_LABEL);
 
         if (mSensorNameText.startsWith(PLACEHOLDER_SENSOR_NAME)) {
             setupPlaceholder();

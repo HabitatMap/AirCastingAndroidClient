@@ -222,11 +222,7 @@ public class DashboardViewModel extends ViewModel {
     }
 
     private Double getStreamRecentMeasurementValue(Sensor sensor, Long sessionId) {
-        if (mViewingSessionsManager.isSessionFixed(sessionId)) {
-            return mViewingSessionsManager.getMeasurementStream(sessionId, sensor.getSensorName()).getLatestMeasurementValue();
-        } else {
-            return Double.valueOf(0);
-        }
+        return mViewingSessionsManager.getMeasurementStream(sessionId, sensor.getSensorName()).getLatestMeasurementValue();
     }
 
     private String getStreamIdentifier(Sensor sensor, long sessionId) {
