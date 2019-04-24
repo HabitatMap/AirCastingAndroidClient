@@ -1,6 +1,6 @@
 package pl.llp.aircasting.tracking;
 
-import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.storage.DatabaseTaskQueue;
@@ -100,7 +100,7 @@ public class ActualSessionTracker implements SessionTracker {
     public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement) {
         measurementTracker.add(stream, measurement);
         recentMeasurements.put(stream.getSensorName(), measurement.getValue());
-        eventBus.post(new MeasurementEvent(measurement, sensor));
+        eventBus.post(new MobileMeasurementEvent(measurement, sensor));
     }
 
     @Override

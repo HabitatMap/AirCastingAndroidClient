@@ -22,7 +22,7 @@ package pl.llp.aircasting.storage.repository;
 import com.google.common.eventbus.EventBus;
 
 import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
-import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
@@ -158,7 +158,7 @@ public class SessionRepository {
                             updateSessionEndDate(oldSession);
                             measurementsAdded = true;
                             // emit an event to update MeasurementPresenter data and map/graph gauges
-                            MeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, oldSession.getId()));
+                            MobileMeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, oldSession.getId()));
                             event.setSessionId(oldSession.getId());
                             eventBus.post(event);
                         }

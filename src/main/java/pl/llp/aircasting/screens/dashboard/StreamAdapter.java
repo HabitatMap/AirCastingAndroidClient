@@ -15,7 +15,6 @@ import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
 import pl.llp.aircasting.screens.common.sessionState.SessionState;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager;
-import pl.llp.aircasting.event.sensor.SessionSensorsLoadedEvent;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
 import pl.llp.aircasting.event.session.ToggleSessionReorderEvent;
 import pl.llp.aircasting.model.*;

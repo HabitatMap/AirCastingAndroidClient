@@ -20,6 +20,8 @@
 package pl.llp.aircasting.screens.stream;
 
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
+import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;

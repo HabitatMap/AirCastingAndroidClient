@@ -20,7 +20,7 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
 import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -166,7 +166,7 @@ public class CurrentSessionManager {
                 MeasurementStream stream = prepareStream(event);
                 tracker.addMeasurement(sensor, stream, measurement);
             } else {
-                eventBus.post(new MeasurementEvent(measurement, sensor));
+                eventBus.post(new MobileMeasurementEvent(measurement, sensor));
             }
         }
     }

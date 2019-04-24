@@ -1,6 +1,6 @@
 package pl.llp.aircasting.sensor.ioio;
 
-import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
@@ -89,7 +89,7 @@ public class IOIOService extends RoboService implements IOIOLooperProvider {
     }
 
     @Subscribe
-    public void onEvent(MeasurementEvent event) {
+    public void onEvent(MobileMeasurementEvent event) {
         Sensor currentSensor = visibleSession.getSensor();
 
         if (currentSensor != null) {
