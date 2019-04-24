@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
+import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
@@ -214,6 +215,11 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     @Subscribe
     public void onEvent(SensorEvent event) {
+        updateGauges();
+    }
+
+    @Subscribe
+    public void onEvent(FixedSensorEvent event) {
         updateGauges();
     }
 
