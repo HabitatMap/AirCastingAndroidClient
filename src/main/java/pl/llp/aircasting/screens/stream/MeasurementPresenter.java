@@ -92,13 +92,17 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     @Subscribe
-    public synchronized void onEvent(MeasurementEvent event) {
-        onMeasurement(event);
+    public synchronized void onEvent(MobileMeasurementEvent event) {
+        onMeasurement(event, false);
     }
 
-    private void onMeasurement(MeasurementEvent event) {
-        if (!visibleSession.isCurrentSessionVisible()) return;
-        if (!state.recording().isRecording()) return;
+    @Subscribe
+    public synchronized void onEvent(FixedSensorEvent event) {
+        onMeasurement(event, true);
+    }
+
+    private void onMeasurement(MeasurementEvent event, Boolean isFixed) {
+        if (!isFixed && !state.recording().isRecording()) return;
         if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
         Measurement measurement = event.getMeasurement();
