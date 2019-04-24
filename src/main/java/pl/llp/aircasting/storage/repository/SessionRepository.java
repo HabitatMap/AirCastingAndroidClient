@@ -22,7 +22,6 @@ package pl.llp.aircasting.storage.repository;
 import com.google.common.eventbus.EventBus;
 
 import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
-import pl.llp.aircasting.event.measurements.FixedSessionsMeasurementEvent;
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.util.Logger;
@@ -166,20 +165,9 @@ public class SessionRepository {
                     }
                 }
 
-                if (measurementsAdded) {
-//                     notify dashboard it should refresh its data
-                    notifyOfNewData(oldSession.getId());
-                }
-
                 return null;
             }
         });
-    }
-
-    private void notifyOfNewData(Long sessionId) {
-        FixedSessionsMeasurementEvent event = new FixedSessionsMeasurementEvent(sessionId);
-
-        eventBus.post(event);
     }
 
     private void prepareHeader(Session session, ContentValues values) {
