@@ -49,8 +49,6 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
         mGetWifiCredentialsView.registerListeners(this, this);
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        checkForLocationServices();
-
         setContentView(mGetWifiCredentialsView.getRootView());
         initDialogToolbar("WiFi Name & Password");
     }
@@ -71,40 +69,39 @@ public class GetWifiCredentialsActivity extends DialogActivity implements GetWif
     }
 
     private void checkForLocationServices() {
-        if (Build.VERSION.SDK_INT >= 28) {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                Dialog dialog = new AlertDialog.Builder(this)
-                        .setMessage(R.string.location_required)
-                        .setPositiveButton(R.string.yes, null)
-                        .setNegativeButton(R.string.no, null)
-                        .create();
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Dialog dialog = new AlertDialog.Builder(this)
+                    .setMessage(R.string.location_required)
+                    .setPositiveButton(R.string.yes, null)
+                    .setNegativeButton(R.string.no, null)
+                    .setCancelable(false)
+                    .create();
 
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Button yes = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                        yes.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                dialog.dismiss();
-                            }
-                        });
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(final DialogInterface dialog) {
+                    Button yes = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    yes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            dialog.dismiss();
+                        }
+                    });
 
-                        Button no = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
-                        no.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                finish();
-                            }
-                        });
-                    }
-                });
+                    Button no = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                    no.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            finish();
+                        }
+                    });
+                }
+            });
 
-                dialog.show();
-            }
+            dialog.show();
         }
     }
 
