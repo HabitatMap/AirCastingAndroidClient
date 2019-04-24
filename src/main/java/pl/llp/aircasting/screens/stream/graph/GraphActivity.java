@@ -68,17 +68,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @Inject
     ViewingSessionsManager viewingSessionsManager;
 
-    private Handler handler = new Handler() {
-    };
-
-    private Thread pollServerTask = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            Intents.triggerStreamingSessionsSync(context);
-
-            handler.postDelayed(pollServerTask, 60000);
-        }
-    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,20 +93,12 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @Override
     public void onPostResume() {
         super.onPostResume();
-        startUpdatingFixedSessions();
         getDelegate().invalidateOptionsMenu();
-    }
-
-    private void startUpdatingFixedSessions() {
-        if (viewingSessionsManager.isAnySessionFixed()) {
-            handler.post(pollServerTask);
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        handler.removeCallbacks(pollServerTask);
         measurementPresenter.unregisterListener(this);
     }
 

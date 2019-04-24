@@ -20,6 +20,7 @@
 package pl.llp.aircasting.screens.stream.base;
 
 import android.net.Uri;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import pl.llp.aircasting.Intents;
@@ -97,6 +98,17 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
+    private Handler handler = new Handler();
+
+    private Thread pollServerTask = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Intents.triggerStreamingSessionsSync(context);
+
+            handler.postDelayed(pollServerTask, 60000);
+        }
+    });
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -104,12 +116,19 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         initialize();
 
         initializeNoteViewer();
+        startUpdatingFixedSessions();
 
         updateGauges();
         updateKeepScreenOn();
         topBarHelper.updateTopBar(visibleSession.getSensor(), topBar);
         Intents.startIOIO(context);
         Intents.startDatabaseWriterService(context);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(pollServerTask);
     }
 
     private void initialize() {
@@ -149,6 +168,12 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         sessionData.setVisibleSession(visibleSessionId);
         sessionData.setVisibleSensorFromName(visibleSessionId, visibleSensorName);
+    }
+
+    private void startUpdatingFixedSessions() {
+        if (viewingSessionsManager.isAnySessionFixed()) {
+            handler.post(pollServerTask);
+        }
     }
 
     private void updateKeepScreenOn() {
