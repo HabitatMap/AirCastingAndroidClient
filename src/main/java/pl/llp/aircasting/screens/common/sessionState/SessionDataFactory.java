@@ -143,11 +143,6 @@ public class SessionDataFactory {
         viewingSessionsSensorManager.removeSessionSensors(sessionId);
     }
 
-    public void clearAllViewingSessions() {
-        viewingSessionsManager.removeAllSessions();
-        viewingSessionsSensorManager.removeAllSessionsSensors();
-    }
-
     public void setVisibleSession(long sessionId) {
         if (sessionState.isSessionCurrent(sessionId)) {
             visibleSession.setSession(currentSessionManager.getCurrentSession());

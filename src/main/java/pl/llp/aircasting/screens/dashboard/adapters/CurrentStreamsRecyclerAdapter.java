@@ -212,7 +212,7 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         mStreamPositions.put(toSensor, fromPosition);
     }
 
-   @Override
+    @Override
     public boolean isItemSwipeEnabled() {
         return true;
     }

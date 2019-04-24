@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;

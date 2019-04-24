@@ -36,7 +36,6 @@ import pl.llp.aircasting.screens.common.base.RoboListActivityWithProgress;
 import pl.llp.aircasting.event.network.SyncStateChangedEvent;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
-import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;

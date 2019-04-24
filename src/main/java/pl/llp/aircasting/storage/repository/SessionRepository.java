@@ -56,8 +56,7 @@ public class SessionRepository {
 
     @Inject SessionDAO sessionDAO;
     @Inject SessionTrackerDAO trackedSessionsDAO;
-    @Inject
-    ViewingSessionsManager viewingSessionsManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject EventBus eventBus;
 
     @API

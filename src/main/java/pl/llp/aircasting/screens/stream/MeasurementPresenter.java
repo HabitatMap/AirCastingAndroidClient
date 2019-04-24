@@ -27,8 +27,6 @@ import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
-import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
 
 import android.content.SharedPreferences;
 import com.google.common.base.Function;
@@ -59,7 +57,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     private static final int MAX_FIXED_MEASUREMENTS = 1440;
     private static final int MAX_MOBILE_MEASUREMENTS = 86400;
 
-    @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject SharedPreferences preferences;
     @Inject EventBus eventBus;

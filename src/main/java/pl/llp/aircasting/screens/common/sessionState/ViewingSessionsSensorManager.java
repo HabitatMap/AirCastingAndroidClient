@@ -2,7 +2,6 @@ package pl.llp.aircasting.screens.common.sessionState;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.util.Log;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

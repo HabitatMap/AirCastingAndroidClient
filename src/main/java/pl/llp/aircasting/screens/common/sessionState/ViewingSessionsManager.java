@@ -1,7 +1,6 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;

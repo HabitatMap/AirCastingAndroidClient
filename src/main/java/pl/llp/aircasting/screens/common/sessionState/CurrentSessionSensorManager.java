@@ -2,8 +2,6 @@ package pl.llp.aircasting.screens.common.sessionState;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.location.Location;
-import android.util.Log;
 
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
