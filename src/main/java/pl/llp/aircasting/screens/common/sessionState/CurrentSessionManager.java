@@ -39,6 +39,7 @@ import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
+import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
 import android.content.ContentValues;
@@ -166,7 +167,7 @@ public class CurrentSessionManager {
                 MeasurementStream stream = prepareStream(event);
                 tracker.addMeasurement(sensor, stream, measurement);
             } else {
-                eventBus.post(new MobileMeasurementEvent(measurement, sensor));
+                eventBus.post(new MobileMeasurementEvent(measurement, sensor, Constants.CURRENT_SESSION_FAKE_ID));
             }
         }
     }

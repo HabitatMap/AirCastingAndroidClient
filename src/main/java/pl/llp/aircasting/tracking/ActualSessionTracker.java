@@ -8,6 +8,7 @@ import pl.llp.aircasting.storage.SessionPropertySetter;
 import pl.llp.aircasting.storage.db.DBConstants;
 import pl.llp.aircasting.storage.db.WritableDatabaseTask;
 import pl.llp.aircasting.storage.repository.SessionRepository;
+import pl.llp.aircasting.util.Constants;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -100,7 +101,7 @@ public class ActualSessionTracker implements SessionTracker {
     public void addMeasurement(Sensor sensor, MeasurementStream stream, Measurement measurement) {
         measurementTracker.add(stream, measurement);
         recentMeasurements.put(stream.getSensorName(), measurement.getValue());
-        eventBus.post(new MobileMeasurementEvent(measurement, sensor));
+        eventBus.post(new MobileMeasurementEvent(measurement, sensor, Constants.CURRENT_SESSION_FAKE_ID));
     }
 
     @Override

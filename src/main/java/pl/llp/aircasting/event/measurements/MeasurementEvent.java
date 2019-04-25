@@ -5,11 +5,13 @@ import pl.llp.aircasting.model.Sensor;
 
 public class MeasurementEvent {
     private Measurement measurement;
+    private long sessionId;
     private Sensor sensor;
 
-    public MeasurementEvent(Measurement measurement, Sensor sensor) {
+    public MeasurementEvent(Measurement measurement, Sensor sensor, long sessionId) {
         this.measurement = measurement;
         this.sensor = sensor;
+        this.sessionId = sessionId;
     }
 
     public Measurement getMeasurement() {
@@ -18,5 +20,9 @@ public class MeasurementEvent {
 
     public Sensor getSensor() {
         return sensor;
+    }
+
+    public long getSessionId() {
+        return sessionId;
     }
 }

@@ -143,7 +143,6 @@ public class SessionRepository {
         dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
             @Override
             public Session execute(SQLiteDatabase readOnlyDatabase) {
-                boolean measurementsAdded = false;
                 Map<Long, List<Measurement>> load = r.loadNew(oldSession, oldSession.getEnd(), readOnlyDatabase);
 
                 for (MeasurementStream stream : streams) {
@@ -152,14 +151,13 @@ public class SessionRepository {
                         if (measurements == null || measurements.isEmpty()) {
 
                         } else {
+                            long sessionId = oldSession.getId();
                             stream.addMeasurements(measurements);
                             oldSession.add(stream);
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
-                            measurementsAdded = true;
                             // emit an event to update MeasurementPresenter data and map/graph gauges
-                            MobileMeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, oldSession.getId()));
-                            event.setSessionId(oldSession.getId());
+                            FixedMeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, sessionId), sessionId);
                             eventBus.post(event);
                         }
                     }

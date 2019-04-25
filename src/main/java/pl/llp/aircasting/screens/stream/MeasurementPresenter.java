@@ -102,6 +102,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private void onMeasurement(MeasurementEvent event, Boolean isFixed) {
+        if (event.getSessionId() != visibleSession.getSession().getId()) return;
         if (!isFixed && !state.recording().isRecording()) return;
         if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
