@@ -152,12 +152,13 @@ public class SessionRepository {
 
                         } else {
                             long sessionId = oldSession.getId();
+                            long measurementsAdded = measurements.size();
                             stream.addMeasurements(measurements);
                             oldSession.add(stream);
                             oldSession.setEnd(stream.getLastMeasurementTime());
                             updateSessionEndDate(oldSession);
                             // emit an event to update MeasurementPresenter data and map/graph gauges
-                            FixedMeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, sessionId), sessionId);
+                            FixedMeasurementEvent event = new FixedMeasurementEvent(stream.getLastMeasurements(1).get(0), new Sensor(stream, sessionId), sessionId, measurementsAdded);
                             eventBus.post(event);
                         }
                     }

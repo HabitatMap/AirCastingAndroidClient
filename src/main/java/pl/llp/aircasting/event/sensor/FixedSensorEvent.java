@@ -5,7 +5,15 @@ import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 
 public class FixedSensorEvent extends MeasurementEvent {
-    public FixedSensorEvent(Measurement measurement, Sensor sensor, long sessionId) {
+    private long measurementsAdded;
+
+    public FixedSensorEvent(Measurement measurement, Sensor sensor, long sessionId, long measurementAdded) {
         super(measurement, sensor, sessionId);
+
+        this.measurementsAdded = measurementAdded;
+    }
+
+    public long getMeasurementsAdded() {
+        return measurementsAdded;
     }
 }

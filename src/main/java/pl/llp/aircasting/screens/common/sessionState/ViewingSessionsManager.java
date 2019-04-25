@@ -100,7 +100,12 @@ public class ViewingSessionsManager {
 
    @Subscribe
     public void onEvent(FixedMeasurementEvent event) {
-        getMeasurementStream(event.getSessionId(), event.getSensor().getSensorName()).add(event.getMeasurement());
+        long sessionId = event.getSessionId();
+        Session session = getSession(sessionId);
+
+        if (session == null) return;
+
+        getMeasurementStream(sessionId, event.getSensor().getSensorName()).add(event.getMeasurement());
     }
 
     public void addFixedSession(Session session) {

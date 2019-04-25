@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.screens.stream;
 
+import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.event.sensor.FixedSensorEvent;
@@ -107,6 +108,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
         Measurement measurement = event.getMeasurement();
+
+        if (isFixed) {
+            long measurementsAdded = ((FixedSensorEvent) event).getMeasurementsAdded();
+
+            if (measurementsAdded > 1) {
+                reset();
+            }
+        }
 
         prepareFullView();
         updateFullView(measurement);
