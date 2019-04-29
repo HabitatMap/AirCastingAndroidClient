@@ -81,7 +81,7 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
         } else {
             currentSessionManager.stopSession();
 
-            if(session.isLocationless()) {
+            if (session.isLocationless()) {
                 currentSessionManager.finishSession(sessionId, false);
             } else if (settingsHelper.isContributingToCrowdMap()) {
                 currentSessionManager.finishSession(sessionId, true);

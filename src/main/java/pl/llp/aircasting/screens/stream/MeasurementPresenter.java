@@ -84,8 +84,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Inject
     private ApplicationState state;
 
-
-
     @Inject
     public void init() {
         preferences.registerOnSharedPreferenceChangeListener(this);
