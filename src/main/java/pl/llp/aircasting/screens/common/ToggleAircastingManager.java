@@ -18,7 +18,7 @@ import pl.llp.aircasting.screens.sessionRecord.StartMobileSessionActivity;
 /**
  * Created by radek on 21/06/17.
  */
-public class ToggleAircastingManager {
+public class ToggleAircastingManager implements LocationHelper.LocationRequestListener {
     public AppCompatDelegate delegate;
     private Context context;
     private Activity activity;
@@ -78,6 +78,12 @@ public class ToggleAircastingManager {
     }
 
     public void startMobileAirCasting() {
+        locationHelper.registerListener(this);
+        locationHelper.checkLocationSettings(activity);
+    }
+
+    @Override
+    public void onLocationRequestSuccess() {
         dashboardChartManager.start();
 
         activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));

@@ -27,6 +27,8 @@ import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
 
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
+
 /**
  * A common superclass for activities that want to display left/right
  * navigation arrows
@@ -65,7 +67,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         super.onResume();
 
         initialize();
-        locationHelper.start();
+//        locationHelper.start();
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
         registeredReceiver = syncBroadcastReceiver;
@@ -127,6 +129,11 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
                 if (resultCode == R.id.save_button) {
                     Session session = Intents.editSessionResult(data);
                     currentSessionManager.updateSession(session);
+                }
+                break;
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    toggleAircastingManager.startMobileAirCasting();
                 }
                 break;
             default:
