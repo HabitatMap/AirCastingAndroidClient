@@ -26,7 +26,7 @@ import pl.llp.aircasting.screens.sessions.SessionsActivity;
 import pl.llp.aircasting.screens.settings.SettingsActivity;
 
 import static android.Manifest.permission.RECORD_AUDIO;
-import static pl.llp.aircasting.util.Constants.MY_PERMISSIONS_REQUEST_RECORD_AUDIO;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_RECORD_AUDIO;
 
 /**
  * Created by radek on 09/06/17.
@@ -85,7 +85,7 @@ public class NavigationDrawerHelper {
                     case R.id.connect_microphone:
                         if (ContextCompat.checkSelfPermission(activity, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(activity,
-                                    new String[]{ RECORD_AUDIO }, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+                                    new String[]{ RECORD_AUDIO }, PERMISSIONS_REQUEST_RECORD_AUDIO);
                         } else {
                             currentSessionSensorManager.startAudioSensor();
                             Intents.startDashboardActivity(activity);

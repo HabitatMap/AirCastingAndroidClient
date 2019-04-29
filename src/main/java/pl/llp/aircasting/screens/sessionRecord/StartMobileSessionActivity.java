@@ -63,8 +63,7 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     }
 
     private void startMobileSession() {
-        // TODO
-//        locationHelper.startLocationUpdates();
+        locationHelper.startLocationUpdates();
 
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
@@ -90,12 +89,8 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
             ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
         }
 
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            if (locationHelper.hasNoGPSFix()) {
-                ToastHelper.show(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG);
-            }
-        } else {
-            ToastHelper.show(context, R.string.gps_off_warning, Toast.LENGTH_LONG);
+        if (locationHelper.getLastLocation() == null) {
+            ToastHelper.show(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG);
         }
     }
 }
