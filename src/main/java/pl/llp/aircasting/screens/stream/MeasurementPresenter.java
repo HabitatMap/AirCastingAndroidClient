@@ -297,6 +297,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     public void unregisterListener(Listener listener) {
         listeners.remove(listener);
+        eventBus.unregister(this);
     }
 
     public boolean canZoomIn() {
