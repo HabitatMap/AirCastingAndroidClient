@@ -1,6 +1,7 @@
 package pl.llp.aircasting.screens.sessionRecord;
 
 import android.app.Application;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,8 @@ import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import roboguice.inject.InjectView;
+
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 
 /**
  * Created by radek on 04/09/17.
@@ -60,7 +63,8 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     }
 
     private void startMobileSession() {
-        locationHelper.start();
+        // TODO
+//        locationHelper.startLocationUpdates();
 
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();

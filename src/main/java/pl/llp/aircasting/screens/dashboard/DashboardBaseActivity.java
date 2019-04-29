@@ -23,6 +23,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
 
@@ -53,7 +54,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
         } else {
-            locationHelper.start();
+//            locationHelper.start();
         }
     }
 
@@ -99,7 +100,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     public synchronized void toggleAirCasting() {
         toggleAircastingManager.toggleAirCasting();
-        getDelegate().invalidateOptionsMenu();
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -112,6 +113,11 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
                 if (resultCode == R.id.save_button) {
                     Session session = Intents.editSessionResult(data);
                     currentSessionManager.updateSession(session);
+                }
+                break;
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    toggleAircastingManager.startMobileAirCasting();
                 }
                 break;
             default:

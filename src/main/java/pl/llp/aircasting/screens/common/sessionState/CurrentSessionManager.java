@@ -229,7 +229,7 @@ public class CurrentSessionManager {
         setSession(newSession);
 
         eventBus.post(new SessionStartedEvent(getCurrentSession()));
-        locationHelper.start();
+//        locationHelper.start();
         currentSessionSensorManager.startSensors();
         state.recording().startRecording();
         notificationHelper.showRecordingNotification();

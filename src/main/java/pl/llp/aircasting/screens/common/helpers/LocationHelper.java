@@ -24,15 +24,29 @@ import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.util.Constants;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -40,36 +54,100 @@ import com.google.inject.Singleton;
 @Singleton
 public class LocationHelper implements LocationListener {
     public static final int ACCURACY_THRESHOLD = 200;
+    public static final int REQUEST_CHECK_SETTINGS = 2;
 
-    @Inject LocationManager locationManager;
     @Inject EventBus eventBus;
-    @Inject Context context;
+    @Inject Context mContext;
 
-    private Location lastLocation;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mLastLocation;
+    private LocationRequestListener mLocationRequestListener;
     private int starts;
 
-    public synchronized void start() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    public interface LocationRequestListener {
+        void onLocationRequestSuccess();
+    }
 
-            updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+    public void checkLocationSettings(Activity activity) {
+        checkLocationSettingsSatisfied(activity);
 
-            starts += 1;
+    }
+
+    public synchronized void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         } else {
-            ToastHelper.showText(context, "The app needs a permission to access your location data", Toast.LENGTH_SHORT);
+            ToastHelper.showText(mContext, "The app needs a permission to access your location data", Toast.LENGTH_SHORT);
         }
     }
 
+    private boolean checkLocationSettingsSatisfied(final Activity activity) {
+        LocationRequest locationRequest = createLocationRequest();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        SettingsClient client = LocationServices.getSettingsClient(mContext);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                startLocationUpdates();
+                mLocationRequestListener.onLocationRequestSuccess();
+            }
+        });
+
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(activity,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                    }
+                }
+            }
+        });
+
+        return true;
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        return locationRequest;
+    }
+
+    public void registerListener(LocationRequestListener listener) {
+        mLocationRequestListener = listener;
+    }
+
+//    private void getLastLocation() {
+//        fusedLocationProviderClient.getLastLocation()
+//                .addOnSuccessListener(new OnSuccessListener<Location>() {
+//                    @Override
+//                    public void onSuccess(Location location) {
+//                        updateLocation(location);
+//                    }
+//                });
+//    }
+
     public synchronized void stop() {
-        starts -= 1;
-        if (starts <= 0) {
-            starts = 0;
-            locationManager.removeUpdates(this);
-        }
+//        starts -= 1;
+//        if (starts <= 0) {
+//            starts = 0;
+//            mLocationManager.removeUpdates(this);
+//        }
     }
 
     public Location getLastLocation() {
-        return lastLocation;
+        return mLastLocation;
     }
 
     @Override
@@ -78,8 +156,8 @@ public class LocationHelper implements LocationListener {
     }
 
     private void updateLocation(Location location) {
-        if (isBetterLocation(location, lastLocation)) {
-            lastLocation = location;
+        if (isBetterLocation(location, mLastLocation)) {
+            mLastLocation = location;
 
             LocationEvent locationEvent = new LocationEvent();
             eventBus.post(locationEvent);
@@ -162,11 +240,13 @@ public class LocationHelper implements LocationListener {
     }
 
     public boolean hasGPSFix() {
-        return (lastLocation != null) &&
-                LocationManager.GPS_PROVIDER.equals(lastLocation.getProvider());
+        return (mLastLocation != null) &&
+                LocationManager.GPS_PROVIDER.equals(mLastLocation.getProvider());
     }
 
     public boolean hasNoGPSFix() {
         return !hasGPSFix();
     }
+
+
 }
