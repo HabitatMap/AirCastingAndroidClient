@@ -54,8 +54,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
-        } else {
-//            locationHelper.start();
         }
     }
 

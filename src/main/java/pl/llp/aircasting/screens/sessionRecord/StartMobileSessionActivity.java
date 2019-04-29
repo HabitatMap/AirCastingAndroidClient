@@ -1,8 +1,6 @@
 package pl.llp.aircasting.screens.sessionRecord;
 
 import android.app.Application;
-import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,8 +13,6 @@ import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import roboguice.inject.InjectView;
-
-import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 
 /**
  * Created by radek on 04/09/17.

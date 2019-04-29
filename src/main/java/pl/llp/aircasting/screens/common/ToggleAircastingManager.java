@@ -30,7 +30,6 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
     private Activity activity;
     private CurrentSessionManager currentSessionManager;
     private SettingsHelper settingsHelper;
-    private CurrentSessionSensorManager currentSessionSensorManager;
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
@@ -45,7 +44,6 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
         this.activity = activity;
         this.currentSessionManager = currentSessionManager;
         this.settingsHelper = settingsHelper;
-        this.currentSessionSensorManager = currentSessionSensorManager;
         this.locationHelper = locationHelper;
         this.delegate = delegate;
         this.context = context;
@@ -81,7 +79,7 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
         } else {
             currentSessionManager.stopSession();
 
-            if(session.isLocationless()) {
+            if (session.isLocationless()) {
                 currentSessionManager.finishSession(sessionId, false);
             } else if (settingsHelper.isContributingToCrowdMap()) {
                 currentSessionManager.finishSession(sessionId, true);
