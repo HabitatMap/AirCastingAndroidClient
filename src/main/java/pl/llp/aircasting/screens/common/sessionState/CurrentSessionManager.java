@@ -241,7 +241,7 @@ public class CurrentSessionManager {
 
     public void stopSession() {
         tracker.stopTracking(getCurrentSession());
-        locationHelper.stop();
+        locationHelper.stopLocationUpdates();
         state.recording().stopRecording();
         notificationHelper.hideRecordingNotification();
         eventBus.post(new SessionStoppedEvent(getCurrentSession()));
@@ -269,7 +269,7 @@ public class CurrentSessionManager {
     }
 
     private void cleanup() {
-        locationHelper.stop();
+        locationHelper.stopLocationUpdates();
         state.recording().stopRecording();
         setSession(new Session());
         notificationHelper.hideRecordingNotification();

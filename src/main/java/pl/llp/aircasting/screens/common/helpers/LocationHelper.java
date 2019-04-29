@@ -20,26 +20,23 @@
 package pl.llp.aircasting.screens.common.helpers;
 
 import pl.llp.aircasting.event.sensor.LocationEvent;
-import pl.llp.aircasting.screens.common.ToastHelper;
-import pl.llp.aircasting.util.Constants;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
@@ -51,9 +48,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import static pl.llp.aircasting.util.Constants.LOCATION_PERMISSION;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
+
 @Singleton
-public class LocationHelper implements LocationListener {
-    public static final int ACCURACY_THRESHOLD = 200;
+public class LocationHelper {
     public static final int REQUEST_CHECK_SETTINGS = 2;
 
     @Inject EventBus eventBus;
@@ -62,7 +61,9 @@ public class LocationHelper implements LocationListener {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastLocation;
     private LocationRequestListener mLocationRequestListener;
-    private int starts;
+    private LocationRequest mLocationRequest;
+    private LocationCallback mLocationCallback;
+    private Boolean mLocationUpdatesStarted = false;
 
     public interface LocationRequestListener {
         void onLocationRequestSuccess();
@@ -70,21 +71,57 @@ public class LocationHelper implements LocationListener {
 
     public void checkLocationSettings(Activity activity) {
         checkLocationSettingsSatisfied(activity);
-
     }
 
+    public void initLocation(Activity activity) {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        }
+
+        mFusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            mLastLocation = location;
+                        }
+                    }
+                });
+    }
+
+    // suppress warning, because we should already have a permission coming here
+    @SuppressLint("MissingPermission")
     public synchronized void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
-        } else {
-            ToastHelper.showText(mContext, "The app needs a permission to access your location data", Toast.LENGTH_SHORT);
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateLocation(location);
+                }
+            }
+        };
+
+        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        mLocationUpdatesStarted = true;
+    }
+
+    public void stopLocationUpdates() {
+        if (mFusedLocationProviderClient != null && mLocationUpdatesStarted) {
+            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+            mLocationUpdatesStarted = false;
         }
     }
 
     private boolean checkLocationSettingsSatisfied(final Activity activity) {
-        LocationRequest locationRequest = createLocationRequest();
+        mLocationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
+                .addLocationRequest(mLocationRequest);
         SettingsClient client = LocationServices.getSettingsClient(mContext);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
@@ -128,125 +165,14 @@ public class LocationHelper implements LocationListener {
         mLocationRequestListener = listener;
     }
 
-//    private void getLastLocation() {
-//        fusedLocationProviderClient.getLastLocation()
-//                .addOnSuccessListener(new OnSuccessListener<Location>() {
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        updateLocation(location);
-//                    }
-//                });
-//    }
-
-    public synchronized void stop() {
-//        starts -= 1;
-//        if (starts <= 0) {
-//            starts = 0;
-//            mLocationManager.removeUpdates(this);
-//        }
-    }
-
     public Location getLastLocation() {
         return mLastLocation;
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        updateLocation(location);
-    }
-
     private void updateLocation(Location location) {
-        if (isBetterLocation(location, mLastLocation)) {
-            mLastLocation = location;
+        mLastLocation = location;
 
-            LocationEvent locationEvent = new LocationEvent();
-            eventBus.post(locationEvent);
-        }
+        LocationEvent locationEvent = new LocationEvent();
+        eventBus.post(locationEvent);
     }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-    }
-
-    /**
-     * Determines whether one Location reading is better than the current Location fix
-     * <p/>
-     * Source: http://developer.android.com/guide/topics/location/obtaining-user-location.html
-     *
-     * @param location            The new Location that you want to evaluate
-     * @param currentBestLocation The current Location fix, to which you want to compare the new one
-     */
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-        if (currentBestLocation == null) {
-            // A new location is always better than no location
-            return true;
-        } else if (location == null) {
-            // A null location is not so good
-            return false;
-        }
-
-        // Check whether the new location fix is newer or older
-        long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > Constants.TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -Constants.TWO_MINUTES;
-        boolean isNewer = timeDelta > 0;
-
-        // If it's been more than two minutes since the current location, use the new location
-        // because the user has likely moved
-        if (isSignificantlyNewer) {
-            return true;
-            // If the new location is more than two minutes older, it must be worse
-        } else if (isSignificantlyOlder) {
-            return false;
-        }
-
-        // Check whether the new location fix is more or less accurate
-        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        boolean isLessAccurate = accuracyDelta > 0;
-        boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > ACCURACY_THRESHOLD;
-
-        // Check if the old and new location are from the same provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                currentBestLocation.getProvider());
-
-        // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks whether two providers are the same
-     */
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
-        }
-        return provider1.equals(provider2);
-    }
-
-    public boolean hasGPSFix() {
-        return (mLastLocation != null) &&
-                LocationManager.GPS_PROVIDER.equals(mLastLocation.getProvider());
-    }
-
-    public boolean hasNoGPSFix() {
-        return !hasGPSFix();
-    }
-
-
 }

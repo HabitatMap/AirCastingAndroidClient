@@ -216,11 +216,16 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     protected void onPause() {
         super.onPause();
 
-        measurementPresenter.unregisterListener(this);
         routeRefreshDetector.stop();
         traceOverlay.stopDrawing(mapView);
         heatMapDetector.stop();
         soundTraceDetector.stop();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        measurementPresenter.unregisterListener(this);
     }
 
     private void initializeRouteOverlay() {

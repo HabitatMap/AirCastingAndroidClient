@@ -57,6 +57,7 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
     public void stopAirCasting() {
         Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
+        locationHelper.stopLocationUpdates();
 
         stopMobileAirCasting(session);
     }
@@ -78,6 +79,7 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
     }
 
     public void startMobileAirCasting() {
+        locationHelper.initLocation(activity);
         locationHelper.registerListener(this);
         locationHelper.checkLocationSettings(activity);
     }

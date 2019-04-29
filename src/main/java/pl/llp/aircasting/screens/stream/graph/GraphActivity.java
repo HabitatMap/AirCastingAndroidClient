@@ -97,8 +97,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         measurementPresenter.unregisterListener(this);
     }
 
