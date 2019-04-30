@@ -1,8 +1,11 @@
 package pl.llp.aircasting.screens.common;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 
@@ -14,6 +17,9 @@ import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.screens.sessionRecord.StartMobileSessionActivity;
+
+import static pl.llp.aircasting.util.Constants.LOCATION_PERMISSION;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * Created by radek on 21/06/17.
@@ -47,6 +53,11 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
     }
 
     public void toggleAirCasting() {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        }
+
         if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
@@ -79,15 +90,19 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
     }
 
     public void startMobileAirCasting() {
-        locationHelper.initLocation(activity);
+        locationHelper.initLocation();
         locationHelper.registerListener(this);
         locationHelper.checkLocationSettings(activity);
     }
 
     @Override
     public void onLocationRequestSuccess() {
-        dashboardChartManager.start();
+        if (locationHelper.locationUpdatesStarted()) {
+            dashboardChartManager.start();
 
-        activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
+            activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
+        } else {
+            toggleAirCasting();
+        }
     }
 }
