@@ -124,17 +124,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_FINE_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    toggleAircastingManager.toggleAirCasting();
-                }
-                break;
-        }
-    }
-
     private void checkForUnfinishedSessions() {
         if (shouldCheckForUnfinishedSessions()) {
             new AsyncTask<Void, Void, Void>() {

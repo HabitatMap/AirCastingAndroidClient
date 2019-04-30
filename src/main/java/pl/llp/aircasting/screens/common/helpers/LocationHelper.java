@@ -53,7 +53,6 @@ public class LocationHelper {
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastLocation;
-    private LocationRequestListener mLocationRequestListener;
     private LocationRequest mLocationRequest;
     private Boolean mLocationUpdatesStarted = false;
 
@@ -69,10 +68,6 @@ public class LocationHelper {
         }
     };
 
-    public interface LocationRequestListener {
-        void onLocationRequestSuccess();
-    }
-
     public void checkLocationSettings(Activity activity) {
         checkLocationSettingsSatisfied(activity);
     }
@@ -86,7 +81,7 @@ public class LocationHelper {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            mLastLocation = location;
+                            updateLocation(location);
                         }
                     }
                 });
@@ -115,8 +110,8 @@ public class LocationHelper {
         task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                initLocation();
                 startLocationUpdates();
-                mLocationRequestListener.onLocationRequestSuccess();
             }
         });
 
@@ -146,10 +141,6 @@ public class LocationHelper {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return locationRequest;
-    }
-
-    public void registerListener(LocationRequestListener listener) {
-        mLocationRequestListener = listener;
     }
 
     public Location getLastLocation() {

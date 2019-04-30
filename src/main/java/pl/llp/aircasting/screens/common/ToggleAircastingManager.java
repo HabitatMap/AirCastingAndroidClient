@@ -24,7 +24,7 @@ import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION
 /**
  * Created by radek on 21/06/17.
  */
-public class ToggleAircastingManager implements LocationHelper.LocationRequestListener {
+public class ToggleAircastingManager {
     public AppCompatDelegate delegate;
     private Context context;
     private Activity activity;
@@ -89,18 +89,12 @@ public class ToggleAircastingManager implements LocationHelper.LocationRequestLi
 
     public void startMobileAirCasting() {
         locationHelper.initLocation();
-        locationHelper.registerListener(this);
         locationHelper.checkLocationSettings(activity);
-    }
 
-    @Override
-    public void onLocationRequestSuccess() {
         if (locationHelper.locationUpdatesStarted()) {
             dashboardChartManager.start();
 
             activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
-        } else {
-            toggleAirCasting();
         }
     }
 }
