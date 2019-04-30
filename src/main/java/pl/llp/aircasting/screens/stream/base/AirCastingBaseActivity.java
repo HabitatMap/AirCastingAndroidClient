@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.stream.base;
 
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
@@ -145,7 +146,9 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_FINE_LOCATION:
-                toggleAircastingManager.startMobileAirCasting();
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    toggleAircastingManager.toggleAirCasting();
+                }
                 break;
         }
     }

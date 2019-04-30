@@ -21,16 +21,12 @@ package pl.llp.aircasting.screens.common.helpers;
 
 import pl.llp.aircasting.event.sensor.LocationEvent;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -48,9 +44,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import static pl.llp.aircasting.util.Constants.LOCATION_PERMISSION;
-import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
-
 @Singleton
 public class LocationHelper {
     public static final int REQUEST_CHECK_SETTINGS = 2;
@@ -62,8 +55,19 @@ public class LocationHelper {
     private Location mLastLocation;
     private LocationRequestListener mLocationRequestListener;
     private LocationRequest mLocationRequest;
-    private LocationCallback mLocationCallback;
     private Boolean mLocationUpdatesStarted = false;
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult == null) {
+                return;
+            }
+            for (Location location : locationResult.getLocations()) {
+                updateLocation(location);
+            }
+        }
+    };
 
     public interface LocationRequestListener {
         void onLocationRequestSuccess();
@@ -73,13 +77,9 @@ public class LocationHelper {
         checkLocationSettingsSatisfied(activity);
     }
 
-    public void initLocation(Activity activity) {
+    @SuppressLint("MissingPermission")
+    public void initLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
-
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
-            return;
-        }
 
         mFusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -92,27 +92,14 @@ public class LocationHelper {
                 });
     }
 
-    // suppress warning, because we should already have a permission coming here
     @SuppressLint("MissingPermission")
     public synchronized void startLocationUpdates() {
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    updateLocation(location);
-                }
-            }
-        };
-
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         mLocationUpdatesStarted = true;
     }
 
     public void stopLocationUpdates() {
-        if (mFusedLocationProviderClient != null && mLocationUpdatesStarted) {
+        if (mFusedLocationProviderClient != null && locationUpdatesStarted()) {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
             mLocationUpdatesStarted = false;
         }
@@ -174,5 +161,9 @@ public class LocationHelper {
 
         LocationEvent locationEvent = new LocationEvent();
         eventBus.post(locationEvent);
+    }
+
+    public boolean locationUpdatesStarted() {
+        return mLocationUpdatesStarted;
     }
 }

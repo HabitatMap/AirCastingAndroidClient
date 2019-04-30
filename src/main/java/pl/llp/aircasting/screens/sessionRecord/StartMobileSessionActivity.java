@@ -31,7 +31,6 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     @Inject Application context;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
-    @Inject LocationManager locationManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,8 +62,6 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     }
 
     private void startMobileSession() {
-        locationHelper.startLocationUpdates();
-
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
 
