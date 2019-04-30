@@ -215,7 +215,7 @@ public class ViewingSessionsManager {
     }
 
     public MeasurementStream getMeasurementStream(long sessionId, String sensorName) {
-        return sessionsForViewing.get(sessionId).getStream(sensorName);
+       return sessionsForViewing.get(sessionId).getStream(sensorName);
     }
 
     public boolean anySessionPresent() {

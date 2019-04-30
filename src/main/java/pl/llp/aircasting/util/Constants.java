@@ -44,9 +44,13 @@ public class Constants
           Manifest.permission.WRITE_EXTERNAL_STORAGE
   };
 
-  public static final Integer MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-  public static final Integer MY_PERMISSIONS_REQUEST_FINE_LOCATION = 2;
-  public static final Integer PERMISSIONS_ALL = 3;
+  public static final String[] LOCATION_PERMISSION = {
+          Manifest.permission.ACCESS_FINE_LOCATION
+  };
+
+  public static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+  public static final int PERMISSIONS_REQUEST_FINE_LOCATION = 2;
+  public static final int PERMISSIONS_ALL = 3;
 
   public static final String FIXED_LABEL = "Last Minute";
   public static final String MOBILE_LABEL = "Last Second";

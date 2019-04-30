@@ -1,8 +1,11 @@
 package pl.llp.aircasting.screens.common;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 
@@ -15,16 +18,18 @@ import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.screens.sessionRecord.StartMobileSessionActivity;
 
+import static pl.llp.aircasting.util.Constants.LOCATION_PERMISSION;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
+
 /**
  * Created by radek on 21/06/17.
  */
-public class ToggleAircastingManager {
+public class ToggleAircastingManager implements LocationHelper.LocationRequestListener {
     public AppCompatDelegate delegate;
     private Context context;
     private Activity activity;
     private CurrentSessionManager currentSessionManager;
     private SettingsHelper settingsHelper;
-    private CurrentSessionSensorManager currentSessionSensorManager;
     private LocationHelper locationHelper;
     private DashboardChartManager dashboardChartManager;
 
@@ -39,7 +44,6 @@ public class ToggleAircastingManager {
         this.activity = activity;
         this.currentSessionManager = currentSessionManager;
         this.settingsHelper = settingsHelper;
-        this.currentSessionSensorManager = currentSessionSensorManager;
         this.locationHelper = locationHelper;
         this.delegate = delegate;
         this.context = context;
@@ -47,6 +51,11 @@ public class ToggleAircastingManager {
     }
 
     public void toggleAirCasting() {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
+        }
+
         if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
@@ -57,6 +66,7 @@ public class ToggleAircastingManager {
     public void stopAirCasting() {
         Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
+        locationHelper.stopLocationUpdates();
 
         stopMobileAirCasting(session);
     }
@@ -69,7 +79,7 @@ public class ToggleAircastingManager {
         } else {
             currentSessionManager.stopSession();
 
-            if(session.isLocationless()) {
+            if (session.isLocationless()) {
                 currentSessionManager.finishSession(sessionId, false);
             } else if (settingsHelper.isContributingToCrowdMap()) {
                 currentSessionManager.finishSession(sessionId, true);
@@ -78,8 +88,19 @@ public class ToggleAircastingManager {
     }
 
     public void startMobileAirCasting() {
-        dashboardChartManager.start();
+        locationHelper.initLocation();
+        locationHelper.registerListener(this);
+        locationHelper.checkLocationSettings(activity);
+    }
 
-        activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
+    @Override
+    public void onLocationRequestSuccess() {
+        if (locationHelper.locationUpdatesStarted()) {
+            dashboardChartManager.start();
+
+            activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
+        } else {
+            toggleAirCasting();
+        }
     }
 }

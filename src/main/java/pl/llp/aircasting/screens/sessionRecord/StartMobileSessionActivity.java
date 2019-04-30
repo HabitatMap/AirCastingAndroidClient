@@ -1,7 +1,6 @@
 package pl.llp.aircasting.screens.sessionRecord;
 
 import android.app.Application;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +27,6 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     @Inject Application context;
     @Inject CurrentSessionManager currentSessionManager;
     @Inject LocationHelper locationHelper;
-    @Inject LocationManager locationManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +58,6 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
     }
 
     private void startMobileSession() {
-        locationHelper.start();
-
         String title = sessionTitle.getText().toString();
         String tags = sessionTags.getText().toString();
 
@@ -86,12 +82,8 @@ public class StartMobileSessionActivity extends DialogActivity implements View.O
             ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
         }
 
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            if (locationHelper.hasNoGPSFix()) {
-                ToastHelper.show(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG);
-            }
-        } else {
-            ToastHelper.show(context, R.string.gps_off_warning, Toast.LENGTH_LONG);
+        if (locationHelper.getLastLocation() == null) {
+            ToastHelper.show(context, R.string.no_gps_fix_warning, Toast.LENGTH_LONG);
         }
     }
 }

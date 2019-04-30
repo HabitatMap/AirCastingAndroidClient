@@ -24,7 +24,6 @@ import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 
 import android.graphics.Canvas;
 import android.graphics.Point;

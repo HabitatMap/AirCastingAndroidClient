@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.stream.base;
 
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
@@ -26,6 +27,9 @@ import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
+
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * A common superclass for activities that want to display left/right
@@ -65,7 +69,6 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         super.onResume();
 
         initialize();
-        locationHelper.start();
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
         registeredReceiver = syncBroadcastReceiver;
@@ -83,7 +86,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
         }
 
         if (!currentSessionManager.isSessionRecording()) {
-            locationHelper.stop();
+            locationHelper.stopLocationUpdates();
         }
 
         if (registeredReceiver != null) {
@@ -129,8 +132,24 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
                     currentSessionManager.updateSession(session);
                 }
                 break;
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    toggleAircastingManager.startMobileAirCasting();
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    toggleAircastingManager.toggleAirCasting();
+                }
+                break;
         }
     }
 

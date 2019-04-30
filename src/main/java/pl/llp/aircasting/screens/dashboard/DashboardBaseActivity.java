@@ -23,8 +23,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * A common superclass for activities that want to display left/right
@@ -52,8 +54,6 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
-        } else {
-            locationHelper.start();
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
         }
 
         if (!currentSessionManager.isSessionRecording()) {
-            locationHelper.stop();
+            locationHelper.stopLocationUpdates();
         }
 
         if (registeredReceiver != null) {
@@ -99,7 +99,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
 
     public synchronized void toggleAirCasting() {
         toggleAircastingManager.toggleAirCasting();
-        getDelegate().invalidateOptionsMenu();
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -114,8 +114,24 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress {
                     currentSessionManager.updateSession(session);
                 }
                 break;
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    toggleAircastingManager.startMobileAirCasting();
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    toggleAircastingManager.toggleAirCasting();
+                }
+                break;
         }
     }
 

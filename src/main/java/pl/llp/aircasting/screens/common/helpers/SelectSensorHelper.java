@@ -57,14 +57,12 @@ public class SelectSensorHelper {
         Sensor sensor = sensors.get(which);
         visibleSession.setSensor(sensor);
 
-//        context.removeDialog(DIALOG_ID);
           context.dismissDialog(DIALOG_ID);
       }
     }).setOnCancelListener(new DialogInterface.OnCancelListener() {
       @Override
       public void onCancel(DialogInterface dialog) {
         context.dismissDialog(DIALOG_ID);
-//        context.removeDialog(DIALOG_ID);
       }
     }).create();
   }
