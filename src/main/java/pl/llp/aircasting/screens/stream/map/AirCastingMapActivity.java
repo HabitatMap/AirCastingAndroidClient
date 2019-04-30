@@ -19,6 +19,9 @@
 */
 package pl.llp.aircasting.screens.stream.map;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.view.*;
 import android.view.animation.Animation;
 import android.widget.Button;
@@ -261,6 +264,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void initializeMap() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationHelper.initLocation();
+        }
         mapView.setSatellite(settingsHelper.isSatelliteView());
 
         if (settingsHelper.isFirstLaunch()) {
@@ -378,6 +384,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     protected void centerMap() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationHelper.initLocation();
+        }
+
         if (locationHelper.getLastLocation() != null) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             MapController controller = mapView.getController();
