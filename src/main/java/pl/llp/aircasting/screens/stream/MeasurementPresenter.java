@@ -19,7 +19,6 @@
  */
 package pl.llp.aircasting.screens.stream;
 
-import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.event.measurements.MeasurementEvent;
 import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.event.sensor.FixedSensorEvent;
@@ -101,7 +100,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private void onMeasurement(MeasurementEvent event, Boolean isFixed) {
-        if (event.getSessionId() != visibleSession.getSession().getId()) return;
+        if (!sessionMatches(event.getSessionId())) return;
         if (!isFixed && !state.recording().isRecording()) return;
         if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
@@ -295,7 +294,6 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     public void unregisterListener(Listener listener) {
         listeners.remove(listener);
-        eventBus.unregister(this);
     }
 
     public boolean canZoomIn() {
@@ -373,5 +371,18 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         for (Listener listener : listeners) {
             listener.onViewUpdated();
         }
+    }
+
+    private boolean sessionMatches(long sessionId) {
+        if (visibleSession.getSession() == null) return false;
+        long visibleSessionId = visibleSession.getSession().getId();
+
+        if (visibleSession.isVisibleSessionRecording() || sessionId == visibleSessionId) {
+            return true;
+        } else if (sessionId != visibleSessionId) {
+            return false;
+        }
+
+        return false;
     }
 }
