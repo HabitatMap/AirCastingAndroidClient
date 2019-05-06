@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.screens.stream.base;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.view.Menu;
@@ -28,7 +29,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
-import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
@@ -46,20 +46,16 @@ import pl.llp.aircasting.model.Sensor;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 import pl.llp.aircasting.screens.stream.GaugeHelper;
 import pl.llp.aircasting.screens.stream.TopBarHelper;
+import pl.llp.aircasting.screens.stream.NoteViewerActivity;
 import roboguice.inject.InjectView;
 
 import java.io.File;
-import java.text.NumberFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static pl.llp.aircasting.Intents.triggerSync;
@@ -70,16 +66,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     public static final String VISIBLE_SENSOR_ID = "visibleSensorId";
 
     @InjectView(R.id.gauge_container) View gauges;
-
-    @InjectView(R.id.note_right) ImageButton noteRight;
-    @InjectView(R.id.note_number) TextView noteNumber;
-    @InjectView(R.id.note_left) ImageButton noteLeft;
-    @InjectView(R.id.note_delete) Button noteDelete;
-    @InjectView(R.id.note_viewer) View noteViewer;
-    @InjectView(R.id.note_date) TextView noteDate;
-    @InjectView(R.id.note_text) EditText noteText;
-    @InjectView(R.id.note_save) Button noteSave;
-    @InjectView(R.id.view_photo) View viewPhoto;
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject public VisibleSession visibleSession;
@@ -91,11 +77,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @Inject GaugeHelper gaugeHelper;
     @Inject SessionDataFactory sessionData;
 
-    NumberFormat numberFormat = NumberFormat.getInstance();
     private boolean initialized = false;
-    int noteIndex = -1;
     Note currentNote;
-    int noteTotal;
 
     final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
@@ -116,7 +99,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         initialize();
 
-        initializeNoteViewer();
+//        initializeNoteViewer();
         startUpdatingFixedSessions();
 
         updateGauges();
@@ -138,11 +121,11 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             zoomIn.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
-            noteDelete.setOnClickListener(this);
-            noteRight.setOnClickListener(this);
-            viewPhoto.setOnClickListener(this);
-            noteLeft.setOnClickListener(this);
-            noteSave.setOnClickListener(this);
+//            noteDelete.setOnClickListener(this);
+//            noteRight.setOnClickListener(this);
+//            viewPhoto.setOnClickListener(this);
+//            noteLeft.setOnClickListener(this);
+//            noteSave.setOnClickListener(this);
 
             gauges.setOnClickListener(this);
 
@@ -154,7 +137,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(NOTE_INDEX, noteIndex);
+//        outState.putInt(NOTE_INDEX, noteIndex);
         outState.putInt(VISIBLE_SESSION_ID, (int) visibleSession.getVisibleSessionId());
         outState.putString(VISIBLE_SENSOR_ID, visibleSession.getSensor().getSensorName());
     }
@@ -163,7 +146,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
+//        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
         int visibleSessionId = savedInstanceState.getInt(VISIBLE_SESSION_ID);
         String visibleSensorName = savedInstanceState.getString(VISIBLE_SENSOR_ID);
 
@@ -280,18 +263,18 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             case R.id.note_delete:
                 deleteNote();
                 break;
-            case R.id.note_left:
-                noteClicked(noteIndex - 1);
-                break;
-            case R.id.note_right:
-                noteClicked(noteIndex + 1);
-                break;
+//            case R.id.note_left:
+//                noteClicked(noteIndex - 1);
+//                break;
+//            case R.id.note_right:
+//                noteClicked(noteIndex + 1);
+//                break;
             case R.id.gauge_container:
                 showDialog(SelectSensorHelper.DIALOG_ID);
                 break;
-            case R.id.view_photo:
-                Intents.viewPhoto(this, photoUri());
-                break;
+//            case R.id.view_photo:
+//                Intents.viewPhoto(this, photoUri());
+//                break;
             default:
                 break;
         }
@@ -306,52 +289,19 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     }
 
     public void noteClicked(int index) {
-        int total = visibleSession.getSessionNoteCount();
-        if (total == 0) return;
-        index = ((index % total) + total) % total;
-
-        currentNote = visibleSession.getSessionNote(index);
-
-        showNoteViewer();
-
-        String title = FormatHelper.dateTime(currentNote.getDate()).toString();
-        noteDate.setText(title);
-        noteText.setText(currentNote.getText());
-        noteNumber.setText(numberFormat.format(index + 1) + "/" + numberFormat.format(total));
-        viewPhoto.setVisibility(photoHelper.photoExists(currentNote) ? View.VISIBLE : View.GONE);
-
-        noteIndex = index;
-        noteTotal = total;
+        showNoteViewer(index);
     }
 
-    private void showNoteViewer() {
-        noteViewer.setVisibility(View.VISIBLE);
-    }
-
-    protected void initializeNoteViewer() {
-        if (noteIndex == -1) {
-            hideNoteViewer();
-        } else {
-            noteClicked(noteIndex);
-        }
-    }
-
-    protected void hideNoteViewer() {
-        noteViewer.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (noteViewer.getVisibility() == View.VISIBLE) {
-            hideNoteViewer();
-        } else {
-            super.onBackPressed();
-        }
+    private void showNoteViewer(int index) {
+        Intent intent = new Intent(this, NoteViewerActivity.class);
+        intent.putExtra(NOTE_INDEX, index);
+        startActivity(intent);
     }
 
     private void saveNote() {
-        String text = noteText.getText().toString();
-        currentNote.setText(text);
+        // TODO
+//        String text = noteText.getText().toString();
+//        currentNote.setText(text);
 
         //noinspection unchecked
         new SimpleProgressTask<Void, Void, Void>(this) {
@@ -367,7 +317,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                hideNoteViewer();
+//                hideNoteViewer();
             }
         }.execute();
     }
@@ -388,7 +338,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
                 super.onPostExecute(aVoid);
 
                 refreshNotes();
-                hideNoteViewer();
+//                hideNoteViewer();
             }
         }.execute();
     }

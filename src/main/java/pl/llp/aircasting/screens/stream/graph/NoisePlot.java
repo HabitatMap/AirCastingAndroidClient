@@ -54,7 +54,7 @@ import static pl.llp.aircasting.util.Search.binarySearch;
 
 public class NoisePlot extends View {
     public static final int OPAQUE = 255;
-    private static final double CLICK_RADIUS = 50;
+    private static final double CLICK_RADIUS = 100;
 
     private AirCastingActivity activity;
     private SettingsHelper settingsHelper;

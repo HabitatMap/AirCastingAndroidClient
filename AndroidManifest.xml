@@ -65,6 +65,8 @@
 
     <activity android:label="@string/make_a_note" android:name=".screens.sessionRecord.MakeANoteActivity" android:theme="@style/Dialog"/>
 
+    <activity android:label="@string/view_note" android:name=".screens.stream.NoteViewerActivity" android:theme="@style/Dialog" />
+
     <activity android:label="@string/color_scale" android:name=".screens.stream.ThresholdsActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/connect_to_aircasting" android:name=".screens.userAccount.SignUpActivity" android:theme="@style/Dialog"/>
