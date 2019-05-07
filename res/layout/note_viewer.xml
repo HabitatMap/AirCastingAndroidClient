@@ -37,7 +37,8 @@
             style="@style/Fill"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:paddingLeft="5dp"
+            android:textSize="18sp"
+            android:paddingLeft="10dp"
             android:text="00/00/00 00:00"
             android:textColor="@android:color/primary_text_dark" />
 
@@ -46,6 +47,7 @@
             style="@style/Wrap"
             android:layout_marginRight="2dp"
             android:gravity="center_vertical"
+            android:textSize="18sp"
             android:text="00/00"
             android:textColor="@android:color/primary_text_dark" />
 
@@ -58,6 +60,7 @@
             android:id="@+id/note_right"
             style="@style/Wrap"
             android:background="@drawable/ic_next_note" />
+
     </LinearLayout>
 
     <LinearLayout
