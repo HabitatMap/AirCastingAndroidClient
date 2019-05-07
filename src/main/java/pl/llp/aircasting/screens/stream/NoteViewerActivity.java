@@ -1,31 +1,35 @@
 package pl.llp.aircasting.screens.stream;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
 
-import org.w3c.dom.Text;
+import java.io.File;
 
-import java.util.Date;
-
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
+import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
 import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
+import pl.llp.aircasting.storage.repository.NoteRepository;
 
 import static pl.llp.aircasting.screens.stream.base.AirCastingActivity.NOTE_INDEX;
+import static pl.llp.aircasting.Intents.triggerSync;
 
 public class NoteViewerActivity extends DialogActivity implements View.OnClickListener {
     @Inject VisibleSession mVisibleSession;
     @Inject PhotoHelper mPhotoHelper;
+    @Inject NoteRepository mNotesRepository;
 
     private View mPreviousNote;
     private View mNextNote;
@@ -36,6 +40,7 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
     private Button mNoteDelete;
     private Button mViewPhoto;
 
+    private Note mCurrentNote;
     private int mNotesTotal = 0;
     private int mNoteIndex = -1;
 
@@ -56,6 +61,9 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
 
         mNextNote.setOnClickListener(this);
         mPreviousNote.setOnClickListener(this);
+        mViewPhoto.setOnClickListener(this);
+        mNoteSave.setOnClickListener(this);
+        mNoteDelete.setOnClickListener(this);
 
         mNotesTotal = mVisibleSession.getSessionNoteCount();
         mNoteIndex = getIntent().getIntExtra(NOTE_INDEX, 0);
@@ -65,13 +73,13 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
 
     private void setNote() {
         int index = ((mNoteIndex % mNotesTotal) + mNotesTotal) % mNotesTotal;
-        Note note = mVisibleSession.getSessionNote(index);
-        String title = FormatHelper.dateTime(note.getDate()).toString();
+        mCurrentNote = mVisibleSession.getSessionNote(index);
+        String title = FormatHelper.dateTime(mCurrentNote.getDate()).toString();
         mNoteDate.setText(title);
 
         mNoteNumber.setText(index + 1 + "/" + mNotesTotal);
-        mNoteText.setText(note.getText());
-        mViewPhoto.setVisibility(mPhotoHelper.photoExists(note) ? View.VISIBLE : View.GONE);
+        mNoteText.setText(mCurrentNote.getText());
+        mViewPhoto.setVisibility(mPhotoHelper.photoExists(mCurrentNote) ? View.VISIBLE : View.GONE);
 
         mNoteIndex = index;
     }
@@ -87,6 +95,66 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
                 mNoteIndex += 1;
                 setNote();
                 break;
+            case R.id.view_photo:
+                showNotePhoto();
+                break;
+            case R.id.note_save:
+                saveNote();
+                break;
+            case R.id.note_delete:
+                deleteNote();
+                break;
+        }
+    }
+
+    private void saveNote() {
+        String text = mNoteText.getText().toString();
+        mCurrentNote.setText(text);
+        final Context context = this;
+
+        //noinspection unchecked
+        new SimpleProgressTask<Void, Void, Void>(this) {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                if (mVisibleSession.isVisibleSessionViewed()) {
+                    mNotesRepository.updateNote(mCurrentNote, mVisibleSession.getSession().getId());
+                    triggerSync(context);
+                }
+                return null;
+            }
+        }.execute();
+
+        finish();
+    }
+
+    private void deleteNote() {
+        //noinspection unchecked
+        final Context context = this;
+
+        new SimpleProgressTask<Void, Void, Void>(this) {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mNotesRepository.deleteNote(mVisibleSession.getSession().getId(), mCurrentNote.getNumber());
+                mVisibleSession.deleteNote(mCurrentNote);
+                triggerSync(context);
+
+                return null;
+            }
+        }.execute();
+
+        finish();
+    }
+
+    private void showNotePhoto() {
+        Intents.viewPhoto(this, photoUri());
+    }
+
+    private Uri photoUri() {
+        if (mPhotoHelper.photoExistsLocally(mCurrentNote)) {
+            File file = new File(mCurrentNote.getPhotoPath());
+            return FileProvider.getUriForFile(this, String.valueOf(R.string.file_provider_authority), file);
+        } else {
+            return Uri.parse(mCurrentNote.getPhotoPath());
         }
     }
 }

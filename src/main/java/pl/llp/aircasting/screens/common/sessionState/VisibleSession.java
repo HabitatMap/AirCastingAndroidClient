@@ -119,6 +119,10 @@ public class VisibleSession {
         return getSession().getNotes();
     }
 
+    public void deleteNote(Note note) {
+        getSession().getNotes().remove(note);
+    }
+
     public Note getSessionNote(int i) {
         return getSession().getNotes().get(i);
     }

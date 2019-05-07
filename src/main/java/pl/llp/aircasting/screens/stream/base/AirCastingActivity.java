@@ -33,7 +33,6 @@ import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
-import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
@@ -55,10 +54,7 @@ import pl.llp.aircasting.screens.stream.TopBarHelper;
 import pl.llp.aircasting.screens.stream.NoteViewerActivity;
 import roboguice.inject.InjectView;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static pl.llp.aircasting.Intents.triggerSync;
 
 public abstract class AirCastingActivity extends AirCastingBaseActivity implements View.OnClickListener {
     public static final String NOTE_INDEX = "noteIndex";
@@ -99,7 +95,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
         initialize();
 
-//        initializeNoteViewer();
         startUpdatingFixedSessions();
 
         updateGauges();
@@ -121,12 +116,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             zoomIn.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
-//            noteDelete.setOnClickListener(this);
-//            noteRight.setOnClickListener(this);
-//            viewPhoto.setOnClickListener(this);
-//            noteLeft.setOnClickListener(this);
-//            noteSave.setOnClickListener(this);
-
             gauges.setOnClickListener(this);
 
             initialized = true;
@@ -137,7 +126,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-//        outState.putInt(NOTE_INDEX, noteIndex);
         outState.putInt(VISIBLE_SESSION_ID, (int) visibleSession.getVisibleSessionId());
         outState.putString(VISIBLE_SENSOR_ID, visibleSession.getSensor().getSensorName());
     }
@@ -146,7 +134,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-//        noteIndex = savedInstanceState.getInt(NOTE_INDEX, -1);
         int visibleSessionId = savedInstanceState.getInt(VISIBLE_SESSION_ID);
         String visibleSensorName = savedInstanceState.getString(VISIBLE_SENSOR_ID);
 
@@ -257,24 +244,9 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             case R.id.top_bar:
                 Intents.thresholdsEditor(this, visibleSession.getSensor());
                 break;
-            case R.id.note_save:
-                saveNote();
-                break;
-            case R.id.note_delete:
-                deleteNote();
-                break;
-//            case R.id.note_left:
-//                noteClicked(noteIndex - 1);
-//                break;
-//            case R.id.note_right:
-//                noteClicked(noteIndex + 1);
-//                break;
             case R.id.gauge_container:
                 showDialog(SelectSensorHelper.DIALOG_ID);
                 break;
-//            case R.id.view_photo:
-//                Intents.viewPhoto(this, photoUri());
-//                break;
             default:
                 break;
         }
@@ -296,60 +268,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         Intent intent = new Intent(this, NoteViewerActivity.class);
         intent.putExtra(NOTE_INDEX, index);
         startActivity(intent);
-    }
-
-    private void saveNote() {
-        // TODO
-//        String text = noteText.getText().toString();
-//        currentNote.setText(text);
-
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                if (visibleSession.isVisibleSessionViewed()) {
-                    currentSessionManager.updateNote(currentNote);
-                    triggerSync(context);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-//                hideNoteViewer();
-            }
-        }.execute();
-    }
-
-    private void deleteNote() {
-        //noinspection unchecked
-        new SimpleProgressTask<Void, Void, Void>(this) {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                currentSessionManager.deleteNote(currentNote);
-                triggerSync(context);
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                refreshNotes();
-//                hideNoteViewer();
-            }
-        }.execute();
-    }
-
-    private Uri photoUri() {
-        if (photoHelper.photoExistsLocally(currentNote)) {
-            File file = new File(currentNote.getPhotoPath());
-            return Uri.fromFile(file);
-        } else {
-            return Uri.parse(currentNote.getPhotoPath());
-        }
     }
 
     protected abstract void refreshNotes();

@@ -22,6 +22,7 @@ package pl.llp.aircasting.screens.sessions;
 import android.content.Context;
 import android.support.v4.content.FileProvider;
 
+import pl.llp.aircasting.R;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -81,7 +82,7 @@ public class CSVHelper {
             csvWriter.close();
 
 //            Uri uri = Uri.fromFile(file);
-            Uri uri = FileProvider.getUriForFile(context, "pl.llp.aircasting.fileprovider", file);
+            Uri uri = FileProvider.getUriForFile(context, String.valueOf(R.string.file_provider_authority), file);
             if (Constants.isDevMode()) {
                 Logger.i("File path [" + uri + "]");
             }

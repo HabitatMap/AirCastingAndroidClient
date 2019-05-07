@@ -33,17 +33,12 @@ import pl.llp.aircasting.screens.common.helpers.NotificationHelper;
 import pl.llp.aircasting.event.session.CurrentSessionSetEvent;
 import pl.llp.aircasting.event.session.SessionStartedEvent;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
-import pl.llp.aircasting.sensor.builtin.SimpleAudioReader;
-import pl.llp.aircasting.storage.DatabaseTaskQueue;
-import pl.llp.aircasting.storage.db.DBConstants;
-import pl.llp.aircasting.storage.db.WritableDatabaseTask;
+import pl.llp.aircasting.storage.repository.NoteRepository;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 import pl.llp.aircasting.util.Constants;
 
 import android.app.Application;
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -53,33 +48,26 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Date;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
 
 @Singleton
 public class CurrentSessionManager {
     public static final double TOTALLY_FAKE_COORDINATE = 200;
 
-    @Inject SimpleAudioReader audioReader;
     @Inject EventBus eventBus;
     @Inject SessionRepository sessionRepository;
-    @Inject DatabaseTaskQueue dbQueue;
-    @Inject
-    LocationHelper locationHelper;
-    @Inject
-    NotificationHelper notificationHelper;
+    @Inject LocationHelper locationHelper;
+    @Inject NotificationHelper notificationHelper;
     @Inject Application applicationContext;
     @Inject TelephonyManager telephonyManager;
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject ContinuousTracker tracker;
-    @Inject
-    ApplicationState state;
+    @Inject ApplicationState state;
 
     @NotNull
     Session currentSession = new Session();
@@ -203,10 +191,6 @@ public class CurrentSessionManager {
         return stream;
     }
 
-    public void deleteNote(Note note) {
-        tracker.deleteNote(currentSession, note);
-    }
-
     public Collection<MeasurementStream> getMeasurementStreams() {
         return newArrayList(currentSession.getActiveMeasurementStreams());
     }
@@ -277,19 +261,5 @@ public class CurrentSessionManager {
     public void setTitleTags(long sessionId, String title, String tags) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);
-    }
-
-    public void updateNote(final Note currentNote) {
-        dbQueue.add(new WritableDatabaseTask<Void>() {
-            @Override
-            public Void execute(SQLiteDatabase writableDatabase) {
-                ContentValues values = new ContentValues();
-                values.put(DBConstants.NOTE_TEXT, currentNote.getText());
-                @Language("SQLite")
-                String whereClause = " WHERE " + DBConstants.NOTE_NUMBER + " = " + currentNote.getNumber() + " AND " + DBConstants.NOTE_SESSION_ID + " = " + currentSession.getId();
-                writableDatabase.update(DBConstants.NOTE_TABLE_NAME, values, whereClause, null);
-                return null;
-            }
-        });
     }
 }
