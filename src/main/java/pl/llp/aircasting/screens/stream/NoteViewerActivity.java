@@ -19,7 +19,6 @@ import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
 import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
-import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.storage.repository.NoteRepository;
 
@@ -112,7 +111,6 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
         mCurrentNote.setText(text);
         final Context context = this;
 
-        //noinspection unchecked
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -128,7 +126,6 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
     }
 
     private void deleteNote() {
-        //noinspection unchecked
         final Context context = this;
 
         new SimpleProgressTask<Void, Void, Void>(this) {

@@ -33,7 +33,6 @@ import pl.llp.aircasting.screens.common.helpers.NotificationHelper;
 import pl.llp.aircasting.event.session.CurrentSessionSetEvent;
 import pl.llp.aircasting.event.session.SessionStartedEvent;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
-import pl.llp.aircasting.storage.repository.NoteRepository;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import pl.llp.aircasting.tracking.ContinuousTracker;
 import pl.llp.aircasting.util.Constants;

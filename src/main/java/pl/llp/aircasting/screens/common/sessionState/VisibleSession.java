@@ -24,8 +24,7 @@ import static com.google.inject.internal.Lists.newArrayList;
 public class VisibleSession {
     @Inject EventBus eventBus;
     @Inject ApplicationState state;
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
     private Session session;
