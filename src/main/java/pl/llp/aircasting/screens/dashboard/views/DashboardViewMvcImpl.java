@@ -100,9 +100,12 @@ public class DashboardViewMvcImpl implements BaseViewMvc, DashboardViewMvc, View
             mStreamsLayout.setVisibility(View.GONE);
         }
 
+        boolean initialBluetoothSensor = mCurrentRecyclerAdapter.getItemCount() == 0;
         mCurrentRecyclerAdapter.bindData(data);
 
         if (!data.isEmpty() && mViewingRecyclerAdapter.getItemCount() == 0) {
+            selectActiveTab(BLUETOOTH_TAB);
+        } else if (!data.isEmpty() && initialBluetoothSensor) {
             selectActiveTab(BLUETOOTH_TAB);
         } else if (data.isEmpty() && mViewingRecyclerAdapter.getItemCount() != 0) {
             selectActiveTab(OTHER_TAB);
