@@ -24,8 +24,7 @@ import static com.google.inject.internal.Lists.newArrayList;
 public class VisibleSession {
     @Inject EventBus eventBus;
     @Inject ApplicationState state;
-    @Inject
-    CurrentSessionManager currentSessionManager;
+    @Inject CurrentSessionManager currentSessionManager;
 
     final Sensor AUDIO_SENSOR = SimpleAudioReader.getSensor();
     private Session session;
@@ -117,6 +116,10 @@ public class VisibleSession {
 
     public Iterable<Note> getSessionNotes() {
         return getSession().getNotes();
+    }
+
+    public void deleteNote(Note note) {
+        getSession().getNotes().remove(note);
     }
 
     public Note getSessionNote(int i) {

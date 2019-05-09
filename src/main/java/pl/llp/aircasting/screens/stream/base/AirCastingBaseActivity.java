@@ -1,6 +1,5 @@
 package pl.llp.aircasting.screens.stream.base;
 
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;

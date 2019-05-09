@@ -20,86 +20,75 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/note_viewer"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="40dp"
-              android:orientation="vertical"
-              android:background="@drawable/panel_background"
->
-    <LinearLayout android:layout_height="wrap_content"
-                  android:layout_width="fill_parent"
-                  android:layout_marginBottom="2dp"
-                  android:padding="3dp"
-                  android:gravity="center_vertical"
-            >
-        <ImageView style="@style/Wrap"
-                   android:src="@drawable/ic_dialog_menu_generic"
-                   android:layout_margin="2dp"
-                />
-        <TextView style="@style/Fill"
-                  android:layout_weight="1"
-                  android:text="00/00/00 00:00"
-                  android:paddingLeft="5dp"
-                  android:gravity="center_vertical"
-                  android:id="@+id/note_date"
-                  android:textColor="@android:color/primary_text_dark"
-                />
-        <TextView style="@style/Wrap"
-                  android:text="00/00"
-                  android:layout_marginRight="2dp"
-                  android:gravity="center_vertical"
-                  android:id="@+id/note_number"
-                  android:textColor="@android:color/primary_text_dark"
-                />
+    android:id="@+id/note_viewer"
+    style="@style/DialogMain"
+    android:orientation="vertical">
 
-        <ImageButton style="@style/Wrap"
-                     android:background="@drawable/left"
-                     android:id="@+id/note_left"
-                />
-        <ImageButton style="@style/Wrap"
-                     android:background="@drawable/right"
-                     android:id="@+id/note_right"
-                />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/toolbar_blue"
+        android:gravity="center_vertical"
+        android:padding="3dp">
+
+        <TextView
+            android:id="@+id/note_date"
+            style="@style/Fill"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:paddingLeft="10dp"
+            android:text="00/00/00 00:00"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <TextView
+            android:id="@+id/note_number"
+            style="@style/Wrap"
+            android:layout_marginRight="2dp"
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:text="00/00"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <ImageButton
+            android:id="@+id/note_left"
+            style="@style/Wrap"
+            android:background="@drawable/ic_previous_note" />
+
+        <ImageButton
+            android:id="@+id/note_right"
+            style="@style/Wrap"
+            android:background="@drawable/ic_next_note" />
+
     </LinearLayout>
 
-    <LinearLayout style="@style/Wide"
-                  android:background="@drawable/dialog_background"
-                  android:orientation="vertical"
-            >
+    <LinearLayout
+        style="@style/Wide"
+        android:orientation="vertical">
 
-        <TextView style="@style/DialogText"
-                  android:text="@string/note"
-                  android:layout_marginLeft="2dp"
-                />
-        <EditText style="@style/Wide"
-                  android:text=""
-                  android:lines="5"
-                  android:id="@+id/note_text"
-                />
-
-        <LinearLayout style="@style/Wrap"
-                      android:gravity="center_vertical"
-                      android:layout_marginBottom="5dp"
-                      android:layout_marginLeft="3dp"
-                      android:id="@+id/view_photo"
-                >
-            <ImageView style="@style/Wrap"
-                       android:src="@drawable/camera"
-                    />
-            <TextView style="@style/Link"
-                      android:text="@string/view_photo"
-                    />
-        </LinearLayout>
+        <EditText
+            android:id="@+id/note_text"
+            style="@style/Wide"
+            android:lines="5"
+            android:text=""
+            android:theme="@style/AirCastingEditText" />
 
         <Button style="@style/DialogButton"
-                android:text="@string/save_changes"
-                android:id="@+id/note_save"
-                />
+            android:text="@string/view_photo"
+            android:id="@+id/view_photo"
+            android:drawableStart="@drawable/camera"
+            android:drawablePadding="10dp"
+            />
 
-        <Button style="@style/DialogButton"
-                android:text="@string/delete"
-                android:id="@+id/note_delete"
-                />
+        <Button
+            android:id="@+id/note_save"
+            style="@style/DialogButton"
+            android:text="@string/save_changes" />
+
+        <Button
+            android:id="@+id/note_delete"
+            style="@style/DialogButton"
+            android:text="@string/delete" />
     </LinearLayout>
 </LinearLayout>
