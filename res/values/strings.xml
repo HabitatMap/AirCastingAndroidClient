@@ -159,10 +159,6 @@
   <string name="yes_contribute">Yes, save and contribute</string>
   <string name="no_contribute">Save but don\'t contribute</string>
   <string name="keep_screen_on">Keep screen on</string>
-  <string name="offset_60_db">Offset at 60 dB</string>
-  <string name="offset_60_db_summary">If you have access to a professional sound level meter for comparison, you can
-    adjust the dB offset to increase the accuracy of your readings.
-  </string>
   <string name="sound_level_measurementless">Disable phone microphone</string>
   <string name="sound_level_measurementless_summary">Check to disable sound level measurements from phone microphone.</string>
   <string name="offset_error">The offset should be between -5 and +5 dB.</string>

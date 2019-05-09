@@ -30,7 +30,6 @@ public interface DBConstants
   String SESSION_TABLE_NAME = "Sessions";
   String SESSION_ID = BaseColumns._ID;
   String SESSION_TITLE = "Title";
-  String SESSION_DESCRIPTION = "Description";
   String SESSION_TAGS = "Tags";
   String SESSION_START = "Start";
   String SESSION_END = "End";
@@ -41,10 +40,7 @@ public interface DBConstants
   String SESSION_LOCATION = "Location";
   String SESSION_CALIBRATION = "Calibration";
   String SESSION_CONTRIBUTE = "Contribute";
-  String SESSION_PHONE_MODEL = "PhoneModel";
 
-  String SESSION_OS_VERSION = "OSVersion";
-  String SESSION_OFFSET_60_DB = "Offset60DB";
   String SESSION_MARKED_FOR_REMOVAL = "MarkedForRemoval";
   String SESSION_SUBMITTED_FOR_REMOVAL = "SubmittedForRemoval";
   String SESSION_CALIBRATED = "is_calibrated";

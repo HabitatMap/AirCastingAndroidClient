@@ -61,15 +61,6 @@ public class SettingsActivityTest {
     }
 
     @Test
-    public void shouldComplainAboutInvalidOffset() {
-        when(activity.settingsHelper.validateOffset60DB(anyInt())).thenReturn(false);
-
-        activity.offset60DbInputListener.onPreferenceChange(mock(Preference.class), SettingsHelper.MAX_OFFSET_60_DB + 1);
-
-        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(activity.getString(R.string.offset_error)));
-    }
-
-    @Test
     public void shouldValidateAveragingInterval() {
         when(activity.settingsHelper.validateAveragingTime()).thenReturn(false);
 

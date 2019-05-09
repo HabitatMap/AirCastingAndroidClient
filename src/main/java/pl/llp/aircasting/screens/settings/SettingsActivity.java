@@ -51,10 +51,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
     @Inject SharedPreferences sharedPreferences;
     @Inject SettingsHelper settingsHelper;
-    @Inject
-    ApplicationState state;
-
-    Offset60DbInputListener offset60DbInputListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +59,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         addPreferencesFromResource(R.xml.preferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        offset60DbInputListener = new Offset60DbInputListener();
-
-        final Preference offsetPreference = getPreferenceScreen().findPreference(SettingsHelper.OFFSET_60_DB);
         final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.STREAMING_ALERT);
 
         alertPreference.setOnPreferenceChangeListener(new StreamingAlertListener());
-        offsetPreference.setOnPreferenceChangeListener(offset60DbInputListener);
     }
 
     // preferences screen behaves differently than the others, so we have to use this workaround to add the toolbar
@@ -120,25 +112,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
             ToastHelper.show(context, R.string.setting_error, Toast.LENGTH_LONG);
         } else if (key.equals(SettingsHelper.AVERAGING_TIME) && !settingsHelper.validateAveragingTime()) {
             ToastHelper.show(context, R.string.averaging_time_error, Toast.LENGTH_LONG);
-        }
-    }
-
-    class Offset60DbInputListener implements Preference.OnPreferenceChangeListener {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            {
-                if (newValue != null) {
-                    try {
-                        int newOffset = Integer.parseInt(newValue.toString());
-                        if (settingsHelper.validateOffset60DB(newOffset)) {
-                            return true;
-                        }
-                    } catch (NumberFormatException ignore) {
-                    }
-                }
-                ToastHelper.show(SettingsActivity.this, R.string.offset_error, Toast.LENGTH_LONG);
-                return false;
-            }
         }
     }
 }

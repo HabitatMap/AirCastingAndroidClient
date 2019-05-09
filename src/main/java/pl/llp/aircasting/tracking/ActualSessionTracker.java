@@ -51,10 +51,6 @@ public class ActualSessionTracker implements SessionTracker {
 
         session.setLocationless(this.settingsHelper.areMapsDisabled() || locationLess);
         session.setCalibration(this.settingsHelper.getCalibration());
-        session.setOffset60DB(this.settingsHelper.getOffset60DB());
-
-        session.setOsVersion(this.metadataHelper.getOSVersion());
-        session.setPhoneModel(this.metadataHelper.getPhoneModel());
     }
 
     @Override
@@ -77,12 +73,6 @@ public class ActualSessionTracker implements SessionTracker {
     public void setTags(long sessionId, String tags) {
         session.setTags(tags);
         setter.forSession(sessionId).key(SESSION_TAGS).value(tags).doSet();
-    }
-
-    @Override
-    public void setDescription(long sessionId, String description) {
-        session.setDescription(description);
-        setter.forSession(sessionId).key(DBConstants.SESSION_DESCRIPTION).value(description).doSet();
     }
 
     @Override
@@ -139,9 +129,6 @@ public class ActualSessionTracker implements SessionTracker {
                 values.put(SESSION_START, session.getStart().getTime());
                 values.put(SESSION_UUID, session.getUUID().toString());
                 values.put(SESSION_CALIBRATION, session.getCalibration());
-                values.put(SESSION_PHONE_MODEL, session.getPhoneModel());
-                values.put(SESSION_OS_VERSION, session.getOSVersion());
-                values.put(SESSION_OFFSET_60_DB, session.getOffset60DB());
                 values.put(SESSION_MARKED_FOR_REMOVAL, 0);
                 values.put(SESSION_SUBMITTED_FOR_REMOVAL, 0);
                 values.put(SESSION_CALIBRATED, 1);
@@ -149,7 +136,6 @@ public class ActualSessionTracker implements SessionTracker {
                 values.put(SESSION_INCOMPLETE, 1);
                 values.put(SESSION_TYPE, session.getType());
                 values.put(SESSION_TITLE, session.getTitle());
-                values.put(SESSION_DESCRIPTION, session.getDescription());
                 values.put(SESSION_TAGS, session.getTags());
                 values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
                 values.put(SESSION_LATITUDE, session.getLatitude());

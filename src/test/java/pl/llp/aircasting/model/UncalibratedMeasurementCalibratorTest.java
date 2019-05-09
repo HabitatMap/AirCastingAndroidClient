@@ -50,7 +50,6 @@ public class UncalibratedMeasurementCalibratorTest
         "INSERT INTO SESSIONS(_id, uuid, "
         + SESSION_CALIBRATED + ", "
         + SESSION_CALIBRATION + ", "
-        + SESSION_OFFSET_60_DB + ", "
         + ") VALUES(1, '" + UUID.randomUUID() + "', false, 10, 20)");
 
     db.execSQL("INSERT INTO STREAMS(_id, "

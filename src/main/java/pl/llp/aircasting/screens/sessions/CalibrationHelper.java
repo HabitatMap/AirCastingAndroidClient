@@ -35,14 +35,13 @@ public class CalibrationHelper
   public double calibrate(double value)
   {
     int calibration = settingsHelper.getCalibration();
-    int offset60DB = settingsHelper.getOffset60DB();
 
-    return calibrate(value, calibration, offset60DB);
+    return calibrate(value, calibration);
   }
 
-  public double calibrate(double value, int calibration, int offset60DB)
+  public double calibrate(double value, int calibration)
   {
-    int low = -(calibration - OFFSET_POINT) + offset60DB;
+    int low = -(calibration - OFFSET_POINT);
 
     if (low == 0) return 0;
     return project(value, low, 0, OFFSET_POINT, calibration);

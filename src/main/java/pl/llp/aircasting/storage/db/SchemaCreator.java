@@ -102,7 +102,6 @@ public class SchemaCreator
     table.setPrimaryKey(new Column(SESSION_ID, Datatype.INTEGER));
 
     table.addColumn(new Column(SESSION_TITLE, Datatype.TEXT));
-    table.addColumn(new Column(SESSION_DESCRIPTION, Datatype.TEXT));
     table.addColumn(new Column(SESSION_TAGS, Datatype.TEXT));
     table.addColumn(new Column(SESSION_START, Datatype.INTEGER));
     table.addColumn(new Column(SESSION_END, Datatype.INTEGER));
@@ -110,9 +109,6 @@ public class SchemaCreator
     table.addColumn(new Column(SESSION_LOCATION, Datatype.TEXT));
     table.addColumn(new Column(SESSION_CALIBRATION, Datatype.INTEGER));
     table.addColumn(new Column(SESSION_CONTRIBUTE, Datatype.BOOLEAN));
-    table.addColumn(new Column(SESSION_PHONE_MODEL, Datatype.TEXT));
-    table.addColumn(new Column(SESSION_OS_VERSION, Datatype.TEXT));
-    table.addColumn(new Column(SESSION_OFFSET_60_DB, Datatype.INTEGER));
     table.addColumn(new Column(SESSION_MARKED_FOR_REMOVAL,Datatype.BOOLEAN));
     table.addColumn(new Column(SESSION_SUBMITTED_FOR_REMOVAL, Datatype.BOOLEAN, 21));
     table.addColumn(new Column(SESSION_CALIBRATED, Datatype.BOOLEAN, 26));

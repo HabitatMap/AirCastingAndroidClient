@@ -171,7 +171,6 @@ public class SessionRepository {
 
     private void prepareHeader(Session session, ContentValues values) {
         values.put(SESSION_TITLE, session.getTitle());
-        values.put(SESSION_DESCRIPTION, session.getDescription());
         values.put(SESSION_TAGS, session.getTags());
         values.put(SESSION_LOCATION, session.getLocation());
     }
