@@ -35,13 +35,13 @@ public class SessionTimeFixer {
     }
 
     private int getOffset(Session session) {
-//        List<MeasurementStream> streams = session.getActiveMeasurementStreams();
-//        for (MeasurementStream stream : streams) {
-//            List<Measurement> measurements = stream.getMeasurements();
-//            for (Measurement measurement : measurements) {
-//                return measurement.getTimeZoneOffsetMinutes();
-//            }
-//        }
+        List<MeasurementStream> streams = session.getActiveMeasurementStreams();
+        for (MeasurementStream stream : streams) {
+            List<Measurement> measurements = stream.getMeasurements();
+            for (Measurement measurement : measurements) {
+                return measurement.getTimeZoneOffsetMinutes();
+            }
+        }
         return 0;
     }
 
