@@ -149,7 +149,7 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
     private Uri photoUri() {
         if (mPhotoHelper.photoExistsLocally(mCurrentNote)) {
             File file = new File(mCurrentNote.getPhotoPath());
-            return FileProvider.getUriForFile(this, String.valueOf(R.string.file_provider_authority), file);
+            return FileProvider.getUriForFile(this, "pl.llp.aircasting.fileprovider", file);
         } else {
             return Uri.parse(mCurrentNote.getPhotoPath());
         }
