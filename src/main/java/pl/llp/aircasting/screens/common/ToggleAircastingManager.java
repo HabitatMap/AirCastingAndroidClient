@@ -36,7 +36,6 @@ public class ToggleAircastingManager {
     public ToggleAircastingManager(Activity activity,
                                    CurrentSessionManager currentSessionManager,
                                    SettingsHelper settingsHelper,
-                                   CurrentSessionSensorManager currentSessionSensorManager,
                                    LocationHelper locationHelper,
                                    AppCompatDelegate delegate,
                                    Context context,
@@ -88,10 +87,7 @@ public class ToggleAircastingManager {
     }
 
     public void startMobileAirCasting() {
-        locationHelper.initLocation();
-        locationHelper.checkLocationSettings(activity);
-
-        if (locationHelper.locationUpdatesStarted()) {
+        if (locationHelper.getLastLocation() != null) {
             dashboardChartManager.start();
 
             activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));

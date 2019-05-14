@@ -18,7 +18,6 @@ public class ToggleAircastingManagerFactory {
     @Inject CurrentSessionManager currentSessionManager;
     @Inject SettingsHelper settingsHelper;
     @Inject LocationHelper locationHelper;
-    @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
 
@@ -26,7 +25,6 @@ public class ToggleAircastingManagerFactory {
         return new ToggleAircastingManager(activity,
                 currentSessionManager,
                 settingsHelper,
-                currentSessionSensorManager,
                 locationHelper,
                 delegate,
                 context,

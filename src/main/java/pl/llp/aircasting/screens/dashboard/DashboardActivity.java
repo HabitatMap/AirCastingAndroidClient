@@ -229,6 +229,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     public void onEvent(SensorConnectedEvent event) {
         mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
+        locationHelper.checkLocationSettings(this);
     }
 
     @Subscribe

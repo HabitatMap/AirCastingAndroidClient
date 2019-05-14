@@ -89,6 +89,7 @@ public class LocationHelper {
 
     @SuppressLint("MissingPermission")
     public synchronized void startLocationUpdates() {
+        initLocation();
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         mLocationUpdatesStarted = true;
     }
@@ -110,7 +111,6 @@ public class LocationHelper {
         task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                initLocation();
                 startLocationUpdates();
             }
         });
