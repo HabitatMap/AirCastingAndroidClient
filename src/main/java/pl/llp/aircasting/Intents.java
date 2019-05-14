@@ -234,6 +234,7 @@ public final class Intents {
         if (uri.getScheme().equals("http")) {
             intent.setData(uri);
         } else {
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setDataAndType(uri, MIME_IMAGE_JPEG);
         }
 
