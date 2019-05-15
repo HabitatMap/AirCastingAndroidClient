@@ -266,6 +266,7 @@
   <string name="configure_airbeam2">Configure AirBeam 2</string>
   <string name="configuring_airbeam">Configuring AirBeam2...</string>
   <string name="input_wifi_credentials">Input WiFi Credentials</string>
+  <string name="pick_location">Pick Location</string>
 
   <string name="drawer_open">Open</string>
   <string name="drawer_close">Close</string>
