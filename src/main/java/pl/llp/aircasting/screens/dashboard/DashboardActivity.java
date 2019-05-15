@@ -168,6 +168,8 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     public void onResume() {
         super.onResume();
 
+        eventBus.register(this);
+
         mDashboardViewModel.refreshCurrentSensors();
         mDashboardViewModel.refreshViewingSensors();
         mDashboardViewModel.refreshLiveCharts();
@@ -178,6 +180,15 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             ToastHelper.show(this, R.string.session_is_loading, Toast.LENGTH_SHORT);
         }
         toggleProgress();
+
+        startUpdatingFixedSessions();
+
+        if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
+            startSensors(context);
+            locationHelper.checkLocationSettings(this);
+        }
+
+        invalidateOptionsMenu();
     }
 
     private void toggleProgress() {
@@ -186,19 +197,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         } else {
             mDashboardViewMvc.hideProgress();
         }
-    }
-
-    @Override
-    public void onPostResume() {
-        startUpdatingFixedSessions();
-
-        if (viewingSessionsManager.anySessionPresent() || currentSessionSensorManager.anySensorConnected()) {
-            startSensors(context);
-        }
-
-        invalidateOptionsMenu();
-
-        super.onPostResume();
     }
 
     private void startUpdatingFixedSessions() {
@@ -212,6 +210,21 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(pollServerTask);
+
+        if (viewingSessionsManager.sessionsEmpty() && !currentSessionManager.isSessionRecording()) {
+            Intents.stopSensors(this);
+        }
+
+        if (!currentSessionManager.anySensorConnected()) {
+            locationHelper.stopLocationUpdates();
+        }
+
+        if (registeredReceiver != null) {
+            unregisterReceiver(syncBroadcastReceiver);
+            registeredReceiver = null;
+        }
+
+        eventBus.unregister(this);
     }
 
     @Override
@@ -227,9 +240,9 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
+        locationHelper.checkLocationSettings(this);
         mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
-        locationHelper.checkLocationSettings(this);
     }
 
     @Subscribe
