@@ -14,6 +14,7 @@ import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.base.RoboMapActivityWithProgress;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.dashboard.DashboardActivity;
+import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
 
 import android.content.Context;
@@ -43,6 +44,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     @Inject public LocationHelper locationHelper;
     @Inject public SettingsHelper settingsHelper;
     @Inject public CurrentSessionManager currentSessionManager;
+    @Inject public MeasurementPresenter measurementPresenter;
 
     @Inject UnfinishedSessionChecker checker;
     @Inject ApplicationState state;
@@ -123,6 +125,8 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     public synchronized void toggleAirCasting() {
         toggleAircastingManager.toggleAirCasting();
         getDelegate().invalidateOptionsMenu();
+
+        measurementPresenter.reset();
     }
 
     @Override

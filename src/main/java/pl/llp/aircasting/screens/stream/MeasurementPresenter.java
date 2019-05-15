@@ -63,8 +63,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Inject SharedPreferences preferences;
     @Inject EventBus eventBus;
     @Inject VisibleSession visibleSession;
-    @Inject
-    MeasurementAggregator aggregator;
+    @Inject MeasurementAggregator aggregator;
     @Inject SessionDataFactory sessionData;
 
     private CopyOnWriteArrayList<Measurement> fullView = null;
@@ -182,7 +181,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         reset();
     }
 
-    private synchronized void reset() {
+    public synchronized void reset() {
         fullView = null;
         timelineView.clear();
 
@@ -290,10 +289,13 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     public void registerListener(Listener listener) {
         listeners.add(listener);
+        eventBus.register(this);
     }
 
     public void unregisterListener(Listener listener) {
         listeners.remove(listener);
+
+        eventBus.unregister(this);
     }
 
     public boolean canZoomIn() {
@@ -375,7 +377,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     private boolean sessionMatches(long sessionId) {
         if (visibleSession.getSession() == null) return false;
-        long visibleSessionId = visibleSession.getSession().getId();
+        long visibleSessionId = visibleSession.getVisibleSessionId();
 
         if (visibleSession.isVisibleSessionRecording() || sessionId == visibleSessionId) {
             return true;

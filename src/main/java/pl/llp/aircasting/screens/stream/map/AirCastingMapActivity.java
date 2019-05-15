@@ -86,7 +86,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Inject NoteOverlay noteOverlay;
     @Inject LocationOverlay locationOverlay;
     @Inject TraceOverlay traceOverlay;
-    @Inject MeasurementPresenter measurementPresenter;
     @Inject RouteOverlay routeOverlay;
     @Inject VisibleSession visibleSession;
 
