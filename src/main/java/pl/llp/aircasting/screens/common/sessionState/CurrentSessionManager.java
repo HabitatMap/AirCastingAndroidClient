@@ -103,11 +103,11 @@ public class CurrentSessionManager {
     }
 
     public boolean isSessionRecording() {
-        return currentSessionSensorManager.anySensorConnected() && state.recording().isRecording();
+        return anySensorConnected() && state.recording().isRecording();
     }
 
     public boolean isSessionIdle() {
-        return currentSessionSensorManager.anySensorConnected() && state.recording().isJustShowingCurrentValues();
+        return anySensorConnected() && state.recording().isJustShowingCurrentValues();
     }
 
     public void updateSession(Session from) {
@@ -223,7 +223,6 @@ public class CurrentSessionManager {
 
     public void stopSession() {
         tracker.stopTracking(getCurrentSession());
-        locationHelper.stopLocationUpdates();
         state.recording().stopRecording();
         notificationHelper.hideRecordingNotification();
         eventBus.post(new SessionStoppedEvent(getCurrentSession()));
@@ -251,7 +250,6 @@ public class CurrentSessionManager {
     }
 
     private void cleanup() {
-        locationHelper.stopLocationUpdates();
         state.recording().stopRecording();
         setSession(new Session());
         notificationHelper.hideRecordingNotification();
@@ -260,5 +258,9 @@ public class CurrentSessionManager {
     public void setTitleTags(long sessionId, String title, String tags) {
         tracker.setTitle(sessionId, title);
         tracker.setTags(sessionId, tags);
+    }
+
+    public boolean anySensorConnected() {
+        return currentSessionSensorManager.anySensorConnected();
     }
 }

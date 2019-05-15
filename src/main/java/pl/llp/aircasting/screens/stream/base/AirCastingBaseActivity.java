@@ -27,6 +27,7 @@ import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
 
+import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
@@ -74,6 +75,11 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
         eventBus.register(this);
         checkForUnfinishedSessions();
+
+        if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
+            startSensors(context);
+            locationHelper.checkLocationSettings(this);
+        }
     }
 
     @Override
@@ -84,7 +90,7 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
             Intents.stopSensors(this);
         }
 
-        if (!currentSessionManager.isSessionRecording()) {
+        if (!currentSessionManager.anySensorConnected()) {
             locationHelper.stopLocationUpdates();
         }
 

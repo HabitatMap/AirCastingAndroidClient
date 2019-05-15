@@ -65,7 +65,6 @@ public class ToggleAircastingManager {
     public void stopAirCasting() {
         Session session = currentSessionManager.getCurrentSession();
         dashboardChartManager.stop();
-        locationHelper.stopLocationUpdates();
 
         stopMobileAirCasting(session);
     }

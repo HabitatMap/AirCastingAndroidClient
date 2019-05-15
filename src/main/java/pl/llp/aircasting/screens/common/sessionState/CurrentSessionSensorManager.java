@@ -93,15 +93,11 @@ public class CurrentSessionSensorManager {
     }
 
     public synchronized double getNow(Sensor sensor) {
-//        if (state.recording().isRecording()) {
-//            return tracker.getNow(sensor);
-//        } else {
-            if (!recentMeasurements.containsKey(sensor.getSensorName())) {
-                return 0;
-            }
+        if (!recentMeasurements.containsKey(sensor.getSensorName())) {
+            return 0;
+        }
 
-            return recentMeasurements.get(sensor.getSensorName());
-//        }
+        return recentMeasurements.get(sensor.getSensorName());
     }
 
     public LiveData<Map<SensorName, Sensor>> getCurrentSensorsData() {
