@@ -79,16 +79,16 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     }
 
     private void runLocationPicker() {
-//        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-//        try {
-//            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-            startActivityForResult(new Intent(this, LocationPickerActivity.class), PLACE_PICKER_REQUEST);
-//        } catch (GooglePlayServicesRepairableException e) {
-//            GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
-//        } catch (GooglePlayServicesNotAvailableException e) {
-//            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
-//        }
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//
+        try {
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+//            startActivityForResult(new Intent(this, LocationPickerActivity.class), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

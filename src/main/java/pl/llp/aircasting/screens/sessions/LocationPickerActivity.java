@@ -1,25 +1,15 @@
 package pl.llp.aircasting.screens.sessions;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.inject.Inject;
 
 import pl.llp.aircasting.R;
@@ -47,6 +37,7 @@ public class LocationPickerActivity extends RoboActivityWithProgress
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mCurrentLocation = mMap.getCameraPosition().target;
         mMap.setOnCameraIdleListener(this);
         mLocateButton.setOnClickListener(this);
     }
@@ -61,8 +52,13 @@ public class LocationPickerActivity extends RoboActivityWithProgress
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.locate:
+                // should move to locationHelper.lastLocation()
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(mCurrentLocation));
                 break;
         }
+    }
+
+    public LatLng getLocation() {
+        return mCurrentLocation;
     }
 }

@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -16,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.libraries.places.compat.ui.PlacePicker;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -38,6 +43,7 @@ import pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModelFactory;
 import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvcImpl;
 import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;
+import pl.llp.aircasting.screens.sessions.LocationPickerActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
@@ -51,14 +57,18 @@ import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.S
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.CURRENT_ITEM;
 import static pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc.VIEWING_ITEM;
+import static pl.llp.aircasting.util.Constants.LOCATION_PERMISSION;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
+import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 public class DashboardActivity extends DashboardBaseActivity implements DashboardViewMvc.Listener {
     private static final long POLLING_INTERVAL = 60000;
     private static final String VIEWING_SESSIONS_IDS = "viewing_session_ids";
     private static final String DASHBOARD_BUNDLE = "dashboard_bundle";
     private static final String HIDDEN_STREAMS = "hidden_streams";
+
+    int PLACE_PICKER_REQUEST = 1;
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject ResourceHelper mResourceHelper;
@@ -157,11 +167,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override
@@ -394,11 +399,22 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                 startActivity(new Intent(this, ExternalSensorActivity.class));
                 break;
             case R.id.configure_airbeam2:
-                if (settingsHelper.hasCredentials()) {
-                    Intents.startAirbeam2Configuration(this);
-                } else {
-                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
+//                if (settingsHelper.hasCredentials()) {
+//                    Intents.startAirbeam2Configuration(this);
+//                } else {
+//                    ToastHelper.show(context, R.string.sign_in_to_configure, Toast.LENGTH_SHORT);
+//                }
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//
+                try {
+                    startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
                 }
+
+//                startActivityForResult(new Intent(this, LocationPickerActivity.class), PLACE_PICKER_REQUEST);
                 break;
         }
     }

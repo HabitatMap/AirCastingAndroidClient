@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -78,6 +79,7 @@ public class LocationHelper {
 
     @SuppressLint("MissingPermission")
     public void initLocation() {
+        Log.w("location init", "called");
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
 
         mFusedLocationProviderClient.getLastLocation()
@@ -115,6 +117,7 @@ public class LocationHelper {
         task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                Log.w("location check", "success");
                 startLocationUpdates();
                 locationSettingsListener.onLocationSettingsSatisfied();
             }
@@ -154,6 +157,7 @@ public class LocationHelper {
 
     private void updateLocation(Location location) {
         mLastLocation = location;
+        Log.w("location update", String.valueOf(location));
 
         LocationEvent locationEvent = new LocationEvent();
         eventBus.post(locationEvent);
