@@ -87,7 +87,7 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
 //        } catch (GooglePlayServicesRepairableException e) {
 //            GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
 //        } catch (GooglePlayServicesNotAvailableException e) {
-            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
+//            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
 //        }
     }
 
