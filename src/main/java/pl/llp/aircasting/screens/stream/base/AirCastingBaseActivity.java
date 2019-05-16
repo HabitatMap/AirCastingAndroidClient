@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.ToggleAircastingManager;
@@ -20,6 +21,8 @@ import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Button;
+import android.widget.Toast;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
@@ -37,7 +40,7 @@ import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION
  * navigation arrows
  */
 
-public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
+public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener, LocationHelper.LocationSettingsListener {
     public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Inject public Context context;
@@ -80,7 +83,6 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
         if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
             startSensors(context);
-            locationHelper.checkLocationSettings(this);
         }
     }
 
@@ -123,6 +125,19 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
     }
 
     public synchronized void toggleAirCasting() {
+        if (!currentSessionManager.isSessionRecording()) {
+            locationHelper.checkLocationSettings(this);
+        } else {
+            toggleSessionRecording();
+        }
+    }
+
+    @Override
+    public void onLocationSettingsSatisfied() {
+        toggleSessionRecording();
+    }
+
+    public synchronized void toggleSessionRecording() {
         toggleAircastingManager.toggleAirCasting();
         getDelegate().invalidateOptionsMenu();
 
@@ -142,8 +157,15 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
                 }
                 break;
             case REQUEST_CHECK_SETTINGS:
-                if (resultCode == RESULT_OK) {
-                    toggleAircastingManager.startMobileAirCasting();
+                if (resultCode != RESULT_OK) {
+                    ToastHelper.showText(this, "You need to enable location settings to record an AirCasting session", Toast.LENGTH_LONG);
+                } else {
+                    locationHelper.startLocationUpdates();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                    onLocationSettingsSatisfied();
                 }
                 break;
             default:

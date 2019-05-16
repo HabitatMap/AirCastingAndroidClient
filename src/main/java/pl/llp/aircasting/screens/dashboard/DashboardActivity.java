@@ -185,7 +185,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
         if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
             startSensors(context);
-            locationHelper.checkLocationSettings(this);
         }
 
         invalidateOptionsMenu();
@@ -240,7 +239,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Subscribe
     public void onEvent(SensorConnectedEvent event) {
-        locationHelper.checkLocationSettings(this);
         mDashboardViewModel.refreshCurrentSensors();
         invalidateOptionsMenu();
     }
