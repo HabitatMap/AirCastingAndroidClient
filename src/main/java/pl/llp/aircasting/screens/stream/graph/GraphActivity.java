@@ -19,7 +19,11 @@
  */
 package pl.llp.aircasting.screens.stream.graph;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.view.MenuItem;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
@@ -29,6 +33,7 @@ import pl.llp.aircasting.event.ui.ScrollEvent;
 import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
@@ -38,6 +43,8 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import roboguice.inject.InjectView;
@@ -46,6 +53,7 @@ import java.util.ArrayList;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 
 public class GraphActivity extends AirCastingActivity implements View.OnClickListener, MeasurementPresenter.Listener {
     @InjectView(R.id.noise_graph)
@@ -108,13 +116,22 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
         switch (menuItem.getItemId()) {
             case R.id.toggle_aircasting:
-                super.toggleAirCasting();
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationHelper.checkLocationSettings(this);
+                }
+
                 break;
             case R.id.make_note:
                 Intents.makeANote(this);
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onLocationSettingsSatisfied() {
+        toggleAirCasting();
     }
 
     @Override
@@ -128,6 +145,26 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
                 break;
             default:
                 super.onClick(view);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode != RESULT_OK) {
+                    ToastHelper.show(this, R.string.enable_location, Toast.LENGTH_LONG);
+                } else {
+                    locationHelper.startLocationUpdates();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                    onLocationSettingsSatisfied();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

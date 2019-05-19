@@ -56,6 +56,10 @@ public class LocationHelper {
     private LocationRequest mLocationRequest;
     private Boolean mLocationUpdatesStarted = false;
 
+    public interface LocationSettingsListener {
+        void onLocationSettingsSatisfied();
+    }
+
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -68,8 +72,8 @@ public class LocationHelper {
         }
     };
 
-    public void checkLocationSettings(Activity activity) {
-        checkLocationSettingsSatisfied(activity);
+    public void checkLocationSettings(LocationSettingsListener locationSettingsListener) {
+        checkLocationSettingsSatisfied(locationSettingsListener);
     }
 
     @SuppressLint("MissingPermission")
@@ -89,6 +93,7 @@ public class LocationHelper {
 
     @SuppressLint("MissingPermission")
     public synchronized void startLocationUpdates() {
+        initLocation();
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         mLocationUpdatesStarted = true;
     }
@@ -100,7 +105,7 @@ public class LocationHelper {
         }
     }
 
-    private boolean checkLocationSettingsSatisfied(final Activity activity) {
+    private boolean checkLocationSettingsSatisfied(final LocationSettingsListener locationSettingsListener) {
         mLocationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
@@ -110,8 +115,8 @@ public class LocationHelper {
         task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                initLocation();
                 startLocationUpdates();
+                locationSettingsListener.onLocationSettingsSatisfied();
             }
         });
 
@@ -123,7 +128,7 @@ public class LocationHelper {
                         // Show the dialog by calling startResolutionForResult(),
                         // and check the result in onActivityResult().
                         ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(activity,
+                        resolvable.startResolutionForResult((Activity) locationSettingsListener,
                                 REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException sendEx) {
                     }

@@ -284,7 +284,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
             chooseToggleSessionsReorderIcon(toggleReorderItem);
         }
 
-        if (currentSessionSensorManager.anySensorConnected() && !currentSessionManager.isSessionRecording()) {
+        if (currentSessionManager.anySensorConnected() && !currentSessionManager.isSessionRecording()) {
             inflater.inflate(R.menu.toolbar_start_recording, menu);
         } else if (currentSessionManager.isSessionRecording()){
             inflater.inflate(R.menu.toolbar_stop_recording, menu);

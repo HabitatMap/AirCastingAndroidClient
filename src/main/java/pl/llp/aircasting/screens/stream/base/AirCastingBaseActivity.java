@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.view.*;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.ToggleAircastingManager;
@@ -19,6 +20,8 @@ import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Button;
+import android.widget.Toast;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
@@ -27,6 +30,7 @@ import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
 
+import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
@@ -35,7 +39,7 @@ import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION
  * navigation arrows
  */
 
-public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener {
+public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress implements View.OnClickListener, LocationHelper.LocationSettingsListener {
     public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Inject public Context context;
@@ -74,6 +78,10 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
 
         eventBus.register(this);
         checkForUnfinishedSessions();
+
+        if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
+            startSensors(context);
+        }
     }
 
     @Override
@@ -132,8 +140,15 @@ public abstract class AirCastingBaseActivity extends RoboMapActivityWithProgress
                 }
                 break;
             case REQUEST_CHECK_SETTINGS:
-                if (resultCode == RESULT_OK) {
-                    toggleAircastingManager.startMobileAirCasting();
+                if (resultCode != RESULT_OK) {
+                    ToastHelper.showText(this, "You need to enable location settings to record an AirCasting session", Toast.LENGTH_LONG);
+                } else {
+                    locationHelper.startLocationUpdates();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                    onLocationSettingsSatisfied();
                 }
                 break;
             default:

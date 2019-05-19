@@ -51,11 +51,6 @@ public class ToggleAircastingManager {
     }
 
     public void toggleAirCasting() {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
-            return;
-        }
-
         if (currentSessionManager.isSessionRecording()) {
             stopAirCasting();
         } else {
@@ -88,13 +83,13 @@ public class ToggleAircastingManager {
     }
 
     public void startMobileAirCasting() {
-        locationHelper.initLocation();
-        locationHelper.checkLocationSettings(activity);
-
-        if (locationHelper.locationUpdatesStarted()) {
-            dashboardChartManager.start();
-
-            activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, LOCATION_PERMISSION, PERMISSIONS_REQUEST_FINE_LOCATION);
+            return;
         }
+
+        dashboardChartManager.start();
+
+        activity.startActivity(new Intent(activity, StartMobileSessionActivity.class));
     }
 }

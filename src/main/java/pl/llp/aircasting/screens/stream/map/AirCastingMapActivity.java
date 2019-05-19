@@ -20,6 +20,7 @@
 package pl.llp.aircasting.screens.stream.map;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.view.*;
@@ -31,6 +32,7 @@ import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.networking.drivers.AveragesDriver;
@@ -63,6 +65,7 @@ import roboguice.inject.InjectView;
 import java.util.List;
 
 import static java.lang.Math.min;
+import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.screens.stream.map.LocationConversionHelper.boundingBox;
 import static pl.llp.aircasting.screens.stream.map.LocationConversionHelper.geoPoint;
 import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle;
@@ -73,7 +76,7 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  * Date: 10/17/11
  * Time: 5:04 PM
  */
-public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener {
+public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
 
     @InjectView(R.id.mapview)
     AirCastingMapView mapView;
@@ -93,6 +96,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
 
+    private static final int ACTION_TOGGLE = 1;
+    private static final int ACTION_CENTER = 2;
+
     private boolean soundTraceComplete = true;
     private boolean heatMapVisible = false;
     private int requestsOutstanding = 0;
@@ -104,6 +110,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private Measurement lastMeasurement;
     private boolean zoomToSession = true;
     private MapIdleDetector routeRefreshDetector;
+    private int mRequestedAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +173,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         switch (menuItem.getItemId()) {
             case R.id.toggle_aircasting:
-                super.toggleAirCasting();
+                mRequestedAction = ACTION_TOGGLE;
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationHelper.checkLocationSettings(this);
+                }
+
                 break;
             case R.id.make_note:
                 Intents.makeANote(this);
@@ -188,7 +200,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
                 mapView.getController().zoomOut();
                 break;
             case R.id.locate:
-                centerMap();
+                mRequestedAction = ACTION_CENTER;
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationHelper.checkLocationSettings(this);
+                }
                 break;
             default:
                 super.onClick(view);
@@ -264,9 +280,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void initializeMap() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationHelper.initLocation();
-        }
         mapView.setSatellite(settingsHelper.isSatelliteView());
 
         if (settingsHelper.isFirstLaunch()) {
@@ -279,6 +292,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             }
 
             settingsHelper.setFirstLaunch(false);
+        }
+    }
+
+    @Override
+    public void onLocationSettingsSatisfied() {
+        if (mRequestedAction == ACTION_TOGGLE) {
+            toggleAirCasting();
+        } else if (mRequestedAction == ACTION_CENTER) {
+            centerMap();
         }
     }
 
@@ -384,14 +406,30 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     protected void centerMap() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationHelper.initLocation();
-        }
-
         if (locationHelper.getLastLocation() != null) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             MapController controller = mapView.getController();
             controller.animateTo(geoPoint);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode != RESULT_OK) {
+                    ToastHelper.show(this, R.string.enable_location, Toast.LENGTH_LONG);
+                } else {
+                    locationHelper.startLocationUpdates();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                    onLocationSettingsSatisfied();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
