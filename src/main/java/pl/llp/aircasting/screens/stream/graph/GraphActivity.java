@@ -70,8 +70,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     View scrollRight;
 
     @Inject
-    MeasurementPresenter measurementPresenter;
-    @Inject
     ThresholdsHolder thresholdsHolder;
     @Inject
     ViewingSessionsManager viewingSessionsManager;

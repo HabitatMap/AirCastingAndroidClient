@@ -182,7 +182,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         reset();
     }
 
-    private synchronized void reset() {
+    public synchronized void reset() {
         fullView = null;
         timelineView.clear();
 
