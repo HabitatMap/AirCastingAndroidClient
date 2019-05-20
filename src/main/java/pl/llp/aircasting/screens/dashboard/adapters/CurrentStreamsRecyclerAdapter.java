@@ -131,17 +131,11 @@ public class CurrentStreamsRecyclerAdapter extends RecyclerView.Adapter<CurrentS
         if (payloads.isEmpty()) {
             holder.mViewMvc.bindData(mData.get(position), position, mResourceHelper);
         } else if (payloads.get(0) == PAYLOAD_NOW_VALUES_UPDATE) {
-            if (mData.size() == mNowData.size()) {
-                holder.mViewMvc.bindNowValue(mNowData);
-            }
+            holder.mViewMvc.bindNowValue(mNowData);
         } else if (payloads.get(0) == PAYLOAD_CHARTS_UPDATE) {
-            if (mData.size() == mChartData.size()) {
-                holder.mViewMvc.bindChart(mChartData);
-            }
+            holder.mViewMvc.bindChart(mChartData);
         } else if (payloads.get(0) == PAYLOAD_TITLE_POSITION_UPDATE) {
-            if (mData.size() == mChartData.size()) {
-                holder.mViewMvc.bindSessionTitle(position);
-            }
+            holder.mViewMvc.bindSessionTitle(position);
         }
 
         holder.mViewMvc.getRootView().setOnLongClickListener(new View.OnLongClickListener() {
