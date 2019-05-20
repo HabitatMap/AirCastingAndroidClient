@@ -93,7 +93,9 @@ public class LocationHelper {
 
     @SuppressLint("MissingPermission")
     public synchronized void startLocationUpdates() {
-        initLocation();
+        if (mLastLocation == null && mFusedLocationProviderClient == null) {
+            initLocation();
+        }
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         mLocationUpdatesStarted = true;
     }

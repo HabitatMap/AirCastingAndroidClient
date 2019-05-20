@@ -102,11 +102,6 @@ public class CurrentStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mResourceHelper = resourceHelper;
 
-        Log.w("current stream", "==================");
-        Log.w("current streams", mSensorNameText);
-        Log.w("current streams", "bind data");
-        Log.w("current stream", "==================");
-
         drawFullView();
     }
 
