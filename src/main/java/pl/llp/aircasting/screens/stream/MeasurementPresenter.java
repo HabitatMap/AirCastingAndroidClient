@@ -100,7 +100,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private void onMeasurement(MeasurementEvent event, Boolean isFixed) {
-        if (!sessionMatches(event.getSessionId())) return;
+        if (!sessionMatches(event.getSessionId(), isFixed)) return;
         if (!isFixed && !state.recording().isRecording()) return;
         if (!event.getSensor().equals(visibleSession.getSensor())) return;
 
@@ -373,11 +373,13 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private boolean sessionMatches(long sessionId) {
+    private boolean sessionMatches(long sessionId, Boolean isFixed) {
         if (visibleSession.getSession() == null) return false;
-        long visibleSessionId = visibleSession.getSession().getId();
+        long visibleSessionId = visibleSession.getVisibleSessionId();
 
-        if (visibleSession.isVisibleSessionRecording() || sessionId == visibleSessionId) {
+        if (visibleSession.isVisibleSessionRecording() && sessionId == visibleSessionId) {
+            return true;
+        } else if (isFixed && sessionId == visibleSessionId) {
             return true;
         } else if (sessionId != visibleSessionId) {
             return false;
