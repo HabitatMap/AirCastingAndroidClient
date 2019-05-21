@@ -160,11 +160,6 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 

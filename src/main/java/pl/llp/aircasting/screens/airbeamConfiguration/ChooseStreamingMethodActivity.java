@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.sessionRecord.StartFixedSessionActivity;
@@ -25,6 +26,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
 
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
+    @Inject LocationHelper mLocationHelper;
 
     private boolean continueStreaming;
 
@@ -63,6 +65,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
 
     public void startFixedAirCasting() {
         dashboardChartManager.start();
+        mLocationHelper.initLocation();
 
         if (settingsHelper.hasNoCredentials()) {
             ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);

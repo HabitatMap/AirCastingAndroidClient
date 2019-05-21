@@ -28,7 +28,6 @@ import pl.llp.aircasting.storage.UnfinishedSessionChecker;
 import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS;
 import static pl.llp.aircasting.util.Constants.PERMISSIONS_ALL;
-import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * A common superclass for activities that want to display left/right
