@@ -37,6 +37,8 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
         setContentView(R.layout.choose_streaming_method);
         initDialogToolbar("Streaming Method");
 
+        mLocationHelper.initLocation();
+
         wifiButton.setOnClickListener(this);
         cellularButton.setOnClickListener(this);
     }
@@ -65,7 +67,6 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
 
     public void startFixedAirCasting() {
         dashboardChartManager.start();
-        mLocationHelper.initLocation();
 
         if (settingsHelper.hasNoCredentials()) {
             ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);

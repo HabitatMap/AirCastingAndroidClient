@@ -62,12 +62,21 @@
         <include layout="@layout/zoom_buttons" />
     </RelativeLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="visible"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/select_location"
+        android:background="@drawable/dialog_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/dashboard_white"
         android:text="Use this location"
         android:layout_centerHorizontal="true"
         android:drawableStart="@drawable/map_marker"

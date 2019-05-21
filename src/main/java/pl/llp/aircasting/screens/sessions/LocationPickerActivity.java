@@ -33,15 +33,15 @@ public class LocationPickerActivity extends RoboActivityWithProgress
         implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, View.OnClickListener {
     public static final String LOCATION = "location";
 
+    @Inject LocationHelper mLocationHelper;
+
     private GoogleMap mMap;
     private LatLng mCurrentLocation;
     private Button mSelectLocation;
-
-    @Inject
-    LocationHelper mLocationHelper;
     private View mLocate;
     private View mZoomIn;
     private View mZoomOut;
+    private View mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,9 @@ public class LocationPickerActivity extends RoboActivityWithProgress
         mZoomIn = findViewById(R.id.zoom_in);
         mZoomOut = findViewById(R.id.zoom_out);
         mSelectLocation = findViewById(R.id.select_location);
+        mProgress = findViewById(R.id.progress_bar);
+
+        mProgress.setVisibility(View.GONE);
 
         initializePlacesWidget();
         mLocate.setOnClickListener(this);
@@ -68,7 +71,7 @@ public class LocationPickerActivity extends RoboActivityWithProgress
         mCurrentLocation = mMap.getCameraPosition().target;
 
         mMap.setMaxZoomPreference(20.0f);
-        mMap.setMinZoomPreference(10.0f);
+        mMap.setMinZoomPreference(5.0f);
         mMap.setOnCameraIdleListener(this);
 
         locateMe();
@@ -99,6 +102,7 @@ public class LocationPickerActivity extends RoboActivityWithProgress
                 mMap.animateCamera(CameraUpdateFactory.zoomOut());
                 break;
             case R.id.select_location:
+                mProgress.setVisibility(View.VISIBLE);
                 Intent intent = new Intent();
                 intent.putExtra(LOCATION, mCurrentLocation);
                 setResult(RESULT_OK, intent);
