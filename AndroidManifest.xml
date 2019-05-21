@@ -95,6 +95,8 @@
 
     <activity android:label="@string/start_fixed_session" android:name=".screens.sessionRecord.StartFixedSessionActivity" android:theme="@style/Dialog"/>
 
+    <activity android:label="@string/pick_location" android:name=".screens.sessions.LocationPickerActivity" android:theme="@style/AirCastingTheme" />
+
     <activity android:label="@string/start_mobile_session" android:name=".screens.sessionRecord.StartMobileSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".screens.dashboard.FakeActivity" android:theme="@android:style/Theme.NoDisplay"/>

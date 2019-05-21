@@ -25,20 +25,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
+import pl.llp.aircasting.screens.sessions.LocationPickerActivity;
 import roboguice.inject.InjectView;
+
+import static pl.llp.aircasting.screens.sessions.LocationPickerActivity.LOCATION;
 
 public class StartFixedSessionActivity extends DialogActivity implements View.OnClickListener {
     @InjectView(R.id.start_indoor_session) Button startIndoorSessionButton;
@@ -78,24 +74,15 @@ public class StartFixedSessionActivity extends DialogActivity implements View.On
     }
 
     private void runLocationPicker() {
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-        try {
-            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException e) {
-            GooglePlayServicesUtil.getErrorDialog(e.getConnectionStatusCode(), this, 0);
-        } catch (GooglePlayServicesNotAvailableException e) {
-            ToastHelper.show(context, R.string.google_play_services_not_available, Toast.LENGTH_LONG);
-        }
+        startActivityForResult(new Intent(this, LocationPickerActivity.class), PLACE_PICKER_REQUEST);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                LatLng latlng = place.getLatLng();
+                LatLng latLng = data.getParcelableExtra(LOCATION);
 
-                startFixedSession(false, latlng);
+                startFixedSession(false, latLng);
             }
         }
     }

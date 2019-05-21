@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.dashboard.DashboardChartManager;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.sessionRecord.StartFixedSessionActivity;
@@ -25,6 +26,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
 
     @Inject Context context;
     @Inject DashboardChartManager dashboardChartManager;
+    @Inject LocationHelper mLocationHelper;
 
     private boolean continueStreaming;
 
@@ -34,6 +36,8 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
         continueStreaming = getIntent().getBooleanExtra(CONTINUE_STREAMING, false);
         setContentView(R.layout.choose_streaming_method);
         initDialogToolbar("Streaming Method");
+
+        mLocationHelper.initLocation();
 
         wifiButton.setOnClickListener(this);
         cellularButton.setOnClickListener(this);

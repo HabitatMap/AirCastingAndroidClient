@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        map:uiZoomControls="false"
+        map:uiZoomGestures="true"/>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentTop="true">
+
+        <fragment android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
+
+    </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/center_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@id/center"
+        android:src="@drawable/map_marker"/>
+
+    <View
+        android:id="@+id/center"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="invisible"
+        android:layout_centerInParent="true" />
+
+    <RelativeLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/select_location"
+        android:id="@+id/buttons">
+
+        <Button android:id="@+id/locate"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/center_map_button"
+            android:layout_marginBottom="96dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="5dp"
+            />
+
+        <include layout="@layout/zoom_buttons" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="visible"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/select_location"
+        android:background="@drawable/dialog_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Use this location"
+        android:layout_centerHorizontal="true"
+        android:drawableStart="@drawable/map_marker"
+        android:drawableTint="@color/gray"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp"
+        android:textAlignment="center"
+        android:paddingLeft="10dp"
+        android:textSize="16dp" />
+
+</RelativeLayout>

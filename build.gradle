@@ -67,7 +67,7 @@ dependencies {
     implementation group: 'cz.msebera.android' , name: 'httpclient' , version: '4.4.1.2'
     implementation group: 'com.intellij', name: 'annotations', version:'9.0.4'
     implementation group: 'com.google.android.gms', name: 'play-services-location', version:'11.6.0'
-    implementation "com.google.android.libraries.places:places-compat:1.1.0"
+    implementation "com.google.android.libraries.places:places:1.1.0"
     implementation "com.android.support:cardview-v7:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"

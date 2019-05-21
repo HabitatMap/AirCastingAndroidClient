@@ -50,7 +50,6 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
     public static final String PHOTO_ATTACHED = "photo_attached";
 
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject LocationHelper locationHelper;
     @Inject PhotoHelper photoHelper;
     @Inject Application context;
 

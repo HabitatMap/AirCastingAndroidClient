@@ -267,6 +267,7 @@
   <string name="configuring_airbeam">Configuring AirBeam2...</string>
   <string name="input_wifi_credentials">Input WiFi Credentials</string>
   <string name="enable_location">You need to enable location settings to get location updates</string>
+  <string name="pick_location">Pick Location</string>
 
   <string name="drawer_open">Open</string>
   <string name="drawer_close">Close</string>
