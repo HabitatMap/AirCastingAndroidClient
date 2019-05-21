@@ -17,7 +17,6 @@ import com.google.inject.Inject;
 public class ContinuousTracker {
     @Inject EventBus eventBus;
     @Inject MetadataHelper metadataHelper;
-    @Inject LocationHelper locationHelper;
     @Inject SettingsHelper settingsHelper;
     @Inject DatabaseTaskQueue taskQueue;
     @Inject SessionRepository sessions;

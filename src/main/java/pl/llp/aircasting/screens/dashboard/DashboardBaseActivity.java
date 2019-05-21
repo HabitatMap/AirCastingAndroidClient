@@ -79,21 +79,10 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress imp
             Intents.stopSensors(this);
         }
 
-//        if (!currentSessionManager.isSessionRecording()) {
-//            locationHelper.stopLocationUpdates();
-//        }
-
         if (registeredReceiver != null) {
             unregisterReceiver(syncBroadcastReceiver);
             registeredReceiver = null;
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        eventBus.unregister(this);
     }
 
     private void initialize() {
