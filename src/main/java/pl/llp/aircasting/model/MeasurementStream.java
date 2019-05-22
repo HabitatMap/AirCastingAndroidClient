@@ -208,7 +208,8 @@ public class MeasurementStream implements Serializable {
 
     private double calculatePeak() {
         double newPeak = Integer.MIN_VALUE;
-        for (Measurement measurement : measurements) {
+        List<Measurement> allMeasurements = new ArrayList(measurements);
+        for (Measurement measurement : allMeasurements) {
             if (measurement.getValue() > newPeak) {
                 newPeak = measurement.getValue();
             }
