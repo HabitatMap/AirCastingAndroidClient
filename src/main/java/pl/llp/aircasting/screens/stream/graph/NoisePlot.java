@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.screens.stream.graph;
 
+import android.graphics.DashPathEffect;
 import android.view.MotionEvent;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
@@ -42,8 +43,10 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.google.common.base.Stopwatch;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -55,17 +58,21 @@ import static pl.llp.aircasting.util.Search.binarySearch;
 public class NoisePlot extends View {
     public static final int OPAQUE = 255;
     private static final double CLICK_RADIUS = 100;
+    private static final String MIDNIGHT = "00:00";
 
     private AirCastingActivity activity;
     private SettingsHelper settingsHelper;
     private ThresholdsHolder thresholds;
 
     private ArrayList<Measurement> measurements = new ArrayList<Measurement>();
+    private String timePattern = "HH:mm";
+    private SimpleDateFormat sdf = new SimpleDateFormat(timePattern);
     private ArrayList<Note> notes;
     private ResourceHelper resourceHelper;
     private int bottom;
     private int top;
     private Sensor sensor;
+    private Paint mMidnightPaint;
 
     MeasurementAggregator aggregator = new MeasurementAggregator();
 
@@ -89,6 +96,8 @@ public class NoisePlot extends View {
         this.settingsHelper = settingsHelper;
         this.thresholds = thresholds;
         this.resourceHelper = resourceHelper;
+
+        mMidnightPaint = initializeMidnightPaint();
     }
 
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
@@ -121,11 +130,16 @@ public class NoisePlot extends View {
                 Measurement measurement = measurements.get(i);
                 Point place = place(measurement);
                 path.lineTo(place.x, place.y);
+
+                String measurementTime = sdf.format(measurement.getTime());
+
+                if (measurementTime.equals(MIDNIGHT)) {
+                    canvas.drawLine(place.x, 0, place.x, canvas.getHeight(), mMidnightPaint);
+                }
             }
             Logger.logGraphPerformance("onDraw to path creation took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-            initializePaint(paint);
-
+            initializePlotPaint(paint);
             canvas.drawPath(path, paint);
             Logger.logGraphPerformance("onDraw to path draw took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
@@ -202,7 +216,7 @@ public class NoisePlot extends View {
         return measurements.get(index);
     }
 
-    private void initializePaint(Paint paint) {
+    private void initializePlotPaint(Paint paint) {
         paint.setColor(Color.WHITE);
         paint.setAlpha(OPAQUE);
         paint.setStrokeWidth(9);
@@ -210,6 +224,18 @@ public class NoisePlot extends View {
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setAntiAlias(true);
+    }
+
+    private Paint initializeMidnightPaint() {
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setAlpha(OPAQUE);
+        paint.setStrokeWidth(3);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        paint.setPathEffect(new DashPathEffect(new float[] {10, 10}, 0));
+
+        return paint;
     }
 
     private void drawBackground(Canvas canvas, Paint paint) {
