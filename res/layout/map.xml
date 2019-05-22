@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     AirCasting - Share your Air!
     Copyright (C) 2011-2012 HabitatMap, Inc.
 
@@ -20,16 +19,15 @@
 -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+
     <pl.llp.aircasting.screens.stream.map.AirCastingMapView
-            style="@style/Fill"
-            android:id="@+id/mapview"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:apiKey="@string/com.google.android.geo.MAPS_KEY"
-            />
+        android:id="@+id/mapview"
+        style="@style/Fill"
+        android:layout_weight="1"
+        android:apiKey="@string/com.google.android.geo.MAPS_KEY"
+        android:clickable="true" />
 
     <pl.llp.aircasting.screens.stream.TouchPane
-        style="@style/Fill"
-                                      android:id="@+id/touch_pane"
-            />
+        android:id="@+id/touch_pane"
+        style="@style/Fill" />
 </merge>
