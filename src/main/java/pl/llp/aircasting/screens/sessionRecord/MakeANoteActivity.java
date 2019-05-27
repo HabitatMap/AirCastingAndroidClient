@@ -52,6 +52,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
     @Inject CurrentSessionManager currentSessionManager;
     @Inject PhotoHelper photoHelper;
     @Inject Application context;
+    @Inject FormatHelper mFormatHelper;
 
     @InjectView(R.id.attach_photo) Button attachPhoto;
     @InjectView(R.id.note_text) EditText noteText;
@@ -70,7 +71,7 @@ public class MakeANoteActivity extends DialogActivity implements View.OnClickLis
         initDialogToolbar("Make Note");
 
         date = new Date();
-        dateText.setText(FormatHelper.dateTime(date));
+        dateText.setText(mFormatHelper.noteDatetime(date));
 
         save.setOnClickListener(this);
         attachPhoto.setOnClickListener(this);

@@ -21,8 +21,10 @@ package pl.llp.aircasting.guice;
 
 import android.graphics.drawable.Drawable;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import pl.llp.aircasting.R;
+import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.stream.map.NoteOverlay;
 import roboguice.inject.InjectResource;
 
@@ -34,9 +36,10 @@ import roboguice.inject.InjectResource;
  */
 public class NoteOverlayProvider implements Provider<NoteOverlay> {
     @InjectResource(R.drawable.arrow_down) Drawable arrow;
+    @Inject FormatHelper formatHelper;
     
     @Override
     public NoteOverlay get() {
-        return new NoteOverlay(arrow);
+        return new NoteOverlay(arrow, formatHelper);
     }
 }

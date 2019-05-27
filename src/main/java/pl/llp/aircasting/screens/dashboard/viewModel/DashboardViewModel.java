@@ -24,6 +24,7 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
@@ -52,6 +53,7 @@ public class DashboardViewModel extends ViewModel {
     private ViewingSessionsManager mViewingSessionsManager;
     private ViewingSessionsSensorManager mViewingSessionsSensorManager;
     private DashboardChartManager mDashboardChartManager;
+    private FormatHelper mFormatHelper;
     private ApplicationState mState;
 
     // current session data
@@ -71,6 +73,7 @@ public class DashboardViewModel extends ViewModel {
                               ViewingSessionsManager viewingSessionsManager,
                               ViewingSessionsSensorManager viewingSessionsSensorManager,
                               DashboardChartManager dashboardChartManager,
+                              FormatHelper formatHelper,
                               ApplicationState applicationState) {
 
         this.mCurrentSessionManager = currentSessionManager;
@@ -78,6 +81,7 @@ public class DashboardViewModel extends ViewModel {
         this.mViewingSessionsManager = viewingSessionsManager;
         this.mViewingSessionsSensorManager = viewingSessionsSensorManager;
         this.mDashboardChartManager = dashboardChartManager;
+        this.mFormatHelper = formatHelper;
         this.mState = applicationState;
     }
 
@@ -210,7 +214,8 @@ public class DashboardViewModel extends ViewModel {
                         map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                         map.put(STREAM_CHART, mDashboardChartManager.getStaticChart(sensor, sessionId));
                         map.put(STREAM_IDENTIFIER, getStreamIdentifier(sensor, sessionId));
-                        map.put(STREAM_TIMESTAMP, mViewingSessionsManager.getSession(sessionId).getStream(sensor.getSensorName()).getLastMeasurementTime());
+                        map.put(STREAM_TIMESTAMP, mFormatHelper.getTimestamp(
+                                mViewingSessionsManager.getSession(sessionId).getStream(sensor.getSensorName()).getLastMeasurementTime()));
 
                         mViewingDashboardData.getValue().add(map);
                     }

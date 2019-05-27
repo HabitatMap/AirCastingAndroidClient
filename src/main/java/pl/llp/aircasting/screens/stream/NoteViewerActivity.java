@@ -29,6 +29,7 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
     @Inject VisibleSession mVisibleSession;
     @Inject PhotoHelper mPhotoHelper;
     @Inject NoteRepository mNotesRepository;
+    @Inject FormatHelper formatHelper;
 
     private View mPreviousNote;
     private View mNextNote;
@@ -73,7 +74,7 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
     private void setNote() {
         int index = ((mNoteIndex % mNotesTotal) + mNotesTotal) % mNotesTotal;
         mCurrentNote = mVisibleSession.getSessionNote(index);
-        String title = FormatHelper.dateTime(mCurrentNote.getDate()).toString();
+        String title = formatHelper.noteDatetime(mCurrentNote.getDate()).toString();
         mNoteDate.setText(title);
 
         mNoteNumber.setText(index + 1 + "/" + mNotesTotal);
