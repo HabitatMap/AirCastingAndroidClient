@@ -73,6 +73,7 @@
   <string name="satellite_view">Satellite map</string>
   <string name="save_session">Save Session</string>
   <string name="very_loud_threshold">Very loud sounds (dB)</string>
+  <string name="use_24_hour_format">Use 24-hour format</string>
 
   <string name="profile_summary">Create an account or sign in</string>
   <string name="average_threshold_summary">Measurements greater than this will be marked in yellow.</string>
