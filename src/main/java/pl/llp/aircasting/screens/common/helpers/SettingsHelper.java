@@ -48,6 +48,7 @@ public class SettingsHelper {
     public static final String KEEP_SCREEN_ON = "keep_screen_on";
     public static final String CALIBRATION = "calibration";
     public static final String SATELLITE = "satellite";
+    public static final String USE_24_HOUR_FORMAT = "24_hour_format";
     public static final String BACKEND = "backend";
     public static final String BACKEND_PORT = "backend_port";
     public static final String HEAT_MAP_DENSITY = "heat_map_density";
@@ -161,6 +162,10 @@ public class SettingsHelper {
 
     public String getUserLogin() {
         return preferences.getString(USER_LOGIN, null);
+    }
+
+    public Boolean defaultTimeFormat() {
+        return preferences.getBoolean(USE_24_HOUR_FORMAT, true) == true;
     }
 
     public void setUserEmail(String email) {

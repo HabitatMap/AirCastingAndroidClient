@@ -38,11 +38,13 @@ import java.util.List;
  */
 public class NoteOverlay extends ItemizedOverlay {
     AirCastingMapActivity context;
+    FormatHelper formatHelper;
 
     List<OverlayItem> items = new ArrayList<OverlayItem>();
 
-    public NoteOverlay(Drawable drawable) {
+    public NoteOverlay(Drawable drawable, FormatHelper formatHelper) {
         super(boundCenterBottom(drawable));
+        this.formatHelper = formatHelper;
     }
 
     public void setContext(AirCastingMapActivity context) {
@@ -61,7 +63,7 @@ public class NoteOverlay extends ItemizedOverlay {
 
     public void add(Note note) {
         GeoPoint geoPoint = LocationConversionHelper.geoPoint(note.getLatitude(), note.getLongitude());
-        String title = FormatHelper.dateTime(note.getDate()).toString();
+        String title = formatHelper.noteDatetime(note.getDate()).toString();
         OverlayItem item = new OverlayItem(geoPoint, title, note.getText());
 
         items.add(item);

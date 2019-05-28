@@ -29,6 +29,7 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 public class SessionAdapter extends ArrayAdapter {
     private static final int[] regular_backgrounds = new int[]{R.drawable.session_list_odd, R.drawable.session_list_even};
+    private final FormatHelper formatHelper;
 
     private ResourceHelper resourceHelper;
     private Context context;
@@ -36,11 +37,12 @@ public class SessionAdapter extends ArrayAdapter {
 
     List<Session> sessions = newArrayList();
 
-    public SessionAdapter(Context context, SessionState sessionState) {
+    public SessionAdapter(Context context, SessionState sessionState, FormatHelper formatHelper) {
         super(context, R.layout.session_row, R.id.session_title);
 
         this.context = context;
         this.sessionState = sessionState;
+        this.formatHelper = formatHelper;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class SessionAdapter extends ArrayAdapter {
     }
 
     private void fillStats(View view, Session session) {
-        ((TextView) view.findViewById(R.id.session_time)).setText(FormatHelper.timeText(session));
+        ((TextView) view.findViewById(R.id.session_time)).setText(formatHelper.sessionDatetime(session));
 
         view.findViewById(R.id.avg_container).setVisibility(View.GONE);
         view.findViewById(R.id.peak_container).setVisibility(View.GONE);

@@ -64,7 +64,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
     private long mSessionId;
     private LineChart mChart;
     private String mStreamIdentifier;
-    private Date mStreamTimestamp;
+    private String mStreamTimestamp;
     private Boolean mShouldDisplayTitle;
 
     public ViewingStreamItemViewMvcImpl(LayoutInflater inflater, ViewGroup parent) {
@@ -104,7 +104,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
         mSessionReorderInProgress = (Boolean) dataItem.get(REORDER_IN_PROGRESS);
         mChart = (LineChart) dataItem.get(STREAM_CHART);
         mStreamIdentifier = (String) dataItem.get(STREAM_IDENTIFIER);
-        mStreamTimestamp = (Date) dataItem.get(STREAM_TIMESTAMP);
+        mStreamTimestamp = (String) dataItem.get(STREAM_TIMESTAMP);
         mShouldDisplayTitle = (Boolean) dataItem.get(TITLE_DISPLAY);
         mNowValue = String.format("%.0f", dataItem.get(STREAM_RECENT_MEASUREMENT));
         mResourceHelper = resourceHelper;
@@ -238,8 +238,7 @@ public class ViewingStreamItemViewMvcImpl implements BaseViewMvc, StreamItemView
 
     private void showAndSetTimestamp() {
         mTimestampTv.setVisibility(View.VISIBLE);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm MM/dd/yy");
-        mTimestampTv.setText(dateFormat.format(mStreamTimestamp));
+        mTimestampTv.setText(mStreamTimestamp);
     }
 
     @Override

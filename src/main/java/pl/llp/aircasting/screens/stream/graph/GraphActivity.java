@@ -34,6 +34,7 @@ import pl.llp.aircasting.event.ui.TapEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.screens.common.ToastHelper;
+import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
@@ -69,10 +70,9 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @InjectView(R.id.suggest_scroll_right)
     View scrollRight;
 
-    @Inject
-    ThresholdsHolder thresholdsHolder;
-    @Inject
-    ViewingSessionsManager viewingSessionsManager;
+    @Inject ThresholdsHolder thresholdsHolder;
+    @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject FormatHelper mFormatHelper;
 
 
     @Override
@@ -205,8 +205,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     private void updateLabels(ArrayList<Measurement> measurements) {
         if (!measurements.isEmpty()) {
-            graphBegin.setText(DateFormat.format("HH:mm:ss", measurements.get(0).getTime()));
-            graphEnd.setText(DateFormat.format("HH:mm:ss", getLast(measurements).getTime()));
+            graphBegin.setText(mFormatHelper.getTime(measurements.get(0).getTime()));
+            graphEnd.setText(mFormatHelper.getTime(getLast(measurements).getTime()));
         }
     }
 

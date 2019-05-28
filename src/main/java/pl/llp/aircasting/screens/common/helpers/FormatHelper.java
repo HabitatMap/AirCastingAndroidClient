@@ -19,32 +19,46 @@
 */
 package pl.llp.aircasting.screens.common.helpers;
 
+import com.google.inject.Inject;
+
 import pl.llp.aircasting.model.Session;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FormatHelper {
+    @Inject SettingsHelper mSettingsHelper;
+
     // 01/29/12 10:22
-    public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
 
     // 10:22
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-    public static String timeText(Session session) {
-        if (session.isFixed()) {
-            return getStartTime(session);
-        } else {
-            return getStartTime(session) + " - " + timeFormat.format(session.getEnd());
+    // 6:20 pm
+    public static final SimpleDateFormat m12HourFomat = new SimpleDateFormat("K:mma");
 
+    public String sessionDatetime(Session session) {
+        if (session.isFixed()) {
+            return dateFormat.format(session.getStart()) + " " + getTime(session.getStart());
+        } else {
+            return dateFormat.format(session.getStart()) + " " + getTime(session.getStart()) + " - " + getTime(session.getEnd());
         }
     }
 
-    public static CharSequence dateTime(Date date) {
-        return dateTimeFormat.format(date);
+    public CharSequence noteDatetime(Date date) {
+        return dateFormat.format(date) + " " + getTime(date);
     }
 
-    private static String getStartTime(Session session) {
-        return dateTimeFormat.format(session.getStart());
+    public String getTimestamp(Date date) {
+        return getTime(date) + " " + dateFormat.format(date);
+    }
+
+    public String getTime(Date date) {
+        if (mSettingsHelper.defaultTimeFormat()) {
+            return timeFormat.format(date);
+        } else {
+            return m12HourFomat.format(date);
+        }
     }
 }

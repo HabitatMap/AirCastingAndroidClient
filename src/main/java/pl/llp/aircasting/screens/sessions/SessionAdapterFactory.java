@@ -1,5 +1,6 @@
 package pl.llp.aircasting.screens.sessions;
 
+import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import android.content.Context;
 import com.google.inject.Inject;
@@ -11,9 +12,10 @@ import pl.llp.aircasting.screens.common.sessionState.SessionState;
 public class SessionAdapterFactory {
   @Inject ResourceHelper resourceHelper;
   @Inject SessionState sessionState;
+  @Inject FormatHelper formatHelper;
 
   public SessionAdapter getSessionAdapter(Context context) {
-    SessionAdapter adapter = new SessionAdapter(context, sessionState);
+    SessionAdapter adapter = new SessionAdapter(context, sessionState, formatHelper);
 
     adapter.setResourceHelper(resourceHelper);
 

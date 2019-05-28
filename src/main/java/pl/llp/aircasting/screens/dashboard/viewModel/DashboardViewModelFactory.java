@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.google.inject.Inject;
 
 import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
@@ -19,6 +20,7 @@ public class DashboardViewModelFactory implements ViewModelProvider.Factory {
     @Inject ViewingSessionsManager mViewingSessionsManager;
     @Inject ViewingSessionsSensorManager mViewingSessionsSensorManager;
     @Inject DashboardChartManager mDashboardChartManager;
+    @Inject FormatHelper mFormatHelper;
     @Inject ApplicationState mState;
 
     public DashboardViewModelFactory() {}
@@ -27,7 +29,13 @@ public class DashboardViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(DashboardViewModel.class)) {
-            return (T) new DashboardViewModel(mCurrentSessionManager, mCurrentSessionSensorManager, mViewingSessionsManager, mViewingSessionsSensorManager, mDashboardChartManager, mState);
+            return (T) new DashboardViewModel(mCurrentSessionManager,
+                    mCurrentSessionSensorManager,
+                    mViewingSessionsManager,
+                    mViewingSessionsSensorManager,
+                    mDashboardChartManager,
+                    mFormatHelper,
+                    mState);
         }
         throw new IllegalArgumentException("Unknown ViewModel class.");
     }

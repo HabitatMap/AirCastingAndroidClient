@@ -41,6 +41,11 @@
                                            android:title="@string/satellite_view"
     />
 
+    <android.preference.CheckBoxPreference android:defaultValue="true"
+                                           android:key="24_hour_format"
+                                           android:title="@string/use_24_hour_format"
+    />
+
     <android.preference.EditTextPreference android:defaultValue="100"
                                            android:numeric="integer"
                                            android:key="calibration"
