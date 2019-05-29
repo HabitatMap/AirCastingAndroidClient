@@ -83,6 +83,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress imp
             unregisterReceiver(syncBroadcastReceiver);
             registeredReceiver = null;
         }
+        eventBus.unregister(this);
     }
 
     private void initialize() {

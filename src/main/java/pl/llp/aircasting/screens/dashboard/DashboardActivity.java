@@ -107,6 +107,11 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
     private void observeViewModel() {
         mDashboardViewModel.getRecentMeasurements().observe(this, new Observer<Map<String, Double>>() {
             @Override
