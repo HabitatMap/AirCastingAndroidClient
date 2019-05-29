@@ -101,8 +101,8 @@ public class Airbeam2Configurator {
     }
 
     public void sendLatLng() {
-        double lat = viewingSessionsManager.getStreamingSession().getLatitude();
-        double lng = viewingSessionsManager.getStreamingSession().getLongitude();
+        double lat = viewingSessionsManager.getNewFixedSession().getLatitude();
+        double lng = viewingSessionsManager.getNewFixedSession().getLongitude();
 
         if (lat == 0) {
             lat = 200;

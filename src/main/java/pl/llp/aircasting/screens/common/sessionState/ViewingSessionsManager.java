@@ -189,7 +189,7 @@ public class ViewingSessionsManager {
         newFixedSession = session;
     }
 
-    public Session getStreamingSession() {
+    public Session getNewFixedSession() {
         return newFixedSession;
     }
 
@@ -242,5 +242,11 @@ public class ViewingSessionsManager {
 
     public void addLoadingSession(long sessionId) {
         mLoadingSessions.add(sessionId);
+    }
+
+    public Boolean isNewFixedSession(Long sessionId) {
+        if (newFixedSession == null) return false;
+
+        return sessionId == getNewFixedSession().getId();
     }
 }

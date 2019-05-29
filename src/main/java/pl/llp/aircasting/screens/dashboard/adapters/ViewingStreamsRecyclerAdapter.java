@@ -26,6 +26,7 @@ import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.StreamItemViewMvc;
 import pl.llp.aircasting.screens.dashboard.views.ViewingStreamItemViewMvcImpl;
 
+import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.NEW_FIXED_SESSION;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SENSOR;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.SESSION_ID;
 import static pl.llp.aircasting.screens.dashboard.viewModel.DashboardViewModel.TITLE_DISPLAY;
@@ -116,8 +117,12 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
     private void prepareSessionPositions() {
         for (Map<String, Object> dataItem : mData) {
             long sessionId = (long) dataItem.get(SESSION_ID);
+            boolean newFixedSession = (boolean) dataItem.get(NEW_FIXED_SESSION);
 
             if (!mSessionPositions.contains(sessionId)) {
+                if (newFixedSession) {
+                    mSessionPositions.add(0, sessionId);
+                }
                 mSessionPositions.add(mSessionPositions.size(), sessionId);
             }
         }

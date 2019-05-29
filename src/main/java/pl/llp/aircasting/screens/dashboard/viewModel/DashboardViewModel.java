@@ -47,6 +47,7 @@ public class DashboardViewModel extends ViewModel {
     public static final String STREAM_TIMESTAMP = "stream_timestamp";
     public static final String TITLE_DISPLAY = "title_display";
     public static final String STREAM_RECENT_MEASUREMENT = "stream_recent_measurement";
+    public static final String NEW_FIXED_SESSION = "new_fixed_session";
 
     private CurrentSessionManager mCurrentSessionManager;
     private CurrentSessionSensorManager mCurrentSessionSensorManager;
@@ -209,6 +210,7 @@ public class DashboardViewModel extends ViewModel {
                         map.put(SESSION_ID, sessionId);
                         map.put(SENSOR, sensor);
                         map.put(SESSION, mViewingSessionsManager.getSession(sessionId));
+                        map.put(NEW_FIXED_SESSION, mViewingSessionsManager.isNewFixedSession(sessionId));
                         map.put(SESSION_RECORDING, false);
                         map.put(STREAM_RECENT_MEASUREMENT, getStreamRecentMeasurementValue(sensor, sessionId));
                         map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());

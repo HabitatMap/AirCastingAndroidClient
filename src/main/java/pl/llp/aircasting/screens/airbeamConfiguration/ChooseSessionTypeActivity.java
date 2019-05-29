@@ -50,7 +50,7 @@ public class ChooseSessionTypeActivity extends DialogActivity implements View.On
                 ToastHelper.show(context, R.string.configuring_airbeam, sleepTime);
 
                 viewingSessionsManager.createAndSetFixedSession();
-                UUID uuid = viewingSessionsManager.getStreamingSession().getUUID();
+                UUID uuid = viewingSessionsManager.getNewFixedSession().getUUID();
                 final String authToken = settingsHelper.getAuthToken();
 
                 // UUID and auth are sent to prolong the AB2 configuration mode
