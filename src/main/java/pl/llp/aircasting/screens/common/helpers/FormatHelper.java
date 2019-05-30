@@ -23,8 +23,10 @@ import com.google.inject.Inject;
 
 import pl.llp.aircasting.model.Session;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class FormatHelper {
     @Inject SettingsHelper mSettingsHelper;
@@ -36,7 +38,16 @@ public class FormatHelper {
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     // 6:20 pm
-    public static final SimpleDateFormat m12HourFomat = new SimpleDateFormat("K:mma");
+//    public static final SimpleDateFormat m12HourFormat = new SimpleDateFormat("HH:mma");
+    public static final SimpleDateFormat m12HourFormat = get12HourFormat();
+
+    private static SimpleDateFormat get12HourFormat() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mma");
+        DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
+        symbols.setAmPmStrings(new String[] { "am", "pm" });
+        sdf.setDateFormatSymbols(symbols);
+        return sdf;
+    }
 
     public String sessionDatetime(Session session) {
         if (session.isFixed()) {
@@ -58,7 +69,7 @@ public class FormatHelper {
         if (mSettingsHelper.defaultTimeFormat()) {
             return timeFormat.format(date);
         } else {
-            return m12HourFomat.format(date);
+            return m12HourFormat.format(date);
         }
     }
 }
