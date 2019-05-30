@@ -42,7 +42,7 @@ public class FormatHelper {
     public static final SimpleDateFormat m12HourFormat = get12HourFormat();
 
     private static SimpleDateFormat get12HourFormat() {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mma");
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mma");
         DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
         symbols.setAmPmStrings(new String[] { "am", "pm" });
         sdf.setDateFormatSymbols(symbols);
