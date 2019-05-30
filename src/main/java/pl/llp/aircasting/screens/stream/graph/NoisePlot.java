@@ -48,6 +48,8 @@ import com.google.common.base.Stopwatch;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Iterables.getLast;
@@ -122,20 +124,22 @@ public class NoisePlot extends View {
             measurements = aggregator.smoothenSamplesToReduceCount(newArrayList(measurements), 1000);
             Path path = new Path();
 
-            float lastY = project(measurements.get(0).getValue());
+            Measurement firstMeasurement = measurements.get(0);
+            Measurement lastMeasurement = measurements.get(measurements.size() - 1);
+
+            float lastY = project(firstMeasurement.getValue());
             path.moveTo(0, lastY);
+
+            if (measurementsContainMidnight(firstMeasurement, lastMeasurement)) {
+                Point midnightPoint = getMidnightPoint(lastMeasurement);
+                canvas.drawLine(midnightPoint.x, 0, midnightPoint.x, canvas.getHeight(), mMidnightPaint);
+            }
 
             // Avoid concurrent modification
             for (int i = 1; i < measurements.size(); i++) {
                 Measurement measurement = measurements.get(i);
                 Point place = place(measurement);
                 path.lineTo(place.x, place.y);
-
-                String measurementTime = sdf.format(measurement.getTime());
-
-                if (measurementTime.equals(MIDNIGHT)) {
-                    canvas.drawLine(place.x, 0, place.x, canvas.getHeight(), mMidnightPaint);
-                }
             }
             Logger.logGraphPerformance("onDraw to path creation took " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
@@ -165,6 +169,29 @@ public class NoisePlot extends View {
         }
     }
 
+    private boolean measurementsContainMidnight(Measurement firstMeasurement, Measurement lastMeasurement) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(firstMeasurement.getTime());
+        int startDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        calendar.setTime(lastMeasurement.getTime());
+        int endDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        return startDay < endDay;
+    }
+
+    private Point getMidnightPoint(Measurement lastMeasurement) {
+        Date lastMeasurementTime = lastMeasurement.getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(lastMeasurementTime);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+
+        Measurement midnightMeasurement = findClosestMeasurement(calendar.getTime());
+        return place(midnightMeasurement);
+    }
+
     private Point place(Measurement measurement) {
         long time = measurement.getTime().getTime();
         float span = lastTime() - firstTime();
@@ -188,7 +215,7 @@ public class NoisePlot extends View {
     }
 
     private Point place(Note note) {
-        Measurement measurement = findClosestMeasurement(note);
+        Measurement measurement = findClosestMeasurement(note.getDate());
         return place(measurement);
     }
 
@@ -205,11 +232,11 @@ public class NoisePlot extends View {
         return measurements.get(0).getTime().getTime();
     }
 
-    private Measurement findClosestMeasurement(final Note note) {
+    private Measurement findClosestMeasurement(final Date date) {
         int index = binarySearch(measurements, new Search.Visitor<Measurement>() {
             @Override
             public int compareTo(Measurement value) {
-                return note.getDate().compareTo(value.getTime());
+                return date.compareTo(value.getTime());
             }
         });
 
