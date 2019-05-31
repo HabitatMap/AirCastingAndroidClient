@@ -341,8 +341,11 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     public synchronized void scroll(double scrollAmount) {
         lastScrolled = new Date().getTime();
         prepareTimelineView();
+        double finalScrollAmount = scrollAmount * timelineView.size();
 
-        anchor -= scrollAmount * timelineView.size();
+        // we need to round the negative values to the negative iteger closer to negative inifity,
+        // because previously they were rounded to 0, which broke the left scroll
+        anchor -= finalScrollAmount >= 0.0 ? Math.ceil(finalScrollAmount) : Math.floor(finalScrollAmount);
         fixAnchor();
         timelineView.clear();
 
