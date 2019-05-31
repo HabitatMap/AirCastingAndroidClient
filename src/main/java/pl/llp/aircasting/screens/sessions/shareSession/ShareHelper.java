@@ -17,7 +17,7 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.screens.sessions;
+package pl.llp.aircasting.screens.sessions.shareSession;
 
 import android.app.Activity;
 import pl.llp.aircasting.Intents;

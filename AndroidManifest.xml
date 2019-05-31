@@ -81,7 +81,7 @@
 
     <activity android:label="@string/contribute_to_crowd_map" android:name=".screens.sessionRecord.ContributeActivity" android:theme="@style/Dialog"/>
 
-    <activity android:label="@string/share_session" android:name=".screens.sessions.ShareSessionActivity" android:theme="@style/Dialog"/>
+    <activity android:label="@string/share_session" android:name=".screens.sessions.shareSession.ShareSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:label="@string/external_devices" android:name=".screens.extsens.ExternalSensorActivity" android:theme="@style/Dialog"/>
 

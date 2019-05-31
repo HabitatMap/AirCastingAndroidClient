@@ -17,7 +17,7 @@
  * <p>
  * You can contact the authors by email at <info@habitatmap.org>
  */
-package pl.llp.aircasting.screens.sessions;
+package pl.llp.aircasting.screens.sessions.shareSession;
 
 import android.app.Activity;
 import pl.llp.aircasting.Intents;
@@ -25,6 +25,8 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
+import pl.llp.aircasting.screens.sessions.CSVHelper;
+import pl.llp.aircasting.screens.sessions.OpenSessionTask;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.common.ToastHelper;
@@ -45,11 +47,6 @@ import roboguice.inject.InjectView;
 import java.io.IOException;
 
 public class ShareSessionActivity extends DialogActivity implements View.OnClickListener {
-    @InjectView(R.id.share_file)
-    Button shareFile;
-    @InjectView(R.id.share_link)
-    Button shareLink;
-
     @InjectResource(R.string.share_title)
     String shareTitle;
     @InjectResource(R.string.share_file)
@@ -66,32 +63,30 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     @Inject Application context;
 
     private Session session;
+    private ShareSessionViewMvcImpl mShareSessionView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.share_session);
+        mShareSessionView = new ShareSessionViewMvcImpl(this, null);
+        setContentView(mShareSessionView.getRootView());
         initDialogToolbar("Share Session");
-
-        shareFile.setOnClickListener(this);
-        shareLink.setOnClickListener(this);
+        mShareSessionView.registerListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         if (getIntent().hasExtra(Intents.SESSION_ID)) {
             long sessionId = getIntent().getLongExtra(Intents.SESSION_ID, 0);
             session = sessionRepository.loadShallow(sessionId);
         } else {
             session = currentSessionManager.getCurrentSession();
         }
-        if (session.isLocationless()) {
-            shareLink.setVisibility(View.GONE);
-        } else {
-            shareLink.setVisibility(View.VISIBLE);
-        }
+
+        mShareSessionView.toggleLink(session.isLocationless());
     }
 
     @Override
