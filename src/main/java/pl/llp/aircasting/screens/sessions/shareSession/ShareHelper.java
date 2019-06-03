@@ -36,7 +36,7 @@ public class ShareHelper {
     @InjectResource(R.string.share_link) String shareLink;
     @InjectResource(R.string.share_title) String shareTitle;
 
-    public void shareLink(Activity activity, Session session) {
+    public void shareLink(Activity activity, Session session, CharSequence selectedSensor) {
         String text = String.format(sessionLinkTemplate, session.getLocation());
 
         Intents.share(activity, shareLink, shareTitle, text);

@@ -37,8 +37,10 @@ import pl.llp.aircasting.storage.repository.SessionRepository;
 import android.app.Application;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
@@ -46,7 +48,7 @@ import roboguice.inject.InjectView;
 
 import java.io.IOException;
 
-public class ShareSessionActivity extends DialogActivity implements View.OnClickListener {
+public class ShareSessionActivity extends DialogActivity implements View.OnClickListener, SensorItemViewMvcImpl.Listener {
     @InjectResource(R.string.share_title)
     String shareTitle;
     @InjectResource(R.string.share_file)
@@ -64,6 +66,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
 
     private Session session;
     private ShareSessionViewMvcImpl mShareSessionView;
+    private CharSequence mSelectedSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +75,9 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         mShareSessionView = new ShareSessionViewMvcImpl(this, null);
         setContentView(mShareSessionView.getRootView());
         initDialogToolbar("Share Session");
-        mShareSessionView.registerListener(this);
+
+        mShareSessionView.registerListener((View.OnClickListener) this);
+        mShareSessionView.registerListener((SensorItemViewMvcImpl.Listener) this);
     }
 
     @Override
@@ -86,6 +91,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
             session = currentSessionManager.getCurrentSession();
         }
 
+        mShareSessionView.bindData(session);
         mShareSessionView.toggleLink(session.isLocationless());
     }
 
@@ -93,7 +99,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.share_link:
-                shareLink();
+                mShareSessionView.showSensors();
                 break;
             case R.id.share_file:
                 shareFile();
@@ -103,7 +109,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
 
     private void shareLink() {
         if (session.getLocation() != null) {
-            shareHelper.shareLink(this, session);
+            shareHelper.shareLink(this, session, mSelectedSensor);
         } else if (settingsHelper.hasCredentials()) {
             ToastHelper.show(context, R.string.session_not_uploaded, Toast.LENGTH_LONG);
         } else {
@@ -167,5 +173,11 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
                 prepareAndShare();
             }
         }.execute(id);
+    }
+
+    @Override
+    public void onSensorSelected(View view) {
+        mSelectedSensor = ((TextView) view.findViewById(R.id.sensor_name)).getText();
+        shareLink();
     }
 }
