@@ -22,13 +22,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/DialogMain"
         >
-    <Button style="@style/DialogButton"
+
+    <include layout="@layout/dialog_toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/share_buttons"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button style="@style/DialogButton"
             android:text="@string/share_link"
             android:id="@+id/share_link"
             />
 
-    <Button style="@style/DialogButton"
+        <Button style="@style/DialogButton"
             android:text="@string/share_file"
             android:id="@+id/share_file"
             />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/select_sensor"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>
