@@ -178,7 +178,7 @@ public class NoisePlot extends View {
         calendar.setTime(lastMeasurement.getTime());
         int endDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        return startDay < endDay;
+        return startDay != endDay;
     }
 
     private Point getMidnightPoint(Measurement lastMeasurement) {
