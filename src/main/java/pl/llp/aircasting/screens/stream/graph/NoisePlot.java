@@ -23,6 +23,7 @@ import android.graphics.DashPathEffect;
 import android.view.MotionEvent;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
+import pl.llp.aircasting.util.Constants;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
@@ -151,7 +152,7 @@ public class NoisePlot extends View {
                 drawNote(canvas, note);
             }
 
-            if (settingsHelper.showGraphMetadata()) {
+            if (Constants.isDevMode()) {
                 String message = "[" + measurements.size() + "] pts";
                 String message2 = "drawing took " + stopwatch.elapsed(TimeUnit.MILLISECONDS);
                 long textSize = getResources().getDimensionPixelSize(R.dimen.debugFontSize);

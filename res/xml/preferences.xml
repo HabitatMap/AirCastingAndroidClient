@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     AirCasting - Share your Air!
     Copyright (C) 2011-2012 HabitatMap, Inc.
 
@@ -20,72 +19,68 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:persistent="true"
-                  android:id="@android:id/list"
-        >
+    android:id="@android:id/list"
+    android:persistent="true">
 
-    <android.preference.CheckBoxPreference android:defaultValue="true"
-                                           android:title="Contribute to CrowdMap"
-                                           android:key="contribute_to_crowdmap"
-                                           android:summary="Check to contribute your sessions to the CrowdMap by default"
-    />
+    <android.preference.CheckBoxPreference
+        android:defaultValue="true"
+        android:key="contribute_to_crowdmap"
+        android:summary="Check to contribute your sessions to the CrowdMap by default"
+        android:title="Contribute to CrowdMap" />
 
-    <CheckBoxPreference android:defaultValue="false"
-                        android:title="Streaming Alert"
-                        android:key="streaming_alert"
-                        android:summary="Check to receive an email when fixed sessions stop streaming data for >10 minutes"
-    />
+    <android.preference.EditTextPreference
+        android:defaultValue="10"
+        android:key="heat_map_density"
+        android:numeric="integer"
+        android:summary="@string/heat_map_density_summary"
+        android:title="@string/heat_map_density" />
 
-    <android.preference.CheckBoxPreference android:defaultValue="false"
-                                           android:key="satellite"
-                                           android:title="@string/satellite_view"
-    />
+    <android.preference.EditTextPreference
+        android:defaultValue="100"
+        android:key="calibration"
+        android:numeric="integer"
+        android:summary="@string/calibration_summary"
+        android:title="@string/calibration" />
 
-    <android.preference.CheckBoxPreference android:defaultValue="true"
-                                           android:key="24_hour_format"
-                                           android:title="@string/use_24_hour_format"
-    />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="streaming_alert"
+        android:summary="@string/streaming_alert_summary"
+        android:title="@string/streaming_alert" />
 
-    <android.preference.EditTextPreference android:defaultValue="100"
-                                           android:numeric="integer"
-                                           android:key="calibration"
-                                           android:title="@string/calibration"
-                                           android:summary="@string/calibration_summary"
-    />
+    <android.preference.CheckBoxPreference
+        android:defaultValue="true"
+        android:key="24_hour_format"
+        android:title="@string/use_24_hour_format" />
 
-    <android.preference.EditTextPreference android:defaultValue="10"
-                                           android:numeric="integer"
-                                           android:key="heat_map_density"
-                                           android:title="@string/heat_map_density"
-                                           android:summary="@string/heat_map_density_summary"
-    />
-    <android.preference.CheckBoxPreference android:defaultValue="false"
-                                           android:key="keep_screen_on"
-                                           android:title="@string/keep_screen_on"
-    />
+    <android.preference.CheckBoxPreference
+        android:defaultValue="false"
+        android:key="keep_screen_on"
+        android:title="@string/keep_screen_on" />
 
-    <android.preference.Preference android:key="backend_settings"
-                                   android:title="@string/backend_settings"
-                                   android:summary="@string/backend_settings_summary"
-    />
-    <android.preference.CheckBoxPreference android:defaultValue="false"
-                                           android:key="sync_only_wifi"
-                                           android:title="@string/sync_only_wifi"
-    />
-    <android.preference.CheckBoxPreference android:defaultValue="true"
-                                           android:key="show_route"
-                                           android:title="@string/show_route"
-    />
+    <android.preference.CheckBoxPreference
+        android:defaultValue="false"
+        android:key="satellite"
+        android:title="@string/satellite_view" />
 
-    <android.preference.CheckBoxPreference android:defaultValue="false"
-                                           android:key="show_graph_metadata"
-                                           android:title="@string/show_graph_metadata"
-    />
+    <android.preference.Preference
+        android:defaultValue="false"
+        android:key="disable_maps"
+        android:title="@string/disable_maps" />
 
-    <android.preference.Preference android:key="disable_maps"
-                                   android:title="@string/disable_maps"
-                                   android:defaultValue="false"
+    <android.preference.CheckBoxPreference
+        android:defaultValue="true"
+        android:key="show_route"
+        android:title="@string/show_route" />
 
-    />
+    <android.preference.CheckBoxPreference
+        android:defaultValue="false"
+        android:key="sync_only_wifi"
+        android:title="@string/sync_only_wifi" />
+
+    <android.preference.Preference
+        android:key="backend_settings"
+        android:summary="@string/backend_settings_summary"
+        android:title="@string/backend_settings" />
 
 </PreferenceScreen>

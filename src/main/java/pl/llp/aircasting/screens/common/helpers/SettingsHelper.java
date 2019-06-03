@@ -72,8 +72,6 @@ public class SettingsHelper {
     public static final String SENSORS = "external_sensors_json";
     public static final boolean DEFAULT_CONTRIBUTE_TO_CROWDMAP = true;
 
-    public static final String SHOW_GRAPH_METADATA = "show_graph_metadata";
-
     @Inject SharedPreferences preferences;
     @Inject Gson gson;
     @Inject EventBus eventBus;
@@ -314,10 +312,6 @@ public class SettingsHelper {
     public void setExternalSensors(List<ExternalSensorDescriptor> sensors) {
         String sensorsAsJson = gson.toJson(sensors);
         writeString(SENSORS, sensorsAsJson);
-    }
-
-    public boolean showGraphMetadata() {
-        return preferences.getBoolean(SHOW_GRAPH_METADATA, false);
     }
 
     public void setDisableMaps(boolean checked) {
