@@ -279,4 +279,5 @@
   <string name="view_note">\"View Note\"</string>
   <string name="streaming_alert">Dormant stream alert</string>
   <string name="streaming_alert_summary">Check to receive an email when active fixed sessions go dormant for >60 minutes></string>
+    <string name="heat_map_density_warning">Heat map density should be between 1 and 40</string>
 </resources>

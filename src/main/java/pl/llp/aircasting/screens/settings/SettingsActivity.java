@@ -20,6 +20,7 @@
 package pl.llp.aircasting.screens.settings;
 
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,9 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     public static final String DISABLE_MAPS_KEY = "disable_maps";
     public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
 
+    private static final Integer MIN_DENSITY = 1;
+    private static final Integer MAX_DENSITY = 40;
+
     @Inject Application context;
 
     @Inject SharedPreferences sharedPreferences;
@@ -60,8 +64,10 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.STREAMING_ALERT);
+        final EditTextPreference heatMapDensityPreference = (EditTextPreference) getPreferenceScreen().findPreference(SettingsHelper.HEAT_MAP_DENSITY);
 
         alertPreference.setOnPreferenceChangeListener(new StreamingAlertListener());
+        heatMapDensityPreference.setOnPreferenceChangeListener(new HeatMapDensityPreferenceChangeListener());
     }
 
     // preferences screen behaves differently than the others, so we have to use this workaround to add the toolbar
@@ -112,6 +118,20 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
             ToastHelper.show(context, R.string.setting_error, Toast.LENGTH_LONG);
         } else if (key.equals(SettingsHelper.AVERAGING_TIME) && !settingsHelper.validateAveragingTime()) {
             ToastHelper.show(context, R.string.averaging_time_error, Toast.LENGTH_LONG);
+        }
+    }
+
+    private class HeatMapDensityPreferenceChangeListener implements Preference.OnPreferenceChangeListener {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            int value = Integer.parseInt(newValue.toString());
+
+            if (value >= MIN_DENSITY && value <= MAX_DENSITY) {
+                return true;
+            } else {
+                ToastHelper.show(getApplicationContext(), R.string.heat_map_density_warning, Toast.LENGTH_SHORT);
+                return false;
+            }
         }
     }
 }
