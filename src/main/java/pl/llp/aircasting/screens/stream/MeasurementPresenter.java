@@ -31,6 +31,7 @@ import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 
 import android.content.SharedPreferences;
+
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -381,6 +382,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         if (key.equals(SettingsHelper.AVERAGING_TIME)) {
             reset();
         }
+    }
+
+    public double getTimelinePeak() {
+        return mTimelinePeak;
+    }
+
+    public double getTimelineAvg() {
+        return mTimelineAverage;
     }
 
     public interface Listener {

@@ -186,6 +186,14 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         refresh();
     }
 
+    @Override
+    public void updateGauges() {
+        double peak = measurementPresenter.getTimelinePeak();
+        double avg = measurementPresenter.getTimelineAvg();
+        mGaugeHelper.setDynamicValues(peak, avg);
+        mGaugeHelper.updateGauges();
+    }
+
     private void refresh() {
         runOnUiThread(new Runnable() {
             @Override
