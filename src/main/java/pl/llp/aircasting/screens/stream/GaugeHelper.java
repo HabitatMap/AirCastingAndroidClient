@@ -38,12 +38,9 @@ public class GaugeHelper {
     private VisibleSession mVisibleSession;
     private SessionDataFactory mSessionData;
 
-//    @InjectResource(R.string.avg_label_template) String avgLabel;
-//    @InjectResource(R.string.now_label_template) String nowLabel;
-//    @InjectResource(R.string.peak_label_template) String peakLabel;
-
-    private double mPeak;
-    private double mAverage;
+    private Sensor mSensor;
+    private int mPeak;
+    private int mAverage;
 
     public GaugeHelper(View view,
                        ResourceHelper resourceHelper,
@@ -63,16 +60,31 @@ public class GaugeHelper {
         mPeakTextView = view.findViewById(R.id.peak_label);
     }
 
-    public void updateGauges() {
-        Sensor sensor = mVisibleSession.getSensor();
+    public void updateGaugesFromSensor() {
+        mSensor = mVisibleSession.getSensor();
+        mPeak = (int) mVisibleSession.getPeak(mSensor);
+        mAverage = (int) mVisibleSession.getAvg(mSensor);
+
+        updateGauges();
+    }
+
+    public void updateGaugesFromTimeline(double peak, double avg) {
+        mSensor = mVisibleSession.getSensor();
+        mPeak = (int) peak;
+        mAverage = (int) avg;
+
+        updateGauges();
+    }
+
+    private void updateGauges() {
         toggleNowContainerVisibility();
 
-        int now = (int) mSessionData.getNow(sensor, mVisibleSession.getVisibleSessionId());
-        updateGauge(mNowGauge, sensor, MarkerSize.BIG, now);
+        int now = (int) mSessionData.getNow(mSensor, mVisibleSession.getVisibleSessionId());
+        updateGauge(mNowGauge, MarkerSize.BIG, now);
 
-        String nowText = String.format(NOW_LABEL, sensor.getShortType());
-        String avgText = String.format(AVG_LABEL, sensor.getShortType());
-        String peakText = String.format(PEAK_LABEL, sensor.getShortType());
+        String nowText = String.format(NOW_LABEL, mSensor.getShortType());
+        String avgText = String.format(AVG_LABEL, mSensor.getShortType());
+        String peakText = String.format(PEAK_LABEL, mSensor.getShortType());
 
         float avgSize = findMinimumVisibleSize(mAvgTextView, avgText);
         float peakSize = findMinimumVisibleSize(mPeakTextView, peakText);
@@ -87,11 +99,8 @@ public class GaugeHelper {
         boolean hasStats = mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed();
 
         if (hasStats) {
-            int avg = (int) mVisibleSession.getAvg(sensor);
-            int peak = (int) mVisibleSession.getPeak(sensor);
-
-            updateGauge(mAvgGauge, sensor, MarkerSize.SMALL, avg);
-            updateGauge(mPeakGauge, sensor, MarkerSize.SMALL, peak);
+            updateGauge(mAvgGauge, MarkerSize.SMALL, mAverage);
+            updateGauge(mPeakGauge, MarkerSize.SMALL, mPeak);
         } else {
             displayInactiveGauge(mAvgGauge, MarkerSize.SMALL);
             displayInactiveGauge(mPeakGauge, MarkerSize.SMALL);
@@ -129,14 +138,14 @@ public class GaugeHelper {
         return textSize;
     }
 
-    private void updateGauge(View view, Sensor sensor, MarkerSize size, int value) {
+    private void updateGauge(View view, MarkerSize size, int value) {
         TextView textView = (TextView) view;
 
         textView.setText(valueOf(value));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mResourceHelper.getTextSize(value, size));
 
         if (mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed()) {
-            textView.setBackgroundDrawable(mResourceHelper.getGauge(sensor, size, value));
+            textView.setBackgroundDrawable(mResourceHelper.getGauge(mSensor, size, value));
         } else {
             textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
         }
@@ -148,11 +157,6 @@ public class GaugeHelper {
         textView.setText("--");
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, ResourceHelper.SMALL_GAUGE_SMALL_TEXT);
         textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
-    }
-
-    public void setDynamicValues(double peak, double avg) {
-        mPeak = peak;
-        mAverage = avg;
     }
 
     private void toggleNowContainerVisibility() {

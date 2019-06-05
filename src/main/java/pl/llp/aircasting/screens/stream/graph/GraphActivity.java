@@ -85,8 +85,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
         initNavigationDrawer();
 
         plot.initialize(this, settingsHelper, thresholdsHolder, resourceHelper);
-
-        refresh();
     }
 
     @Override
@@ -190,8 +188,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     public void updateGauges() {
         double peak = measurementPresenter.getTimelinePeak();
         double avg = measurementPresenter.getTimelineAvg();
-        mGaugeHelper.setDynamicValues(peak, avg);
-        mGaugeHelper.updateGauges();
+        mGaugeHelper.updateGaugesFromTimeline(peak, avg);
     }
 
     private void refresh() {
@@ -206,6 +203,7 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
                 plot.update(visibleSession.getSensor(), measurements, notes);
 
+                updateGauges();
                 updateLabels(measurements);
             }
         });

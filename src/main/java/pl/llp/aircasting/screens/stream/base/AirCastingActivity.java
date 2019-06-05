@@ -40,7 +40,6 @@ import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -163,17 +162,12 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     }
 
     protected void updateGauges() {
-        final Sensor sensor = visibleSession.getSensor();
-        updateGaugeFaces(sensor);
-    }
-
-    private void updateGaugeFaces(final Sensor visibleSensor) {
         if (noUpdateInProgress.get()) {
             noUpdateInProgress.set(false);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mGaugeHelper.updateGauges();
+                    mGaugeHelper.updateGaugesFromSensor();
                     noUpdateInProgress.set(true);
                 }
             });
