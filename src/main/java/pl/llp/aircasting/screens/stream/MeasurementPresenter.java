@@ -140,6 +140,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
             }
             measurementsSize += 1;
             timelineView.add(measurement);
+            calculateTimelinePeakAndAverage(getTimelineView());
+
+            // need to update timeline peak&avg on new mesurement
+            if (anchor == 0) {
+                notifyListeners();
+            }
         }
     }
 
