@@ -4,7 +4,7 @@ Install all the packages for Android 2.3.1 (API v.9).
 
 Install Extras.
 
-2) Install maven (`brew install maven` on OSX).
+2) Install maven (`brew cask install maven` on OSX).
 
 3) Clone https://github.com/simpligility/android-maven-plugin
 
