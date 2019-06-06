@@ -31,6 +31,7 @@ import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 
 import android.content.SharedPreferences;
+
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -41,6 +42,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -63,9 +65,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Inject SharedPreferences preferences;
     @Inject EventBus eventBus;
     @Inject VisibleSession visibleSession;
-    @Inject
-    MeasurementAggregator aggregator;
+    @Inject MeasurementAggregator aggregator;
     @Inject SessionDataFactory sessionData;
+    @Inject private ApplicationState state;
 
     private CopyOnWriteArrayList<Measurement> fullView = null;
     private int measurementsSize;
@@ -77,11 +79,9 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
 
     private final CopyOnWriteArrayList<Measurement> timelineView = new CopyOnWriteArrayList<Measurement>();
     private List<Listener> listeners = newArrayList();
-
     private Sensor currentViewSensor;
-
-    @Inject
-    private ApplicationState state;
+    private double mTimelinePeak = 0;
+    private double mTimelineAverage = 0;
 
     @Inject
     public void init() {
@@ -140,6 +140,12 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
             }
             measurementsSize += 1;
             timelineView.add(measurement);
+            calculateTimelinePeakAndAverage(getTimelineView());
+
+            // need to update timeline peak&avg on new mesurement
+            if (anchor == 0) {
+                notifyListeners();
+            }
         }
     }
 
@@ -284,8 +290,28 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
 
 //    +1 because subMap parameters are (inclusive, exclusive)
-        timelineView.addAll(measurementsMap.subMap(lastMeasurementTime - visibleMilliseconds, lastMeasurementTime + 1).values());
+        Collection<Measurement> timelineMeasurements = measurementsMap.subMap(lastMeasurementTime - visibleMilliseconds, lastMeasurementTime + 1).values();
+        calculateTimelinePeakAndAverage(timelineMeasurements);
+        timelineView.addAll(timelineMeasurements);
+
         measurementsSize = measurements.size();
+    }
+
+    private void calculateTimelinePeakAndAverage(Collection<Measurement> timelineMeasurements) {
+        double peakValue = 0;
+        double sum = 0;
+
+        for (Measurement measurement : timelineMeasurements) {
+            double measurementValue = measurement.getValue();
+
+            if (measurementValue > peakValue) {
+                peakValue = measurementValue;
+            }
+            sum += measurementValue;
+        }
+
+        mTimelinePeak = peakValue;
+        mTimelineAverage = sum / timelineMeasurements.size();
     }
 
     public void registerListener(Listener listener) {
@@ -362,6 +388,14 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         if (key.equals(SettingsHelper.AVERAGING_TIME)) {
             reset();
         }
+    }
+
+    public double getTimelinePeak() {
+        return mTimelinePeak;
+    }
+
+    public double getTimelineAvg() {
+        return mTimelineAverage;
     }
 
     public interface Listener {

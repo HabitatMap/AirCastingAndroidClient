@@ -22,62 +22,88 @@ import static java.lang.String.valueOf;
 public class GaugeHelper {
     public static final int MARGIN = 2;
 
-    @Inject
-    ResourceHelper resourceHelper;
-    @Inject CurrentSessionManager currentSessionManager;
-    @Inject
-    VisibleSession visibleSession;
-    @Inject
-    SessionDataFactory sessionData;
-    @Inject
-    NowValueVisibilityManager nowManager;
+    private static String AVG_LABEL = "Avg %s";
+    private static String NOW_LABEL = "Now %s";
+    private static String PEAK_LABEL = "Peak %s";
 
-    @InjectResource(R.string.avg_label_template) String avgLabel;
-    @InjectResource(R.string.now_label_template) String nowLabel;
-    @InjectResource(R.string.peak_label_template) String peakLabel;
+    private final View mNowContainer;
+    private final TextView mNowGauge;
+    private final TextView mAvgGauge;
+    private final TextView mPeakGauge;
+    private final TextView mNowTextView;
+    private final TextView mAvgTextView;
+    private final TextView mPeakTextView;
 
-    /**
-     * Update a set of now/avg/peak gauges
-     *
-     * @param sensor The Sensor from which the readings are taken
-     * @param view   The view containing the three gauges
-     */
-    public void updateGauges(Sensor sensor, View view) {
-        View nowContainer = view.findViewById(R.id.now_container);
-        nowContainer.setVisibility(nowManager.getVisibility());
+    private ResourceHelper mResourceHelper;
+    private VisibleSession mVisibleSession;
+    private SessionDataFactory mSessionData;
 
-        int now = (int) sessionData.getNow(sensor, visibleSession.getVisibleSessionId());
-        updateGauge(view.findViewById(R.id.now_gauge), sensor, MarkerSize.BIG, now);
+    private Sensor mSensor;
+    private int mPeak;
+    private int mAverage;
 
-        String nowText = String.format(nowLabel, sensor.getShortType());
-        String avgText = String.format(avgLabel, sensor.getShortType());
-        String peakText = String.format(peakLabel, sensor.getShortType());
+    public GaugeHelper(View view,
+                       ResourceHelper resourceHelper,
+                       VisibleSession visibleSession,
+                       SessionDataFactory sessionDataFactory) {
+        mResourceHelper = resourceHelper;
+        mVisibleSession = visibleSession;
+        mSessionData = sessionDataFactory;
 
-        TextView nowTextView = (TextView) view.findViewById(R.id.now_label);
-        TextView avgTextView = (TextView) view.findViewById(R.id.avg_label);
-        TextView peakTextView = (TextView) view.findViewById(R.id.peak_label);
+        mNowContainer = view.findViewById(R.id.now_container);
+        mNowGauge = view.findViewById(R.id.now_gauge);
+        mAvgGauge = view.findViewById(R.id.avg_gauge);
+        mPeakGauge = view.findViewById(R.id.peak_gauge);
 
-        float avgSize = findMinimumVisibleSize(avgTextView, avgText);
-        float peakSize = findMinimumVisibleSize(peakTextView, peakText);
-        float nowSize = findMinimumVisibleSize(nowTextView, nowText);
+        mNowTextView = view.findViewById(R.id.now_label);
+        mAvgTextView = view.findViewById(R.id.avg_label);
+        mPeakTextView = view.findViewById(R.id.peak_label);
+    }
+
+    public void updateGaugesFromSensor() {
+        mSensor = mVisibleSession.getSensor();
+        mPeak = (int) mVisibleSession.getPeak(mSensor);
+        mAverage = (int) mVisibleSession.getAvg(mSensor);
+
+        updateGauges();
+    }
+
+    public void updateGaugesFromTimeline(double peak, double avg) {
+        mSensor = mVisibleSession.getSensor();
+        mPeak = (int) peak;
+        mAverage = (int) avg;
+
+        updateGauges();
+    }
+
+    private void updateGauges() {
+        toggleNowContainerVisibility();
+
+        int now = (int) mSessionData.getNow(mSensor, mVisibleSession.getVisibleSessionId());
+        updateGauge(mNowGauge, MarkerSize.BIG, now);
+
+        String nowText = String.format(NOW_LABEL, mSensor.getShortType());
+        String avgText = String.format(AVG_LABEL, mSensor.getShortType());
+        String peakText = String.format(PEAK_LABEL, mSensor.getShortType());
+
+        float avgSize = findMinimumVisibleSize(mAvgTextView, avgText);
+        float peakSize = findMinimumVisibleSize(mPeakTextView, peakText);
+        float nowSize = findMinimumVisibleSize(mNowTextView, nowText);
 
         avgSize = peakSize = Math.min(avgSize, peakSize);
 
-        updateLabel(nowTextView, nowText, nowSize);
-        updateLabel(avgTextView, avgText, avgSize);
-        updateLabel(peakTextView, peakText, peakSize);
+        updateLabel(mNowTextView, nowText, nowSize);
+        updateLabel(mAvgTextView, avgText, avgSize);
+        updateLabel(mPeakTextView, peakText, peakSize);
 
-        boolean hasStats = visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed();
+        boolean hasStats = mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed();
 
         if (hasStats) {
-            int avg = (int) visibleSession.getAvg(sensor);
-            int peak = (int) visibleSession.getPeak(sensor);
-
-            updateGauge(view.findViewById(R.id.avg_gauge), sensor, MarkerSize.SMALL, avg);
-            updateGauge(view.findViewById(R.id.peak_gauge), sensor, MarkerSize.SMALL, peak);
+            updateGauge(mAvgGauge, MarkerSize.SMALL, mAverage);
+            updateGauge(mPeakGauge, MarkerSize.SMALL, mPeak);
         } else {
-            displayInactiveGauge(view.findViewById(R.id.avg_gauge), MarkerSize.SMALL);
-            displayInactiveGauge(view.findViewById(R.id.peak_gauge), MarkerSize.SMALL);
+            displayInactiveGauge(mAvgGauge, MarkerSize.SMALL);
+            displayInactiveGauge(mPeakGauge, MarkerSize.SMALL);
         }
     }
 
@@ -112,16 +138,16 @@ public class GaugeHelper {
         return textSize;
     }
 
-    private void updateGauge(View view, Sensor sensor, MarkerSize size, int value) {
+    private void updateGauge(View view, MarkerSize size, int value) {
         TextView textView = (TextView) view;
 
         textView.setText(valueOf(value));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, resourceHelper.getTextSize(value, size));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mResourceHelper.getTextSize(value, size));
 
-        if (visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed()) {
-            textView.setBackgroundDrawable(resourceHelper.getGauge(sensor, size, value));
+        if (mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed()) {
+            textView.setBackgroundDrawable(mResourceHelper.getGauge(mSensor, size, value));
         } else {
-            textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+            textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
         }
     }
 
@@ -130,6 +156,14 @@ public class GaugeHelper {
 
         textView.setText("--");
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, ResourceHelper.SMALL_GAUGE_SMALL_TEXT);
-        textView.setBackgroundDrawable(resourceHelper.getDisabledGauge(size));
+        textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
+    }
+
+    private void toggleNowContainerVisibility() {
+        if (mVisibleSession.isVisibleSessionFixed() || mVisibleSession.isCurrentSessionVisible()) {
+            mNowContainer.setVisibility(View.VISIBLE);
+        } else {
+            mNowContainer.setVisibility(View.GONE);
+        }
     }
 }

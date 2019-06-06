@@ -40,7 +40,6 @@ import pl.llp.aircasting.event.sensor.AudioReaderErrorEvent;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Note;
-import pl.llp.aircasting.model.Sensor;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -61,7 +60,9 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     public static final String VISIBLE_SESSION_ID = "visibleSessionId";
     public static final String VISIBLE_SENSOR_ID = "visibleSensorId";
 
-    @InjectView(R.id.gauge_container) View gauges;
+    protected GaugeHelper mGaugeHelper;
+    protected View mGauges;
+
     @InjectView(R.id.top_bar) View topBar;
 
     @Inject public VisibleSession visibleSession;
@@ -70,7 +71,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
-    @Inject GaugeHelper gaugeHelper;
     @Inject SessionDataFactory sessionData;
 
     private boolean initialized = false;
@@ -112,11 +112,17 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     private void initialize() {
         if (!initialized) {
+            mGauges = findViewById(R.id.gauge_container);
+
+            if (mGaugeHelper == null) {
+                mGaugeHelper = new GaugeHelper(mGauges, resourceHelper, visibleSession, sessionData);
+            }
+
             zoomOut.setOnClickListener(this);
             zoomIn.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
-            gauges.setOnClickListener(this);
+            mGauges.setOnClickListener(this);
 
             initialized = true;
         }
@@ -156,17 +162,12 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     }
 
     protected void updateGauges() {
-        final Sensor sensor = visibleSession.getSensor();
-        updateGaugeFaces(sensor);
-    }
-
-    private void updateGaugeFaces(final Sensor visibleSensor) {
         if (noUpdateInProgress.get()) {
             noUpdateInProgress.set(false);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    gaugeHelper.updateGauges(visibleSensor, gauges);
+                    mGaugeHelper.updateGaugesFromSensor();
                     noUpdateInProgress.set(true);
                 }
             });
