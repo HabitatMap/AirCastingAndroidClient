@@ -23,7 +23,7 @@ import pl.llp.aircasting.screens.sessionRecord.ContributeActivity;
 import pl.llp.aircasting.screens.sessionRecord.EditSessionActivity;
 import pl.llp.aircasting.screens.sessionRecord.MakeANoteActivity;
 import pl.llp.aircasting.screens.sessions.SessionsActivity;
-import pl.llp.aircasting.screens.sessions.ShareSessionActivity;
+import pl.llp.aircasting.screens.sessions.shareSession.ShareSessionActivity;
 import pl.llp.aircasting.screens.dashboard.DashboardActivity;
 import pl.llp.aircasting.screens.stream.ThresholdsActivity;
 import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;

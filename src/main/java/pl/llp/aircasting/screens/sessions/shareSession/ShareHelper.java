@@ -17,7 +17,7 @@
 
     You can contact the authors by email at <info@habitatmap.org>
 */
-package pl.llp.aircasting.screens.sessions;
+package pl.llp.aircasting.screens.sessions.shareSession;
 
 import android.app.Activity;
 import pl.llp.aircasting.Intents;
@@ -36,8 +36,11 @@ public class ShareHelper {
     @InjectResource(R.string.share_link) String shareLink;
     @InjectResource(R.string.share_title) String shareTitle;
 
-    public void shareLink(Activity activity, Session session) {
-        String text = String.format(sessionLinkTemplate, session.getLocation());
+    private final String SENSOR_PARAM = "?sensor_name=";
+
+    public void shareLink(Activity activity, Session session, CharSequence selectedSensorName) {
+        String sessionLink = session.getLocation() + SENSOR_PARAM + selectedSensorName;
+        String text = String.format(sessionLinkTemplate, sessionLink);
 
         Intents.share(activity, shareLink, shareTitle, text);
     }
