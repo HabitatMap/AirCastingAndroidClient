@@ -118,8 +118,6 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
                 mGaugeHelper = new GaugeHelper(mGauges, resourceHelper, visibleSession, sessionData);
             }
 
-            zoomOut.setOnClickListener(this);
-            zoomIn.setOnClickListener(this);
             topBar.setOnClickListener(this);
 
             mGauges.setOnClickListener(this);

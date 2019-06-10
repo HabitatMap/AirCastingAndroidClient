@@ -78,8 +78,7 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  */
 public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
 
-    @InjectView(R.id.mapview)
-    AirCastingMapView mapView;
+    @InjectView(R.id.mapview) AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
@@ -116,7 +115,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         super.onCreate(savedInstanceState);
         noteOverlay.setContext(this);
 
-        setContentView(R.layout.heat_map);
+        setContentView(R.layout.activity_map);
 
         initToolbar("Map");
         initNavigationDrawer();

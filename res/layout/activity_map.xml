@@ -24,32 +24,36 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
->
+        android:layout_height="match_parent">
 
     <!--main content-->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:orientation="vertical"
                   android:layout_height="fill_parent"
-                  android:layout_width="fill_parent"
-    >
+                  android:layout_width="fill_parent">
 
         <include layout="@layout/toolbar"/>
 
         <RelativeLayout android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:background="@android:color/background_light"
-        >
+                        android:background="@android:color/background_light"> 
+            
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                map:uiZoomControls="false"
+                map:uiZoomGestures="true"/>
 
-            <include layout="@layout/map"/>
 
             <include layout="@layout/gauges"/>
 
             <RelativeLayout android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
-                            android:id="@+id/buttons"
-            >
+                            android:id="@+id/buttons">
 
                 <Button android:id="@+id/locate"
                         android:layout_width="38dp"
@@ -64,8 +68,15 @@
                 <include layout="@layout/zoom_buttons" />
 
             </RelativeLayout>
-        </RelativeLayout>
 
+       <ProgressBar
+            android:id="@+id/progress_bar"
+            android:visibility="visible"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />  </RelativeLayout>
 
     </LinearLayout>
 
