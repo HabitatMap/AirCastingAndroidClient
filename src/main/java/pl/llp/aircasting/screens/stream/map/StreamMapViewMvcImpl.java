@@ -57,7 +57,7 @@ public class StreamMapViewMvcImpl implements BaseViewMvc, OnMapReadyCallback, Vi
         locateMe();
     }
 
-    private void locateMe() {
+    public void locateMe() {
     }
 
     @Override

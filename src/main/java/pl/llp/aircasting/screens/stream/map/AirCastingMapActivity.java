@@ -119,7 +119,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         initToolbar("Map");
         initNavigationDrawer();
-        centerMap.setOnClickListener(this);
 
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
