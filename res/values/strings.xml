@@ -83,7 +83,7 @@
   <string name="color_scale_summary">Adjust the relationship between sound levels and display colors.</string>
   <string name="connect_to_aircasting">Connect to AirCasting</string>
   <string name="create_new_account">Create new account?</string>
-  <string name="heat_map_density_summary">Smaller grid cell sizes will display averages for smaller areas but will increase downloading times</string>
+  <string name="heat_map_density_summary">Grid cell sizes can be any number 1-40. Smaller grid cell sizes will display averages for smaller areas but will increase downloading times.</string>
   <string name="loud_threshold_summary">Measurements greater than this will be marked in orange.</string>
   <string name="save_and_share">Save and share</string>
   <string name="share_with">Share with</string>
@@ -278,6 +278,6 @@
   <string name="other">Other</string>
   <string name="view_note">\"View Note\"</string>
   <string name="streaming_alert">Dormant stream alert</string>
-  <string name="streaming_alert_summary">Check to receive an email when active fixed sessions go dormant for >60 minutes></string>
-    <string name="heat_map_density_warning">Heat map density should be between 1 and 40</string>
+  <string name="streaming_alert_summary">Check to receive an email when active fixed sessions go dormant for >60 minutes</string>
+    <string name="heat_map_density_warning">CrowdmMap grid cell size must be a number 1-40</string>
 </resources>

@@ -61,7 +61,7 @@ public class SettingsHelper {
     public static final boolean DEFAULT_SATELLITE = false;
     public static final String DEFAULT_BACKEND = "aircasting.org";
     public static final int DEFAULT_BACKEND_PORT = 80;
-    public static final int DEFAULT_HEAT_MAP_DENSITY = 10;
+    public static final int DEFAULT_HEAT_MAP_DENSITY = 20;
     public static final boolean DEFAULT_KEEP_SCREEN_ON = false;
     public static final String SAMPLE_INTERVAL = "sample_interval";
     public static final String AVERAGING_TIME = "averaging_time";
