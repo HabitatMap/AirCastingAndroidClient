@@ -27,6 +27,8 @@ import android.view.*;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
 import com.google.common.eventbus.Subscribe;
@@ -55,7 +57,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.google.inject.Inject;
 

@@ -49,12 +49,9 @@ public class RouteOverlay extends Overlay {
     public static final int OPAQUE = 255;
     public static final int SMOOTHING_BATCH = 10;
 
-    @Inject
-    PathSmoother pathSmoother;
-    @Inject
-    ResourceHelper resourceHelper;
-    @Inject
-    VisibleSession visibleSession;
+    @Inject PathSmoother pathSmoother;
+    @Inject ResourceHelper resourceHelper;
+    @Inject VisibleSession visibleSession;
 
     private List<GeoPoint> points = newArrayList();
     private List<GeoPoint> pendingPoints = newArrayList();
@@ -133,7 +130,7 @@ public class RouteOverlay extends Overlay {
             points.addAll(pendingPoints);
             pendingPoints.clear();
 
-            smoothedPoints = pathSmoother.getSmoothed(points);
+//            smoothedPoints = pathSmoother.getSmoothed(points);
         }
     }
 

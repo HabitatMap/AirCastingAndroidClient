@@ -1,5 +1,6 @@
 package pl.llp.aircasting.util.map;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
 import java.util.List;
@@ -15,15 +16,15 @@ import static com.google.common.collect.Lists.newArrayList;
 public class PathSmoother {
     private static final double DIST_CUTOFF = 50;
 
-    private List<GeoPoint> points;
+    private List<LatLng> points;
     private boolean[] keep;
 
-    public List<GeoPoint> getSmoothed(List<GeoPoint> geoPoints) {
+    public List<LatLng> getSmoothed(List<LatLng> geoPoints) {
         points = newArrayList(geoPoints);
         keep = new boolean[this.points.size()];
         ramerDouglasPeucke(0, keep.length - 1);
 
-        List<GeoPoint> result = newArrayList();
+        List<LatLng> result = newArrayList();
         for (int i = 0; i < keep.length; i++) {
             if (keep[i]) {
                 result.add(this.points.get(i));
@@ -53,13 +54,13 @@ public class PathSmoother {
         }
     }
 
-    private double perpendicularDist(GeoPoint from, GeoPoint to1, GeoPoint to2) {
-        double x1 = from.getLongitudeE6();
-        double y1 = from.getLatitudeE6();
-        double x2 = to1.getLongitudeE6();
-        double y2 = to1.getLatitudeE6();
-        double x3 = to2.getLongitudeE6();
-        double y3 = to2.getLatitudeE6();
+    private double perpendicularDist(LatLng from, LatLng to1, LatLng to2) {
+        double x1 = from.longitude * 1000000;
+        double y1 = from.latitude * 1000000;
+        double x2 = to1.longitude * 1000000;
+        double y2 = to1.latitude * 1000000;
+        double x3 = to2.longitude * 1000000;
+        double y3 = to2.latitude * 1000000;
 
         // Line equation of a straight line going through (x2, y2) and (x3, y3):
         // x(y3 - y2) + y(x2 - x3) - x2y3 + y2x3

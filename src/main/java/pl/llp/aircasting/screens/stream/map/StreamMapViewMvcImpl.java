@@ -11,41 +11,51 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Singleton;
+
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.common.BaseViewMvc;
+import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
+import pl.llp.aircasting.util.map.PathSmoother;
 
 import static pl.llp.aircasting.screens.stream.map.LocationConversionHelper.boundingBox;
 
 @Singleton
-public class StreamMapViewMvcImpl implements BaseViewMvc, OnMapReadyCallback, View.OnClickListener, GoogleMap.OnCameraIdleListener {
+public class StreamMapViewMvcImpl implements BaseViewMvc, View.OnClickListener, GoogleMap.OnCameraIdleListener {
     private final Activity mContext;
     private final LayoutInflater mLayoutInflater;
     private final View mLocate;
     private final View mZoomIn;
     private final View mZoomOut;
     private final View mProgress;
-    private final Session mSession;
+    private final VisibleSession mVisibleSession;
+    private final PathSmoother mPathSmoother;
     private View mRootView;
     private GoogleMap mMap;
     private LatLng mCurrentLocation;
+    private List<LatLng> mRoutePoints = new ArrayList<>();
 
-    public StreamMapViewMvcImpl(Activity context, ViewGroup parent, Session session) {
+    public StreamMapViewMvcImpl(Activity context, ViewGroup parent, VisibleSession visibleSession) {
         mContext = context;
         mLayoutInflater = mContext.getLayoutInflater();
         mRootView = mLayoutInflater.inflate(R.layout.activity_map, parent, false);
 
-        MapFragment mapFragment = (MapFragment) mContext.getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        mSession = session;
+        mVisibleSession = visibleSession;
 
         mLocate = findViewById(R.id.locate);
         mZoomIn = findViewById(R.id.zoom_in);
         mZoomOut = findViewById(R.id.zoom_out);
         mProgress = findViewById(R.id.progress_bar);
+
+        mPathSmoother = new PathSmoother();
 
         mProgress.setVisibility(View.GONE);
 
@@ -54,7 +64,6 @@ public class StreamMapViewMvcImpl implements BaseViewMvc, OnMapReadyCallback, Vi
         mZoomOut.setOnClickListener(this);
     }
 
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -62,6 +71,7 @@ public class StreamMapViewMvcImpl implements BaseViewMvc, OnMapReadyCallback, Vi
         mMap.setMinZoomPreference(1.0f);
         mMap.setOnCameraIdleListener(this);
 
+        drawSessionRoute();
         moveToSessionLocation();
     }
 
@@ -99,10 +109,30 @@ public class StreamMapViewMvcImpl implements BaseViewMvc, OnMapReadyCallback, Vi
 
     public void moveToSessionLocation() {
         if (mCurrentLocation == null) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(mSession);
+            LocationConversionHelper.BoundingBox boundingBox = boundingBox(mVisibleSession.getSession());
             mCurrentLocation = boundingBox.getCenter();
         }
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mCurrentLocation, 16f);
         mMap.animateCamera(cameraUpdate);
+    }
+
+    private void drawSessionRoute() {
+        List<Measurement> measurements = mVisibleSession.getStream().getMeasurements();
+
+        for (Measurement measurement : measurements) {
+            LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
+            mRoutePoints.add(point);
+        }
+
+        List<LatLng> smoothedPath = mPathSmoother.getSmoothed(mRoutePoints);
+        PolylineOptions options = new PolylineOptions();
+        options.width(5f);
+        options.color(R.color.gps_route);
+
+        for (LatLng point : smoothedPath) {
+            options.add(point);
+        }
+
+        mMap.addPolyline(options);
     }
 }

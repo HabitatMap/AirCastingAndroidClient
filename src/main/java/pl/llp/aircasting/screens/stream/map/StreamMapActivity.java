@@ -4,29 +4,54 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
 
-public class StreamMapActivity extends AirCastingActivity {
+public class StreamMapActivity extends AirCastingActivity implements OnMapReadyCallback {
     private StreamMapViewMvcImpl mStreamMapViewMvcImpl;
     private int mRequestedAction;
 
     private static final int ACTION_TOGGLE = 1;
     private static final int ACTION_CENTER = 2;
     private boolean mZoomToSession = true;
+    private MapFragment mMapFragment;
+    private GoogleMap mMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mStreamMapViewMvcImpl = new StreamMapViewMvcImpl(this, null, visibleSession.getSession());
+
+        Log.w("map activity", "oncreate");
+
+        mStreamMapViewMvcImpl = new StreamMapViewMvcImpl(this, null, visibleSession);
         setContentView(mStreamMapViewMvcImpl.getRootView());
+
+        if (mMapFragment == null) {
+            mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+            mMapFragment.setRetainInstance(true);
+            mMapFragment.getMapAsync((OnMapReadyCallback) context);
+        }
+
         initToolbar("Map");
         initNavigationDrawer();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if (mMap == null) {
+            mMap = googleMap;
+            mStreamMapViewMvcImpl.onMapReady(googleMap);
+        }
     }
 
     @Override
