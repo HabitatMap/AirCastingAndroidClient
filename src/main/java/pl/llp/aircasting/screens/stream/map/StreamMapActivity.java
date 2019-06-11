@@ -18,14 +18,31 @@ public class StreamMapActivity extends AirCastingActivity {
 
     private static final int ACTION_TOGGLE = 1;
     private static final int ACTION_CENTER = 2;
+    private boolean mZoomToSession = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mStreamMapViewMvcImpl = new StreamMapViewMvcImpl(this, null);
+        mStreamMapViewMvcImpl = new StreamMapViewMvcImpl(this, null, visibleSession.getSession());
         setContentView(mStreamMapViewMvcImpl.getRootView());
         initToolbar("Map");
         initNavigationDrawer();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (visibleSession.isVisibleSessionViewed() && mZoomToSession) {
+//            mStreamMapViewMvcImpl.showSessionLocation();
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mZoomToSession = false;
     }
 
     @Override

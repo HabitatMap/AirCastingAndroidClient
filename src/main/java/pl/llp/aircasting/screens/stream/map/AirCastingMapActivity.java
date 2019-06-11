@@ -324,12 +324,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void showSession() {
-        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(visibleSession.getSession());
-
-            mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
-            mapView.getController().animateTo(boundingBox.getCenter());
-        }
+//        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
+//            LocationConversionHelper.BoundingBox boundingBox = boundingBox(visibleSession.getSession());
+//
+//            mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
+//            mapView.getController().animateTo(boundingBox.getCenter());
+//        }
     }
 
     @Override
