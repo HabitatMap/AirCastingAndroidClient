@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import pl.llp.aircasting.model.Session;
 public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListener, SensorItemViewMvcImpl.Listener {
     private final SensorRecyclerAdapter mSensorAdapter;
     private final View mButtons;
+    private final Toolbar mToolbar;
     public View mRootView;
 
     private final View mShareFile;
@@ -38,6 +40,7 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mShareFile = findViewById(R.id.share_file);
         mShareLink = findViewById(R.id.share_link);
         mSelectSensorRv = findViewById(R.id.select_sensor);
+        mToolbar = findViewById(R.id.toolbar);
 
         mSensorAdapter = new SensorRecyclerAdapter(inflater);
         mSensorAdapter.registerListener(this);
@@ -78,6 +81,7 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
     public void showSensors() {
         mButtons.setVisibility(View.GONE);
         mSelectSensorRv.setVisibility(View.VISIBLE);
+        mToolbar.setTitle("Select a Stream");
     }
 
     @Override

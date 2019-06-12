@@ -3,13 +3,14 @@ package pl.llp.aircasting.screens.sessions.shareSession;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.common.BaseViewMvc;
 
 public class SensorItemViewMvcImpl implements BaseViewMvc {
-    private final TextView mSensorName;
+    private final Button mSensorName;
     private View mRootView;
     private Listener mListener;
 
@@ -21,7 +22,7 @@ public class SensorItemViewMvcImpl implements BaseViewMvc {
         mRootView = inflater.inflate(R.layout.sensor_item, parent, false);
         mSensorName = findViewById(R.id.sensor_name);
 
-        getRootView().setOnClickListener(new View.OnClickListener() {
+        mSensorName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onSensorSelected(v);
