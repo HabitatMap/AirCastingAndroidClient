@@ -39,8 +39,8 @@ public class GaugeHelper {
     private SessionDataFactory mSessionData;
 
     private Sensor mSensor;
-    private int mPeak;
-    private int mAverage;
+    private double mPeak;
+    private double mAverage;
 
     public GaugeHelper(View view,
                        ResourceHelper resourceHelper,
@@ -70,8 +70,8 @@ public class GaugeHelper {
 
     public void updateGaugesFromTimeline(double peak, double avg) {
         mSensor = mVisibleSession.getSensor();
-        mPeak = (int) peak;
-        mAverage = (int) avg;
+        mPeak = peak;
+        mAverage = avg;
 
         updateGauges();
     }
@@ -79,7 +79,7 @@ public class GaugeHelper {
     private void updateGauges() {
         toggleNowContainerVisibility();
 
-        int now = (int) mSessionData.getNow(mSensor, mVisibleSession.getVisibleSessionId());
+        double now = mSessionData.getNow(mSensor, mVisibleSession.getVisibleSessionId());
         updateGauge(mNowGauge, MarkerSize.BIG, now);
 
         String nowText = String.format(NOW_LABEL, mSensor.getShortType());
@@ -138,10 +138,10 @@ public class GaugeHelper {
         return textSize;
     }
 
-    private void updateGauge(View view, MarkerSize size, int value) {
+    private void updateGauge(View view, MarkerSize size, double value) {
         TextView textView = (TextView) view;
 
-        textView.setText(valueOf(value));
+        textView.setText(valueOf(Math.round(value)));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mResourceHelper.getTextSize(value, size));
 
         if (mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed()) {

@@ -311,7 +311,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         }
 
         mTimelinePeak = peakValue;
-        mTimelineAverage = sum / timelineMeasurements.size();
+        mTimelineAverage = sum / (double) timelineMeasurements.size();
     }
 
     public void registerListener(Listener listener) {
