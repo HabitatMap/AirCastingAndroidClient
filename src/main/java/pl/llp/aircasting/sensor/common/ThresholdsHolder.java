@@ -1,5 +1,7 @@
 package pl.llp.aircasting.sensor.common;
 
+import android.util.Log;
+
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.Sensor;
@@ -57,7 +59,7 @@ public class ThresholdsHolder {
             Map<MeasurementLevel, Integer> levels = getValues(sensor);
 
             for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
-                if (value >= levels.get(level)) {
+                if (value > levels.get(level)) {
                     return level;
                 }
             }
