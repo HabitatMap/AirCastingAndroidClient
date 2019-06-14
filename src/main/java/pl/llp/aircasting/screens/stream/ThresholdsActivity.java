@@ -1,21 +1,21 @@
 /**
- AirCasting - Share your Air!
- Copyright (C) 2011-2012 HabitatMap, Inc.
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
- You can contact the authors by email at <info@habitatmap.org>
+ * AirCasting - Share your Air!
+ * Copyright (C) 2011-2012 HabitatMap, Inc.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * You can contact the authors by email at <info@habitatmap.org>
  */
 package pl.llp.aircasting.screens.stream;
 
@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
@@ -43,30 +44,47 @@ import roboguice.inject.InjectView;
 
 import static java.lang.String.valueOf;
 
-public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener
-{
-    @InjectView(R.id.color_scale_very_loud) EditText veryLoudEdit;
-    @InjectView(R.id.color_scale_too_loud) EditText tooLoudEdit;
-    @InjectView(R.id.color_scale_average) EditText averageEdit;
-    @InjectView(R.id.color_scale_quiet) EditText quietEdit;
-    @InjectView(R.id.color_scale_loud) EditText loudEdit;
+public class ThresholdsActivity extends DialogActivity implements View.OnClickListener, View.OnFocusChangeListener, SeekBar.OnSeekBarChangeListener {
+    @InjectView(R.id.color_scale_too_loud)
+    EditText tooLoudEdit;
+    @InjectView(R.id.color_scale_very_loud)
+    EditText veryLoudEdit;
+    @InjectView(R.id.color_scale_loud)
+    EditText loudEdit;
+    @InjectView(R.id.color_scale_average)
+    EditText averageEdit;
+    @InjectView(R.id.color_scale_quiet)
+    EditText quietEdit;
 
-    @InjectView(R.id.color_scale_very_loud_slider) SeekBar veryLoudSlider;
-    @InjectView(R.id.color_scale_average_slider) SeekBar averageSlider;
-    @InjectView(R.id.color_scale_loud_slider) SeekBar loudSlider;
+    @InjectView(R.id.color_scale_very_loud_slider)
+    SeekBar veryLoudSlider;
+    @InjectView(R.id.color_scale_average_slider)
+    SeekBar averageSlider;
+    @InjectView(R.id.color_scale_loud_slider)
+    SeekBar loudSlider;
 
-    @InjectView(R.id.top_bar_very_high) TextView topBarTooLoud;
-    @InjectView(R.id.top_bar_very_low) TextView topBarQuiet;
-    @InjectView(R.id.top_bar_high) TextView topBarVeryLoud;
-    @InjectView(R.id.top_bar_low) TextView topBarAverage;
-    @InjectView(R.id.top_bar_mid) TextView topBarLoud;
+    @InjectView(R.id.top_bar_very_high)
+    TextView topBarTooLoud;
+    @InjectView(R.id.top_bar_very_low)
+    TextView topBarQuiet;
+    @InjectView(R.id.top_bar_high)
+    TextView topBarVeryLoud;
+    @InjectView(R.id.top_bar_low)
+    TextView topBarAverage;
+    @InjectView(R.id.top_bar_mid)
+    TextView topBarLoud;
 
-    @InjectView(R.id.reset) Button reset;
-    @InjectView(R.id.save) Button save;
+    @InjectView(R.id.reset)
+    Button reset;
+    @InjectView(R.id.save)
+    Button save;
 
-    @Inject SettingsHelper settingsHelper;
-    @Inject Application context;
-    @Inject EventBus eventBus;
+    @Inject
+    SettingsHelper settingsHelper;
+    @Inject
+    Application context;
+    @Inject
+    EventBus eventBus;
 
     private int veryLoud;
     private int tooLoud;
@@ -117,16 +135,14 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
         }
     }
 
-  private void resetThresholds()
-  {
-    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS)
-    {
-      eventBus.post(new ThresholdSetEvent(sensor, level, sensor.getThreshold(level)));
+    private void resetThresholds() {
+        for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
+            eventBus.post(new ThresholdSetEvent(sensor, level, sensor.getThreshold(level)));
+        }
+        settingsHelper.resetThresholds(sensor);
     }
-    settingsHelper.resetThresholds(sensor);
-  }
 
-  void saveThresholds() {
+    void saveThresholds() {
         calculateThresholds();
         fixThresholds();
 

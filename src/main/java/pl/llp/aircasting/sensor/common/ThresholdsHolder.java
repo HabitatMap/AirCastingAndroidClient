@@ -19,67 +19,61 @@ import static com.google.common.collect.Maps.newHashMap;
  * Created by ags on 01/04/2013 at 13:22
  */
 @Singleton
-public class ThresholdsHolder
-{
-  @Inject SettingsHelper settings;
-  @Inject EventBus eventBus;
+public class ThresholdsHolder {
+    @Inject
+    SettingsHelper settings;
+    @Inject
+    EventBus eventBus;
 
-  Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
+    Map<Sensor, Map<MeasurementLevel, Integer>> thresholds = newHashMap();
 
-  @Inject
-  public void init()
-  {
-    eventBus.register(this);
-  }
-
-  @Subscribe
-  public void onEvent(ThresholdSetEvent event)
-  {
-    Sensor sensor = event.getSensor();
-
-    if (sensor != null) {
-      Map<MeasurementLevel, Integer> levels = getValues(sensor);
-      levels.put(event.getLevel(), event.getValue());
+    @Inject
+    public void init() {
+        eventBus.register(this);
     }
-  }
 
-  private HashMap<MeasurementLevel, Integer> initLevels(Sensor sensor)
-  {
-    HashMap<MeasurementLevel, Integer> values = new HashMap<MeasurementLevel, Integer>();
-    for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
-      int threshold = settings.getThreshold(sensor, level);
-      values.put(level, threshold);
-    }
-    thresholds.put(sensor, values);
-    return values;
-  }
+    @Subscribe
+    public void onEvent(ThresholdSetEvent event) {
+        Sensor sensor = event.getSensor();
 
-  public MeasurementLevel getLevel(Sensor sensor, double value)
-  {
-    if (sensor != null) {
-      Map<MeasurementLevel, Integer> levels = getValues(sensor);
-
-      for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
-        if (value >= levels.get(level)) {
-          return level;
+        if (sensor != null) {
+            Map<MeasurementLevel, Integer> levels = getValues(sensor);
+            levels.put(event.getLevel(), event.getValue());
         }
-      }
     }
-    return MeasurementLevel.TOO_LOW;
-  }
 
-  private Map<MeasurementLevel, Integer> getValues(Sensor sensor)
-  {
-    Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
-    if(levels == null)
-    {
-      levels = initLevels(sensor);
+    private HashMap<MeasurementLevel, Integer> initLevels(Sensor sensor) {
+        HashMap<MeasurementLevel, Integer> values = new HashMap<MeasurementLevel, Integer>();
+        for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
+            int threshold = settings.getThreshold(sensor, level);
+            values.put(level, threshold);
+        }
+        thresholds.put(sensor, values);
+        return values;
     }
-    return levels;
-  }
 
-  public int getValue(Sensor sensor, MeasurementLevel level)
-  {
-    return getValues(sensor).get(level);
-  }
+    public MeasurementLevel getLevel(Sensor sensor, double value) {
+        if (sensor != null) {
+            Map<MeasurementLevel, Integer> levels = getValues(sensor);
+
+            for (MeasurementLevel level : MeasurementLevel.OBTAINABLE_LEVELS) {
+                if (value >= levels.get(level)) {
+                    return level;
+                }
+            }
+        }
+        return MeasurementLevel.TOO_LOW;
+    }
+
+    private Map<MeasurementLevel, Integer> getValues(Sensor sensor) {
+        Map<MeasurementLevel, Integer> levels = thresholds.get(sensor);
+        if (levels == null) {
+            levels = initLevels(sensor);
+        }
+        return levels;
+    }
+
+    public int getValue(Sensor sensor, MeasurementLevel level) {
+        return getValues(sensor).get(level);
+    }
 }
