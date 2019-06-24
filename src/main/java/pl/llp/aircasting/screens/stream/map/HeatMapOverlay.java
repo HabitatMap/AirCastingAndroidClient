@@ -35,48 +35,47 @@ import com.google.inject.Inject;
 
 import static pl.llp.aircasting.screens.stream.map.LocationConversionHelper.geoPoint;
 
-public class HeatMapOverlay extends Overlay
-{
-  private static final int ALPHA = 100;
+public class HeatMapOverlay extends Overlay {
+    private static final int ALPHA = 100;
 
-  @Inject SoundHelper soundHelper;
-  @Inject ResourceHelper resourceHelper;
-  @Inject Paint paint;
-  @Inject VisibleSession visibleSession;
+    @Inject
+    SoundHelper soundHelper;
+    @Inject
+    ResourceHelper resourceHelper;
+    @Inject
+    Paint paint;
+    @Inject
+    VisibleSession visibleSession;
 
-  private Iterable<Region> regions;
+    private Iterable<Region> regions;
 
-  @Override
-  public void draw(Canvas canvas, MapView view, boolean shadow)
-  {
-    if (shadow || regions == null) return;
+    @Override
+    public void draw(Canvas canvas, MapView view, boolean shadow) {
+        if (shadow || regions == null) return;
 
-    Projection projection = view.getProjection();
+        Projection projection = view.getProjection();
 
-    Sensor sensor =  visibleSession.getSensor();
-    for (Region region : regions)
-    {
-      double value = region.getValue();
+        Sensor sensor = visibleSession.getSensor();
+        for (Region region : regions) {
+            double value = region.getValue();
 
-      if (soundHelper.shouldDisplay(sensor, value))
-      {
-        int color = resourceHelper.getColorAbsolute(sensor, value);
+            if (soundHelper.shouldDisplay(sensor, value)) {
+                int color = resourceHelper.getColorAbsolute(sensor, value);
 
-        paint.setColor(color);
-        paint.setAlpha(ALPHA);
+                paint.setColor(color);
+                paint.setAlpha(ALPHA);
 
-        GeoPoint southWest = geoPoint(region.getSouth(), region.getWest());
-        GeoPoint northEast = geoPoint(region.getNorth(), region.getEast());
-        Point bottomLeft = projection.toPixels(southWest, null);
-        Point topRight = projection.toPixels(northEast, null);
+                GeoPoint southWest = geoPoint(region.getSouth(), region.getWest());
+                GeoPoint northEast = geoPoint(region.getNorth(), region.getEast());
+                Point bottomLeft = projection.toPixels(southWest, null);
+                Point topRight = projection.toPixels(northEast, null);
 
-        canvas.drawRect(bottomLeft.x, bottomLeft.y, topRight.x, topRight.y, paint);
-      }
+                canvas.drawRect(bottomLeft.x, topRight.y, topRight.x, bottomLeft.y, paint);
+            }
+        }
     }
-  }
 
-  public void setRegions(Iterable<Region> regions)
-  {
-    this.regions = regions;
-  }
+    public void setRegions(Iterable<Region> regions) {
+        this.regions = regions;
+    }
 }
