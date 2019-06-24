@@ -298,6 +298,13 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     public void onLocationSettingsSatisfied() {
         if (mRequestedAction == ACTION_TOGGLE) {
             toggleAirCasting();
+
+            measurementPresenter.reset();
+            traceOverlay.refresh(mapView);
+            routeOverlay.clear();
+            routeOverlay.invalidate();
+            mapView.invalidate();
+
         } else if (mRequestedAction == ACTION_CENTER) {
             centerMap();
         }
