@@ -90,15 +90,13 @@ public class RouteOverlay extends Overlay {
             return;
         }
 
-        if (isRefreshRequired(view)) {
-            path = new Path();
+        path = new Path();
 
-            preparePoints();
-            preparePath(view.getProjection());
+        preparePoints();
+        preparePath(view.getProjection());
 
-            zoomLevel = view.getZoomLevel();
-            mapCenter = view.getMapCenter();
-        }
+        zoomLevel = view.getZoomLevel();
+        mapCenter = view.getMapCenter();
 
         canvas.drawPath(path, paint);
     }
