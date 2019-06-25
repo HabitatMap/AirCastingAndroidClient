@@ -151,7 +151,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_inactive);
         } else {
             heatMapVisible = true;
-            mapView.getOverlays().add(heatMapOverlay);
+            mapView.getOverlays().add(0, heatMapOverlay);
             mapView.invalidate();
             menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_active);
         }
