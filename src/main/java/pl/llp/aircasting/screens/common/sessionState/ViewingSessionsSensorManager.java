@@ -149,13 +149,11 @@ public class ViewingSessionsSensorManager {
         long sessionId = (long) dataItem.get(SESSION_ID);
         viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
         mHiddenStreams.add(sensor.toString());
-        notifySensorsChanged();
     }
 
     public void deleteSensorFromSession(Sensor sensor, long sessionId) {
         String sensorName = sensor.getSensorName();
         viewingSessionsSensors.get(sessionId).remove(SensorName.from(sensorName));
-        notifySensorsChanged();
     }
 
     public void removeSessionSensors(long sessionId) {

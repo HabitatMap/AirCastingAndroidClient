@@ -42,7 +42,7 @@ public class DashboardPagerAdapter extends PagerAdapter {
         RecyclerView.Adapter adapter = (RecyclerView.Adapter) mAdapters.get(position);
         recyclerView.setAdapter(adapter);
 
-        ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback((StreamItemTouchHelperAdapter) adapter);
+        ItemTouchHelper.Callback callback = new StreamItemTouchHelperCallback((StreamItemTouchHelperAdapter) adapter, mContext);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
