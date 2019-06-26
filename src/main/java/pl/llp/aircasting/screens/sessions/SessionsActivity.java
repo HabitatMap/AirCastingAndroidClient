@@ -59,6 +59,7 @@ import roboguice.inject.InjectView;
 import java.util.List;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static pl.llp.aircasting.Intents.SESSION_ID;
 
 public class SessionsActivity extends RoboListActivityWithProgress implements ActivityCompat.OnRequestPermissionsResultCallback, AppCompatCallback {
     @Inject SessionAdapterFactory sessionAdapterFactory;
@@ -78,7 +79,11 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            refreshList();
+            long id = intent.getLongExtra(SESSION_ID, 0);
+            Session session = sessionRepository.loadShallow(id);
+            if (session != null) {
+                sessionAdapter.addSession(session);
+            }
         }
     };
 

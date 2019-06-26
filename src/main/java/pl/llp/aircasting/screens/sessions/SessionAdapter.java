@@ -124,6 +124,12 @@ public class SessionAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
+    public void addSession(Session session) {
+        this.sessions.add(session);
+        super.add(session);
+        notifyDataSetChanged();
+    }
+
     public Session getSession(int position) {
         return sessions.get(position);
     }

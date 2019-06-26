@@ -83,7 +83,7 @@ public class SyncService extends RoboIntentService {
             if (canUpload()) {
                 sync();
             } else if (!settingsHelper.hasCredentials()) {
-                Intents.notifySyncUpdate(context, accountReminder);
+                Intents.notifySyncUpdate(context, null, accountReminder);
             }
         } catch (SessionSyncException exception) {
             ToastHelper.show(getBaseContext(), R.string.session_sync_failed, Toast.LENGTH_LONG);
@@ -122,7 +122,6 @@ public class SyncService extends RoboIntentService {
         for (UUID uuid : deleted) {
             sessionRepository.markSessionForRemoval(uuid);
         }
-        Intents.notifySyncUpdate(context);
         sessionRepository.deleteSubmitted();
     }
 
@@ -212,7 +211,7 @@ public class SyncService extends RoboIntentService {
                 }
             }
 
-            Intents.notifySyncUpdate(context);
+            Intents.notifySyncUpdate(context, session.getId());
         }
     }
 
@@ -246,6 +245,7 @@ public class SyncService extends RoboIntentService {
     }
 
     public void downloadSingleSession(long id) {
+        long sessionId = -1;
         HttpResult<Session> result = sessionDriver.show(id);
 
         if (result.getStatus() == Status.SUCCESS) {
@@ -253,19 +253,18 @@ public class SyncService extends RoboIntentService {
 
             if (session == null) {
                 Logger.w("Session [" + id + "] couldn't ");
-//            } else if (!session.isFixed() && session.isIncomplete()) {
-//                Logger.w(String.format("Session [%s] lacks of some measurements.", id));
             } else {
                 try {
                     fixTimesFromUTC(session);
                     sessionRepository.save(session);
+                    sessionId = session.getId();
                 } catch (RepositoryException e) {
                     Logger.e("Error saving session [" + id + "]", e);
                 }
             }
         }
 
-        Intents.notifySyncUpdate(context);
+        Intents.notifySyncUpdate(context, sessionId);
     }
 
     public void syncSingleSessionData(long sessionId, String sessionUUID) {

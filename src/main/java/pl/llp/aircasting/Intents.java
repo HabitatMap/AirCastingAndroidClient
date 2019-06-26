@@ -241,15 +241,18 @@ public final class Intents {
         activity.startActivity(intent);
     }
 
-    public static void notifySyncUpdate(Context context) {
-        notifySyncUpdate(context, null);
+    public static void notifySyncUpdate(Context context, Long sessionId) {
+        if (sessionId != null) {
+            notifySyncUpdate(context, sessionId, null);
+        }
     }
 
-    public static void notifySyncUpdate(Context context, String message) {
+    public static void notifySyncUpdate(Context context, Long sessionId, String message) {
         Intent intent = new Intent(ACTION_SYNC_UPDATE);
         if (message != null) {
             intent.putExtra(MESSAGE, message);
         }
+        intent.putExtra(SESSION_ID, sessionId);
 
         context.sendBroadcast(intent);
     }
