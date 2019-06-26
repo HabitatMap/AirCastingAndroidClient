@@ -23,10 +23,10 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
         mAdapter = adapter;
         mContext = context;
         mDeleteIcon = ContextCompat.getDrawable(mContext, R.drawable.ic_stream_delete);
-        mHideIcon = ContextCompat.getDrawable(mContext, R.drawable.ic_stream_hide);
+        mHideIcon = ContextCompat.getDrawable(mContext, R.drawable.clear_dashboard_icon);
 
-        mDeleteBackground = new ColorDrawable(mContext.getResources().getColor(R.color.red));
-        mHideBackground = new ColorDrawable(mContext.getResources().getColor(R.color.bar_blue));
+        mDeleteBackground = new ColorDrawable(mContext.getResources().getColor(R.color.dashboard_delete_stram_bckgd));
+        mHideBackground = new ColorDrawable(mContext.getResources().getColor(R.color.list_viewing_session_even));
     }
 
     @Override
