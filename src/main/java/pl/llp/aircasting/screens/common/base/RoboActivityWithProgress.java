@@ -190,8 +190,8 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.navigation_empty_icon);
         toolbar.setContentInsetStartWithNavigation(0);
-        this.setSupportActionBar(toolbar);
-        this.setTitle(title);
+        setSupportActionBar(toolbar);
+        setTitle(title);
     }
 
     public void initDialogToolbar(String title) {
@@ -204,14 +204,7 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
         navigationDrawerHelper.initNavigationDrawer(toolbar, this);
     }
 
-    public AppCompatDelegate getDelegate() {
-        if (delegate == null) {
-            delegate = AppCompatDelegate.create(this, this);
-        }
-        return delegate;
-    }
-
-    @Override
+   @Override
     public ActionMode onWindowStartingSupportActionMode(ActionMode.Callback callback) {
         return null;
     }
