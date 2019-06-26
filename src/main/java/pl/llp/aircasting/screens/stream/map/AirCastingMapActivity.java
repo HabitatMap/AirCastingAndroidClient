@@ -78,6 +78,8 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  */
 public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
 
+    private static final String HEAT_MAP_VISIBLE = "heat_map_visible";
+
     @InjectView(R.id.mapview)
     AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
@@ -137,10 +139,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(HEAT_MAP_VISIBLE, heatMapVisible);
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         zoomToSession = false;
+        heatMapVisible = savedInstanceState.getBoolean(HEAT_MAP_VISIBLE);
     }
 
     private void toggleHeatMapVisibility(MenuItem menuItem) {
@@ -163,6 +173,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         MenuInflater inflater = getDelegate().getMenuInflater();
         inflater.inflate(R.menu.toolbar_crowd_map_toggle, menu);
+
+        if (heatMapVisible) {
+            menu.getItem(menu.size() - 1).setIcon(R.drawable.toolbar_crowd_map_icon_active);
+        }
         return true;
     }
 
