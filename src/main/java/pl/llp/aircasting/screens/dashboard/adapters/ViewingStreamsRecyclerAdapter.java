@@ -267,6 +267,9 @@ public class ViewingStreamsRecyclerAdapter extends RecyclerView.Adapter<ViewingS
         mStreamPositions.clear();
         prepareStreamPositionsAndTitles();
         notifyItemRemoved(position);
+
+        // we need to reload the new item in position, because it could now have a title
+        notifyItemChanged(position);
     }
 
     @Override
