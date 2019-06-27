@@ -183,6 +183,8 @@ public class DashboardChartManager {
         MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensorName);
         String streamKey = getKey(sessionId, sensorName);
 
+        if (stream == null) return chart;
+
         if (mViewingSessionsManager.isSessionFixed(sessionId)) {
             entries = ChartAveragesCreator.getFixedEntries(stream);
         } else {
