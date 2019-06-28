@@ -20,6 +20,8 @@ public class AirbeamSensor extends AbstractSensor {
     LineDataReader lineReader;
     WriterWorker writerWorker;
 
+    private boolean mStopped = true;
+
     public AirbeamSensor(ExternalSensorDescriptor descriptor, EventBus eventBus, BluetoothAdapter bluetoothAdapter) {
         super(descriptor, eventBus, bluetoothAdapter);
         eventBus.register(this);
@@ -27,6 +29,7 @@ public class AirbeamSensor extends AbstractSensor {
 
     @Override
     protected void startWorking() {
+        mStopped = false;
         readerWorker.start();
         writerWorker.start();
     }
@@ -41,15 +44,18 @@ public class AirbeamSensor extends AbstractSensor {
 
     @Override
     protected void customStop() {
-        if (readerWorker != null) {
-            readerWorker.stop();
-        }
+        if (!mStopped) {
+            if (readerWorker != null) {
+                readerWorker.stop();
+            }
 
-        if (writerWorker != null) {
-            writerWorker.stop();
-        }
+            if (writerWorker != null) {
+                writerWorker.stop();
+            }
 
-        eventBus.unregister(this);
+            eventBus.unregister(this);
+            mStopped = true;
+        }
     }
 
     @Subscribe
