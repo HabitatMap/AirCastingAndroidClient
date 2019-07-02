@@ -26,12 +26,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId 'pl.llp.aircasting'
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 96
         versionName "1.5.11"
     }
@@ -53,10 +53,12 @@ android {
 }
 
 dependencies {
-    def supportVersion = "26.1.0"
+    def supportVersion = "28.0.0"
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:support-v4:$supportVersion"
+    implementation "com.android.support:support-media-compat:28.0.0"
 
     implementation group: 'com.google.code.gson', name: 'gson', version:'2.2.3'
     implementation group: 'com.google.inject', name: 'guice', version:'2.0-no_aop'
@@ -72,11 +74,11 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
     implementation "android.arch.lifecycle:extensions:1.1.1"
-    testCompile group: 'junit', name: 'junit', version:'4.10'
-    testCompile group: 'com.pivotallabs', name: 'robolectric', version:'1.0'
-    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
-    testCompile group: 'org.easytesting', name: 'fest-assert', version:'1.4'
-    compileOnly(group: 'com.google.android.maps', name: 'maps', version:'7_r1') {
+    testImplementation group: 'junit', name: 'junit', version:'4.10'
+    testImplementation group: 'com.pivotallabs', name: 'robolectric', version:'1.0'
+    testImplementation group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
+    testImplementation group: 'org.easytesting', name: 'fest-assert', version:'1.4'
+    implementation(group: 'com.google.android.maps', name: 'maps', version:'7_r1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
        This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
        Please review and delete this closure when resolved. */
