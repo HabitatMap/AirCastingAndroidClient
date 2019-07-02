@@ -95,7 +95,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress imp
     }
 
     public synchronized void toggleAirCasting() {
-        if (!currentSessionManager.isSessionRecording()) {
+        if (!currentSessionManager.isSessionRecording() && !settingsHelper.areMapsDisabled()) {
             locationHelper.checkLocationSettings(this);
         } else {
             toggleSessionRecording();

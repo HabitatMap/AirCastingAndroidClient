@@ -188,8 +188,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             case R.id.toggle_aircasting:
                 mRequestedAction = ACTION_TOGGLE;
 
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    locationHelper.checkLocationSettings(this);
+                if (!settingsHelper.areMapsDisabled()) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        locationHelper.checkLocationSettings(this);
+                    }
+                } else {
+                    toggleSessionRecording();
                 }
 
                 break;
@@ -311,17 +315,20 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     public void onLocationSettingsSatisfied() {
         if (mRequestedAction == ACTION_TOGGLE) {
-            toggleAirCasting();
-
-            measurementPresenter.reset();
-            traceOverlay.refresh(mapView);
-            routeOverlay.clear();
-            routeOverlay.invalidate();
-            mapView.invalidate();
-
+            toggleSessionRecording();
         } else if (mRequestedAction == ACTION_CENTER) {
             centerMap();
         }
+    }
+
+    private void toggleSessionRecording() {
+        toggleAirCasting();
+
+        measurementPresenter.reset();
+        traceOverlay.refresh(mapView);
+        routeOverlay.clear();
+        routeOverlay.invalidate();
+        mapView.invalidate();
     }
 
     protected void startSpinner() {
