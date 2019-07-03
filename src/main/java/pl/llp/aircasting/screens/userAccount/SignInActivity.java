@@ -112,8 +112,6 @@ public class SignInActivity extends DialogActivity implements View.OnClickListen
 
         switch (result.getStatus()) {
           case ERROR:
-            ToastHelper.show(context, R.string.unknown_error, Toast.LENGTH_LONG);
-            break;
           case FAILURE:
             ToastHelper.show(context, R.string.login_error, Toast.LENGTH_LONG);
             break;
