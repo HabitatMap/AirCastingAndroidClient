@@ -426,7 +426,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void updateRoute() {
-        if (settingsHelper.isShowRoute() && currentSessionManager.isSessionRecording()) {
+        if (settingsHelper.isShowRoute() && visibleSession.isVisibleSessionRecording()) {
             GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
             routeOverlay.addPoint(geoPoint);
         }
