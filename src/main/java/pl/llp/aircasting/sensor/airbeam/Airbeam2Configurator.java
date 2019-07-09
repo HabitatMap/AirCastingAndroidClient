@@ -61,6 +61,7 @@ public class Airbeam2Configurator {
 
     public void sendFinalAb2Config() {
         sendLatLng();
+        sleepFor(2000);
         configureStreamingMethod();
         sleepFor(4000);
         disconnectAirBeam2();
