@@ -80,14 +80,15 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
         background.setBounds(0, 0, 0, 0);
         background.draw(c);
 
-        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-        int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+        int iconMarginVertical = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+        int iconMarginHorizontal = (itemView.getHeight() - icon.getIntrinsicWidth()) / 4;
+        int iconTop = itemView.getTop() + iconMarginVertical;
         int iconBottom = iconTop + icon.getIntrinsicHeight();
 
         //right
         if (dX > 0) {
-            int iconLeft = itemView.getLeft() + iconMargin;
-            int iconRight = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+            int iconLeft = itemView.getLeft() + iconMarginHorizontal;
+            int iconRight = itemView.getLeft() + iconMarginHorizontal + icon.getIntrinsicWidth();
 
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
             background.setBounds(itemView.getLeft(), itemView.getTop(), (int) (itemView.getLeft() + dX), itemView.getBottom());
@@ -95,12 +96,13 @@ public class StreamItemTouchHelperCallback extends ItemTouchHelper.Callback {
             icon = mDeleteIcon;
             background = mDeleteBackground;
 
-            int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
-            int iconRight = itemView.getRight() - iconMargin;
+            int iconLeft = itemView.getRight() - iconMarginHorizontal - icon.getIntrinsicWidth();
+            int iconRight = itemView.getRight() - iconMarginHorizontal;
 
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
             background.setBounds((int) (itemView.getRight() + dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
         } else {
+            icon.setBounds(0, 0, 0, 0);
             background.setBounds(0, 0, 0, 0);
         }
 
