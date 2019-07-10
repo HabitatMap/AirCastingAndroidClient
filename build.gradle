@@ -32,8 +32,8 @@ android {
         applicationId 'pl.llp.aircasting'
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 96
-        versionName "1.5.11"
+        versionCode 97
+        versionName "1.5.12"
     }
 
     buildTypes {
