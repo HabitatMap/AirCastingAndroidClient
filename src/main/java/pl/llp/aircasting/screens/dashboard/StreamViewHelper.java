@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.SessionState;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.model.MeasurementStream;
@@ -40,7 +40,7 @@ public class StreamViewHelper {
     @Inject
     SessionState sessionState;
     @Inject
-    SessionDataFactory sessionData;
+    SessionDataAccessor sessionData;
     @Inject ApplicationState applicationState;
 
     private static List<Integer> positionsWithTitle = new ArrayList<Integer>();

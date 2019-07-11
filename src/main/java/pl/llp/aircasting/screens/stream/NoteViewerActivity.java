@@ -19,6 +19,7 @@ import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
 import pl.llp.aircasting.screens.common.helpers.FormatHelper;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.storage.repository.NoteRepository;
 
@@ -27,6 +28,7 @@ import static pl.llp.aircasting.Intents.triggerSync;
 
 public class NoteViewerActivity extends DialogActivity implements View.OnClickListener {
     @Inject VisibleSession mVisibleSession;
+    @Inject SessionDataAccessor mSessionData;
     @Inject PhotoHelper mPhotoHelper;
     @Inject NoteRepository mNotesRepository;
     @Inject FormatHelper formatHelper;

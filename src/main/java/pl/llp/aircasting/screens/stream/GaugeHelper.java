@@ -3,7 +3,7 @@ package pl.llp.aircasting.screens.stream;
 import pl.llp.aircasting.MarkerSize;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
@@ -36,7 +36,7 @@ public class GaugeHelper {
 
     private ResourceHelper mResourceHelper;
     private VisibleSession mVisibleSession;
-    private SessionDataFactory mSessionData;
+    private SessionDataAccessor mSessionData;
 
     private Sensor mSensor;
     private double mPeak;
@@ -45,10 +45,10 @@ public class GaugeHelper {
     public GaugeHelper(View view,
                        ResourceHelper resourceHelper,
                        VisibleSession visibleSession,
-                       SessionDataFactory sessionDataFactory) {
+                       SessionDataAccessor sessionDataAccessor) {
         mResourceHelper = resourceHelper;
         mVisibleSession = visibleSession;
-        mSessionData = sessionDataFactory;
+        mSessionData = sessionDataAccessor;
 
         mNowContainer = view.findViewById(R.id.now_container);
         mNowGauge = view.findViewById(R.id.now_gauge);

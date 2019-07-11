@@ -26,7 +26,7 @@ import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.model.*;
 
@@ -66,7 +66,8 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     @Inject EventBus eventBus;
     @Inject VisibleSession visibleSession;
     @Inject MeasurementAggregator aggregator;
-    @Inject SessionDataFactory sessionData;
+    @Inject
+    SessionDataAccessor sessionData;
     @Inject private ApplicationState state;
 
     private CopyOnWriteArrayList<Measurement> fullView = null;
