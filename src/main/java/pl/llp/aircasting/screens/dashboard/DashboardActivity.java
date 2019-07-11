@@ -441,7 +441,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                         Sensor sensor = (Sensor) dataItem.get(SENSOR);
                         long sessionId = (long) dataItem.get(SESSION_ID);
                         sessionData.deleteSensorStream(sensor, sessionId);
-                        Intents.triggerSync(context);
+                        sessionData.syncDataToServer(sessionId);
                         removeOneOrAll(position, noStreamsLeft);
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -465,7 +465,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
                         long sessionId = (long) dataItem.get(SESSION_ID);
                         sessionData.deleteSensorStream(sensor, sessionId);
                         sessionData.deleteSession(sessionId);
-                        Intents.triggerSync(context);
+                        sessionData.syncDataToServer(sessionId);
                         removeOneOrAll(position, noStreamsLeft);
                     }
                 }).setNegativeButton("No", new DialogInterface.OnClickListener() {

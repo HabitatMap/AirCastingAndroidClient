@@ -30,6 +30,7 @@ import pl.llp.aircasting.networking.httpUtils.HttpResult;
 import pl.llp.aircasting.networking.httpUtils.PerformRequest;
 import pl.llp.aircasting.networking.httpUtils.Uploadable;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import java.io.IOException;
@@ -46,7 +47,11 @@ public class SessionDriver {
     private static final String EMPTY_ID = "empty";
     public static final String COMPRESSION = "compression";
     public static final String STREAM_MEASUREMENTS = "stream_measurements";
+    private static final String UPDATE_USER_SESSION_PATH = "/api/user/sessions/update_session";
+    private static final String JSON_SUFFIX = ".json";
+    private static final String DATA_KEY = "data";
 
+    @Inject Gson gson;
     @Inject GZIPHelper gzipHelper;
     @Inject PhotoHelper photoHelper;
     @Inject BitmapTransformer bitmapTransformer;
@@ -99,7 +104,7 @@ public class SessionDriver {
     public HttpResult<Session> show(long id) {
         return http()
                 .get()
-                .from(USER_SESSION_PATH + id + ".json")
+                .from(USER_SESSION_PATH + id + JSON_SUFFIX)
                 .with(STREAM_MEASUREMENTS, "false")
                 .into(Session.class);
     }
@@ -107,9 +112,17 @@ public class SessionDriver {
     public HttpResult<Session> show(long id, String uuid, Boolean streamMeasurements) {
         return http()
                 .get()
-                .from(USER_SESSION_PATH + EMPTY_ID + ".json")
+                .from(USER_SESSION_PATH + EMPTY_ID + JSON_SUFFIX)
                 .with(STREAM_MEASUREMENTS, String.valueOf(streamMeasurements))
                 .with("uuid", uuid)
+                .into(Session.class);
+    }
+
+    public HttpResult<Session> syncToServer(Session session) {
+        return http()
+                .post()
+                .to(UPDATE_USER_SESSION_PATH + JSON_SUFFIX)
+                .with(DATA_KEY, gson.toJson(session))
                 .into(Session.class);
     }
 
