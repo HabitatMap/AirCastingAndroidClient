@@ -1,10 +1,12 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import pl.llp.aircasting.networking.drivers.SessionDriver;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.model.*;
@@ -17,16 +19,13 @@ import java.util.List;
  */
 @Singleton
 public class SessionDataAccessor {
-    @Inject
-    CurrentSessionManager currentSessionManager;
-    @Inject
-    ViewingSessionsManager viewingSessionsManager;
-    @Inject
-    CurrentSessionSensorManager currentSessionSensorManager;
-    @Inject
-    ViewingSessionsSensorManager viewingSessionsSensorManager;
+    @Inject CurrentSessionManager currentSessionManager;
+    @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject CurrentSessionSensorManager currentSessionSensorManager;
+    @Inject ViewingSessionsSensorManager viewingSessionsSensorManager;
     @Inject SessionState sessionState;
     @Inject SessionRepository sessionRepository;
+    @Inject SessionDriver mSessionDriver;
     @Inject VisibleSession visibleSession;
 
     public Session getSession(long sessionId) {
@@ -137,6 +136,18 @@ public class SessionDataAccessor {
         sessionRepository.deleteStream(getSession(sessionId), stream);
         stream.setMarkedForRemoval(true);
         getSession(sessionId).removeStream(stream);
+    }
+
+    public void syncDataToServer(long sessionId) {
+        final Session session = sessionRepository.loadShallow(sessionId);
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mSessionDriver.syncToServer(session);
+                return null;
+            }
+        }.execute();
     }
 
     public void clearViewingSession(long sessionId) {

@@ -242,7 +242,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
         Session session = Intents.editSessionResult(data);
 
         sessionRepository.update(session);
-        Intents.triggerSync(context);
+        mSessionData.syncDataToServer(session.getId());
 
         refreshList();
     }

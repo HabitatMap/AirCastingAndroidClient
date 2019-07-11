@@ -24,7 +24,6 @@ import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.storage.repository.NoteRepository;
 
 import static pl.llp.aircasting.screens.stream.base.AirCastingActivity.NOTE_INDEX;
-import static pl.llp.aircasting.Intents.triggerSync;
 
 public class NoteViewerActivity extends DialogActivity implements View.OnClickListener {
     @Inject VisibleSession mVisibleSession;
@@ -118,8 +117,9 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
             @Override
             protected Void doInBackground(Void... voids) {
                 if (mVisibleSession.isVisibleSessionViewed()) {
-                    mNotesRepository.updateNote(mCurrentNote, mVisibleSession.getSession().getId());
-                    triggerSync(context);
+                    long sessionId = mVisibleSession.getSession().getId();
+                    mNotesRepository.updateNote(mCurrentNote, sessionId);
+                    mSessionData.syncDataToServer(sessionId);
                 }
                 return null;
             }
@@ -134,9 +134,10 @@ public class NoteViewerActivity extends DialogActivity implements View.OnClickLi
         new SimpleProgressTask<Void, Void, Void>(this) {
             @Override
             protected Void doInBackground(Void... voids) {
-                mNotesRepository.deleteNote(mVisibleSession.getSession().getId(), mCurrentNote.getNumber());
+                long sessionId = mVisibleSession.getSession().getId();
+                mNotesRepository.deleteNote(sessionId, mCurrentNote.getNumber());
                 mVisibleSession.deleteNote(mCurrentNote);
-                triggerSync(context);
+                mSessionData.syncDataToServer(sessionId);
 
                 return null;
             }

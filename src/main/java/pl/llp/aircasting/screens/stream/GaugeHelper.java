@@ -6,15 +6,13 @@ import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 
 import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
-import com.google.inject.Inject;
+
 import com.google.inject.Singleton;
-import roboguice.inject.InjectResource;
 
 import static java.lang.String.valueOf;
 
