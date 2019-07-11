@@ -46,10 +46,13 @@ import android.net.NetworkInfo;
 import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.eventbus.EventBus;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 import roboguice.service.RoboIntentService;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -95,7 +98,7 @@ public class SyncService extends RoboIntentService {
 
     private void sync() throws SessionSyncException {
         List<Session> sessions = sessionRepository.allCompleteSessions();
-        Iterable<Session> preparedSessions = prepareSessions(sessions);
+        Iterable<SessionSyncItem> preparedSessions = prepareSessions(sessions);
 
         HttpResult<SyncResponse> result = syncDriver.sync(preparedSessions);
         Status status = result.getStatus();
@@ -108,7 +111,7 @@ public class SyncService extends RoboIntentService {
             sessionRepository.deleteSubmitted();
             UUID[] upload = syncResponse.getUpload();
             UUID[] deleted = syncResponse.getDeleted();
-            long[] download = syncResponse.getDownload();
+            UUID[] download = syncResponse.getDownload();
             deleteMarked(deleted);
             uploadSessions(upload);
             downloadSessions(download);
@@ -125,20 +128,16 @@ public class SyncService extends RoboIntentService {
         sessionRepository.deleteSubmitted();
     }
 
-    List<Session> prepareSessions(List<Session> sessions) {
-        List<Session> result = newArrayList();
+    List<SessionSyncItem> prepareSessions(List<Session> sessions) {
+        List<SessionSyncItem> result = newArrayList();
 
         for (Session session : sessions) {
             if (session.isLocationless() && !session.isFixed()) {
                 continue;
             }
 
-            boolean ignoreSession = deletedAnything(session);
-            if (ignoreSession) {
-                continue;
-            }
 
-            result.add(session);
+            result.add(new SessionSyncItem(session.getUUID().toString(), session.isMarkedForRemoval()));
         }
         if (sessions.size() > result.size()) {
             sessionRepository.deleteSubmitted();
@@ -238,28 +237,28 @@ public class SyncService extends RoboIntentService {
         sessionRepository.update(session);
     }
 
-    private void downloadSessions(long[] ids) {
-        for (long id : inverted(ids)) {
-            downloadSingleSession(id);
+    private void downloadSessions(UUID[] uuids) {
+        for (UUID uuid : inverted(uuids)) {
+            downloadSingleSession(uuid);
         }
     }
 
-    public void downloadSingleSession(long id) {
+    public void downloadSingleSession(UUID uuid) {
         long sessionId = -1;
-        HttpResult<Session> result = sessionDriver.show(id);
+        HttpResult<Session> result = sessionDriver.show(-1, uuid.toString(), false);
 
         if (result.getStatus() == Status.SUCCESS) {
             Session session = result.getContent();
 
             if (session == null) {
-                Logger.w("Session [" + id + "] couldn't ");
+                Logger.w("Session [" + uuid + "] couldn't ");
             } else {
                 try {
                     fixTimesFromUTC(session);
                     sessionRepository.save(session);
                     sessionId = session.getId();
                 } catch (RepositoryException e) {
-                    Logger.e("Error saving session [" + id + "]", e);
+                    Logger.e("Error saving session [" + uuid + "]", e);
                 }
             }
         }
@@ -303,13 +302,23 @@ public class SyncService extends RoboIntentService {
         sessionTimes.fromUTCtoLocal(session);
     }
 
-    long[] inverted(long[] array) {
+    UUID[] inverted(UUID[] array) {
         for (int i = 0; i < array.length / 2; i++) {
-            long temp = array[i];
+            UUID temp = array[i];
             array[i] = array[array.length - 1 - i];
             array[array.length - 1 - i] = temp;
         }
 
         return array;
+    }
+
+    public class SessionSyncItem implements Serializable {
+        @Expose @SerializedName("uuid") private String uuid;
+        @Expose @SerializedName("deleted") private Boolean deleted;
+
+        public SessionSyncItem(String uuid, boolean deleted) {
+            this.uuid = uuid;
+            this.deleted = deleted;
+        }
     }
 }

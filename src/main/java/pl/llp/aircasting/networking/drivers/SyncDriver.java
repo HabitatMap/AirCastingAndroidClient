@@ -24,6 +24,8 @@ import com.google.inject.Inject;
 import pl.llp.aircasting.networking.schema.SyncResponse;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.networking.httpUtils.HttpResult;
+import pl.llp.aircasting.sessionSync.SessionSyncException;
+import pl.llp.aircasting.sessionSync.SyncService;
 
 import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 
@@ -36,10 +38,11 @@ import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 public class SyncDriver {
     @Inject Gson gson;
 
-    public static final String SYNC_PATH = "/api/user/sessions/sync.json";
+    public static final String SYNC_PATH = "/api/user/sessions/sync2.json";
 
-    public HttpResult<SyncResponse> sync(Iterable<Session> sessions) {
-        String json = gson.toJson(sessions);
+    public HttpResult<SyncResponse> sync(Iterable<SyncService.SessionSyncItem> sessionsData) {
+        String json = gson.toJson(sessionsData);
+
 
         return http()
                 .post()
