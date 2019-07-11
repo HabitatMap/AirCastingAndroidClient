@@ -40,7 +40,7 @@ import pl.llp.aircasting.screens.dashboard.views.DashboardViewMvcImpl;
 import pl.llp.aircasting.screens.extsens.ExternalSensorActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.event.session.SessionLoadedForViewingEvent;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.model.*;
 import pl.llp.aircasting.event.sensor.SensorConnectedEvent;
 
@@ -62,7 +62,7 @@ public class DashboardActivity extends DashboardBaseActivity implements Dashboar
 
     @Inject CurrentSessionSensorManager currentSessionSensorManager;
     @Inject ResourceHelper mResourceHelper;
-    @Inject SessionDataFactory sessionData;
+    @Inject SessionDataAccessor sessionData;
     @Inject DashboardViewModelFactory mDashboardViewModelFactory;
 
     private Handler handler = new Handler() {};

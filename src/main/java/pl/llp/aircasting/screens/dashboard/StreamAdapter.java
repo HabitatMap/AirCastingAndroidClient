@@ -12,7 +12,7 @@ import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.SessionState;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsSensorManager;
 import pl.llp.aircasting.event.session.SessionStoppedEvent;
@@ -87,7 +87,7 @@ public class StreamAdapter extends SimpleAdapter {
     DashboardBaseActivity context;
     EventBus eventBus;
     SessionState sessionState;
-    SessionDataFactory sessionData;
+    SessionDataAccessor sessionData;
     ApplicationState state;
 
     private List<Map<String, Object>> data;
@@ -115,7 +115,7 @@ public class StreamAdapter extends SimpleAdapter {
                          ViewingSessionsSensorManager viewingSessionsSensorManager,
                          DashboardChartManager dashboardChartManager,
                          SessionState sessionState,
-                         SessionDataFactory sessionData,
+                         SessionDataAccessor sessionData,
                          ApplicationState state) {
         super(context, data, R.layout.stream_row, FROM, TO);
         this.data = data;

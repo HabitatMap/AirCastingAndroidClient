@@ -37,6 +37,7 @@ import pl.llp.aircasting.event.network.SyncStateChangedEvent;
 import pl.llp.aircasting.screens.common.helpers.NoOp;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
 import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
 import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
 import pl.llp.aircasting.sessionSync.SyncService;
@@ -66,6 +67,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject SessionRepository sessionRepository;
     @Inject ViewingSessionsManager viewingSessionsManager;
+    @Inject SessionDataAccessor mSessionData;
     @Inject Application context;
     @Inject EventBus eventBus;
     @Inject UncalibratedMeasurementCalibrator calibrator;

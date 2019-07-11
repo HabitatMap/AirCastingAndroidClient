@@ -32,7 +32,7 @@ import pl.llp.aircasting.event.sensor.SensorEvent;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
@@ -71,7 +71,8 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
     @Inject SelectSensorHelper selectSensorHelper;
     @Inject TopBarHelper topBarHelper;
     @Inject PhotoHelper photoHelper;
-    @Inject SessionDataFactory sessionData;
+    @Inject
+    SessionDataAccessor sessionData;
 
     private boolean initialized = false;
     Note currentNote;

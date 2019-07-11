@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.Nullable;
 
-import pl.llp.aircasting.screens.common.sessionState.SessionDataFactory;
+import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import roboguice.inject.InjectResource;
 
@@ -31,7 +31,7 @@ public class SelectSensorHelper {
   @Inject
   VisibleSession visibleSession;
   @Inject
-  SessionDataFactory sessionData;
+  SessionDataAccessor sessionData;
 
   /**
    * Prepare a dialog displaying a list of sensors, allowing the user to select
