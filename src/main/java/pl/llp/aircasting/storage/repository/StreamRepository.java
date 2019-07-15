@@ -141,6 +141,11 @@ public class StreamRepository {
         }
     }
 
+    public void deleteAllForSession(long sessionId, SQLiteDatabase writableDatabase) {
+        final String whereClause = STREAM_SESSION_ID + " = '" + sessionId + "'";
+        writableDatabase.delete(STREAM_TABLE_NAME, whereClause, null);
+    }
+
     public void saveNewStreamAndMeasurements(final MeasurementStream toSave, final long sessionId, final SQLiteDatabase writableDatabase) {
         toSave.setSessionId(sessionId);
         final MeasurementStream stream = saveOne(toSave, sessionId, writableDatabase);

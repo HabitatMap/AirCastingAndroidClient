@@ -111,7 +111,7 @@ public class FixedSessionDriver {
                 Logger.w("Data for session [" + uuid + "] couldn't be downloaded");
             } else {
                 try {
-                    sessionRepository.saveNewData(session, downloadedSession, progressListener);
+                    sessionRepository.saveNewStreamData(session, downloadedSession, progressListener);
                 } catch (RepositoryException e) {
                     Logger.e("Error saving data for session [" + uuid + "]", e);
                 }

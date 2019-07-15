@@ -21,6 +21,7 @@ package pl.llp.aircasting.storage.repository;
 
 import com.google.common.eventbus.EventBus;
 
+import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.event.measurements.FixedMeasurementEvent;
 import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
@@ -104,7 +105,7 @@ public class SessionRepository {
     }
 
     @API
-    public void saveNewData(final Session oldSession, @NotNull final Session downloadedSession, ProgressListener progressListener) {
+    public void saveNewStreamData(final Session oldSession, @NotNull final Session downloadedSession, ProgressListener progressListener) {
         dbAccessor.executeWritableTask(new WritableDatabaseTask<Object>() {
             @Override
             public Object execute(SQLiteDatabase writableDatabase) {
@@ -234,8 +235,7 @@ public class SessionRepository {
                 });
     }
 
-    @Internal
-    private Session loadShallow(final String uuid) {
+    public Session loadShallow(final String uuid) {
         return dbAccessor.executeReadOnlyTask(new ReadOnlyDatabaseTask<Session>() {
             @Override
             public Session execute(SQLiteDatabase readOnlyDatabase) {
@@ -441,7 +441,7 @@ public class SessionRepository {
     }
 
     @API
-    public void update(final Session session) {
+    public void updateLocalSession(final Session session) {
         final ContentValues values = new ContentValues();
         prepareHeader(session, values);
 
@@ -464,17 +464,19 @@ public class SessionRepository {
         logSessionDeletion(whereClause);
     }
 
-    public void updateSessionData(final Session sessionData, final long sessionId) {
+    public void updateSessionWithSyncedData(final Session sessionData, final long sessionId) {
         final ContentValues values = new ContentValues();
         prepareHeader(sessionData, values);
 
-        final String whereClause = SESSION_ID + " = " + sessionId;
+        final String whereClause = SESSION_UUID + " = '" + sessionData.getUUID().toString() + "'";
 
         dbAccessor.executeWritableTask(new WritableDatabaseTask() {
             @Override
             public Object execute(SQLiteDatabase writableDatabase) {
                 try {
                     notes.save(sessionData.getNotes(), sessionId, writableDatabase);
+                    streams.deleteAllForSession(sessionId, writableDatabase);
+                    streams.saveAll(sessionData.getMeasurementStreams(), sessionId, writableDatabase);
 
                     writableDatabase.update(SESSION_TABLE_NAME, values, whereClause, null);
                 } catch (SQLException e) {
