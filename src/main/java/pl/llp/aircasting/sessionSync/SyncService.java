@@ -315,10 +315,12 @@ public class SyncService extends RoboIntentService {
     public class SessionSyncItem implements Serializable {
         @Expose @SerializedName("uuid") private String uuid;
         @Expose @SerializedName("deleted") private Boolean deleted;
+        @Expose @SerializedName("version") private Integer version;
 
-        public SessionSyncItem(String uuid, boolean deleted) {
+        public SessionSyncItem(String uuid, boolean deleted, int version) {
             this.uuid = uuid;
             this.deleted = deleted;
+            this.version = version;
         }
     }
 }
