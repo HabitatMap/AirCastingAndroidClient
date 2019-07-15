@@ -122,5 +122,4 @@ public interface DBConstants
   String REGRESSION_BACKEND_ID = "backend_id";
   String REGRESSION_IS_ENABLED = "is_enabled";
   String REGRESSION_CREATED_AT = "created_at";
-
 }

@@ -20,7 +20,6 @@
 package pl.llp.aircasting.screens.stream.base;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
