@@ -51,6 +51,7 @@ public class Session implements Serializable {
     @Expose private boolean isIndoor;
     @Expose private double latitude;
     @Expose private double longitude;
+    @Expose private int version;
 
     private volatile Long id = null;
     private boolean submittedForRemoval = false;
@@ -315,5 +316,13 @@ public class Session implements Serializable {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public int getVersion() {
+        return version;
     }
 }

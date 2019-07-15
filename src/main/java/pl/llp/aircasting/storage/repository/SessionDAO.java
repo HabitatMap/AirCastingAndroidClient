@@ -56,6 +56,7 @@ public class SessionDAO {
         session.setIndoor(getBool(cursor, SESSION_INDOOR));
         session.setLatitude(getDouble(cursor, SESSION_LATITUDE));
         session.setLongitude(getDouble(cursor, SESSION_LONGITUDE));
+        session.setVersion(getInt(cursor, SESSION_VERSION));
     }
 
     public ContentValues asValues(Session session) {
@@ -78,6 +79,7 @@ public class SessionDAO {
         values.put(SESSION_INDOOR, session.isIndoor() ? 1 : 0);
         values.put(SESSION_LATITUDE, session.getLatitude());
         values.put(SESSION_LONGITUDE, session.getLongitude());
+        values.put(SESSION_VERSION, session.getVersion());
 
         return values;
     }

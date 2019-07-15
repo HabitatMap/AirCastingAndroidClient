@@ -173,6 +173,7 @@ public class SessionRepository {
         values.put(SESSION_TITLE, session.getTitle());
         values.put(SESSION_TAGS, session.getTags());
         values.put(SESSION_LOCATION, session.getLocation());
+        values.put(SESSION_VERSION, session.getVersion());
     }
 
     public Session loadShallow(Cursor cursor) {

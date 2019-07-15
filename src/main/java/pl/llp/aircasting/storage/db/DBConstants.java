@@ -57,6 +57,7 @@ public interface DBConstants
   String SESSION_INDOOR = "is_indoor";
   String SESSION_LATITUDE = "Latitude";
   String SESSION_LONGITUDE = "Longitude";
+  String SESSION_VERSION = "version";
 
   /** @deprecated belongs to streams */
   String DEPRECATED_SESSION_AVG = "Average";

@@ -118,6 +118,7 @@ public class SchemaCreator
     table.addColumn(new Column(SESSION_INDOOR, Datatype.BOOLEAN, 36));
     table.addColumn(new Column(SESSION_LATITUDE, Datatype.REAL, 36));
     table.addColumn(new Column(SESSION_LONGITUDE, Datatype.REAL, 36));
+    table.addColumn(new Column(SESSION_VERSION, Datatype.INTEGER));
 
     return table;
   }
