@@ -46,7 +46,6 @@ import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 public final class Intents {
     public static final String SESSION = "session";
