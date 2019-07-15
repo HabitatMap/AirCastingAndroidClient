@@ -60,7 +60,10 @@ import roboguice.inject.InjectView;
 import java.util.List;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static pl.llp.aircasting.Intents.ACTION_SESSION_CHANGED;
+import static pl.llp.aircasting.Intents.ACTION_SYNC_UPDATE;
 import static pl.llp.aircasting.Intents.SESSION_ID;
+import static pl.llp.aircasting.Intents.triggerSync;
 
 public class SessionsActivity extends RoboListActivityWithProgress implements ActivityCompat.OnRequestPermissionsResultCallback, AppCompatCallback {
     @Inject SessionAdapterFactory sessionAdapterFactory;
@@ -81,10 +84,17 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            long id = intent.getLongExtra(SESSION_ID, 0);
-            Session session = sessionRepository.loadShallow(id);
-            if (session != null) {
-                sessionAdapter.addSession(session);
+            switch (intent.getAction()) {
+                case ACTION_SYNC_UPDATE:
+                    long id = intent.getLongExtra(SESSION_ID, 0);
+                    Session session = sessionRepository.loadShallow(id);
+                    if (session != null) {
+                        sessionAdapter.addSession(session);
+                    }
+                    break;
+                case ACTION_SESSION_CHANGED:
+                    refreshList();
+                    break;
             }
         }
     };
@@ -125,6 +135,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intents.ACTION_SYNC_UPDATE);
+        filter.addAction(Intents.ACTION_SESSION_CHANGED);
         registerReceiver(broadcastReceiver, filter);
 
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
