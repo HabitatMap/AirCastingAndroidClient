@@ -1,6 +1,7 @@
 package pl.llp.aircasting.screens.common.sessionState;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.eventbus.EventBus;
@@ -71,31 +72,38 @@ public class ViewingSessionsManager {
         notifyNewSession(session, true);
     }
 
-    public void view(Long sessionId, @NotNull final ProgressListener progressListener) {
-        Preconditions.checkNotNull(progressListener);
+    public void view(final Long sessionId, @NotNull final ProgressListener progressListener) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Preconditions.checkNotNull(progressListener);
 
-        Session session = sessionRepository.loadFully(sessionId, progressListener);
-        String sessionUUID = String.valueOf(session.getUUID());
+                Session session = sessionRepository.loadFully(sessionId, progressListener);
+                String sessionUUID = String.valueOf(session.getUUID());
 
-        if (session.isIncomplete()) {
-            syncService.downloadSessionMeasurements(sessionId, sessionUUID);
-            session = sessionRepository.loadFully(sessionId, progressListener);
-        }
+                if (session.isIncomplete()) {
+                    syncService.downloadSessionMeasurements(sessionId, sessionUUID);
+                    session = sessionRepository.loadFully(sessionId, progressListener);
+                }
 
-        sessionsForViewing.put(sessionId, session);
+                sessionsForViewing.put(sessionId, session);
 
-        if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
-            MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
-            session.removeStream(stream);
-        }
+                if (session.hasStream(PLACEHOLDER_SENSOR_NAME)) {
+                    MeasurementStream stream = getMeasurementStream(sessionId, PLACEHOLDER_SENSOR_NAME);
+                    session.removeStream(stream);
+                }
 
-        if (session.isFixed()) {
-            fixedSessionDriver.downloadNewData(session, progressListener);
-            addFixedSession(session);
-        }
+                if (session.isFixed()) {
+                    fixedSessionDriver.downloadNewData(session, progressListener);
+                    addFixedSession(session);
+                }
 
-        mLoadingSessions.remove(sessionId);
-        notifyNewSession(session, false);
+                mLoadingSessions.remove(sessionId);
+                notifyNewSession(session, false);
+
+                return null;
+            }
+        }.execute();
     }
 
    @Subscribe
