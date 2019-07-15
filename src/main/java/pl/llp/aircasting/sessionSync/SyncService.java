@@ -137,8 +137,7 @@ public class SyncService extends RoboIntentService {
                 continue;
             }
 
-
-            result.add(new SessionSyncItem(session.getUUID().toString(), session.isMarkedForRemoval()));
+            result.add(new SessionSyncItem(session.getUUID().toString(), session.isMarkedForRemoval(), session.getVersion()));
         }
         if (sessions.size() > result.size()) {
             sessionRepository.deleteSubmitted();
@@ -180,7 +179,7 @@ public class SyncService extends RoboIntentService {
 
     private void markSessionSubmittedForRemoval(Session session) {
         session.setSubmittedForRemoval(true);
-        sessionRepository.update(session);
+        sessionRepository.updateLocalSession(session);
     }
 
     private boolean canUpload() {
@@ -235,7 +234,7 @@ public class SyncService extends RoboIntentService {
             note.setPhotoPath(responseNote.getPhotoLocation());
         }
 
-        sessionRepository.update(session);
+        sessionRepository.updateLocalSession(session);
     }
 
     private void downloadSessions(UUID[] uuids) {
@@ -249,22 +248,29 @@ public class SyncService extends RoboIntentService {
         HttpResult<Session> result = sessionDriver.show(-1, uuid.toString(), false);
 
         if (result.getStatus() == Status.SUCCESS) {
-            Session session = result.getContent();
+            Session downloadedSession = result.getContent();
 
-            if (session == null) {
-                Logger.w("Session [" + uuid + "] couldn't ");
+            if (downloadedSession == null) {
+                Logger.w("Session [" + uuid + "] couldn't download");
             } else {
                 try {
-                    fixTimesFromUTC(session);
-                    sessionRepository.save(session);
-                    sessionId = session.getId();
+                    fixTimesFromUTC(downloadedSession);
+                    Session localSession = sessionRepository.loadShallow(uuid.toString());
+
+                    if (localSession == null) {
+                        localSession = sessionRepository.save(downloadedSession);
+                        sessionId = localSession.getId();
+                        Intents.notifySyncUpdate(context, sessionId);
+                    } else {
+                        sessionId = localSession.getId();
+                        sessionRepository.updateSessionWithSyncedData(downloadedSession, sessionId);
+                        Intents.notifySessionChanged(context);
+                    }
                 } catch (RepositoryException e) {
                     Logger.e("Error saving session [" + uuid + "]", e);
                 }
             }
         }
-
-        Intents.notifySyncUpdate(context, sessionId);
     }
 
     public void syncSingleSessionData(long sessionId, String sessionUUID) {
@@ -277,7 +283,7 @@ public class SyncService extends RoboIntentService {
                 Logger.w("Session data couldn't be saved");
             } else {
                 fixTimesFromUTC(session);
-                sessionRepository.updateSessionData(session, sessionId);
+                sessionRepository.updateSessionWithSyncedData(session, sessionId);
             }
         }
     }

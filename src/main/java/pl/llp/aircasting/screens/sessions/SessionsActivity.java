@@ -252,7 +252,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
     private void updateSession(Intent data) {
         Session session = Intents.editSessionResult(data);
 
-        sessionRepository.update(session);
+        sessionRepository.updateLocalSession(session);
         mSessionData.syncDataToServer(session.getId());
 
         refreshList();
@@ -302,6 +302,7 @@ public class SessionsActivity extends RoboListActivityWithProgress implements Ac
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sessionRepository.markSessionForRemoval(id);
+                        triggerSync(context);
                         refreshList();
                     }
                 }).setNegativeButton("No", NoOp.dialogOnClick());
