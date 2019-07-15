@@ -66,6 +66,7 @@ public final class Intents {
     public static final String AIR_CASTING = "AirCasting";
 
     public static final String ACTION_SYNC_UPDATE = "AIRCASTING_SYNC_UPDATE";
+    public static final String ACTION_SESSION_CHANGED = "AIRCASTING_SESSION_DELETED";
 
     public static final String MESSAGE = "message";
     public static final String MIME_TEXT_PLAIN = "text/plain";
@@ -254,6 +255,11 @@ public final class Intents {
         }
         intent.putExtra(SESSION_ID, sessionId);
 
+        context.sendBroadcast(intent);
+    }
+
+    public static void notifySessionChanged(Context context) {
+        Intent intent = new Intent(ACTION_SESSION_CHANGED);
         context.sendBroadcast(intent);
     }
 

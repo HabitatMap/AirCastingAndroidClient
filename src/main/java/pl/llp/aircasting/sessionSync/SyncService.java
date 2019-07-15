@@ -126,6 +126,7 @@ public class SyncService extends RoboIntentService {
             sessionRepository.markSessionForRemoval(uuid);
         }
         sessionRepository.deleteSubmitted();
+        Intents.notifySessionChanged(context);
     }
 
     List<SessionSyncItem> prepareSessions(List<Session> sessions) {
