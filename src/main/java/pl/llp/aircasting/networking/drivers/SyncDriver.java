@@ -38,7 +38,7 @@ import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 public class SyncDriver {
     @Inject Gson gson;
 
-    public static final String SYNC_PATH = "/api/user/sessions/sync2.json";
+    public static final String SYNC_PATH = "/api/user/sessions/sync_with_versioning.json";
 
     public HttpResult<SyncResponse> sync(Iterable<SyncService.SessionSyncItem> sessionsData) {
         String json = gson.toJson(sessionsData);
