@@ -44,7 +44,7 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
-        android:key="streaming_alert"
+        android:key="dormant_session_alert"
         android:summary="@string/streaming_alert_summary"
         android:title="@string/streaming_alert" />
 

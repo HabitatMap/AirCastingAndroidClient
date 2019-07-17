@@ -55,7 +55,7 @@ public class SettingsHelper {
     public static final String FIRST_LAUNCH = "first_launch";
     public static final String DISABLE_MAPS = "disable_maps";
     public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
-    public static final String STREAMING_ALERT = "streaming_alert";
+    public static final String DORMANT_SESSION_ALERT = "dormant_session_alert";
 
     public static final int DEFAULT_CALIBRATION = 100;
     public static final boolean DEFAULT_SATELLITE = false;
@@ -168,6 +168,10 @@ public class SettingsHelper {
 
     public void setUserEmail(String email) {
         writeString(USER_EMAIL, email);
+    }
+    
+    public void setUserDormantSessionAlert(Boolean alertEnabled) {
+        writeBoolean(DORMANT_SESSION_ALERT, alertEnabled);
     }
 
     public String getUserEmail() {

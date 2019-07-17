@@ -33,6 +33,8 @@ import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 public class UsersDriver {
     private static final String USER_PATH = "/api/user.json";
     private static final String RESET_PASSWORD_PATH = "/users/password.json";
+    private static final String USER_SETTINGS_PATH = "/api/user/settings.json";
+    private static final String DATA_KEY = "data";
 
     public HttpResult<UserInfo> create(String email, String username, String password, boolean sendEmails) {
         return http()
@@ -58,6 +60,14 @@ public class UsersDriver {
                 .post()
                 .to(RESET_PASSWORD_PATH)
                 .with("user[login]", login)
+                .execute();
+    }
+
+    public HttpResult<Void> sendSettings(String settings) {
+        return http()
+                .post()
+                .to(USER_SETTINGS_PATH)
+                .with(DATA_KEY, settings)
                 .execute();
     }
 }

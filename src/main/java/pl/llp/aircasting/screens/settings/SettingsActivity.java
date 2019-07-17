@@ -19,6 +19,7 @@
  */
 package pl.llp.aircasting.screens.settings;
 
+import android.os.AsyncTask;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.support.v7.widget.Toolbar;
@@ -27,7 +28,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.networking.drivers.UsersDriver;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 
 import android.app.Application;
@@ -37,7 +38,12 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 import com.google.inject.Inject;
+
+import java.util.HashMap;
+
 import pl.llp.aircasting.screens.common.ToastHelper;
 import roboguice.activity.RoboPreferenceActivity;
 
@@ -47,6 +53,7 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
     public static final String BACKEND_SETTINGS_KEY = "backend_settings";
     public static final String DISABLE_MAPS_KEY = "disable_maps";
     public static final String CONTRIBUTE_TO_CROWDMAP = "contribute_to_crowdmap";
+    private static final String SESSION_STOPPED_KEY = "session_stopped_alert";
 
     private static final Integer MIN_DENSITY = 1;
     private static final Integer MAX_DENSITY = 40;
@@ -55,6 +62,8 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
 
     @Inject SharedPreferences sharedPreferences;
     @Inject SettingsHelper settingsHelper;
+    @Inject Gson mGson;
+    @Inject UsersDriver mUsersDriver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +72,10 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         addPreferencesFromResource(R.xml.preferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.STREAMING_ALERT);
+        final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.DORMANT_SESSION_ALERT);
         final EditTextPreference heatMapDensityPreference = (EditTextPreference) getPreferenceScreen().findPreference(SettingsHelper.HEAT_MAP_DENSITY);
 
-        alertPreference.setOnPreferenceChangeListener(new StreamingAlertListener());
+        alertPreference.setOnPreferenceChangeListener(new DormantSessionAlertToggleListener());
         heatMapDensityPreference.setOnPreferenceChangeListener(new HeatMapDensityPreferenceChangeListener());
     }
 
@@ -132,6 +141,25 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
                 ToastHelper.show(getApplicationContext(), R.string.heat_map_density_warning, Toast.LENGTH_SHORT);
                 return false;
             }
+        }
+    }
+
+    public class DormantSessionAlertToggleListener implements Preference.OnPreferenceChangeListener {
+        private HashMap<String, Boolean> mSettings = new HashMap<>();
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, final Object newValue) {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    settingsHelper.setUserDormantSessionAlert((Boolean) newValue);
+                    mSettings.put(SESSION_STOPPED_KEY, (Boolean) newValue);
+                    mUsersDriver.sendSettings(mGson.toJson(mSettings));
+                    return null;
+                }
+            }.execute();
+
+            return true;
         }
     }
 }
