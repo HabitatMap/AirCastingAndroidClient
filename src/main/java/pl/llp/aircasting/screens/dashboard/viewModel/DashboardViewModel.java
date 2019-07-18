@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import pl.llp.aircasting.model.Measurement;
+import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.internal.SensorName;
@@ -229,7 +230,13 @@ public class DashboardViewModel extends ViewModel {
     }
 
     private Double getStreamRecentMeasurementValue(Sensor sensor, Long sessionId) {
-        return mViewingSessionsManager.getMeasurementStream(sessionId, sensor.getSensorName()).getLatestMeasurementValue();
+        MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensor.getSensorName());
+
+        if (stream != null) {
+            return stream.getLatestMeasurementValue();
+        } else {
+            return Double.valueOf(0);
+        }
     }
 
     private String getStreamIdentifier(Sensor sensor, long sessionId) {
