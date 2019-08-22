@@ -43,6 +43,10 @@ public class SchemaMigrator {
         db.execSQL(new SchemaCreator().sessionTable().asSQL(revision));
     }
 
+    private void createMeasurementTable(SQLiteDatabase db, int revision) {
+        db.execSQL(new SchemaCreator().measurementTable().asSQL(revision));
+    }
+
     public void migrate(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 19 && newVersion >= 19) {
             addColumn(db, NOTE_TABLE_NAME, NOTE_PHOTO, Datatype.TEXT);
@@ -125,7 +129,11 @@ public class SchemaMigrator {
 
         if (oldVersion < 37) {
             db.execSQL("DROP TABLE IF EXISTS " + SESSION_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + MEASUREMENT_TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + STREAM_TABLE_NAME);
             createSessionsTable(db, 37);
+            createMeasurementTable(db, 37);
+            createStreamTable(db, 37);
         }
 
 
