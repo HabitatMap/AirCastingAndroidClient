@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
 
     private final View mShareFile;
     private final View mShareLink;
+    private final View mEmailField;
+    private final View mSendFile;
     private final RecyclerView mSelectSensorRv;
     private View.OnClickListener mClickListener;
 
@@ -41,6 +44,8 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mShareLink = findViewById(R.id.share_link);
         mSelectSensorRv = findViewById(R.id.select_sensor);
         mToolbar = findViewById(R.id.toolbar);
+        mEmailField = findViewById(R.id.email_field);
+        mSendFile = findViewById(R.id.send_file);
 
         mSensorAdapter = new SensorRecyclerAdapter(inflater);
         mSensorAdapter.registerListener(this);
@@ -50,6 +55,7 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
 
         mShareFile.setOnClickListener(this);
         mShareLink.setOnClickListener(this);
+        mSendFile.setOnClickListener(this);
     }
 
     public void registerListener(View.OnClickListener listener) {
@@ -84,6 +90,16 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mToolbar.setTitle("Select a Stream");
     }
 
+    public void showEmailField() {
+        mButtons.setVisibility(View.GONE);
+        mEmailField.setVisibility(View.VISIBLE);
+        mToolbar.setTitle("Provide an Email Address");
+    }
+
+    public String emailAddress() {
+        return ((EditText) findViewById(R.id.email_input)).getText().toString();
+    }
+
     @Override
     public View getRootView() {
         return mRootView;
@@ -103,3 +119,4 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mSensorClickListener.onSensorSelected(view);
     }
 }
+

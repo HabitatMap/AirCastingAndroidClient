@@ -122,6 +122,7 @@
   <string name="no_data">No data recorded</string>
   <string name="share_link">Share Link</string>
   <string name="share_file">Share File</string>
+  <string name="send_file">Send</string>
   <string name="share_title">View my AirCasting session</string>
   <string name="im_aircasting">I\'m AirCasting</string>
   <string name="session_options">Session Options</string>

@@ -42,6 +42,28 @@
             />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/email_field"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText android:theme="@style/AirCastingEditText"
+            style="@style/AirCastingEditText"
+            android:id="@+id/email_input"
+            android:hint="@string/email"
+            android:layout_height="@dimen/editTextHeight"
+            android:inputType="textEmailAddress"
+            />
+
+
+        <Button style="@style/DialogButton"
+            android:text="@string/send_file"
+            android:id="@+id/send_file"
+            />
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/select_sensor"
         android:visibility="gone"
