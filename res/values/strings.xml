@@ -105,7 +105,6 @@
   <string name="session_link_template"
           formatted="false">View my AirCasting session: %s
   </string>
-  <string name="session_file_template">View my AirCasting session. It\'s attached as a CSV file.</string>
   <string name="profile_template" formatted="false">Signed in as %s
   </string>
 
@@ -281,4 +280,5 @@
   <string name="streaming_alert">Dormant stream alert</string>
   <string name="streaming_alert_summary">Check to receive an email when active fixed sessions go dormant for >30 minutes</string>
     <string name="heat_map_density_warning">CrowdmMap grid cell size must be a number 1-40</string>
+  <string name="session_exported">Exported sessions will be emailed within minutes. The email may end up in your spam folder.</string>
 </resources>

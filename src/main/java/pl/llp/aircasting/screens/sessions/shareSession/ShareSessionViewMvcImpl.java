@@ -119,4 +119,3 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mSensorClickListener.onSensorSelected(view);
     }
 }
-

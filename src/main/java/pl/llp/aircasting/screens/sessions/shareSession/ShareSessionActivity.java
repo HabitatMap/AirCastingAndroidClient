@@ -7,11 +7,6 @@ import pl.llp.aircasting.R;
 import android.os.AsyncTask;
 import pl.llp.aircasting.networking.schema.ExportSession;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
-import pl.llp.aircasting.screens.common.base.SimpleProgressTask;
-import pl.llp.aircasting.screens.common.helpers.NoOp;
-import pl.llp.aircasting.screens.sessions.CSVHelper;
-import pl.llp.aircasting.screens.sessions.OpenSessionTask;
-import pl.llp.aircasting.util.Logger;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
@@ -19,10 +14,7 @@ import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.repository.SessionRepository;
 import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 
-
-
 import android.app.Application;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -30,19 +22,16 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 
-import java.io.IOException;
-
 public class ShareSessionActivity extends DialogActivity implements View.OnClickListener, SensorItemViewMvcImpl.Listener {
+    private static final String EXPORT_PATH = "/api/sessions/export_by_uuid.json";
+
     @InjectResource(R.string.share_title)
     String shareTitle;
     @InjectResource(R.string.share_file)
     String shareChooserTitle;
-    @InjectResource(R.string.session_file_template)
-    String shareText;
 
     @Inject ShareHelper shareHelper;
     @Inject CurrentSessionManager currentSessionManager;
-    @Inject CSVHelper csvHelper;
     @Inject SessionRepository sessionRepository;
     @Inject SettingsHelper settingsHelper;
 
@@ -95,26 +84,25 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         }
     }
 
-    private static final String EXPORT_PATH = "/api/sessions/export_by_uuid.json";
-
     private void sendFile() {
         emailAddres = mShareSessionView.emailAddress();
-        session = currentSessionManager.getCurrentSession();
-
 
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 http()
-                        .get()
-                        .from(EXPORT_PATH)
-                        .with("email", (String) emailAddres)
-//                        .with("uuid", session.getUUID().toString())
-                        .with("uuid", "c77413f4-542f-4892-aa53-340b9a9308b8")
-                        .into(ExportSession.class);
+                    .get()
+                    .from(EXPORT_PATH)
+                    .with("email", (String) emailAddres)
+                    .with("uuid", session.getUUID().toString())
+                    .into(ExportSession.class);
                 return true;
             }
         }.execute();
+
+        finish();
+
+        ToastHelper.show(context, R.string.session_exported, Toast.LENGTH_LONG);
     }
 
     private void shareLink() {
