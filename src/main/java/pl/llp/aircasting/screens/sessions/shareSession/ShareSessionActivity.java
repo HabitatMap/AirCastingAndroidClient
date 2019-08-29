@@ -4,15 +4,13 @@ import android.app.Activity;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 
-import android.os.AsyncTask;
-import pl.llp.aircasting.networking.schema.ExportSession;
+import pl.llp.aircasting.networking.drivers.SessionDriver;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.storage.repository.SessionRepository;
-import static pl.llp.aircasting.networking.httpUtils.HttpBuilder.http;
 
 import android.app.Application;
 import android.os.Bundle;
@@ -23,8 +21,6 @@ import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 
 public class ShareSessionActivity extends DialogActivity implements View.OnClickListener, SensorItemViewMvcImpl.Listener {
-    private static final String EXPORT_PATH = "/api/sessions/export_by_uuid.json";
-
     @InjectResource(R.string.share_title)
     String shareTitle;
     @InjectResource(R.string.share_file)
@@ -40,7 +36,6 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     private Session session;
     private ShareSessionViewMvcImpl mShareSessionView;
     private CharSequence mSelectedSensor;
-    private CharSequence emailAddres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,21 +80,11 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     }
 
     private void sendFile() {
-        emailAddres = mShareSessionView.emailAddress();
+        String email = mShareSessionView.getEmailAddress();
+        String uuid = session.getUUID().toString();
 
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                http()
-                    .get()
-                    .from(EXPORT_PATH)
-                    .with("email", (String) emailAddres)
-                    .with("uuid", session.getUUID().toString())
-                    .into(ExportSession.class);
-                return true;
-            }
-        }.execute();
-
+        SessionDriver.exportSession(email, uuid);
+        
         finish();
 
         ToastHelper.show(context, R.string.session_exported, Toast.LENGTH_LONG);

@@ -57,7 +57,6 @@
             android:inputType="textEmailAddress"
             />
 
-
         <Button style="@style/DialogButton"
             android:text="@string/send_file"
             android:id="@+id/send_file"

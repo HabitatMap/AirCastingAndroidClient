@@ -96,7 +96,7 @@ public class ShareSessionViewMvcImpl implements BaseViewMvc, View.OnClickListene
         mToolbar.setTitle("Provide an Email Address");
     }
 
-    public String emailAddress() {
+    public String getEmailAddress() {
         return ((EditText) findViewById(R.id.email_input)).getText().toString();
     }
 
