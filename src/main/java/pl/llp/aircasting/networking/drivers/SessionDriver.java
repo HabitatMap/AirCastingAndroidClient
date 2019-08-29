@@ -29,6 +29,9 @@ import pl.llp.aircasting.util.bitmap.BitmapTransformer;
 import pl.llp.aircasting.networking.httpUtils.HttpResult;
 import pl.llp.aircasting.networking.httpUtils.PerformRequest;
 import pl.llp.aircasting.networking.httpUtils.Uploadable;
+import pl.llp.aircasting.networking.schema.ExportSession;
+
+import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -50,6 +53,7 @@ public class SessionDriver {
     private static final String UPDATE_USER_SESSION_PATH = "/api/user/sessions/update_session";
     private static final String JSON_SUFFIX = ".json";
     private static final String DATA_KEY = "data";
+    private static final String EXPORT_PATH = "/api/sessions/export_by_uuid.json";
 
     @Inject Gson gson;
     @Inject GZIPHelper gzipHelper;
@@ -164,6 +168,21 @@ public class SessionDriver {
         } catch (IOException e) {
             return error();
         }
+    }
+
+    public static AsyncTask<Void,Void,Boolean> exportSession(final String email, final String uuid) {
+      return new AsyncTask<Void, Void, Boolean>() {
+          @Override
+          protected Boolean doInBackground(Void... voids) {
+              http()
+                  .get()
+                  .from(EXPORT_PATH)
+                  .with("email", (String) email)
+                  .with("uuid", uuid)
+                  .into(ExportSession.class);
+              return true;
+          }
+      }.execute();
     }
 
 }
