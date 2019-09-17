@@ -170,7 +170,7 @@ public class SessionDriver {
         }
     }
 
-    public static AsyncTask<Void,Void,Boolean> exportSession(final String email, final String uuid) {
+    public static AsyncTask<Void,Void,Boolean> exportSessionByEmail(final String email, final String uuid) {
       return new AsyncTask<Void, Void, Boolean>() {
           @Override
           protected Boolean doInBackground(Void... voids) {

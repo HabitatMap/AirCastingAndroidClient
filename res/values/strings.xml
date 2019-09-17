@@ -105,6 +105,7 @@
   <string name="session_link_template"
           formatted="false">View my AirCasting session: %s
   </string>
+  <string name="session_file_template">View my AirCasting session. It\'s attached as a CSV file.</string>
   <string name="profile_template" formatted="false">Signed in as %s
   </string>
 
