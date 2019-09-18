@@ -32,14 +32,7 @@ public class UserInfo {
     @Expose private String username;
     @Expose private String authentication_token;
     @Expose private String password;
-    @Expose private Boolean session_stopped_alert;
-
-    public UserInfo(String email, String username, String authentication_token, Boolean session_stopped_alert) {
-        this.email = email;
-        this.username = username;
-        this.authentication_token = authentication_token;
-        this.session_stopped_alert = session_stopped_alert;
-    }
+    @Expose private Boolean session_stopped_alert = false;
 
     public String getEmail() {
         return email;

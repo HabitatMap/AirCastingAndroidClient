@@ -72,7 +72,7 @@ public class FixedSessionUploader {
         Status status = result.getStatus();
 
         if (status == Status.ERROR || status == Status.FAILURE) {
-            throw new SessionSyncException("Session creation failed");
+            ToastHelper.showText(context, "Session creation failed!", Toast.LENGTH_LONG);
         }
     }
 

@@ -103,9 +103,7 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
         String uuid = session.getUUID().toString();
 
         SessionDriver.exportSessionByEmail(email, uuid);
-
         finish();
-
         ToastHelper.show(context, R.string.session_exported, Toast.LENGTH_LONG);
     }
 

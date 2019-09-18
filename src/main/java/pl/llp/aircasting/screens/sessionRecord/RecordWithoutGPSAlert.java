@@ -8,7 +8,6 @@ import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 
 public class RecordWithoutGPSAlert {
     private Activity activity;
-    private AppCompatDelegate delegate;
     private CurrentSessionManager currentSessionManager;
     private String sessionTitle;
     private String sessionTags;
@@ -17,11 +16,9 @@ public class RecordWithoutGPSAlert {
     public RecordWithoutGPSAlert(String title,
                                  String tags,
                                  Activity activity,
-                                 AppCompatDelegate delegate,
                                  CurrentSessionManager currentSessionManager,
                                  boolean withoutLocation) {
         this.activity = activity;
-        this.delegate = delegate;
         this.currentSessionManager = currentSessionManager;
         this.sessionTitle = title;
         this.sessionTags = tags;
@@ -36,7 +33,7 @@ public class RecordWithoutGPSAlert {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         currentSessionManager.startMobileSession(sessionTitle, sessionTags, withoutLocation);
-                        delegate.invalidateOptionsMenu();
+                        activity.invalidateOptionsMenu();
                         activity.finish();
                         break;
 

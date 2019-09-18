@@ -6,23 +6,19 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.google.common.collect.ComparisonChain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.model.internal.SensorName;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.screens.common.helpers.FormatHelper;
@@ -217,8 +213,7 @@ public class DashboardViewModel extends ViewModel {
                         map.put(REORDER_IN_PROGRESS, mState.dashboardState.isSessionReorderInProgress());
                         map.put(STREAM_CHART, mDashboardChartManager.getStaticChart(sensor, sessionId));
                         map.put(STREAM_IDENTIFIER, getStreamIdentifier(sensor, sessionId));
-                        map.put(STREAM_TIMESTAMP, mFormatHelper.getTimestamp(
-                                mViewingSessionsManager.getSession(sessionId).getStream(sensor.getSensorName()).getLastMeasurementTime()));
+                        map.put(STREAM_TIMESTAMP, mFormatHelper.getTimestamp(getLastStreamMeasurementTime(sensor.getSensorName(), sessionId)));
 
                         mViewingDashboardData.getValue().add(map);
                     }
@@ -227,6 +222,15 @@ public class DashboardViewModel extends ViewModel {
         }
 
         return mViewingDashboardData;
+    }
+
+    private Date getLastStreamMeasurementTime(String sensorName, Long sessionId) {
+        MeasurementStream stream = mViewingSessionsManager.getMeasurementStream(sessionId, sensorName);
+
+        if (stream != null) {
+            return stream.getLastMeasurementTime();
+        }
+        return new Date();
     }
 
     private Double getStreamRecentMeasurementValue(Sensor sensor, Long sessionId) {

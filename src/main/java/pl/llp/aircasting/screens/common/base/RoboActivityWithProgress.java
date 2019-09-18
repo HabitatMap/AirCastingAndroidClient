@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatCallback;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -36,7 +35,6 @@ public abstract class RoboActivityWithProgress extends AppCompatActivity impleme
 
     @Inject NavigationDrawerHelper navigationDrawerHelper;
 
-    public AppCompatDelegate delegate;
     public Toolbar toolbar;
     protected ContextScope scope;
     protected EventManager eventManager;
