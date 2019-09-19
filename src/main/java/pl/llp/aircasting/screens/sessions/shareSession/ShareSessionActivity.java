@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 
 import java.io.IOException;
 
+import pl.llp.aircasting.util.Logger;
 import roboguice.inject.InjectResource;
 
 public class ShareSessionActivity extends DialogActivity implements View.OnClickListener, SensorItemViewMvcImpl.Listener {
@@ -91,6 +92,15 @@ public class ShareSessionActivity extends DialogActivity implements View.OnClick
     }
 
     private void shareFile() {
+        if (settingsHelper.hasCredentials()) {
+            chooseShareMethod();
+        } else {
+            ToastHelper.show(context, R.string.account_reminder, Toast.LENGTH_LONG);
+            finish();
+        }
+    }
+
+    private void chooseShareMethod() {
         if (session.isLocationless()) {
             shareLocalFile();
         } else {
