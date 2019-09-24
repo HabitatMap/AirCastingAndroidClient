@@ -51,6 +51,7 @@ import com.google.inject.Inject;
 import roboguice.inject.InjectView;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -215,8 +216,16 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     private void updateLabels(ArrayList<Measurement> measurements) {
         if (!measurements.isEmpty()) {
-            graphBegin.setText(mFormatHelper.getTime(measurements.get(0).getTime()));
-            graphEnd.setText(mFormatHelper.getTime(getLast(measurements).getTime()));
+            Measurement firstMeasurement = measurements.get(0);
+            Measurement lastMeasurement = getLast(measurements);
+
+            if (firstMeasurement != null) {
+                graphBegin.setText(mFormatHelper.getTime(measurements.get(0).getTime()));
+            }
+
+            if (lastMeasurement != null) {
+                graphEnd.setText(mFormatHelper.getTime(getLast(measurements).getTime()));
+            }
         }
     }
 

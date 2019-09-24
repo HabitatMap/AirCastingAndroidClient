@@ -66,10 +66,13 @@ public class FormatHelper {
     }
 
     public String getTime(Date date) {
-        if (mSettingsHelper.defaultTimeFormat()) {
-            return timeFormat.format(date);
-        } else {
-            return m12HourFormat.format(date);
+        if (date != null) {
+            if (mSettingsHelper.defaultTimeFormat()) {
+                return timeFormat.format(date);
+            } else {
+                return m12HourFormat.format(date);
+            }
         }
+        return "00:00:00";
     }
 }
