@@ -170,6 +170,7 @@
   <string name="stop_aircasting_to_calibrate">To calibrate you must first stop AirCasting.</string>
   <string name="session_not_uploaded">Session upload pending - wait a couple of minutes and try again.</string>
   <string name="location_required">You need to have location services enabled to scan for WiFi networks. Would you like to do it now?</string>
+  <string name="stop_recording_first">To sign out, you must first stop recording</string>
 
   <string name="unnamed_session"><![CDATA[<i>unnamed</i>]]></string>
   <string name="mic_error">Could not access microphone - please make sure other apps are not using it. You may need to

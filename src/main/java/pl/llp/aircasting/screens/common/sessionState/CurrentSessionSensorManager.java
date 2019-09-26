@@ -176,6 +176,13 @@ public class CurrentSessionSensorManager {
         removeCurrentSensor(SensorName.from("Phone Microphone"));
     }
 
+    public void disconnectAll() {
+        audioReader.stop();
+        externalSensors.disconnectAllSensors();
+        currentSessionSensors.clear();
+        eventBus.post(new SensorConnectedEvent());
+    }
+
     public void disconnectSensors(ExternalSensorDescriptor descriptor) {
         String address = descriptor.getAddress();
         Collection<MeasurementStream> streams = currentSessionManager.getMeasurementStreams();
