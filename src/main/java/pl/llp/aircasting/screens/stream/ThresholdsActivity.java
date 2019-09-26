@@ -120,6 +120,10 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
 
         save.setOnClickListener(this);
         reset.setOnClickListener(this);
+
+        calculateThresholds();
+        fixThresholds();
+        updateViews();
     }
 
     @Override
