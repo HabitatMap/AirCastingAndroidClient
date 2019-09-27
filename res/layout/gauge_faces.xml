@@ -19,7 +19,7 @@
         <TextView style="@style/Gauge"
                   android:textSize="35sp"
                   android:id="@+id/avg_gauge"
-
+                  android:text="0"
                 />
     </LinearLayout>
     <LinearLayout style="@style/GaugeContainer"
@@ -33,6 +33,7 @@
         <TextView style="@style/Gauge"
                   android:background="@drawable/round_bottom_green_big"
                   android:textSize="38sp"
+                  android:text="0"
                   android:id="@+id/now_gauge"
                   android:singleLine="true"/>
     </LinearLayout>
@@ -47,6 +48,7 @@
                 />
         <TextView style="@style/Gauge"
                   android:textSize="35sp"
+                  android:text="0"
                   android:id="@+id/peak_gauge"
                 />
     </LinearLayout>
