@@ -6,7 +6,9 @@ import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.SessionDataAccessor;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.model.Sensor;
+import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
 
+import android.app.Activity;
 import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
@@ -32,6 +34,7 @@ public class GaugeHelper {
     private final TextView mAvgTextView;
     private final TextView mPeakTextView;
 
+    private Activity mActivity;
     private ResourceHelper mResourceHelper;
     private VisibleSession mVisibleSession;
     private SessionDataAccessor mSessionData;
@@ -40,10 +43,11 @@ public class GaugeHelper {
     private double mPeak;
     private double mAverage;
 
-    public GaugeHelper(View view,
+    public GaugeHelper(Activity activity, View view,
                        ResourceHelper resourceHelper,
                        VisibleSession visibleSession,
                        SessionDataAccessor sessionDataAccessor) {
+        mActivity = activity;
         mResourceHelper = resourceHelper;
         mVisibleSession = visibleSession;
         mSessionData = sessionDataAccessor;
@@ -136,17 +140,22 @@ public class GaugeHelper {
         return textSize;
     }
 
-    private void updateGauge(View view, MarkerSize size, double value) {
-        TextView textView = (TextView) view;
+    private void updateGauge(View view, final MarkerSize size, final double value) {
+        final TextView textView = (TextView) view;
 
-        textView.setText(valueOf(Math.round(value)));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mResourceHelper.getTextSize(value, size));
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(valueOf(Math.round(value)));
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, mResourceHelper.getTextSize(value, size));
 
-        if (mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed()) {
-            textView.setBackgroundDrawable(mResourceHelper.getGauge(mSensor, size, value));
-        } else {
-            textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
-        }
+                if (mVisibleSession.isVisibleSessionRecording() || mVisibleSession.isVisibleSessionViewed()) {
+                    textView.setBackgroundDrawable(mResourceHelper.getGauge(mSensor, size, value));
+                } else {
+                    textView.setBackgroundDrawable(mResourceHelper.getDisabledGauge(size));
+                }
+            }
+        });
     }
 
     private void displayInactiveGauge(View view, MarkerSize size) {

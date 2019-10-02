@@ -115,7 +115,7 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
             mGauges = findViewById(R.id.gauge_container);
 
             if (mGaugeHelper == null) {
-                mGaugeHelper = new GaugeHelper(mGauges, resourceHelper, visibleSession, sessionData);
+                mGaugeHelper = new GaugeHelper(this, mGauges, resourceHelper, visibleSession, sessionData);
             }
 
             zoomOut.setOnClickListener(this);
