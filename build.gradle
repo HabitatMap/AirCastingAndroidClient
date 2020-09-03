@@ -2,6 +2,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         mavenLocal()
     }
     dependencies {
@@ -17,12 +18,13 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
-     jcenter()
-     mavenLocal()
-     maven { url "http://acra.googlecode.com/svn/repository/releases/" }
-     maven { url "https://maven.google.com" }
-     maven { url "http://repo.maven.apache.org/maven2" }
-     maven { url 'https://jitpack.io' }
+    jcenter()
+    mavenCentral()
+    mavenLocal()
+    maven { url "http://acra.googlecode.com/svn/repository/releases/" }
+    maven { url "https://maven.google.com" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url 'https://jitpack.io' }
 }
 
 android {
@@ -55,7 +57,6 @@ android {
 dependencies {
     def supportVersion = "28.0.0"
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:support-v4:$supportVersion"
     implementation "com.android.support:support-media-compat:28.0.0"
@@ -78,9 +79,6 @@ dependencies {
     testImplementation group: 'com.pivotallabs', name: 'robolectric', version:'1.0'
     testImplementation group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
     testImplementation group: 'org.easytesting', name: 'fest-assert', version:'1.4'
-    implementation(group: 'com.google.android.maps', name: 'maps', version:'7_r1') {
-       /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
-       Please review and delete this closure when resolved. */
-    }
+    implementation files('libs/maps-7_r1.jar')
+    implementation files('libs/MPAndroidChart-v3.0.2.jar')
 }
