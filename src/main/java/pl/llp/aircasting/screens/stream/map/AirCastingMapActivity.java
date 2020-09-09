@@ -65,6 +65,7 @@ import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
+import pl.llp.aircasting.screens.stream.base.AirCastingActivityForMap;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -80,7 +81,7 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  * Date: 10/17/11
  * Time: 5:04 PM
  */
-public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
+public class AirCastingMapActivity extends AirCastingActivityForMap implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
 
     private static final String HEAT_MAP_VISIBLE = "heat_map_visible";
 

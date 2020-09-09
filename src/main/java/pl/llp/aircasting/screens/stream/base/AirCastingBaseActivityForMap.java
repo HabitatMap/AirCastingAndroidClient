@@ -1,47 +1,45 @@
 package pl.llp.aircasting.screens.stream.base;
 
-import android.os.AsyncTask;
-import android.view.*;
-import pl.llp.aircasting.Intents;
-import pl.llp.aircasting.R;
-import pl.llp.aircasting.screens.common.ToastHelper;
-import pl.llp.aircasting.screens.common.base.RoboActivityWithProgress;
-import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
-import pl.llp.aircasting.model.Session;
-import pl.llp.aircasting.screens.common.ToggleAircastingManager;
-import pl.llp.aircasting.screens.common.ToggleAircastingManagerFactory;
-import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
-import pl.llp.aircasting.screens.common.ApplicationState;
-import pl.llp.aircasting.screens.common.helpers.LocationHelper;
-import pl.llp.aircasting.screens.common.base.RoboMapActivityWithProgress;
-import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
-import pl.llp.aircasting.screens.dashboard.DashboardActivity;
-import pl.llp.aircasting.screens.stream.MeasurementPresenter;
-import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
-
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
-import pl.llp.aircasting.storage.UnfinishedSessionChecker;
-import roboguice.inject.InjectView;
 
 import java.util.concurrent.TimeUnit;
 
+import pl.llp.aircasting.Intents;
+import pl.llp.aircasting.R;
+import pl.llp.aircasting.model.Session;
+import pl.llp.aircasting.screens.common.ApplicationState;
+import pl.llp.aircasting.screens.common.ToastHelper;
+import pl.llp.aircasting.screens.common.ToggleAircastingManager;
+import pl.llp.aircasting.screens.common.ToggleAircastingManagerFactory;
+import pl.llp.aircasting.screens.common.base.RoboMapActivityWithProgress;
+import pl.llp.aircasting.screens.common.helpers.LocationHelper;
+import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
+import pl.llp.aircasting.screens.common.sessionState.ViewingSessionsManager;
+import pl.llp.aircasting.screens.dashboard.DashboardActivity;
+import pl.llp.aircasting.screens.stream.MeasurementPresenter;
+import pl.llp.aircasting.sessionSync.SyncBroadcastReceiver;
+import pl.llp.aircasting.storage.UnfinishedSessionChecker;
+import roboguice.inject.InjectView;
+
 import static pl.llp.aircasting.Intents.startSensors;
 import static pl.llp.aircasting.screens.common.helpers.LocationHelper.REQUEST_CHECK_SETTINGS;
-import static pl.llp.aircasting.util.Constants.PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * A common superclass for activities that want to display left/right
  * navigation arrows
  */
 
-public abstract class AirCastingBaseActivity extends RoboActivityWithProgress implements View.OnClickListener, LocationHelper.LocationSettingsListener {
+public abstract class AirCastingBaseActivityForMap extends RoboMapActivityWithProgress implements View.OnClickListener, LocationHelper.LocationSettingsListener {
     public static final long DELTA = TimeUnit.SECONDS.toMillis(15);
 
     @Inject public Context context;
@@ -106,6 +104,12 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
         eventBus.unregister(this);
     }
 
+    @Override
+    protected boolean isRouteDisplayed() {
+        // The maps server needs to know if we are displaying any routes
+        return false;
+    }
+
     private void initialize() {
         toggleAircastingManager = aircastingHelperFactory.getAircastingHelper(this, getDelegate());
 
@@ -160,7 +164,7 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    checker.finishIfNeeded(AirCastingBaseActivity.this);
+                    checker.finishIfNeeded(AirCastingBaseActivityForMap.this);
                     lastChecked = System.currentTimeMillis();
                     return null;
                 }
