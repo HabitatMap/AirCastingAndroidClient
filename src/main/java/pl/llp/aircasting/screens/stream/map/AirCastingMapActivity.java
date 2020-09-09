@@ -107,6 +107,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private static final int DEFAULT_ZOOM = 16;
 
     private GoogleMap map;
+    private SupportMapFragment mapFragment;
     private boolean soundTraceComplete = true;
     private boolean heatMapVisible = false;
     private int requestsOutstanding = 0;
@@ -130,7 +131,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         initNavigationDrawer();
         centerMap.setOnClickListener(this);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapview);
         mapFragment.getMapAsync(this);
     }
@@ -479,18 +480,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             LatLng northWest = visibleRegion.farLeft;
             LatLng southEast = visibleRegion.nearRight;
 
-//            Location northWestLoc = LocationConversionHelper.location(northWest);
-//            Location southEastLoc = LocationConversionHelper.location(southEast);
-//
-//            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
-//            if (size < 1) size = 1;
-//
-//            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
-//            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
+            View mapView = mapFragment.getView();
+            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
+            if (size < 1) size = 1;
 
-//            return averagesDriver.index(visibleSession.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
-//                    southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
-            return null;
+            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
+            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
+
+            return averagesDriver.index(visibleSession.getSensor(), northWest.longitude, northWest.latitude,
+                    southEast.longitude, southEast.latitude, gridSizeX, gridSizeY);
         }
 
         @Override
