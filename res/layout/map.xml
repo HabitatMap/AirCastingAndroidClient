@@ -20,16 +20,9 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/mapview"
+    <fragment android:id="@+id/mapview"
         android:name="com.google.android.libraries.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        map:uiZoomControls="true"
-        map:uiZoomGestures="true"
         android:clickable="true" />
-
-    <pl.llp.aircasting.screens.stream.TouchPane
-        android:id="@+id/touch_pane"
-        style="@style/Fill" />
 </merge>
