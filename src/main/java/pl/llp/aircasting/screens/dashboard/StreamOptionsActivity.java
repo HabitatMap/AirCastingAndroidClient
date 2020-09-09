@@ -10,7 +10,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.screens.common.base.DialogActivity;
 import pl.llp.aircasting.screens.stream.graph.GraphActivity;
 import pl.llp.aircasting.screens.stream.map.AirCastingMapActivity;
-import pl.llp.aircasting.screens.stream.map.AirCastingMapActivity2;
 import roboguice.inject.InjectView;
 
 /**
@@ -39,7 +38,7 @@ public class StreamOptionsActivity extends DialogActivity implements View.OnClic
                 finish();
                 break;
             case R.id.map_button:
-                startActivity(new Intent(context, AirCastingMapActivity2.class));
+                startActivity(new Intent(context, AirCastingMapActivity.class));
                 finish();
                 break;
         }

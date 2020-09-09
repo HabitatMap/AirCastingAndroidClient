@@ -38,6 +38,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.libraries.maps.CameraUpdateFactory;
+import com.google.android.libraries.maps.GoogleMap;
+import com.google.android.libraries.maps.OnMapReadyCallback;
+import com.google.android.libraries.maps.SupportMapFragment;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
@@ -65,7 +71,6 @@ import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
-import pl.llp.aircasting.screens.stream.base.AirCastingActivityForMap;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -81,12 +86,10 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  * Date: 10/17/11
  * Time: 5:04 PM
  */
-public class AirCastingMapActivity extends AirCastingActivityForMap implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener {
+public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener, OnMapReadyCallback {
 
     private static final String HEAT_MAP_VISIBLE = "heat_map_visible";
 
-    @InjectView(R.id.mapview)
-    AirCastingMapView mapView;
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
@@ -105,6 +108,7 @@ public class AirCastingMapActivity extends AirCastingActivityForMap implements M
     private static final int ACTION_TOGGLE = 1;
     private static final int ACTION_CENTER = 2;
 
+    private GoogleMap map;
     private boolean soundTraceComplete = true;
     private boolean heatMapVisible = false;
     private int requestsOutstanding = 0;
@@ -129,12 +133,28 @@ public class AirCastingMapActivity extends AirCastingActivityForMap implements M
         initNavigationDrawer();
         centerMap.setOnClickListener(this);
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapview);
+        mapFragment.getMapAsync(this);
+
         mapView.getOverlays().add(routeOverlay);
         mapView.getOverlays().add(traceOverlay);
 
         if (!visibleSession.isVisibleSessionViewed()) {
             mapView.getOverlays().add(locationOverlay);
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        map.addMarker(new MarkerOptions()
+                .position(sydney)
+                .title("Marker in Sydney"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override

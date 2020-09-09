@@ -67,7 +67,6 @@
     <activity android:label="@string/session_options" android:name=".screens.sessions.OpenFixedSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".screens.stream.map.AirCastingMapActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
-    <activity android:name=".screens.stream.map.AirCastingMapActivity2" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
 
     <activity android:name=".screens.about.AboutActivity" android:theme="@style/AirCastingTheme"/>
 
