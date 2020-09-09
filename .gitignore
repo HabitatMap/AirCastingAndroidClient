@@ -17,6 +17,7 @@ local.properties
 proguard_logs
 *.apk
 *.keystore
+secure.properties
 gen
 gen-external-apklibs/
 release/

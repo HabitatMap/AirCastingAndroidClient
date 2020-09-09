@@ -36,6 +36,13 @@ android {
         targetSdkVersion 28
         versionCode 106
         versionName "1.5.19"
+
+        // Read the API key from ./secure.properties into R.string.maps_api_key
+        def secureProps = new Properties()
+        if (file("./secure.properties").exists()) {
+            file("./secure.properties")?.withInputStream { secureProps.load(it) }
+        }
+        resValue "string", "maps_api_key", (secureProps.getProperty("MAPS_API_KEY") ?: "")
     }
 
     buildTypes {
@@ -79,6 +86,9 @@ dependencies {
     testImplementation group: 'com.pivotallabs', name: 'robolectric', version:'1.0'
     testImplementation group: 'org.mockito', name: 'mockito-all', version:'1.9.5'
     testImplementation group: 'org.easytesting', name: 'fest-assert', version:'1.4'
+
+    implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation files('libs/maps-7_r1.jar')
+
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
 }

@@ -32,10 +32,11 @@
       android:usesCleartextTraffic="true"
       android:largeHeap="true">
     <!-- Libraries -->
-    <uses-library android:name="com.google.android.maps"/>
 
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-    <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/com.google.android.geo.API_KEY"/>
+    <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="@string/maps_api_key" />
 
     <!-- Activities -->
     <activity android:label="@string/app_name" android:name=".screens.SplashActivity" android:noHistory="true" android:theme="@style/AirCastingTheme">
@@ -66,6 +67,7 @@
     <activity android:label="@string/session_options" android:name=".screens.sessions.OpenFixedSessionActivity" android:theme="@style/Dialog"/>
 
     <activity android:name=".screens.stream.map.AirCastingMapActivity" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
+    <activity android:name=".screens.stream.map.AirCastingMapActivity2" android:theme="@style/AirCastingTheme" android:launchMode="singleTask" android:screenOrientation="portrait"/>
 
     <activity android:name=".screens.about.AboutActivity" android:theme="@style/AirCastingTheme"/>
 
