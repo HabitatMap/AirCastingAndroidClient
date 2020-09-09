@@ -19,6 +19,8 @@
 */
 package pl.llp.aircasting.screens.stream.map;
 
+import com.google.android.libraries.maps.GoogleMap;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,7 +30,7 @@ import java.util.TimerTask;
  * Date: 11/3/11
  * Time: 4:01 PM
  */
-public class MapIdleDetector implements AirCastingMapView.Listener {
+public class MapIdleDetector implements GoogleMap.OnCameraIdleListener {
     public static final int PERIOD = 100;
 
     private long idleTime;
@@ -36,26 +38,33 @@ public class MapIdleDetector implements AirCastingMapView.Listener {
     private long lastMapMovement = System.currentTimeMillis();
     private Timer mapIdleTimer = new Timer(true);
     private boolean triggered = false;
+    private boolean started = false;
 
-    public static MapIdleDetector detectMapIdle(AirCastingMapView mapView, long idleTime, MapIdleListener listener) {
-        return new MapIdleDetector(mapView, idleTime, listener);
+    public static MapIdleDetector detectMapIdle(GoogleMap map, long idleTime, MapIdleListener listener) {
+        return new MapIdleDetector(map, idleTime, listener);
+    }
+
+    public void start() {
+        if (!started) {
+            mapIdleTimer.schedule(new MapIdleTask(), 0, PERIOD);
+        }
+        started = true;
     }
 
     public void stop() {
         mapIdleTimer.cancel();
+        started = false;
     }
 
-    private MapIdleDetector(AirCastingMapView mapView, long idleTime, MapIdleListener listener) {
+    private MapIdleDetector(GoogleMap map, long idleTime, MapIdleListener listener) {
         this.idleTime = idleTime;
         this.listener = listener;
 
-        mapView.addListener(this);
-
-        mapIdleTimer.schedule(new MapIdleTask(), 0, PERIOD);
+        map.setOnCameraIdleListener(this);
     }
 
     @Override
-    public void onMapViewChanged() {
+    public void onCameraIdle() {
         lastMapMovement = System.currentTimeMillis();
         triggered = false;
     }

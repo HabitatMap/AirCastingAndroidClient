@@ -46,6 +46,7 @@ import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.MapStyleOptions;
 import com.google.android.libraries.maps.model.MarkerOptions;
+import com.google.android.libraries.maps.model.PolygonOptions;
 import com.google.android.libraries.maps.model.VisibleRegion;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -88,7 +89,10 @@ import static pl.llp.aircasting.screens.stream.map.MapIdleDetector.detectMapIdle
  * Date: 10/17/11
  * Time: 5:04 PM
  */
-public class AirCastingMapActivity extends AirCastingActivity implements MapIdleDetector.MapIdleListener, MeasurementPresenter.Listener, LocationHelper.LocationSettingsListener, OnMapReadyCallback {
+public class AirCastingMapActivity extends AirCastingActivity implements
+        MeasurementPresenter.Listener,
+        LocationHelper.LocationSettingsListener,
+        OnMapReadyCallback {
 
     private static final String HEAT_MAP_VISIBLE = "heat_map_visible";
 
@@ -114,7 +118,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private AsyncTask<Void, Void, Void> refreshTask;
     private MapIdleDetector heatMapDetector;
     private MapIdleDetector soundTraceDetector;
-    private HeatMapUpdater updater;
+    private HeatMapUpdater heatMapUpdater;
+    private SoundTraceUpdater soundTraceUpdater;
     private boolean initialized = false;
     private Measurement lastMeasurement;
     private boolean zoomToSession = true;
@@ -141,6 +146,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         map = googleMap;
 
         initializeMap();
+
+        heatMapUpdater = new HeatMapUpdater();
+        heatMapDetector = MapIdleDetector.detectMapIdle(map, HEAT_MAP_UPDATE_TIMEOUT, heatMapUpdater);
+
+        soundTraceUpdater = new SoundTraceUpdater();
+        soundTraceDetector = MapIdleDetector.detectMapIdle(map, SOUND_TRACE_UPDATE_TIMEOUT, soundTraceUpdater);
+
+        startDetectors();
     }
 
     @Override
@@ -252,6 +265,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         }
     }
 
+    private void startDetectors() {
+        if (routeRefreshDetector != null) routeRefreshDetector.start();
+        if (heatMapDetector != null) heatMapDetector.start();
+        if (soundTraceDetector != null) soundTraceDetector.start();
+    }
+
+    private void stopDetectors() {
+        routeRefreshDetector.stop();
+        heatMapDetector.stop();
+        soundTraceDetector.stop();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -263,16 +288,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         checkConnection();
 
-        updater = new HeatMapUpdater();
+        startDetectors();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        routeRefreshDetector.stop();
-        heatMapDetector.stop();
-        soundTraceDetector.stop();
+        stopDetectors();
     }
 
     @Override
@@ -347,8 +370,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
 
-        updater.onMapIdle();
-        onMapIdle();
+        heatMapUpdater.onMapIdle();
+        soundTraceUpdater.onMapIdle();
     }
 
     @Override
@@ -444,16 +467,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         }
     }
 
-    @Override
-    public void onMapIdle() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                refreshSoundTrace();
-            }
-        });
-    }
-
     private void refreshSoundTrace() {
         soundTraceComplete = false;
         refresh();
@@ -463,7 +476,17 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
-        public static final int MAP_BUFFER_SIZE = 3;
+        LatLng northWest;
+        LatLng southEast;
+        int gridSizeX;
+        int gridSizeY;
+
+        public HeatMapDownloader(LatLng northWest, LatLng southEast, int gridSizeX, int gridSizeY) {
+            this.northWest = northWest;
+            this.southEast = southEast;
+            this.gridSizeX = gridSizeX;
+            this.gridSizeY = gridSizeY;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -473,20 +496,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         @Override
         protected HttpResult<Iterable<Region>> doInBackground(Void... voids) {
-            Projection projection = map.getProjection();
-            VisibleRegion visibleRegion = projection.getVisibleRegion();
-
-            // We want to download data that's off screen so the user can see something while panning
-            LatLng northWest = visibleRegion.farLeft;
-            LatLng southEast = visibleRegion.nearRight;
-
-            View mapView = mapFragment.getView();
-            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
-            if (size < 1) size = 1;
-
-            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
-            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
-
             return averagesDriver.index(visibleSession.getSensor(), northWest.longitude, northWest.latitude,
                     southEast.longitude, southEast.latitude, gridSizeX, gridSizeY);
         }
@@ -496,6 +505,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             requestsOutstanding -= 1;
 
             if (regions.getContent() != null) {
+                for (Region region : regions.getContent()) {
+                    map.addPolygon(new PolygonOptions().add(
+                            new LatLng(region.getNorth(), region.getWest()),
+                            new LatLng(region.getNorth(), region.getEast()),
+                            new LatLng(region.getSouth(), region.getWest()),
+                            new LatLng(region.getSouth(), region.getEast())
+                    ));
+                }
 //                heatMapOverlay.setRegions(regions.getContent());
             }
 
@@ -503,14 +520,42 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         }
     }
 
-    private class HeatMapUpdater implements MapIdleDetector.MapIdleListener {
+    private class SoundTraceUpdater implements MapIdleDetector.MapIdleListener {
         @Override
         public void onMapIdle() {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    refreshSoundTrace();
+                }
+            });
+        }
+    }
+
+    private class HeatMapUpdater implements MapIdleDetector.MapIdleListener {
+        public static final int MAP_BUFFER_SIZE = 3;
+
+        @Override
+        public void onMapIdle() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Projection projection = map.getProjection();
+                    VisibleRegion visibleRegion = projection.getVisibleRegion();
+
+                    // We want to download data that's off screen so the user can see something while panning
+                    LatLng northWest = visibleRegion.farLeft;
+                    LatLng southEast = visibleRegion.nearRight;
+
+                    View mapView = mapFragment.getView();
+                    int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
+                    if (size < 1) size = 1;
+
+                    int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
+                    int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
+
                     //noinspection unchecked
-                    new HeatMapDownloader().execute();
+                    new HeatMapDownloader(northWest, southEast, gridSizeX, gridSizeY).execute();
                 }
             });
         }
