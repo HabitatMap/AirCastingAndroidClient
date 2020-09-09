@@ -73,7 +73,7 @@ public class NoteOverlay extends ItemizedOverlay {
 
     @Override
     public boolean onTap(int i) {
-        context.noteClicked(items.get(i), i);
+        context.noteClicked(i);
         return true;
     }
 

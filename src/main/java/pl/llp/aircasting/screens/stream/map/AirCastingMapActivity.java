@@ -41,13 +41,15 @@ import android.widget.Toast;
 import com.google.android.libraries.maps.CameraUpdateFactory;
 import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
+import com.google.android.libraries.maps.Projection;
 import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.MapStyleOptions;
 import com.google.android.libraries.maps.model.MarkerOptions;
+import com.google.android.libraries.maps.model.VisibleRegion;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.OverlayItem;
-import com.google.android.maps.Projection;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -93,13 +95,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
-    @Inject HeatMapOverlay heatMapOverlay;
     @Inject AveragesDriver averagesDriver;
     @Inject ConnectivityManager connectivityManager;
-    @Inject NoteOverlay noteOverlay;
-    @Inject LocationOverlay locationOverlay;
-    @Inject TraceOverlay traceOverlay;
-    @Inject RouteOverlay routeOverlay;
     @Inject VisibleSession visibleSession;
 
     public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
@@ -107,6 +104,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     private static final int ACTION_TOGGLE = 1;
     private static final int ACTION_CENTER = 2;
+    private static final int DEFAULT_ZOOM = 16;
 
     private GoogleMap map;
     private boolean soundTraceComplete = true;
@@ -125,7 +123,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        noteOverlay.setContext(this);
 
         setContentView(R.layout.heat_map);
 
@@ -136,25 +133,13 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapview);
         mapFragment.getMapAsync(this);
-
-        mapView.getOverlays().add(routeOverlay);
-        mapView.getOverlays().add(traceOverlay);
-
-        if (!visibleSession.isVisibleSessionViewed()) {
-            mapView.getOverlays().add(locationOverlay);
-        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        initializeMap();
     }
 
     @Override
@@ -181,13 +166,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     private void toggleHeatMapVisibility(MenuItem menuItem) {
         if (heatMapVisible) {
             heatMapVisible = false;
-            mapView.getOverlays().remove(heatMapOverlay);
-            mapView.invalidate();
             menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_inactive);
         } else {
             heatMapVisible = true;
-            mapView.getOverlays().add(0, heatMapOverlay);
-            mapView.invalidate();
             menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_active);
         }
     }
@@ -232,21 +213,38 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         return true;
     }
 
+    private void zoom(int step) {
+        float zoom = map.getCameraPosition().zoom + step;
+        LatLng position = map.getCameraPosition().target;
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom));
+    }
+
+    private void zoomIn() {
+        zoom(1);
+    }
+
+    private void zoomOut() {
+        zoom(-1);
+    }
+
+    private void locate() {
+        mRequestedAction = ACTION_CENTER;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationHelper.checkLocationSettings(this);
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.zoom_in:
-                mapView.getController().zoomIn();
+                zoomIn();
                 break;
             case R.id.zoom_out:
-                mapView.getController().zoomOut();
+                zoomOut();
                 break;
             case R.id.locate:
-                mRequestedAction = ACTION_CENTER;
-
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    locationHelper.checkLocationSettings(this);
-                }
+                locate();
                 break;
             default:
                 super.onClick(view);
@@ -257,20 +255,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     protected void onResume() {
         super.onResume();
 
-        initialize();
         refreshNotes();
         spinnerAnimation.start();
-        initializeMap();
         measurementPresenter.registerListener(this);
         initializeRouteOverlay();
-        traceOverlay.startDrawing();
-        traceOverlay.refresh(mapView);
 
         checkConnection();
 
         updater = new HeatMapUpdater();
-        heatMapDetector = detectMapIdle(mapView, HEAT_MAP_UPDATE_TIMEOUT, updater);
-        soundTraceDetector = detectMapIdle(mapView, SOUND_TRACE_UPDATE_TIMEOUT, this);
     }
 
     @Override
@@ -278,7 +270,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         super.onPause();
 
         routeRefreshDetector.stop();
-        traceOverlay.stopDrawing(mapView);
         heatMapDetector.stop();
         soundTraceDetector.stop();
     }
@@ -290,30 +281,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void initializeRouteOverlay() {
-        routeOverlay.clear();
-
         if (shouldShowRoute()) {
             Sensor sensor = visibleSession.getSensor();
             List<Measurement> measurements = visibleSession.getMeasurements(sensor);
 
             for (Measurement measurement : measurements) {
-                GeoPoint geoPoint = geoPoint(measurement);
-                routeOverlay.addPoint(geoPoint);
+//                GeoPoint geoPoint = geoPoint(measurement);
+//                routeOverlay.addPoint(geoPoint);
             }
         }
-
-        routeRefreshDetector = detectMapIdle(mapView, 100, new MapIdleDetector.MapIdleListener() {
-            @Override
-            public void onMapIdle() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        routeOverlay.invalidate();
-                        mapView.invalidate();
-                    }
-                });
-            }
-        });
     }
 
     private boolean shouldShowRoute() {
@@ -322,19 +298,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     }
 
     private void initializeMap() {
-        mapView.setSatellite(settingsHelper.isSatelliteView());
-
-        if (settingsHelper.isFirstLaunch()) {
-            mapView.getController().setZoom(16);
-
-            Location location = locationHelper.getLastLocation();
-            if (location != null) {
-                GeoPoint geoPoint = geoPoint(location);
-                mapView.getController().setCenter(geoPoint);
-            }
-
-            settingsHelper.setFirstLaunch(false);
+        if (settingsHelper.isSatelliteView()) {
+            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         }
+
+        LatLng position = new LatLng(visibleSession.getSession().getLatitude(), visibleSession.getSession().getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
     }
 
     @Override
@@ -350,10 +319,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         toggleAirCasting();
 
         measurementPresenter.reset();
-        traceOverlay.refresh(mapView);
-        routeOverlay.clear();
-        routeOverlay.invalidate();
-        mapView.invalidate();
     }
 
     protected void startSpinner() {
@@ -368,53 +333,18 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         spinner.setAnimation(null);
     }
 
-    private void initialize() {
-        if (!initialized) {
-            showSession();
-
-            mapView.getOverlays().add(noteOverlay);
-
-            initialized = true;
-        }
-    }
-
-    private void showSession() {
-        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
-            LocationConversionHelper.BoundingBox boundingBox = boundingBox(visibleSession.getSession());
-
-            mapView.getController().zoomToSpan(boundingBox.getLatSpan(), boundingBox.getLonSpan());
-            mapView.getController().animateTo(boundingBox.getCenter());
-        }
-    }
-
     @Override
     protected void refreshNotes() {
-        noteOverlay.clear();
+//        noteOverlay.clear();
         for (Note note : visibleSession.getSessionNotes()) {
-            noteOverlay.add(note);
+//            noteOverlay.add(note);
         }
     }
-
-    public void noteClicked(OverlayItem item, int index) {
-//        suppressNextTap();
-
-        mapView.getController().animateTo(item.getPoint());
-
-        noteClicked(index);
-    }
-
 
     @Subscribe
     @Override
     public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mapView.invalidate();
-            }
-        });
 
         updater.onMapIdle();
         onMapIdle();
@@ -425,7 +355,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     public void onEvent(VisibleSessionUpdatedEvent event) {
         super.onEvent(event);
         refreshNotes();
-        mapView.invalidate();
     }
 
     @Subscribe
@@ -435,33 +364,27 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
     @Subscribe
     public void onEvent(DoubleTapEvent event) {
-        mapView.getController().zoomIn();
+        zoomIn();
     }
 
-    @Subscribe
-    public void onEvent(MotionEvent event) {
-        mapView.dispatchTouchEvent(event);
-    }
 
     @Subscribe
     public void onEvent(LocationEvent event) {
         updateRoute();
-
-        mapView.invalidate();
     }
 
     private void updateRoute() {
         if (settingsHelper.isShowRoute() && visibleSession.isVisibleSessionRecording()) {
-            GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
-            routeOverlay.addPoint(geoPoint);
+//            GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
+//            routeOverlay.addPoint(geoPoint);
         }
     }
 
     protected void centerMap() {
         if (locationHelper.getLastLocation() != null) {
-            GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
-            MapController controller = mapView.getController();
-            controller.animateTo(geoPoint);
+            Location location = locationHelper.getLastLocation();
+            LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
         }
     }
 
@@ -493,22 +416,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
     public void onAveragedMeasurement(Measurement measurement) {
         if (currentSessionManager.isSessionRecording()) {
             if (!settingsHelper.isAveraging()) {
-                traceOverlay.update(measurement);
+//                traceOverlay.update(measurement);
             } else if (lastMeasurement != null) {
-                traceOverlay.update(lastMeasurement);
+//                traceOverlay.update(lastMeasurement);
             }
         }
 
         if (settingsHelper.isAveraging()) {
             lastMeasurement = measurement;
         }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mapView.invalidate();
-            }
-        });
     }
 
     private void checkConnection() {
@@ -525,7 +441,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         } else {
             startSpinner();
         }
-        if (!complete) mapView.invalidate();
     }
 
     @Override
@@ -542,10 +457,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
         soundTraceComplete = false;
         refresh();
 
-        traceOverlay.refresh(mapView);
-
         soundTraceComplete = true;
-        mapView.invalidate();
         refresh();
     }
 
@@ -560,23 +472,25 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
 
         @Override
         protected HttpResult<Iterable<Region>> doInBackground(Void... voids) {
-            Projection projection = mapView.getProjection();
+            Projection projection = map.getProjection();
+            VisibleRegion visibleRegion = projection.getVisibleRegion();
 
             // We want to download data that's off screen so the user can see something while panning
-            GeoPoint northWest = projection.fromPixels(-mapView.getWidth(), -mapView.getHeight());
-            GeoPoint southEast = projection.fromPixels(2 * mapView.getWidth(), 2 * mapView.getHeight());
+            LatLng northWest = visibleRegion.farLeft;
+            LatLng southEast = visibleRegion.nearRight;
 
-            Location northWestLoc = LocationConversionHelper.location(northWest);
-            Location southEastLoc = LocationConversionHelper.location(southEast);
+//            Location northWestLoc = LocationConversionHelper.location(northWest);
+//            Location southEastLoc = LocationConversionHelper.location(southEast);
+//
+//            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
+//            if (size < 1) size = 1;
+//
+//            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
+//            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
 
-            int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
-            if (size < 1) size = 1;
-
-            int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
-            int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
-
-            return averagesDriver.index(visibleSession.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
-                    southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
+//            return averagesDriver.index(visibleSession.getSensor(), northWestLoc.getLongitude(), northWestLoc.getLatitude(),
+//                    southEastLoc.getLongitude(), southEastLoc.getLatitude(), gridSizeX, gridSizeY);
+            return null;
         }
 
         @Override
@@ -584,10 +498,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements MapIdle
             requestsOutstanding -= 1;
 
             if (regions.getContent() != null) {
-                heatMapOverlay.setRegions(regions.getContent());
+//                heatMapOverlay.setRegions(regions.getContent());
             }
 
-            mapView.invalidate();
             refresh();
         }
     }
