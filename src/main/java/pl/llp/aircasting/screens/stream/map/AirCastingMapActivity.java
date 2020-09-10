@@ -94,8 +94,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         LocationHelper.LocationSettingsListener,
         OnMapReadyCallback {
 
-    private static final String HEAT_MAP_VISIBLE = "heat_map_visible";
-
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
@@ -103,7 +101,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Inject ConnectivityManager connectivityManager;
     @Inject VisibleSession visibleSession;
 
-    public static final int HEAT_MAP_UPDATE_TIMEOUT = 500;
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
 
     private static final int ACTION_TOGGLE = 1;
@@ -113,12 +110,9 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private GoogleMap map;
     private SupportMapFragment mapFragment;
     private boolean soundTraceComplete = true;
-    private boolean heatMapVisible = false;
     private int requestsOutstanding = 0;
     private AsyncTask<Void, Void, Void> refreshTask;
-    private MapIdleDetector heatMapDetector;
     private MapIdleDetector soundTraceDetector;
-    private HeatMapUpdater heatMapUpdater;
     private SoundTraceUpdater soundTraceUpdater;
     private boolean initialized = false;
     private Measurement lastMeasurement;
@@ -147,9 +141,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
         initializeMap();
 
-        heatMapUpdater = new HeatMapUpdater();
-        heatMapDetector = MapIdleDetector.detectMapIdle(map, HEAT_MAP_UPDATE_TIMEOUT, heatMapUpdater);
-
         soundTraceUpdater = new SoundTraceUpdater();
         soundTraceDetector = MapIdleDetector.detectMapIdle(map, SOUND_TRACE_UPDATE_TIMEOUT, soundTraceUpdater);
 
@@ -163,41 +154,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(HEAT_MAP_VISIBLE, heatMapVisible);
-    }
-
-    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         zoomToSession = false;
-        heatMapVisible = savedInstanceState.getBoolean(HEAT_MAP_VISIBLE);
-    }
-
-    private void toggleHeatMapVisibility(MenuItem menuItem) {
-        if (heatMapVisible) {
-            heatMapVisible = false;
-            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_inactive);
-        } else {
-            heatMapVisible = true;
-            menuItem.setIcon(R.drawable.toolbar_crowd_map_icon_active);
-        }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuInflater inflater = getDelegate().getMenuInflater();
-        inflater.inflate(R.menu.toolbar_crowd_map_toggle, menu);
-
-        if (heatMapVisible) {
-            menu.getItem(menu.size() - 1).setIcon(R.drawable.toolbar_crowd_map_icon_active);
-        }
-        return true;
     }
 
     @Override
@@ -219,9 +179,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 break;
             case R.id.make_note:
                 Intents.makeANote(this);
-                break;
-            case R.id.toggle_heat_map_button:
-                toggleHeatMapVisibility(menuItem);
                 break;
         }
         return true;
@@ -267,13 +224,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
     private void startDetectors() {
         if (routeRefreshDetector != null) routeRefreshDetector.start();
-        if (heatMapDetector != null) heatMapDetector.start();
         if (soundTraceDetector != null) soundTraceDetector.start();
     }
 
     private void stopDetectors() {
         routeRefreshDetector.stop();
-        heatMapDetector.stop();
         soundTraceDetector.stop();
     }
 
@@ -370,7 +325,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
 
-        heatMapUpdater.onMapIdle();
         soundTraceUpdater.onMapIdle();
     }
 
@@ -475,51 +429,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         refresh();
     }
 
-    class HeatMapDownloader extends AsyncTask<Void, Void, HttpResult<Iterable<Region>>> {
-        LatLng northWest;
-        LatLng southEast;
-        int gridSizeX;
-        int gridSizeY;
-
-        public HeatMapDownloader(LatLng northWest, LatLng southEast, int gridSizeX, int gridSizeY) {
-            this.northWest = northWest;
-            this.southEast = southEast;
-            this.gridSizeX = gridSizeX;
-            this.gridSizeY = gridSizeY;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            requestsOutstanding += 1;
-            refresh();
-        }
-
-        @Override
-        protected HttpResult<Iterable<Region>> doInBackground(Void... voids) {
-            return averagesDriver.index(visibleSession.getSensor(), northWest.longitude, northWest.latitude,
-                    southEast.longitude, southEast.latitude, gridSizeX, gridSizeY);
-        }
-
-        @Override
-        protected void onPostExecute(HttpResult<Iterable<Region>> regions) {
-            requestsOutstanding -= 1;
-
-            if (regions.getContent() != null) {
-                for (Region region : regions.getContent()) {
-                    map.addPolygon(new PolygonOptions().add(
-                            new LatLng(region.getNorth(), region.getWest()),
-                            new LatLng(region.getNorth(), region.getEast()),
-                            new LatLng(region.getSouth(), region.getWest()),
-                            new LatLng(region.getSouth(), region.getEast())
-                    ));
-                }
-//                heatMapOverlay.setRegions(regions.getContent());
-            }
-
-            refresh();
-        }
-    }
-
     private class SoundTraceUpdater implements MapIdleDetector.MapIdleListener {
         @Override
         public void onMapIdle() {
@@ -527,35 +436,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 @Override
                 public void run() {
                     refreshSoundTrace();
-                }
-            });
-        }
-    }
-
-    private class HeatMapUpdater implements MapIdleDetector.MapIdleListener {
-        public static final int MAP_BUFFER_SIZE = 3;
-
-        @Override
-        public void onMapIdle() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Projection projection = map.getProjection();
-                    VisibleRegion visibleRegion = projection.getVisibleRegion();
-
-                    // We want to download data that's off screen so the user can see something while panning
-                    LatLng northWest = visibleRegion.farLeft;
-                    LatLng southEast = visibleRegion.nearRight;
-
-                    View mapView = mapFragment.getView();
-                    int size = min(mapView.getWidth(), mapView.getHeight()) / settingsHelper.getHeatMapDensity();
-                    if (size < 1) size = 1;
-
-                    int gridSizeX = MAP_BUFFER_SIZE * mapView.getWidth() / size;
-                    int gridSizeY = MAP_BUFFER_SIZE * mapView.getHeight() / size;
-
-                    //noinspection unchecked
-                    new HeatMapDownloader(northWest, southEast, gridSizeX, gridSizeY).execute();
                 }
             });
         }
