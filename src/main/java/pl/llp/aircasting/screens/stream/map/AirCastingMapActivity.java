@@ -62,6 +62,7 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.networking.drivers.AveragesDriver;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.LocationHelper;
+import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
@@ -87,6 +88,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Inject AveragesDriver averagesDriver;
     @Inject ConnectivityManager connectivityManager;
     @Inject VisibleSession visibleSession;
+    @Inject ResourceHelper resourceHelper;
 
     public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
 
@@ -147,7 +149,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
         ArrayList<LatLng> points = new ArrayList<>();
         for (Measurement measurement : measurements) {
-            options.addSpan(new StyleSpan(Color.BLUE));
+            int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
+            options.addSpan(new StyleSpan(color));
             points.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
         }
 

@@ -25,7 +25,9 @@ import pl.llp.aircasting.model.internal.MeasurementLevel;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.common.ThresholdsHolder;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -162,19 +164,26 @@ public class ResourceHelper {
         return thresholds.getLevel(sensor, value);
     }
 
-    public Drawable getBulletAbsolute(Sensor sensor, double value) {
+    public int getMeasurementColor(Context context, Sensor sensor, double value) {
+        int color;
         switch (getLevel(sensor, value)) {
             case TOO_LOW:
+                color = R.color.gray;
+                break;
             case VERY_LOW:
-                return greenBullet;
+                color = R.color.green;
+                break;
             case LOW:
-                return yellowBullet;
+                color = R.color.yellow;
+                break;
             case MID:
-                return orangeBullet;
+                color = R.color.orange;
+                break;
             case HIGH:
             default:
-                return redBullet;
+                color = R.color.red;
         }
+        return ContextCompat.getColor(context, color);
     }
 
     public float getTextSize(double power, MarkerSize size) {
