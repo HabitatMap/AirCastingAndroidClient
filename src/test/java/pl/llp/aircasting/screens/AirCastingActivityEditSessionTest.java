@@ -25,7 +25,6 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.model.Session;
 import pl.llp.aircasting.screens.common.sessionState.CurrentSessionManager;
 import pl.llp.aircasting.screens.stream.map.AirCastingMapActivity;
-import pl.llp.aircasting.screens.stream.map.RouteOverlay;
 
 import android.content.Intent;
 import com.google.inject.Inject;

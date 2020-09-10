@@ -117,7 +117,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private boolean initialized = false;
     private Measurement lastMeasurement;
     private boolean zoomToSession = true;
-    private MapIdleDetector routeRefreshDetector;
     private int mRequestedAction;
 
     @Override
@@ -223,12 +222,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     private void startDetectors() {
-        if (routeRefreshDetector != null) routeRefreshDetector.start();
         if (soundTraceDetector != null) soundTraceDetector.start();
     }
 
     private void stopDetectors() {
-        routeRefreshDetector.stop();
         soundTraceDetector.stop();
     }
 
@@ -239,7 +236,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         refreshNotes();
         spinnerAnimation.start();
         measurementPresenter.registerListener(this);
-        initializeRouteOverlay();
 
         checkConnection();
 
@@ -257,18 +253,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     public void onStop() {
         super.onStop();
         measurementPresenter.unregisterListener(this);
-    }
-
-    private void initializeRouteOverlay() {
-        if (shouldShowRoute()) {
-            Sensor sensor = visibleSession.getSensor();
-            List<Measurement> measurements = visibleSession.getMeasurements(sensor);
-
-            for (Measurement measurement : measurements) {
-//                GeoPoint geoPoint = geoPoint(measurement);
-//                routeOverlay.addPoint(geoPoint);
-            }
-        }
     }
 
     private boolean shouldShowRoute() {
@@ -343,19 +327,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Subscribe
     public void onEvent(DoubleTapEvent event) {
         zoomIn();
-    }
-
-
-    @Subscribe
-    public void onEvent(LocationEvent event) {
-        updateRoute();
-    }
-
-    private void updateRoute() {
-        if (settingsHelper.isShowRoute() && visibleSession.isVisibleSessionRecording()) {
-//            GeoPoint geoPoint = geoPoint(locationHelper.getLastLocation());
-//            routeOverlay.addPoint(geoPoint);
-        }
     }
 
     protected void centerMap() {
