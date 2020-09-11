@@ -20,8 +20,10 @@
 package pl.llp.aircasting.screens.stream.map;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -39,6 +41,8 @@ import com.google.android.libraries.maps.CameraUpdateFactory;
 import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
+import com.google.android.libraries.maps.model.Circle;
+import com.google.android.libraries.maps.model.CircleOptions;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.LatLngBounds;
 import com.google.android.libraries.maps.model.Polyline;
@@ -86,13 +90,12 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Inject VisibleSession visibleSession;
     @Inject ResourceHelper resourceHelper;
 
-    public static final int SOUND_TRACE_UPDATE_TIMEOUT = 300;
-
     private static final int ACTION_TOGGLE = 1;
     private static final int ACTION_CENTER = 2;
     private static final int DEFAULT_ZOOM = 16;
 
     private GoogleMap map;
+    private Circle lastMeasurementCircle = null;
     private SupportMapFragment mapFragment;
     private int requestsOutstanding = 0;
     private AsyncTask<Void, Void, Void> refreshTask;
@@ -313,12 +316,23 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
     @Override
     public void onAveragedMeasurement(final Measurement measurement) {
+        Sensor sensor = visibleSession.getSensor();
+        final int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
+
         if (currentSessionManager.isSessionRecording()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    measurementPoints.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
+                    LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
+                    measurementPoints.add(point);
                     measurementsLine.setPoints(measurementPoints);
+
+                    if (lastMeasurementCircle != null) lastMeasurementCircle.remove();
+                    lastMeasurementCircle = map.addCircle(new CircleOptions()
+                        .center(point)
+                        .radius(0.3)
+                        .strokeColor(Color.WHITE)
+                        .fillColor(color));
                 }
             });
         }
