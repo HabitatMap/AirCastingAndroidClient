@@ -228,13 +228,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        // TODO: should we do sothing here?
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         measurementPresenter.unregisterListener(this);
@@ -247,7 +240,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     private void animateCameraToSession() {
-        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
+        if (zoomToSession) {
             LatLngBounds boundingBox = LocationConversionHelper.boundingBox(visibleSession.getSession());
             int padding = 100; // meters
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(boundingBox, padding));
@@ -279,24 +272,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     protected void stopSpinner() {
         spinner.setVisibility(View.INVISIBLE);
         spinner.setAnimation(null);
-    }
-
-    // on sensor changed
-    @Subscribe
-    @Override
-    public void onEvent(VisibleStreamUpdatedEvent event) {
-        super.onEvent(event);
-
-        // TODO: should we do something here?
-    }
-
-    // visible session changed
-    @Override
-    @Subscribe
-    public void onEvent(VisibleSessionUpdatedEvent event) {
-        super.onEvent(event);
-
-        // TODO: should we do something here?
     }
 
     @Subscribe
