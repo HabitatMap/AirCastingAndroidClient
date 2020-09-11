@@ -65,8 +65,8 @@ public class LocationConversionHelper {
 
     public static LatLngBounds boundingBox(Session session) {
         double north, south, east, west;
-        north = east = Double.MIN_VALUE;
-        south = west = Double.MAX_VALUE;
+        north = east = Integer.MIN_VALUE;
+        south = west = Integer.MAX_VALUE;
 
         for (Measurement measurement : allMeasurements(session)) {
             north = max(north, measurement.getLatitude());
