@@ -69,11 +69,6 @@
         android:title="@string/disable_maps" />
 
     <android.preference.CheckBoxPreference
-        android:defaultValue="true"
-        android:key="show_route"
-        android:title="@string/show_route" />
-
-    <android.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="sync_only_wifi"
         android:title="@string/sync_only_wifi" />
