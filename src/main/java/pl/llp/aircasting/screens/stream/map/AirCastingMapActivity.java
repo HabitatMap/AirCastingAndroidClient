@@ -41,26 +41,22 @@ import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.LatLngBounds;
+import com.google.android.libraries.maps.model.Polyline;
 import com.google.android.libraries.maps.model.PolylineOptions;
 import com.google.android.libraries.maps.model.RoundCap;
 import com.google.android.libraries.maps.model.StyleSpan;
-import com.google.android.maps.GeoPoint;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.session.NoteCreatedEvent;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Measurement;
-import pl.llp.aircasting.model.Note;
 import pl.llp.aircasting.model.Sensor;
-import pl.llp.aircasting.networking.drivers.AveragesDriver;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
@@ -86,7 +82,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @InjectView(R.id.spinner) ImageView spinner;
     @InjectView(R.id.locate) Button centerMap;
     @InjectResource(R.anim.spinner) Animation spinnerAnimation;
-    @Inject AveragesDriver averagesDriver;
     @Inject ConnectivityManager connectivityManager;
     @Inject VisibleSession visibleSession;
     @Inject ResourceHelper resourceHelper;
@@ -99,15 +94,17 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
     private GoogleMap map;
     private SupportMapFragment mapFragment;
-    private boolean soundTraceComplete = true;
     private int requestsOutstanding = 0;
     private AsyncTask<Void, Void, Void> refreshTask;
-    private MapIdleDetector soundTraceDetector;
-    private SoundTraceUpdater soundTraceUpdater;
     private boolean initialized = false;
-    private Measurement lastMeasurement;
     private boolean zoomToSession = true;
     private int mRequestedAction;
+
+    private PolylineOptions options = new PolylineOptions()
+            .width(20f)
+            .startCap(new RoundCap());
+    private Polyline measurementsLine;
+    private ArrayList<LatLng> measurementPoints = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,11 +128,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         initializeMap();
         drawSession();
         animateCameraToSession();
-
-        soundTraceUpdater = new SoundTraceUpdater();
-        soundTraceDetector = MapIdleDetector.detectMapIdle(map, SOUND_TRACE_UPDATE_TIMEOUT, soundTraceUpdater);
-
-        startDetectors();
     }
 
     private void drawSession() {
@@ -144,18 +136,13 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
         if (measurements.size() == 0) { return; }
 
-        PolylineOptions options = new PolylineOptions()
-                .width(20f)
-                .startCap(new RoundCap());
-
-        ArrayList<LatLng> points = new ArrayList<>();
         for (Measurement measurement : measurements) {
             int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
             options.addSpan(new StyleSpan(color));
-            points.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
+            measurementPoints.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
         }
 
-        map.addPolyline(options.addAll(points));
+        measurementsLine = map.addPolyline(options.addAll(measurementPoints));
     }
 
     @Override
@@ -230,14 +217,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         }
     }
 
-    private void startDetectors() {
-        if (soundTraceDetector != null) soundTraceDetector.start();
-    }
-
-    private void stopDetectors() {
-        soundTraceDetector.stop();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -246,26 +225,19 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         measurementPresenter.registerListener(this);
 
         checkConnection();
-
-        startDetectors();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        stopDetectors();
+        // TODO: should we do sothing here?
     }
 
     @Override
     public void onStop() {
         super.onStop();
         measurementPresenter.unregisterListener(this);
-    }
-
-    private boolean shouldShowRoute() {
-        return settingsHelper.isShowRoute() &&
-                (visibleSession.isVisibleSessionRecording() || visibleSession.isVisibleSessionViewed());
     }
 
     private void initializeMap() {
@@ -309,19 +281,22 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         spinner.setAnimation(null);
     }
 
+    // on sensor changed
     @Subscribe
     @Override
     public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
 
-        soundTraceUpdater.onMapIdle();
+        // TODO: should we do something here?
     }
 
+    // visible session changed
     @Override
     @Subscribe
     public void onEvent(VisibleSessionUpdatedEvent event) {
         super.onEvent(event);
-        // TODO: refresh map?
+
+        // TODO: should we do something here?
     }
 
     @Subscribe
@@ -362,17 +337,15 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     @Override
-    public void onAveragedMeasurement(Measurement measurement) {
+    public void onAveragedMeasurement(final Measurement measurement) {
         if (currentSessionManager.isSessionRecording()) {
-            if (!settingsHelper.isAveraging()) {
-//                traceOverlay.update(measurement);
-            } else if (lastMeasurement != null) {
-//                traceOverlay.update(lastMeasurement);
-            }
-        }
-
-        if (settingsHelper.isAveraging()) {
-            lastMeasurement = measurement;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    measurementPoints.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
+                    measurementsLine.setPoints(measurementPoints);
+                }
+            });
         }
     }
 
@@ -384,31 +357,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     private void refresh() {
-        boolean complete = (requestsOutstanding == 0) && soundTraceComplete;
+        boolean complete = (requestsOutstanding == 0);
         if (complete) {
             stopSpinner();
         } else {
             startSpinner();
-        }
-    }
-
-    private void refreshSoundTrace() {
-        soundTraceComplete = false;
-        refresh();
-
-        soundTraceComplete = true;
-        refresh();
-    }
-
-    private class SoundTraceUpdater implements MapIdleDetector.MapIdleListener {
-        @Override
-        public void onMapIdle() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    refreshSoundTrace();
-                }
-            });
         }
     }
 }
