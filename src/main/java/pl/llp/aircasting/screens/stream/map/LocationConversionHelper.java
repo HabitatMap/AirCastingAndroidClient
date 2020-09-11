@@ -24,6 +24,9 @@ import pl.llp.aircasting.model.MeasurementStream;
 import pl.llp.aircasting.model.Session;
 
 import android.location.Location;
+
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLngBounds;
 import com.google.android.maps.GeoPoint;
 import com.google.common.base.Function;
 
@@ -60,23 +63,22 @@ public class LocationConversionHelper {
         return location;
     }
 
-    public static BoundingBox boundingBox(Session session) {
-        int north, south, east, west;
-        north = east = Integer.MIN_VALUE;
-        south = west = Integer.MAX_VALUE;
+    public static LatLngBounds boundingBox(Session session) {
+        double north, south, east, west;
+        north = east = Double.MIN_VALUE;
+        south = west = Double.MAX_VALUE;
 
         for (Measurement measurement : allMeasurements(session)) {
-            north = max(north, geoPointize(measurement.getLatitude()));
-            south = min(south, geoPointize(measurement.getLatitude()));
-            east = max(east, geoPointize(measurement.getLongitude()));
-            west = min(west, geoPointize(measurement.getLongitude()));
+            north = max(north, measurement.getLatitude());
+            south = min(south, measurement.getLatitude());
+            east = max(east, measurement.getLongitude());
+            west = min(west, measurement.getLongitude());
         }
 
-        GeoPoint center = new GeoPoint((north + south) / 2, (east + west) / 2);
-        int latSpan = north - south;
-        int lonSpan = east - west;
+        LatLng southWest = new LatLng(south, west);
+        LatLng northEast = new LatLng(north, east);
 
-        return new BoundingBox(center, latSpan, lonSpan);
+        return new LatLngBounds(southWest, northEast);
     }
 
     private static Iterable<Measurement> allMeasurements(Session session) {
@@ -92,25 +94,25 @@ public class LocationConversionHelper {
     }
 
     public static class BoundingBox {
-        private GeoPoint center;
-        private int latSpan;
-        private int lonSpan;
+        private LatLng center;
+        private double latSpan;
+        private double lonSpan;
 
-        public BoundingBox(GeoPoint center, int latSpan, int lonSpan) {
+        public BoundingBox(LatLng center, double latSpan, double lonSpan) {
             this.center = center;
             this.latSpan = latSpan;
             this.lonSpan = lonSpan;
         }
 
-        public GeoPoint getCenter() {
+        public LatLng getCenter() {
             return center;
         }
 
-        public int getLatSpan() {
+        public double getLatSpan() {
             return latSpan;
         }
 
-        public int getLonSpan() {
+        public double getLonSpan() {
             return lonSpan;
         }
     }

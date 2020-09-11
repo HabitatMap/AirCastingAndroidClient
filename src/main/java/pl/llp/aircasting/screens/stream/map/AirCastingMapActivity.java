@@ -40,9 +40,11 @@ import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLngBounds;
 import com.google.android.libraries.maps.model.PolylineOptions;
 import com.google.android.libraries.maps.model.RoundCap;
 import com.google.android.libraries.maps.model.StyleSpan;
+import com.google.android.maps.GeoPoint;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -127,8 +129,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         map = googleMap;
 
         initializeMap();
-
         drawSession();
+        animateCameraToSession();
 
         soundTraceUpdater = new SoundTraceUpdater();
         soundTraceDetector = MapIdleDetector.detectMapIdle(map, SOUND_TRACE_UPDATE_TIMEOUT, soundTraceUpdater);
@@ -270,9 +272,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         if (settingsHelper.isSatelliteView()) {
             map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         }
+    }
 
-        LatLng position = new LatLng(visibleSession.getSession().getLatitude(), visibleSession.getSession().getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
+    private void animateCameraToSession() {
+        if (visibleSession.isVisibleSessionViewed() && zoomToSession) {
+            LatLngBounds boundingBox = LocationConversionHelper.boundingBox(visibleSession.getSession());
+            int padding = 100; // meters
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(boundingBox, padding));
+        }
     }
 
     @Override

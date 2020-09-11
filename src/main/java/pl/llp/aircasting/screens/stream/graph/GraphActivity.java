@@ -185,11 +185,6 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @Override
-    protected void refreshNotes() {
-        refresh();
-    }
-
-    @Override
     public void updateGauges() {
         double peak = measurementPresenter.getTimelinePeak();
         double avg = measurementPresenter.getTimelineAvg();
