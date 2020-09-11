@@ -22,7 +22,6 @@ package pl.llp.aircasting.screens.stream.map;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -187,9 +186,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 }
 
                 break;
-            case R.id.make_note:
-                Intents.makeANote(this);
-                break;
         }
         return true;
     }
@@ -244,7 +240,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     protected void onResume() {
         super.onResume();
 
-        refreshNotes();
         spinnerAnimation.start();
         measurementPresenter.registerListener(this);
 
@@ -307,14 +302,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         spinner.setAnimation(null);
     }
 
-    @Override
-    protected void refreshNotes() {
-//        noteOverlay.clear();
-        for (Note note : visibleSession.getSessionNotes()) {
-//            noteOverlay.add(note);
-        }
-    }
-
     @Subscribe
     @Override
     public void onEvent(VisibleStreamUpdatedEvent event) {
@@ -327,12 +314,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Subscribe
     public void onEvent(VisibleSessionUpdatedEvent event) {
         super.onEvent(event);
-        refreshNotes();
-    }
-
-    @Subscribe
-    public void onEvent(NoteCreatedEvent event) {
-        refreshNotes();
+        // TODO: refresh map?
     }
 
     @Subscribe

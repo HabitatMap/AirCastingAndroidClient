@@ -270,6 +270,4 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
         intent.putExtra(NOTE_INDEX, index);
         startActivity(intent);
     }
-
-    protected abstract void refreshNotes();
 }
