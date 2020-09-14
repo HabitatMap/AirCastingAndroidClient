@@ -22,7 +22,10 @@ package pl.llp.aircasting.screens.stream.map;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -40,10 +43,12 @@ import com.google.android.libraries.maps.CameraUpdateFactory;
 import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
-import com.google.android.libraries.maps.model.Circle;
-import com.google.android.libraries.maps.model.CircleOptions;
+import com.google.android.libraries.maps.model.BitmapDescriptor;
+import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.LatLngBounds;
+import com.google.android.libraries.maps.model.Marker;
+import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.libraries.maps.model.Polyline;
 import com.google.android.libraries.maps.model.PolylineOptions;
 import com.google.android.libraries.maps.model.RoundCap;
@@ -94,7 +99,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private static final int DEFAULT_ZOOM = 16;
 
     private GoogleMap map;
-    private Circle lastMeasurementCircle = null;
+    private Marker lastMeasurementMarker = null;
     private SupportMapFragment mapFragment;
     private int requestsOutstanding = 0;
     private AsyncTask<Void, Void, Void> refreshTask;
@@ -135,16 +140,20 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private void drawSession() {
         Sensor sensor = visibleSession.getSensor();
         List<Measurement> measurements = visibleSession.getMeasurements(sensor);
+        LatLng latestPoint = null;
+        Integer latestColor = null;
 
         if (measurements.size() == 0) { return; }
 
         for (Measurement measurement : measurements) {
-            int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
-            options.addSpan(new StyleSpan(color));
-            measurementPoints.add(new LatLng(measurement.getLatitude(), measurement.getLongitude()));
+            latestColor = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
+            options.addSpan(new StyleSpan(latestColor));
+            latestPoint = new LatLng(measurement.getLatitude(), measurement.getLongitude());
+            measurementPoints.add(latestPoint);
         }
 
         measurementsLine = map.addPolyline(options.addAll(measurementPoints));
+        drawLastMeasurementMarker(latestPoint, latestColor);
     }
 
     @Override
@@ -342,13 +351,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                     LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
                     measurementPoints.add(point);
                     measurementsLine.setPoints(measurementPoints);
-
-                    if (lastMeasurementCircle != null) lastMeasurementCircle.remove();
-                    lastMeasurementCircle = map.addCircle(new CircleOptions()
-                        .center(point)
-                        .radius(0.3)
-                        .strokeColor(Color.WHITE)
-                        .fillColor(color));
+                    drawLastMeasurementMarker(point, color);
                 }
             });
         }
@@ -368,5 +371,60 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         } else {
             startSpinner();
         }
+    }
+
+    private void drawLastMeasurementMarker(LatLng point, Integer color) {
+        if (map == null) return;
+
+        if (lastMeasurementMarker != null) lastMeasurementMarker.remove();
+        lastMeasurementMarker = map.addMarker(new MarkerOptions()
+                .position(point)
+                .icon(circleMarkerIcon(color)));
+    }
+
+    private BitmapDescriptor circleMarkerIcon(Integer color) {
+        int CIRCLE_WIDTH = 30;
+        int STROKE_WIDTH = 4;
+
+        Bitmap bitmap = Bitmap.createBitmap(
+                CIRCLE_WIDTH + 2 * STROKE_WIDTH,
+                CIRCLE_WIDTH + 2 * STROKE_WIDTH,
+                Bitmap.Config.ARGB_8888
+        );
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.TRANSPARENT);
+
+        Paint strokePaint = new Paint();
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setColor(Color.WHITE);
+        strokePaint.setAntiAlias(true);
+        strokePaint.setStrokeWidth(STROKE_WIDTH);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+
+        int radius = CIRCLE_WIDTH / 2;
+
+        int padding = 0;
+
+        // drawing stroke
+        canvas.drawCircle(
+                radius + STROKE_WIDTH,
+                radius + STROKE_WIDTH,
+                radius - padding,
+                strokePaint
+        );
+
+        // drawing circle filled with proper color
+        canvas.drawCircle(
+                radius + STROKE_WIDTH,
+                radius + STROKE_WIDTH,
+                radius - padding,
+                paint
+        );
+
+     return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }
