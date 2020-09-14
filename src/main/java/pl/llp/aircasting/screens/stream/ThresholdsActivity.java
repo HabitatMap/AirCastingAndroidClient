@@ -22,6 +22,7 @@ package pl.llp.aircasting.screens.stream;
 import pl.llp.aircasting.Intents;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.ThresholdSetEvent;
+import pl.llp.aircasting.event.sensor.HeatLegendUnitsChangedEvent;
 import pl.llp.aircasting.screens.common.helpers.SettingsHelper;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.model.Sensor;
@@ -150,6 +151,7 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
         calculateThresholds();
         fixThresholds();
 
+        eventBus.post(new HeatLegendUnitsChangedEvent());
         eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.VERY_HIGH, tooLoud));
         eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.HIGH, veryLoud));
         eventBus.post(new ThresholdSetEvent(sensor, MeasurementLevel.MID, loud));

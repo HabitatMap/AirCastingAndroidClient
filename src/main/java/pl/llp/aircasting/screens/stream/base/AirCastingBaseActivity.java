@@ -70,6 +70,11 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
     private boolean initialized = false;
     private long lastChecked = 0;
 
+    @Inject
+    public void init() {
+        eventBus.register(this);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,7 +84,6 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
         registerReceiver(syncBroadcastReceiver, SyncBroadcastReceiver.INTENT_FILTER);
         registeredReceiver = syncBroadcastReceiver;
 
-        eventBus.register(this);
         checkForUnfinishedSessions();
 
         if (viewingSessionsManager.anySessionPresent() || currentSessionManager.anySensorConnected()) {
@@ -103,7 +107,6 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
             unregisterReceiver(syncBroadcastReceiver);
             registeredReceiver = null;
         }
-        eventBus.unregister(this);
     }
 
     private void initialize() {

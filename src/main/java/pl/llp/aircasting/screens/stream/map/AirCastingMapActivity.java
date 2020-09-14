@@ -20,7 +20,6 @@
 package pl.llp.aircasting.screens.stream.map;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -56,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.llp.aircasting.R;
-import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
+import pl.llp.aircasting.event.sensor.HeatLegendUnitsChangedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Measurement;
@@ -248,6 +247,23 @@ public class AirCastingMapActivity extends AirCastingActivity implements
             int padding = 100; // meters
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(boundingBox, padding));
         }
+    }
+
+    // on sensor changed
+    @Subscribe
+    @Override
+    public void onEvent(VisibleStreamUpdatedEvent event) {
+        super.onEvent(event);
+        System.out.println("ANIA sensor changed");
+
+        // TODO: refresh drawing
+    }
+
+    // on HLU changed
+    @Subscribe
+    public void onEvent(HeatLegendUnitsChangedEvent event) {
+        System.out.println("ANIA HLU changed");
+        // TODO: refresh drawing
     }
 
     @Override
