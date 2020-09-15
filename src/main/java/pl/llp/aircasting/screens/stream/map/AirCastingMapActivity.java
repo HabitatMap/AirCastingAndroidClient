@@ -29,7 +29,6 @@ import android.graphics.Paint;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.view.MenuItem;
@@ -45,14 +44,12 @@ import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.libraries.maps.model.BitmapDescriptor;
 import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
-import com.google.android.libraries.maps.model.JointType;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.LatLngBounds;
 import com.google.android.libraries.maps.model.Marker;
 import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.libraries.maps.model.Polyline;
 import com.google.android.libraries.maps.model.PolylineOptions;
-import com.google.android.libraries.maps.model.RoundCap;
 import com.google.android.libraries.maps.model.SquareCap;
 import com.google.android.libraries.maps.model.StyleSpan;
 import com.google.common.eventbus.Subscribe;
@@ -168,6 +165,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
         options.addAll(measurementPoints).addAllSpans(measurementSpans);
         measurementsLine = map.addPolyline(options);
+
         drawLastMeasurementMarker(latestPoint, latestColor);
     }
 
@@ -370,6 +368,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
                     measurementPoints.add(point);
                     measurementSpans.add(new StyleSpan(color));
+
+                    if (measurementsLine == null) {
+                        measurementsLine = map.addPolyline(options);
+                    }
 
                     measurementsLine.setPoints(measurementPoints);
                     measurementsLine.setSpans(measurementSpans);
