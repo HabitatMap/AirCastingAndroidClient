@@ -67,7 +67,6 @@
   <string name="average_threshold">Average sounds (dB)</string>
   <string name="color_scale">Heat Legend Units</string>
   <string name="edit_session">Edit Session</string>
-  <string name="heat_map_density">CrowdMap grid cell size</string>
   <string name="loud_threshold">Loud sounds (dB)</string>
   <string name="make_a_note">Make Note</string>
   <string name="satellite_view">Satellite map</string>
