@@ -103,9 +103,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private GoogleMap map;
     private Marker lastMeasurementMarker = null;
     private SupportMapFragment mapFragment;
-    private int requestsOutstanding = 0;
-    private AsyncTask<Void, Void, Void> refreshTask;
-    private boolean initialized = false;
     private boolean zoomToSession = true;
     private int mRequestedAction;
 
