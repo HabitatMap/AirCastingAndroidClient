@@ -65,6 +65,7 @@ public class LocationConversionHelper {
 
     public static LatLngBounds boundingBox(Session session) {
         double north, south, east, west;
+
         north = east = Integer.MIN_VALUE;
         south = west = Integer.MAX_VALUE;
 
@@ -78,7 +79,18 @@ public class LocationConversionHelper {
         LatLng southWest = new LatLng(south, west);
         LatLng northEast = new LatLng(north, east);
 
-        return new LatLngBounds(southWest, northEast);
+        LatLngBounds bounds;
+        try {
+            bounds = new LatLngBounds(southWest, northEast);
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+            bounds = defaultBounds();
+        }
+        return bounds;
+    }
+
+    private static LatLngBounds defaultBounds() {
+        return new LatLngBounds(new LatLng(-90, 180), new LatLng(90, 180));
     }
 
     private static Iterable<Measurement> allMeasurements(Session session) {
