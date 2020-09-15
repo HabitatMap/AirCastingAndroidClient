@@ -145,6 +145,8 @@ public class ThresholdsActivity extends DialogActivity implements View.OnClickLi
             eventBus.post(new ThresholdSetEvent(sensor, level, sensor.getThreshold(level)));
         }
         settingsHelper.resetThresholds(sensor);
+
+        eventBus.post(new HeatLegendUnitsChangedEvent());
     }
 
     void saveThresholds() {

@@ -267,16 +267,26 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Override
     public void onEvent(VisibleStreamUpdatedEvent event) {
         super.onEvent(event);
-        System.out.println("ANIA sensor changed");
 
-        // TODO: refresh drawing
+        refresh();
     }
 
     // on HLU changed
     @Subscribe
     public void onEvent(HeatLegendUnitsChangedEvent event) {
-        System.out.println("ANIA HLU changed");
-        // TODO: refresh drawing
+        refresh();
+    }
+
+    private void refresh() {
+        // temporary workaround for the old app
+        // will be implemented differently in the new app
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+                startActivity(new Intent(context, AirCastingMapActivity.class));
+            }
+        });
     }
 
     @Override
@@ -365,15 +375,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnectedOrConnecting()) {
             ToastHelper.show(this, R.string.no_internet, Toast.LENGTH_SHORT);
-        }
-    }
-
-    private void refresh() {
-        boolean complete = (requestsOutstanding == 0);
-        if (complete) {
-            stopSpinner();
-        } else {
-            startSpinner();
         }
     }
 
