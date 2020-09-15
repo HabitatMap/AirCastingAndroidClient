@@ -131,6 +131,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapview);
         mapFragment.getMapAsync(this);
+
+        measurementPresenter.registerListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        measurementPresenter.unregisterListener(this);
     }
 
     @Override
@@ -243,15 +251,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         super.onResume();
 
         spinnerAnimation.start();
-        measurementPresenter.registerListener(this);
 
         checkConnection();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        measurementPresenter.unregisterListener(this);
     }
 
     private void initializeMap() {
