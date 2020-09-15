@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.libraries.maps.CameraUpdateFactory;
 import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.OnMapReadyCallback;
@@ -50,6 +51,7 @@ import com.google.android.libraries.maps.model.Marker;
 import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.libraries.maps.model.Polyline;
 import com.google.android.libraries.maps.model.PolylineOptions;
+import com.google.android.libraries.maps.model.RoundCap;
 import com.google.android.libraries.maps.model.SquareCap;
 import com.google.android.libraries.maps.model.StyleSpan;
 import com.google.common.eventbus.Subscribe;
@@ -104,10 +106,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private int mRequestedAction;
 
     private PolylineOptions options = new PolylineOptions()
-            .width(20f)
+            .width(10f)
             .zIndex(1000)
-            .endCap(new SquareCap())
-            .startCap(new SquareCap());
+            .jointType(JointType.ROUND)
+            .endCap(new RoundCap())
+            .startCap(new RoundCap());
     private Polyline measurementsLine;
     private ArrayList<LatLng> measurementPoints = new ArrayList<>();
     private ArrayList<StyleSpan> measurementSpans = new ArrayList<>();
