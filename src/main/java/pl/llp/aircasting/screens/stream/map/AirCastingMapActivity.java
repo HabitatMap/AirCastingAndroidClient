@@ -116,6 +116,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
             .startCap(new SquareCap());
     private Polyline measurementsLine;
     private ArrayList<LatLng> measurementPoints = new ArrayList<>();
+    private ArrayList<StyleSpan> measurementSpans = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,14 +150,19 @@ public class AirCastingMapActivity extends AirCastingActivity implements
 
         if (measurements.size() == 0) { return; }
 
+        int i = 0;
         for (Measurement measurement : measurements) {
             latestColor = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
-            options.addSpan(new StyleSpan(latestColor));
+            if (i > 0) {
+                measurementSpans.add(new StyleSpan(latestColor));
+            }
             latestPoint = new LatLng(measurement.getLatitude(), measurement.getLongitude());
             measurementPoints.add(latestPoint);
+            i += 1;
         }
 
-        measurementsLine = map.addPolyline(options.addAll(measurementPoints));
+        options.addAll(measurementPoints).addAllSpans(measurementSpans);
+        measurementsLine = map.addPolyline(options);
         drawLastMeasurementMarker(latestPoint, latestColor);
     }
 
@@ -363,8 +369,13 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 @Override
                 public void run() {
                     LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
+
                     measurementPoints.add(point);
+                    measurementSpans.add(new StyleSpan(color));
+
                     measurementsLine.setPoints(measurementPoints);
+                    measurementsLine.setSpans(measurementSpans);
+
                     drawLastMeasurementMarker(point, color);
                 }
             });
