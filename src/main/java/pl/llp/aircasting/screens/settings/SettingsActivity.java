@@ -73,10 +73,8 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         final CheckBoxPreference alertPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SettingsHelper.DORMANT_SESSION_ALERT);
-        final EditTextPreference heatMapDensityPreference = (EditTextPreference) getPreferenceScreen().findPreference(SettingsHelper.HEAT_MAP_DENSITY);
 
         alertPreference.setOnPreferenceChangeListener(new DormantSessionAlertToggleListener());
-        heatMapDensityPreference.setOnPreferenceChangeListener(new HeatMapDensityPreferenceChangeListener());
     }
 
     // preferences screen behaves differently than the others, so we have to use this workaround to add the toolbar
@@ -127,20 +125,6 @@ public class SettingsActivity extends RoboPreferenceActivity implements SharedPr
             ToastHelper.show(context, R.string.setting_error, Toast.LENGTH_LONG);
         } else if (key.equals(SettingsHelper.AVERAGING_TIME) && !settingsHelper.validateAveragingTime()) {
             ToastHelper.show(context, R.string.averaging_time_error, Toast.LENGTH_LONG);
-        }
-    }
-
-    private class HeatMapDensityPreferenceChangeListener implements Preference.OnPreferenceChangeListener {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            int value = Integer.parseInt(newValue.toString());
-
-            if (value >= MIN_DENSITY && value <= MAX_DENSITY) {
-                return true;
-            } else {
-                ToastHelper.show(getApplicationContext(), R.string.heat_map_density_warning, Toast.LENGTH_SHORT);
-                return false;
-            }
         }
     }
 

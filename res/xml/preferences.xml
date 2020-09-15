@@ -29,13 +29,6 @@
         android:title="Contribute to CrowdMap" />
 
     <android.preference.EditTextPreference
-        android:defaultValue="20"
-        android:key="heat_map_density"
-        android:numeric="integer"
-        android:summary="@string/heat_map_density_summary"
-        android:title="@string/heat_map_density" />
-
-    <android.preference.EditTextPreference
         android:defaultValue="100"
         android:key="calibration"
         android:numeric="integer"
