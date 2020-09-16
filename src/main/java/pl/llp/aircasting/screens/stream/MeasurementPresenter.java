@@ -115,6 +115,10 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
             }
         }
 
+        for (Listener listener : listeners) {
+            listener.onMeasurement(measurement);
+        }
+
         prepareFullView();
         updateFullView(measurement);
 
@@ -402,6 +406,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     public interface Listener {
         void onViewUpdated();
 
+        void onMeasurement(Measurement measurement);
         void onAveragedMeasurement(Measurement measurement);
     }
 

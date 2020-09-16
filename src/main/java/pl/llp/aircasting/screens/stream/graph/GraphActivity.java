@@ -181,8 +181,10 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     }
 
     @Override
-    public void onAveragedMeasurement(Measurement measurement) {
-    }
+    public void onAveragedMeasurement(Measurement measurement) {}
+
+    @Override
+    public void onMeasurement(Measurement measurement) {}
 
     @Override
     public void updateGauges() {
