@@ -107,7 +107,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     private int mRequestedAction;
 
     private PolylineOptions options = new PolylineOptions()
-            .width(10f)
+            .width(20f)
             .zIndex(1000)
             .jointType(JointType.ROUND)
             .endCap(new RoundCap())
