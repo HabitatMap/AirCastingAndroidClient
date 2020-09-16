@@ -362,11 +362,14 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     public void onAveragedMeasurement(final Measurement measurement) {
         Sensor sensor = visibleSession.getSensor();
         final int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
+        System.out.println("MARYSIA: onAvaragedMeasurement color: "+color);
+        System.out.println("MARYSIA: currentSessionManager.isSessionRecording(): "+currentSessionManager.isSessionRecording());
 
         if (currentSessionManager.isSessionRecording()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("MARYSIA: onAvaragedMeasurement run runnable, adding points etc"+color);
                     LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
 
                     measurementPoints.add(point);
