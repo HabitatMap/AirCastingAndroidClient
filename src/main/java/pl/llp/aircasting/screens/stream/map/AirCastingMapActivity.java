@@ -359,33 +359,42 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     @Override
-    public void onAveragedMeasurement(final Measurement measurement) {
+    public void onAveragedMeasurement(final Measurement measurement) {}
+
+    @Override
+    public void onMeasurement(final Measurement measurement) {
+        final LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
         Sensor sensor = visibleSession.getSensor();
         final int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
-        System.out.println("MARYSIA: onAvaragedMeasurement color: "+color);
-        System.out.println("MARYSIA: currentSessionManager.isSessionRecording(): "+currentSessionManager.isSessionRecording());
 
-        if (currentSessionManager.isSessionRecording()) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("MARYSIA: onAvaragedMeasurement run runnable, adding points etc"+color);
-                    LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
-
-                    measurementPoints.add(point);
-                    measurementSpans.add(new StyleSpan(color));
-
-                    if (measurementsLine == null) {
-                        measurementsLine = map.addPolyline(options);
-                    }
-
-                    measurementsLine.setPoints(measurementPoints);
-                    measurementsLine.setSpans(measurementSpans);
-
-                    drawLastMeasurementMarker(point, color);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (visibleSession.isVisibleSessionFixed()) {
+                    drawFixedMeasurement(point, color);
+                } else if(currentSessionManager.isSessionRecording()) {
+                    drawMobileMeasurement(point, color);
                 }
-            });
+            }
+        });
+    }
+
+    private void drawFixedMeasurement(final LatLng point, final int color) {
+        drawLastMeasurementMarker(point, color);
+    }
+
+    private void drawMobileMeasurement(final LatLng point, final int color) {
+        measurementPoints.add(point);
+        measurementSpans.add(new StyleSpan(color));
+
+        if (measurementsLine == null) {
+            measurementsLine = map.addPolyline(options);
         }
+
+        measurementsLine.setPoints(measurementPoints);
+        measurementsLine.setSpans(measurementSpans);
+
+        drawLastMeasurementMarker(point, color);
     }
 
     private void checkConnection() {
