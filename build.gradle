@@ -34,8 +34,8 @@ android {
         applicationId 'pl.llp.aircasting'
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 107
-        versionName "1.5.20"
+        versionCode 108
+        versionName "1.5.21"
 
         // Read the API key from ./secure.properties into R.string.maps_api_key
         def secureProps = new Properties()
