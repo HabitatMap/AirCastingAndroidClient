@@ -5,6 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
+
+import pl.llp.aircasting.event.ui.SensorChangedEvent;
 import pl.llp.aircasting.screens.common.ApplicationState;
 import pl.llp.aircasting.event.session.CurrentSessionSetEvent;
 import pl.llp.aircasting.event.session.VisibleSessionUpdatedEvent;
@@ -55,6 +57,11 @@ public class VisibleSession {
     public void setSensor(@NotNull Sensor sensor) {
         this.sensor = sensor;
         eventBus.post(new VisibleStreamUpdatedEvent(sensor));
+    }
+
+    public void changeSensor(@NotNull Sensor sensor) {
+        this.sensor = sensor;
+        eventBus.post(new SensorChangedEvent(sensor));
     }
 
     @NotNull

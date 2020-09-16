@@ -28,6 +28,7 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.measurements.MobileMeasurementEvent;
 import pl.llp.aircasting.event.sensor.FixedSensorEvent;
 import pl.llp.aircasting.event.sensor.SensorEvent;
+import pl.llp.aircasting.event.ui.SensorChangedEvent;
 import pl.llp.aircasting.screens.common.helpers.PhotoHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
 import pl.llp.aircasting.screens.common.helpers.SelectSensorHelper;
@@ -217,6 +218,12 @@ public abstract class AirCastingActivity extends AirCastingBaseActivity implemen
 
     @Subscribe
     public void onEvent(VisibleStreamUpdatedEvent event) {
+        topBarHelper.updateTopBar(event.getSensor(), topBar);
+        updateGauges();
+    }
+
+    @Subscribe
+    public void onEvent(SensorChangedEvent event) {
         topBarHelper.updateTopBar(event.getSensor(), topBar);
         updateGauges();
     }
