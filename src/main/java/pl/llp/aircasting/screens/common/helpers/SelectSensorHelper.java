@@ -55,7 +55,7 @@ public class SelectSensorHelper {
       @Override
       public void onClick(DialogInterface dialog, int which) {
         Sensor sensor = sensors.get(which);
-        visibleSession.setSensor(sensor);
+        visibleSession.changeSensor(sensor);
 
           context.dismissDialog(DIALOG_ID);
       }

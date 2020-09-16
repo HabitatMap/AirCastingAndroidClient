@@ -63,6 +63,7 @@ import java.util.List;
 import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.HeatLegendUnitsChangedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
+import pl.llp.aircasting.event.ui.SensorChangedEvent;
 import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
@@ -270,7 +271,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     // on sensor changed
     @Subscribe
     @Override
-    public void onEvent(VisibleStreamUpdatedEvent event) {
+    public void onEvent(SensorChangedEvent event) {
         super.onEvent(event);
 
         refresh();
