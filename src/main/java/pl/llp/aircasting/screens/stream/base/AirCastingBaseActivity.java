@@ -145,12 +145,7 @@ public abstract class AirCastingBaseActivity extends RoboActivityWithProgress im
                 if (resultCode != RESULT_OK) {
                     ToastHelper.showText(this, "You need to enable location settings to record an AirCasting session", Toast.LENGTH_LONG);
                 } else {
-                    locationHelper.startLocationUpdates();
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
-                    onLocationSettingsSatisfied();
+                    locationHelper.startLocationUpdates(this);
                 }
                 break;
             default:

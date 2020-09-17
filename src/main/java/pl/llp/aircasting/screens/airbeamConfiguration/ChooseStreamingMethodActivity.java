@@ -37,7 +37,7 @@ public class ChooseStreamingMethodActivity extends DialogActivity implements Vie
         setContentView(R.layout.choose_streaming_method);
         initDialogToolbar("Streaming Method");
 
-        mLocationHelper.initLocation();
+        mLocationHelper.initLocation(null);
 
         wifiButton.setOnClickListener(this);
         cellularButton.setOnClickListener(this);

@@ -144,18 +144,20 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         map = googleMap;
 
         initializeMap();
-        drawSession();
-        animateCameraToSession();
-    }
 
-    private void drawSession() {
         Sensor sensor = visibleSession.getSensor();
         List<Measurement> measurements = visibleSession.getMeasurements(sensor);
+        if (measurements.size() > 0) {
+            drawSession(sensor, measurements);
+            animateCameraToSession();
+        } else {
+            locate();
+        }
+    }
+
+    private void drawSession(Sensor sensor, List<Measurement> measurements) {
         LatLng latestPoint = null;
         Integer latestColor = null;
-
-        if (measurements.size() == 0) { return; }
-
         int i = 0;
         for (Measurement measurement : measurements) {
             latestColor = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
@@ -310,18 +312,6 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         measurementPresenter.reset();
     }
 
-    protected void startSpinner() {
-        if (spinner.getVisibility() != View.VISIBLE) {
-            spinner.setVisibility(View.VISIBLE);
-            spinner.setAnimation(spinnerAnimation);
-        }
-    }
-
-    protected void stopSpinner() {
-        spinner.setVisibility(View.INVISIBLE);
-        spinner.setAnimation(null);
-    }
-
     @Subscribe
     public void onEvent(DoubleTapEvent event) {
         zoomIn();
@@ -342,12 +332,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 if (resultCode != RESULT_OK) {
                     ToastHelper.show(this, R.string.enable_location, Toast.LENGTH_LONG);
                 } else {
-                    locationHelper.startLocationUpdates();
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
-                    onLocationSettingsSatisfied();
+                    locationHelper.startLocationUpdates(this);
                 }
                 break;
             default:
