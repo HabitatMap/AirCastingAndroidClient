@@ -410,13 +410,13 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         }
     }
 
-    private void drawLastMeasurementMarker(LatLng point, Integer color) {
+    private void drawLastMeasurementMarker(LatLng point, Bitmap dot) {
         if (map == null) return;
 
         if (lastMeasurementMarker != null) lastMeasurementMarker.remove();
         lastMeasurementMarker = map.addMarker(new MarkerOptions()
                 .position(point)
-                .icon(circleMarkerIcon(color)));
+                .icon(dot.des));
     }
 
     private BitmapDescriptor circleMarkerIcon(Integer color) {

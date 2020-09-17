@@ -26,9 +26,12 @@ import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.sensor.common.ThresholdsHolder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -116,19 +119,19 @@ public class ResourceHelper {
         }
     }
 
-    public Drawable getLocationBullet(Sensor sensor, double value) {
+    public Bitmap getLocationBullet(Sensor sensor, double value) {
         switch (getLevel(sensor, value)) {
             case LOW:
-                return dotYellow;
+                return getBitmap(dotYellow);
             case MID:
-                return dotOrange;
+                return getBitmap(dotOrange);
             case HIGH:
             case VERY_HIGH:
-                return dotRed;
+                return getBitmap(dotRed);
             case TOO_LOW:
             case VERY_LOW:
             default:
-                return dotGreen;
+                return getBitmap(dotGreen);
         }
     }
 
