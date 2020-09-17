@@ -101,11 +101,16 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
     }
 
     private void onMeasurement(MeasurementEvent event, Boolean isFixed) {
-        if (!sessionMatches(event.getSessionId(), isFixed)) return;
-        if (!isFixed && !state.recording().isRecording()) return;
-        if (!event.getSensor().equals(visibleSession.getSensor())) return;
-
         Measurement measurement = event.getMeasurement();
+
+        if (!event.getSensor().equals(visibleSession.getSensor())) return;
+        if (!isFixed && !state.recording().isRecording() && !visibleSession.isVisibleSessionRecording()) {
+            for (Listener listener : listeners) {
+                listener.onMeasurementIdle(measurement);
+            }
+            return;
+        }
+        if (!sessionMatches(event.getSessionId(), isFixed)) return;
 
         if (isFixed) {
             long measurementsAdded = ((FixedSensorEvent) event).getMeasurementsAdded();
@@ -407,6 +412,7 @@ public class MeasurementPresenter implements SharedPreferences.OnSharedPreferenc
         void onViewUpdated();
 
         void onMeasurement(Measurement measurement);
+        void onMeasurementIdle(Measurement measurement);
         void onAveragedMeasurement(Measurement measurement);
     }
 
