@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -77,7 +78,7 @@ public class LocationHelper {
     }
 
     @SuppressLint("MissingPermission")
-    public void initLocation() {
+    public void initLocation(@Nullable final LocationSettingsListener locationSettingsListener) {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
 
         mFusedLocationProviderClient.getLastLocation()
@@ -87,14 +88,20 @@ public class LocationHelper {
                         if (location != null) {
                             updateLocation(location);
                         }
+
+                        if (locationSettingsListener != null) {
+                            locationSettingsListener.onLocationSettingsSatisfied();
+                        }
                     }
                 });
     }
 
     @SuppressLint("MissingPermission")
-    public synchronized void startLocationUpdates() {
+    public synchronized void startLocationUpdates(final LocationSettingsListener locationSettingsListener) {
         if (mLastLocation == null && mFusedLocationProviderClient == null) {
-            initLocation();
+            initLocation(locationSettingsListener);
+        } else {
+            locationSettingsListener.onLocationSettingsSatisfied();
         }
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         mLocationUpdatesStarted = true;
@@ -117,8 +124,7 @@ public class LocationHelper {
         task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                startLocationUpdates();
-                locationSettingsListener.onLocationSettingsSatisfied();
+                startLocationUpdates(locationSettingsListener);
             }
         });
 

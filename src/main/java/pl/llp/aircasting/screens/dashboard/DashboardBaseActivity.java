@@ -128,12 +128,7 @@ public abstract class DashboardBaseActivity extends RoboActivityWithProgress imp
                 if (resultCode != RESULT_OK) {
                     ToastHelper.show(this, R.string.enable_location, Toast.LENGTH_LONG);
                 } else {
-                    locationHelper.startLocationUpdates();
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
-                    onLocationSettingsSatisfied();
+                    locationHelper.startLocationUpdates(this);
                 }
                 break;
             default:
