@@ -52,7 +52,6 @@ import com.google.android.libraries.maps.model.MarkerOptions;
 import com.google.android.libraries.maps.model.Polyline;
 import com.google.android.libraries.maps.model.PolylineOptions;
 import com.google.android.libraries.maps.model.RoundCap;
-import com.google.android.libraries.maps.model.SquareCap;
 import com.google.android.libraries.maps.model.StyleSpan;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -64,12 +63,12 @@ import pl.llp.aircasting.R;
 import pl.llp.aircasting.event.sensor.HeatLegendUnitsChangedEvent;
 import pl.llp.aircasting.event.ui.DoubleTapEvent;
 import pl.llp.aircasting.event.ui.SensorChangedEvent;
-import pl.llp.aircasting.event.ui.VisibleStreamUpdatedEvent;
 import pl.llp.aircasting.model.Measurement;
 import pl.llp.aircasting.model.Sensor;
 import pl.llp.aircasting.screens.common.ToastHelper;
 import pl.llp.aircasting.screens.common.helpers.LocationHelper;
 import pl.llp.aircasting.screens.common.helpers.ResourceHelper;
+import pl.llp.aircasting.screens.common.sessionState.CurrentSessionSensorManager;
 import pl.llp.aircasting.screens.common.sessionState.VisibleSession;
 import pl.llp.aircasting.screens.stream.MeasurementPresenter;
 import pl.llp.aircasting.screens.stream.base.AirCastingActivity;
@@ -97,7 +96,8 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     @Inject ResourceHelper resourceHelper;
 
     private static final int ACTION_TOGGLE = 1;
-    private static final int ACTION_CENTER = 2;
+    private static final int ACTION_LOCATE = 2;
+
     private static final int DEFAULT_ZOOM = 16;
 
     private GoogleMap map;
@@ -197,9 +197,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
                 mRequestedAction = ACTION_TOGGLE;
 
                 if (!settingsHelper.areMapsDisabled()) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        locationHelper.checkLocationSettings(this);
-                    }
+                    checkLocationSettings();
                 } else {
                     toggleSessionRecording();
                 }
@@ -224,7 +222,11 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     }
 
     private void locate() {
-        mRequestedAction = ACTION_CENTER;
+        mRequestedAction = ACTION_LOCATE;
+        checkLocationSettings();
+    }
+
+    private void checkLocationSettings() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationHelper.checkLocationSettings(this);
         }
@@ -301,7 +303,7 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     public void onLocationSettingsSatisfied() {
         if (mRequestedAction == ACTION_TOGGLE) {
             toggleSessionRecording();
-        } else if (mRequestedAction == ACTION_CENTER) {
+        } else if (mRequestedAction == ACTION_LOCATE) {
             centerMap();
         }
     }
@@ -348,6 +350,20 @@ public class AirCastingMapActivity extends AirCastingActivity implements
     public void onAveragedMeasurement(final Measurement measurement) {}
 
     @Override
+    public void onMeasurementIdle(final Measurement measurement) {
+        final LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
+        Sensor sensor = visibleSession.getSensor();
+        final int color = resourceHelper.getMeasurementColor(this, sensor, measurement.getValue());
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                drawLocationMeasurement(point, color);
+            }
+        });
+    }
+
+    @Override
     public void onMeasurement(final Measurement measurement) {
         final LatLng point = new LatLng(measurement.getLatitude(), measurement.getLongitude());
         Sensor sensor = visibleSession.getSensor();
@@ -380,6 +396,10 @@ public class AirCastingMapActivity extends AirCastingActivity implements
         measurementsLine.setPoints(measurementPoints);
         measurementsLine.setSpans(measurementSpans);
 
+        drawLastMeasurementMarker(point, color);
+    }
+
+    private void drawLocationMeasurement(final LatLng point, final int color) {
         drawLastMeasurementMarker(point, color);
     }
 
