@@ -52,6 +52,7 @@ import roboguice.inject.InjectView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Lists.newArrayList;
@@ -74,6 +75,8 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
     @Inject ThresholdsHolder thresholdsHolder;
     @Inject ViewingSessionsManager viewingSessionsManager;
     @Inject FormatHelper mFormatHelper;
+
+    final AtomicBoolean noUpdateInProgress = new AtomicBoolean(true);
 
 
     @Override
@@ -186,9 +189,18 @@ public class GraphActivity extends AirCastingActivity implements View.OnClickLis
 
     @Override
     public void updateGauges() {
-        double peak = measurementPresenter.getTimelinePeak();
-        double avg = measurementPresenter.getTimelineAvg();
-        mGaugeHelper.updateGaugesFromTimeline(peak, avg);
+        if (noUpdateInProgress.get()) {
+            noUpdateInProgress.set(false);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    double peak = measurementPresenter.getTimelinePeak();
+                    double avg = measurementPresenter.getTimelineAvg();
+                    mGaugeHelper.updateGaugesFromTimeline(peak, avg);
+                    noUpdateInProgress.set(true);
+                }
+            });
+        }
     }
 
     private void refresh() {
