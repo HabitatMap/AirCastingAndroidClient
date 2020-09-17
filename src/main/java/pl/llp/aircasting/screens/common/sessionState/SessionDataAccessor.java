@@ -94,7 +94,10 @@ public class SessionDataAccessor {
 
         if (sensor != null) {
             if (sessionState.isSessionBeingViewed(sessionId)) {
-                now = getStream(sensor.getSensorName(), sessionId).getLatestMeasurementValue();
+                MeasurementStream stream = getStream(sensor.getSensorName(), sessionId);
+                if (stream != null) {
+                    now = stream.getLatestMeasurementValue();
+                }
             }
             if (sessionState.isSessionCurrent(sessionId)) {
                 now = currentSessionSensorManager.getNow(sensor);
