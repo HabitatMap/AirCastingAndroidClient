@@ -17,7 +17,7 @@
     <com.google.maps.api.key>0aW177QG5gTuz6SCETXfq_BAlXRaNVk5aykrN9g</com.google.maps.api.key>
 
     <android.version>4.1.1.4</android.version>
-    <apache.httpclient.version>4.2.2</apache.httpclient.version>
+    <apache.httpclient.version>4.5.13</apache.httpclient.version>
     <gson.version>2.2.3</gson.version>
     <guava.version>14.0.1</guava.version>
 
